@@ -1,16 +1,27 @@
-import {FileRoute, Outlet} from '@tanstack/react-router';
+import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
+import FriendListItem from './friends/-components/FriendListItem.tsx';
+import {friends} from '@fake-data/friends.ts';
+import clsx from 'clsx';
 
-export const Route = new FileRoute('/groups').createRoute({
-  component: GroupsLayout,
+export const Route = new FileRoute('/friends').createRoute({
+  component: FriendsLayout,
 });
 
-function GroupsLayout() {
+function FriendsLayout() {
+  const matchRoute = useMatchRoute();
+  const isRootLayout = matchRoute({to: '/friends'});
+
   return (
     <>
-      <div className="w-96 fixed inset-y-0 left-60 border-e border-slate-200">
-        <div className="px-6 pb-4 pt-6">
-          <h2 className="text-lg font-medium text-gray-900">Groups</h2>
+      <div
+        className={clsx(
+          !isRootLayout && 'hidden xl:block w-96 fixed inset-y-0 left-60 border-e border-slate-200 overflow-auto',
+          isRootLayout && 'xl:w-96 xl:fixed xl:inset-y-0 xl:left-60 xl:border-e xl:border-slate-200 xl:overflow-auto',
+        )}
+      >
+        <div className="px-6 pb-4 pt-6 sticky top-0 bg-white z-10">
+          <h2 className="text-lg font-medium text-gray-900">Friends</h2>
           <p className="text-sm text-gray-600">
             Overall, you are owed <span className="text-green-700">Rs 46,043</span>
           </p>
@@ -28,13 +39,22 @@ function GroupsLayout() {
               </div>
             </div>
 
-            <button className="shrink-0 p-2 border border-slate-300 flex items-center justify-center rounded-md hover:bg-slate-50">
+            <button
+              className="shrink-0 p-2 border border-slate-300 flex items-center justify-center rounded-md hover:bg-slate-50">
               <AdjustmentsVerticalIcon className="size-5 text-slate-600" />
             </button>
           </div>
         </div>
+
+        <div>
+          {friends.map((e) => (
+            <FriendListItem key={e.id} {...e} />
+          ))}
+        </div>
+
+        <ScrollRestoration />
       </div>
-      <div className="ms-96">
+      <div className="xl:ms-96">
         <Outlet />
       </div>
     </>
