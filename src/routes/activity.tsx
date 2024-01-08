@@ -2,15 +2,16 @@ import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/rea
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import GroupListItem from "./groups/-components/GroupListItem.tsx";
-import {groups} from "@fake-data/groups.ts";
+import {activities} from "@fake-data/acitivities.ts";
+import ActivityListItem from "./activity/-components/ActivityListItem.tsx";
 
-export const Route = new FileRoute('/groups').createRoute({
-    component: GroupsLayout,
+export const Route = new FileRoute('/activity').createRoute({
+    component: ActivityLayout,
 });
 
-function GroupsLayout() {
+function ActivityLayout() {
     const matchRoute = useMatchRoute();
-    const isRootLayout = matchRoute({to: '/groups'});
+    const isRootLayout = matchRoute({to: '/activity'});
 
     return (
         <>
@@ -21,11 +22,7 @@ function GroupsLayout() {
                 )}
             >
                 <div className="px-6 pb-4 pt-6 sticky top-0 bg-white z-10">
-                    <h2 className="text-lg font-medium text-gray-900">Groups</h2>
-                    <p className="text-sm text-gray-600">
-                        Overall, you are owed <span className="text-green-700">Rs 46,043</span>
-                    </p>
-
+                    <h2 className="text-lg font-medium text-gray-900">Activity</h2>
                     <div className="flex items-center gap-x-2 mt-6">
                         <div className="grow">
                             <label htmlFor="search" className="sr-only">Search</label>
@@ -47,8 +44,8 @@ function GroupsLayout() {
                 </div>
 
                 <div>
-                    {groups.map((e) => (
-                        <GroupListItem key={e.id} {...e} />
+                    {activities.map((e) => (
+                        <ActivityListItem key={e.id} {...e} />
                     ))}
                 </div>
 

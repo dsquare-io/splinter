@@ -3,12 +3,12 @@ import { FileRoute, lazyFn, lazyRouteComponent } from "@tanstack/react-router"
 import { Route as rootRoute } from "./routes/__root"
 import { Route as GroupsImport } from "./routes/groups"
 import { Route as FriendsImport } from "./routes/friends"
+import { Route as ActivityImport } from "./routes/activity"
 import { Route as IndexImport } from "./routes/index"
 import { Route as ProfileMeImport } from "./routes/profile/me"
 import { Route as GroupsGroupImport } from "./routes/groups/$group"
 import { Route as FriendsFriendImport } from "./routes/friends/$friend"
-import { Route as GroupsIndexImport } from "./routes/groups/index"
-import { Route as ActivityIndexImport } from "./routes/activity/index"
+import { Route as ActivityActivityImport } from "./routes/activity/$activity"
 
 const GroupsRoute = GroupsImport.update({
   path: "/groups",
@@ -17,6 +17,11 @@ const GroupsRoute = GroupsImport.update({
 
 const FriendsRoute = FriendsImport.update({
   path: "/friends",
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ActivityRoute = ActivityImport.update({
+  path: "/activity",
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -40,20 +45,19 @@ const FriendsFriendRoute = FriendsFriendImport.update({
   getParentRoute: () => FriendsRoute,
 } as any)
 
-const GroupsIndexRoute = GroupsIndexImport.update({
-  path: "/",
-  getParentRoute: () => GroupsRoute,
-} as any)
-
-const ActivityIndexRoute = ActivityIndexImport.update({
-  path: "/activity/",
-  getParentRoute: () => rootRoute,
+const ActivityActivityRoute = ActivityActivityImport.update({
+  path: "/$activity",
+  getParentRoute: () => ActivityRoute,
 } as any)
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
     "/": {
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    "/activity": {
+      preLoaderRoute: typeof ActivityImport
       parentRoute: typeof rootRoute
     }
     "/friends": {
@@ -64,13 +68,9 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof GroupsImport
       parentRoute: typeof rootRoute
     }
-    "/activity/": {
-      preLoaderRoute: typeof ActivityIndexImport
-      parentRoute: typeof rootRoute
-    }
-    "/groups/": {
-      preLoaderRoute: typeof GroupsIndexImport
-      parentRoute: typeof GroupsRoute
+    "/activity/$activity": {
+      preLoaderRoute: typeof ActivityActivityImport
+      parentRoute: typeof ActivityRoute
     }
     "/friends/$friend": {
       preLoaderRoute: typeof FriendsFriendImport
@@ -89,8 +89,8 @@ declare module "@tanstack/react-router" {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
+  ActivityRoute.addChildren([ActivityActivityRoute]),
   FriendsRoute.addChildren([FriendsFriendRoute]),
-  GroupsRoute.addChildren([GroupsIndexRoute, GroupsGroupRoute]),
-  ActivityIndexRoute,
+  GroupsRoute.addChildren([GroupsGroupRoute]),
   ProfileMeRoute,
 ])

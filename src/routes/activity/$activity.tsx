@@ -1,19 +1,19 @@
 import {FileRoute, Link, Navigate} from '@tanstack/react-router';
-import {groups} from '@fake-data/groups.ts';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
+import {activities} from "@fake-data/acitivities.ts";
 
-export const Route = new FileRoute('/groups/$group').createRoute({
+export const Route = new FileRoute('/activity/$activity').createRoute({
     component: RootComponent,
 });
 
 function RootComponent() {
-    const {group: groupId} = Route.useParams();
+    const {activity: activityId} = Route.useParams();
 
-    const group = groups.find((e) => e.id.toString() === groupId);
+    const activity = activities.find((e) => e.id.toString() === activityId);
 
-    if (!group) {
+    if (!activity) {
         return (
-            <Navigate to="/groups"/>
+            <Navigate to="/activity"/>
         );
     }
 
@@ -21,9 +21,9 @@ function RootComponent() {
         <div className="px-6 pt-6 pb-4">
             <Link className="flex items-center gap-x-1.5 xl:hidden text-sm text-sky-700 font-medium mb-1" to="/friends">
                 <ChevronLeftIcon className="size-3"/>
-                Group
+                Activity
             </Link>
-            <h1 className="truncate text-2xl font-bold text-gray-900">{group.name}</h1>
+            <h1 className="truncate text-2xl font-bold text-gray-900">{activity.verb}</h1>
         </div>
     );
 }
