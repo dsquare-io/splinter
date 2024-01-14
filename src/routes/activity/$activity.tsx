@@ -92,7 +92,7 @@ function RootComponent() {
                         </div>
 
                         <button
-                            className="shrink-0 p-2  flex items-center justify-center rounded-md hover:bg-slate-50">
+                            className="shrink-0 p-2 flex items-center justify-center rounded-md hover:bg-slate-50">
                             <PaperAirplaneIcon className="size-5 text-slate-600"/>
                         </button>
                     </div>

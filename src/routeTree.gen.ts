@@ -1,14 +1,20 @@
 import { FileRoute, lazyFn, lazyRouteComponent } from "@tanstack/react-router"
 
 import { Route as rootRoute } from "./routes/__root"
+import { Route as ProfileImport } from "./routes/profile"
 import { Route as GroupsImport } from "./routes/groups"
 import { Route as FriendsImport } from "./routes/friends"
 import { Route as ActivityImport } from "./routes/activity"
 import { Route as IndexImport } from "./routes/index"
-import { Route as ProfileMeImport } from "./routes/profile/me"
+import { Route as ProfileProfileImport } from "./routes/profile/$profile"
 import { Route as GroupsGroupImport } from "./routes/groups/$group"
 import { Route as FriendsFriendImport } from "./routes/friends/$friend"
 import { Route as ActivityActivityImport } from "./routes/activity/$activity"
+
+const ProfileRoute = ProfileImport.update({
+  path: "/profile",
+  getParentRoute: () => rootRoute,
+} as any)
 
 const GroupsRoute = GroupsImport.update({
   path: "/groups",
@@ -30,9 +36,9 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProfileMeRoute = ProfileMeImport.update({
-  path: "/profile/me",
-  getParentRoute: () => rootRoute,
+const ProfileProfileRoute = ProfileProfileImport.update({
+  path: "/$profile",
+  getParentRoute: () => ProfileRoute,
 } as any)
 
 const GroupsGroupRoute = GroupsGroupImport.update({
@@ -68,6 +74,10 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof GroupsImport
       parentRoute: typeof rootRoute
     }
+    "/profile": {
+      preLoaderRoute: typeof ProfileImport
+      parentRoute: typeof rootRoute
+    }
     "/activity/$activity": {
       preLoaderRoute: typeof ActivityActivityImport
       parentRoute: typeof ActivityRoute
@@ -80,9 +90,9 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof GroupsGroupImport
       parentRoute: typeof GroupsRoute
     }
-    "/profile/me": {
-      preLoaderRoute: typeof ProfileMeImport
-      parentRoute: typeof rootRoute
+    "/profile/$profile": {
+      preLoaderRoute: typeof ProfileProfileImport
+      parentRoute: typeof ProfileRoute
     }
   }
 }
@@ -92,5 +102,5 @@ export const routeTree = rootRoute.addChildren([
   ActivityRoute.addChildren([ActivityActivityRoute]),
   FriendsRoute.addChildren([FriendsFriendRoute]),
   GroupsRoute.addChildren([GroupsGroupRoute]),
-  ProfileMeRoute,
+  ProfileRoute.addChildren([ProfileProfileRoute]),
 ])
