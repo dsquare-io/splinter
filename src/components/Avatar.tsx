@@ -5,7 +5,7 @@ import {ComponentProps} from 'react';
 
 const AvatarRoot = twc(
   AvatarPrimitive.Root,
-)`relative flex items-center text-slate-600 text-sm justify-center size-8 shrink-0 overflow-hidden rounded-full ring-1 ring-slate-300`;
+)`relative flex items-center text-slate-600 text-sm justify-center shrink-0 overflow-hidden rounded-full ring-1 ring-slate-300`;
 
 const AvatarImage = twc(
   AvatarPrimitive.Image,

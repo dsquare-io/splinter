@@ -1,34 +1,14 @@
 import {Avatar} from '@components/Avatar.tsx';
-import {Link} from '@tanstack/react-router';
 
-const items = [
-    {
-        id: 1,
-        name: "Fuel",
-        balance: 200,
-        currency: "PKR"
-    },
-    {
-        id: 2,
-        name: "Shopping",
-        balance: -400,
-        currency: "USD"
-    },
-    {
-        id: 3,
-        name: "Food",
-        balance: -800,
-        currency: "USD",
-    },
-    {
-        id: 4,
-        name: "Food",
-        balance: 0,
-        currency: "USD"
-    },
-]
+interface SingleEntryItemProps {
+    id: number;
+    name: string;
+    balance: number;
+    currency: string;
+}
 
-export default function SingleEntryItem() {
+export default function SingleEntryItem({name, balance, currency}: SingleEntryItemProps) {
+
     return (
         <div
             // to="/friends/$friend"
@@ -44,35 +24,37 @@ export default function SingleEntryItem() {
             </div>
 
             <div className="grow text-sm font-regular text-slate-800">
-                <p>
-                    Item 1
+                <p className="text-base font-normal text-slate-700">
+                    {name}
                 </p>
-                <p className="text-xs text-gray-400">Settle up</p>
-            </div>
-            {items.map((item) => {
-                return (
-                    <>
-                        {item.balance === 0 && (
-                            <div className="text-xs text-slate-400">
-                                Settled up
-                            </div>
-                        )}
-                        {item.balance > 0 && (
-                            <div className="text-right">
-                                <div className="text-xs text-slate-400">You lent</div>
-                                <div className="text-sm text-green-700">{item.currency} {item.balance}</div>
-                            </div>
-                        )}
-                        {item.balance < 0 && (
-                            <div className="text-right">
-                                <div className="text-xs text-slate-400">You borrowed</div>
-                                <div className="text-sm text-rose-700">{item.currency} {item.balance}</div>
-                            </div>
-                        )}
-                    </>
-                )
-            })}
 
+                {balance === 0 ? <p className="text-xs text-gray-400"> All settled up </p> : undefined}
+                {balance > 0 ? <p className="text-xs text-gray-400"> Ali Paid <span
+                    className="font-medium text-green-700">{currency} {balance}</span></p> : undefined}
+                {balance < 0 ? <p className="text-xs text-gray-400"> You Paid <span
+                    className="font-medium text-red-700">{currency} {balance}</span></p> : undefined}
+
+
+            </div>
+            <>
+                {balance === 0 && (
+                    <div className="text-xs text-slate-400">
+                        Settled up
+                    </div>
+                )}
+                {balance > 0 && (
+                    <div className="text-right">
+                        <div className="text-xs text-slate-400">You lent</div>
+                        <div className="text-sm text-green-700">{currency} {balance}</div>
+                    </div>
+                )}
+                {balance < 0 && (
+                    <div className="text-right">
+                        <div className="text-xs text-slate-400">You borrowed</div>
+                        <div className="text-sm text-rose-700">{currency} {balance}</div>
+                    </div>
+                )}
+            </>
         </div>
     );
 }

@@ -1,7 +1,6 @@
 import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import GroupListItem from "./groups/-components/GroupListItem.tsx";
 import {activities} from "@fake-data/acitivities.ts";
 import ActivityListItem from "./activity/-components/ActivityListItem.tsx";
 

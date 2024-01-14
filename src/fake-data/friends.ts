@@ -501,3 +501,29 @@ export const friends = [
     'currency': 'BRL',
   },
 ];
+export const items = [
+    {
+        id: 1,
+        name: "Fuel",
+        balance: 200,
+        currency: "PKR"
+    },
+    {
+        id: 2,
+        name: "Shopping",
+        balance: -400,
+        currency: "USD"
+    },
+    {
+        id: 3,
+        name: "Food",
+        balance: -800,
+        currency: "USD",
+    },
+    {
+        id: 4,
+        name: "Food",
+        balance: 0,
+        currency: "USD"
+    },
+]
