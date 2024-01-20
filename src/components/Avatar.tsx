@@ -5,7 +5,7 @@ import {ComponentProps} from 'react';
 
 const AvatarRoot = twc(
   AvatarPrimitive.Root,
-)`relative flex items-center text-slate-600 text-sm justify-center shrink-0 overflow-hidden rounded-full ring-1 ring-slate-300`;
+)`relative flex items-center text-gray-600 text-sm justify-center shrink-0 overflow-hidden rounded-full ring-1 ring-gray-300`;
 
 const AvatarImage = twc(
   AvatarPrimitive.Image,
@@ -13,7 +13,7 @@ const AvatarImage = twc(
 
 const AvatarFallback = twc(
   AvatarPrimitive.Image,
-)`flex size-full items-center justify-center rounded-full bg-slate-50`;
+)`flex size-full items-center justify-center rounded-full bg-gray-50`;
 
 
 interface AvatarProps extends Omit<ComponentProps<typeof AvatarRoot>, 'children'> {
