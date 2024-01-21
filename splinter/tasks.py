@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 def send_template_mail(context, directory, recipients, sender_email=None, fail_silently=True):
     subject = render_to_string(directory + '/subject.txt', context)
     context['subject'] = subject
+    context['SITE_NAME'] = settings.SITE_NAME
     plain_body = render_to_string(directory + '/body.txt', context)
 
     try:

@@ -26,5 +26,6 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
+SITE_NAME = 'Splinter'
 
 WITHIN_TEST_SUITE = parse_bool(os.getenv('WITHIN_TEST_SUITE'), False)
