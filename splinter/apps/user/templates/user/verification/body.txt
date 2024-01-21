@@ -1,0 +1,9 @@
+Hi {{ user.first_name }}!
+
+Thank you for creating an account at {{ SITE_NAME }}!
+
+To verify your new account, please click the link below:
+
+{{ url }}
+
+Note: If this wasn't you, please ignore this email and your address will be removed from our records.

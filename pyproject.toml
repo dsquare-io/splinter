@@ -1,0 +1,87 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "setuptools-scm",
+    "Cython>=3"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "splinter"
+description = "Expense Sharing App"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12"
+]
+license = { file = "LICENSE" }
+authors = [
+    { name = "dSquare", email = "contact@dsquare.io" }
+]
+urls = { dSquare = "https://dsquare.io" }
+dependencies = [
+    "Django>=5",
+    "psycopg2-binary",
+    "djangorestframework>=3.14",
+    "orjson",
+    "django-otp",
+    "sentry-sdk",
+    "celery",
+    "django-redis",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "isort",
+    "yapf",
+    "coverage",
+    "parameterized",
+]
+
+[project.scripts]
+splinter = "splinter.entrypoint:main"
+
+[tool.setuptools.packages.find]
+include = ["splinter", "splinter.*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "splinter.__version__" }
+
+[tool.cibuildwheel]
+build-frontend = "build"
+
+[tool.yapf]
+based_on_style = "facebook"
+column_limit = 120
+dedent_closing_brackets = true
+coalesce_brackets = true
+force_multiline_dict = true
+split_complex_comprehension = true
+each_dict_entry_on_separate_line = true
+align_closing_bracket_with_visual_indent = true
+ignore_patterns = [
+    ".idea/**",
+    "build/**",
+    "htmlcov/**",
+    "splinter.egg-info/**",
+    "**/*.so"
+]
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 120
+
+[tool.semantic_release]
+version_variables = ['splinter/__init__.py:__version__']
+commit_author = 'dSquare <contact@dsquare.io>'
+commit_message = 'Bump to {version}'
+
+[tool.semantic_release.publish]
+upload_to_vcs_release = true

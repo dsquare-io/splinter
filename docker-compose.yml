@@ -1,0 +1,61 @@
+version: '3'
+volumes:
+  postgresql_data:
+  node_modules:
+
+services:
+  database:
+    container_name: splinter-database
+    hostname: splinter-database.local
+    image: postgres:13
+    environment:
+      - "POSTGRES_USER=splinter"
+      - "POSTGRES_PASSWORD=splinter"
+      - "POSTGRES_DB=splinter"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    ports:
+      - "54321:5432"
+
+  cache:
+    container_name: splinter-cache
+    hostname: splinter-cache.local
+    image: redis
+
+  primary:
+    container_name: splinter-primary
+    hostname: splinter.local
+    image: splinter
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      bash -c "
+        sleep 10 &&
+        splinter migrate &&
+        splinter runserver 0.0.0.0:8000
+      "
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./emails/:/tmp/splinter-emails/
+
+  ui:
+    container_name: splinter-ui
+    hostname: splinter-ui
+    image: node:18-alpine
+    command: >
+      sh -c "
+        npm install &&
+        npm run dev
+      "
+    env_file: .env
+    environment:
+      - "NODE_ENV=development"
+    volumes:
+      - ./ui:/app
+      - node_modules:/app/node_modules/
+    ports:
+      - "3000:3000"

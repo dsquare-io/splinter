@@ -1,0 +1,11 @@
+import os
+
+DEFAULT_HTTP_PROTOCOL = os.getenv('HTTP_PROTOCOL', 'http')
+PUBLIC_DOMAIN = os.getenv('PUBLIC_DOMAIN', 'splinter.dsquare.io')
+
+PUBLIC_URL = f'{DEFAULT_HTTP_PROTOCOL}://{PUBLIC_DOMAIN}'
+
+ALLOWED_HOSTS = ['*']  # Rely on Ingress
+
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

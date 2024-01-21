@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Verify your email for access to {{ SITE_NAME }}</title>
+</head>
+
+<body>
+<h4>Hi {{ user.first_name }}!</h4>
+<p>
+  Thank you for creating an account at <b>{{ SITE_NAME }}</b>!
+</p>
+<p>
+  To verify your new account, please click the link below:
+</p>
+<p>
+  <a href="{{ url }}">
+    Verify my email address
+  </a>
+<p>
+  Note: If this wasn't you, please ignore this email and your address will be removed from our records.
+</p>
+
+
+</body>
+</html>
