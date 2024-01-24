@@ -1,4 +1,7 @@
+import os
 from datetime import timedelta
+
+from splinter.utils.parser import parse_bool
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -28,3 +31,4 @@ ACCESS_TOKEN_EXPIRY = timedelta(days=7)
 EMAIL_VERIFICATION_EXPIRE_DAYS = 7
 
 USERNAME_MIN_LENGTH = 5
+SIGNUP_ENABLED = parse_bool(os.getenv('SIGNUP_ENABLED'), False)
