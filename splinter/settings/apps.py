@@ -10,6 +10,7 @@ INSTALLED_APPS = [
 
     # External Applications
     'rest_framework',
+    'drf_yasg',
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
