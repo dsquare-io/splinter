@@ -3,7 +3,6 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 
 from splinter.apps.user.models import User
-from splinter.apps.user.utils import suggest_username
 
 
 class AuthenticateUserSerializer(serializers.Serializer):
@@ -106,7 +105,7 @@ class CreateUserSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         if 'username' not in validated_data:
-            validated_data['username'] = suggest_username(validated_data['email'])
+            validated_data['username'] = User.objects.suggest_username(validated_data['email'])
 
         validated_data.setdefault('is_active', False)
         return User.objects.create_user(**validated_data)

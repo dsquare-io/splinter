@@ -1,48 +1,59 @@
-import re
+from typing import Any, Dict, List, Optional, Union
 
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
+
+from splinter.utils.strings import convert_html_to_text
 
 
 @shared_task
-def send_template_mail(context, directory, recipients, sender_email=None, fail_silently=True):
-    subject = render_to_string(directory + '/subject.txt', context)
+def send_template_mail(
+    subject: str,
+    recipients: Union[str, List[str]],
+    context: Dict[str, Any],
+    template_name: str,
+    sender: Optional[str] = None,
+    fail_silently: bool = True
+):
     context['subject'] = subject
     context['SITE_NAME'] = settings.SITE_NAME
-    plain_body = render_to_string(directory + '/body.txt', context)
-
-    try:
-        html_body = render_to_string(directory + '/body.html', context)
-    except TemplateDoesNotExist:
-        html_body = None
+    context['CONTACT_EMAIL'] = settings.CONTACT_EMAIL
+    html_body = render_to_string(template_name, context)
 
     send_mail(
         subject=subject,
         recipients=recipients,
         body_html=html_body,
-        body_text=plain_body,
-        sender=sender_email,
-        fail_silently=fail_silently
+        sender=sender,
+        fail_silently=fail_silently,
     )
 
 
 @shared_task
-def send_mail(subject, recipients, body_html=None, body_text=None, sender=None, fail_silently=True):
+def send_mail(
+    subject: str,
+    recipients: Union[str, List[str]],
+    body_html: Optional[str] = None,
+    body_text: Optional[str] = None,
+    sender: Optional[str] = None,
+    fail_silently: bool = True
+):
+    if not body_html or not body_text:
+        raise ValueError('Either `body_html`, `body_text` or both must be provided')
+
     if not body_text:
-        if not body_html:
-            body_text = '(empty)'
-        else:
-            body_text = 'Please have a look over HTML Alternative Content'
+        body_text = convert_html_to_text(body_html, wrap_width=80)
 
     if isinstance(recipients, str):
         recipients = [recipients]
 
-    subject = re.sub(r'(?<=[a-z])\r?\n', ' ', subject)  # Email subject *must not* contain newlines
     email_message = EmailMultiAlternatives(
-        subject=subject, body=body_text, from_email=sender or settings.DEFAULT_FROM_EMAIL, to=recipients
+        subject=subject,
+        body=body_text,
+        from_email=sender or settings.DEFAULT_FROM_EMAIL,
+        to=recipients,
     )
 
     if body_html:

@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import random
+import re
 
 from django.conf import settings
 from django.contrib.auth.models import UserManager as AuthUserManager
@@ -11,10 +12,37 @@ from django.utils import timezone
 
 from splinter.apps.user.postman import send_verification_email
 from splinter.db.soft_delete import SoftDeleteManager
+from splinter.utils.strings import generate_random_string
+
+DUPLICATE_UNDERSCORE_RE = re.compile(r'_+')
+DISALLOWED_USERNAME_CHARTS_RE = re.compile(r'[^A-Za-z0-9.]')
 
 
 class UserManager(SoftDeleteManager, AuthUserManager):
-    pass
+    def suggest_username(self, email: str) -> str:
+        username = email.split('@', 1)[0].lower()
+        username = DISALLOWED_USERNAME_CHARTS_RE.sub('_', username).strip('_')
+        username = DUPLICATE_UNDERSCORE_RE.sub('_', username)
+
+        if len(username) < settings.USERNAME_MIN_LENGTH:
+            username += generate_random_string(settings.USERNAME_MIN_LENGTH - len(username))
+
+        suggested_suffix = 0
+
+        existing_usernames = self.filter(username__istartswith=username).values_list('username', flat=True)
+        for existing_username in existing_usernames:
+            if existing_username == username:
+                suggested_suffix = 1
+                continue
+
+            suffix = existing_username[len(username) + 1:]
+            if suffix.isdigit() and int(suffix) == suggested_suffix:
+                suggested_suffix += 1
+
+        if suggested_suffix:
+            username += f'_{suggested_suffix}'
+
+        return username
 
 
 class EmailVerificationManager(models.Manager):

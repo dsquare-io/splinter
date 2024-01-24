@@ -2,6 +2,7 @@ import os
 
 DEFAULT_HTTP_PROTOCOL = os.getenv('HTTP_PROTOCOL', 'http')
 PUBLIC_DOMAIN = os.getenv('PUBLIC_DOMAIN', 'splinter.dsquare.io')
+CONTACT_EMAIL = os.getenv('CONTACT_EMAIL', f'contact@{PUBLIC_DOMAIN}')
 
 PUBLIC_URL = f'{DEFAULT_HTTP_PROTOCOL}://{PUBLIC_DOMAIN}'
 

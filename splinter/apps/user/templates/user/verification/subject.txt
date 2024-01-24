@@ -1,1 +1,0 @@
-Verify your email for access to {{ SITE_NAME }}

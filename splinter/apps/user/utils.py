@@ -1,23 +1,31 @@
-import re
-
-from django.conf import settings
-
-from splinter.apps.user.models import User
-from splinter.utils.strings import generate_random_string
+import math
+from datetime import timedelta
 
 
-def suggest_username(email: str) -> str:
-    username = email.split('@', 1)[0]
-    username = re.sub(r'[^A-Za-z0-9.]', '_', username).strip('_')
-    username = re.sub(r'_+', '_', username)
+def timedelta_to_string(delta: timedelta) -> str:
+    seconds = delta.total_seconds()
 
-    if len(username) < settings.USERNAME_MIN_LENGTH:
-        username += generate_random_string(settings.USERNAME_MIN_LENGTH - len(username))
+    days = math.floor(seconds / 86400)
+    hours = math.floor((seconds % 86400) / 3600)
+    minutes = math.floor((seconds % 3600) / 60)
+    seconds = math.floor(seconds % 60)
 
-    counter = 0
-    guess = username
-    while User.objects.filter(username__iexact=guess).exists():
-        guess = '%s_%s' % (username, counter)
-        counter += 1
+    components = []
 
-    return guess
+    if days > 0:
+        components.append(f'{days} days' if days > 1 else '1 day')
+
+    if hours > 0:
+        components.append(f'{hours} hours' if hours > 1 else '1 hour')
+
+    if minutes > 0:
+        components.append(f'{minutes} minutes' if minutes > 1 else '1 minute')
+
+    if seconds > 0:
+        components.append(f'{seconds} seconds' if seconds > 1 else '1 second')
+
+    last_component = components.pop()
+    if components:
+        return f'{", ".join(components)} and {last_component}'
+
+    return last_component

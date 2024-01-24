@@ -1,0 +1,24 @@
+<p>Dear {{ user.display_name }},</p>
+
+<p>
+    {{ invited_by.display_name }} has invited you to join {{ SITE_NAME }}. Our platform provides the ultimate
+    expense-sharing app. Easily split bills, track group expenses, and settle debts seamlessly, making financial
+    harmony a breeze. We believe that your presence on our platform will contribute to its success.
+</p>
+
+<p>To create your account and start exploring, click on the link below:</p>
+
+<p><a href="{{ accept_invitation_url }}">Join {{ SITE_NAME }}</a></p>
+
+<p>
+    If you have any questions or need assistance, {{ invited_by.display_name }} is here to help.
+    You can contact them at {{ invited_by.email }}.
+</p>
+
+<p>We look forward to welcoming you to {{ SITE_NAME }} and hope you enjoy the experience!</p>
+
+<p>
+    Best regards,<br>
+    {{ SITE_NAME }} Team<br>
+    {{ CONTACT_EMAIL }}
+</p>

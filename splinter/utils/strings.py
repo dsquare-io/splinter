@@ -1,7 +1,11 @@
 import random
 import re
 import string
+from html.parser import HTMLParser
+from textwrap import wrap
+from typing import Optional
 
+WHITE_SPACE_RE = re.compile(r'\s+')
 FIRST_CAP_RE = re.compile('(.)([A-Z][a-z]+)')
 ALL_CAP_RE = re.compile('([a-z0-9])([A-Z])')
 UNDERSCORE_RE = re.compile(r'[a-z]_[a-z]')
@@ -32,3 +36,66 @@ def snake_to_title(name: str) -> str:
 
 def generate_random_string(length: int) -> str:
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+
+class HTMLFilter(HTMLParser):
+    EXCLUDED_BODY_TAGS = ('head', 'script', 'style')
+
+    INLINE_TAGS = ('a', 'b', 'small', 'strong', 'i', 'span')
+
+    def __init__(self, *args, **kwargs):
+        self.paragraphs = []
+        self.current_tag = None
+        self.ignore_data = False
+        self.current_tag_additional_data = None
+        super().__init__(*args, **kwargs)
+
+    def handle_starttag(self, tag: str, attrs):
+        self.current_tag = tag.lower()
+        if self.current_tag == 'p':
+            self.paragraphs.append('')
+
+        if not self.ignore_data:
+            self.ignore_data = self.current_tag in self.EXCLUDED_BODY_TAGS
+
+        self.current_tag_additional_data = None
+        if self.current_tag == 'a':
+            self.current_tag_additional_data = dict(attrs).get('href')
+
+    def handle_endtag(self, tag):
+        current_tag = tag.lower()
+        if current_tag == 'p':
+            self.paragraphs.append('')
+
+        if self.ignore_data and current_tag in self.EXCLUDED_BODY_TAGS:
+            self.ignore_data = False
+
+    def handle_data(self, data):
+        if self.ignore_data:
+            return
+
+        data = WHITE_SPACE_RE.sub(' ', data).strip()
+        if not data:
+            return
+
+        if self.current_tag in self.INLINE_TAGS and len(self.paragraphs) > 1:
+            self.paragraphs[-1] = f'{self.paragraphs[-1]} {data}'.strip()
+        else:
+            self.paragraphs.append(data)
+
+        if self.current_tag_additional_data:
+            self.paragraphs[-1] = f'{self.paragraphs[-1]} {self.current_tag_additional_data}'
+
+
+def convert_html_to_text(html: str, wrap_width: Optional[int] = None) -> str:
+    instance = HTMLFilter()
+    instance.feed(html)
+
+    if wrap_width:
+        paragraphs = []
+        for para in instance.paragraphs:
+            paragraphs.extend(wrap(para, wrap_width))
+    else:
+        paragraphs = instance.paragraphs
+
+    return '\n'.join(paragraphs)

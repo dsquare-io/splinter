@@ -1,0 +1,18 @@
+<p>Dear {{ user.display_name }},</p>
+
+<p>
+    Thank you for registering with {{ SITE_NAME }}. To ensure that we have the correct email address and to activate
+    your account, please click on the link below to verify your email:
+</p>
+<p><a href="{{ email_verification_url }}">Verify Email</a></p>
+<p>
+    If you are unable to click on the link, please copy and paste it into your web browser's address bar.
+</p>
+<p>If you did not sign up for an account with {{ SITE_NAME }}, please disregard this email.</p>
+
+<p>Thank you for choosing {{ SITE_NAME }}.</p>
+<p>
+    Best regards,<br>
+    {{ SITE_NAME }} Team<br>
+    {{ CONTACT_EMAIL }}
+</p>
