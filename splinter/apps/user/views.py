@@ -13,9 +13,9 @@ from splinter.apps.user.request_identity import RequestIdentity
 from splinter.apps.user.serializers import (
     AuthenticateUserSerializer,
     ChangePasswordSerializer,
+    CreateUserSerializer,
     EmailVerificationSerializer,
     ForgetPasswordSerializer,
-    RegisterUserSerializer,
     ResetPasswordSerializer,
     UserProfileSerializer,
 )
@@ -52,7 +52,7 @@ class UserProfileView(UpdateAPIViewEx, GenericAPIView):
 
 class CreateAccountView(CreateAPIViewEx, GenericAPIView):
     permission_classes = ()
-    serializer_class = RegisterUserSerializer
+    serializer_class = CreateUserSerializer
 
     def perform_create(self, serializer):
         user = serializer.save()

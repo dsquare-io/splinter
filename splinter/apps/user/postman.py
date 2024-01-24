@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 def send_password_reset_email(user: 'User', password_reset_url: str, request_identity: 'RequestIdentity') -> None:
     delta = timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT)
 
-    send_template_mail.delay(
+    send_template_mail(
         subject='Reset Your Password',
         recipients=user.email,
         template_name='user/password-reset.html',
@@ -28,7 +28,7 @@ def send_password_reset_email(user: 'User', password_reset_url: str, request_ide
 
 
 def send_verification_email(user: 'User', email_verification_url: str) -> None:
-    send_template_mail.delay(
+    send_template_mail(
         subject='Confirm Your Email Address',
         recipients=user.email,
         template_name='user/verify-email.html',
@@ -40,7 +40,7 @@ def send_verification_email(user: 'User', email_verification_url: str) -> None:
 
 
 def send_invitation_email(user: 'User', accept_invitation_url: str, invited_by: 'User') -> None:
-    send_template_mail.delay(
+    send_template_mail(
         subject=f'{invited_by.display_name} Invites You to Join {settings.SITE_NAME}',
         recipients=user.email,
         template_name='user/invitation.html',

@@ -56,7 +56,7 @@ class EmailVerification(models.Model):
         db_table = 'user_email_verifications'
 
     def __str__(self):
-        return f'verification for {self.email}'
+        return self.email
 
     @property
     def confirmed(self):

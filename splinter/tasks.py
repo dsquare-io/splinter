@@ -8,7 +8,6 @@ from django.template.loader import render_to_string
 from splinter.utils.strings import convert_html_to_text
 
 
-@shared_task
 def send_template_mail(
     subject: str,
     recipients: Union[str, List[str]],
@@ -22,7 +21,7 @@ def send_template_mail(
     context['CONTACT_EMAIL'] = settings.CONTACT_EMAIL
     html_body = render_to_string(template_name, context)
 
-    send_mail(
+    send_mail.delay(
         subject=subject,
         recipients=recipients,
         body_html=html_body,

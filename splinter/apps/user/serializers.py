@@ -109,7 +109,3 @@ class CreateUserSerializer(serializers.Serializer):
 
         validated_data.setdefault('is_active', False)
         return User.objects.create_user(**validated_data)
-
-
-class RegisterUserSerializer(CreateUserSerializer):
-    pass
