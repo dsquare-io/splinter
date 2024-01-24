@@ -2,11 +2,11 @@ import logging
 
 from django.http import HttpResponse, HttpResponseServerError
 
-from splinter.core.health_checks import DatabaseHealthCheck
+from splinter.ext.health.checks import DatabaseHealthCheck
 
 logger = logging.getLogger(__name__)
 
-HEALTH_CHECKS = (DatabaseHealthCheck, )
+HEALTH_CHECKS = (DatabaseHealthCheck,)
 
 
 def liveness(request):
