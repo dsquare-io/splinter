@@ -1,7 +1,7 @@
 from rest_framework.generics import ListAPIView
 
 from splinter.apps.friend.serializers import FriendSerializer, InviteFriendSerializer
-from splinter.apps.user.models import User
+from splinter.apps.friend.shortcuts import get_user_friends
 from splinter.apps.user.shortcuts import invite_user
 from splinter.core.views import GenericAPIView
 
@@ -10,7 +10,7 @@ class ListFiendView(ListAPIView, GenericAPIView):
     serializer_class = FriendSerializer
 
     def get_queryset(self):
-        return User.objects.filter(friends__source_id=self.request.user.id)
+        return get_user_friends(self.request.user.id)
 
 
 class InviteFiendView(GenericAPIView):

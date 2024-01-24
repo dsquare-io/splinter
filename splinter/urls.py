@@ -6,6 +6,7 @@ urlpatterns = [
     path('', include('splinter.ext.health.urls')),
     path('', include('splinter.ext.swagger.urls')),
     path('api/friend/', include('splinter.apps.friend.urls')),
+    path('api/group/', include('splinter.apps.group.urls')),
     path('api/mfa/', include('splinter.apps.mfa.urls')),
     path('api/user/', include('splinter.apps.user.urls')),
 ]

@@ -20,6 +20,7 @@ INSTALLED_APPS = [
 
     # Internal Applications
     'splinter.apps.friend',
+    'splinter.apps.group',
     'splinter.apps.mfa',
     'splinter.apps.token',
     'splinter.apps.user',
