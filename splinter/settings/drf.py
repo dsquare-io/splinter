@@ -1,9 +1,21 @@
 REST_FRAMEWORK = {
-    'NON_FIELD_ERRORS_KEY': 'request',
+    'NON_FIELD_ERRORS_KEY': '',
     'DEFAULT_RENDERER_CLASSES': ('splinter.core.renderers.CamelCaseJSONRenderer', ),
     'DEFAULT_PARSER_CLASSES': ('splinter.core.parsers.CamelCaseJSONParser', ),
     'DEFAULT_PAGINATION_CLASS': 'splinter.core.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 100
+}
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'splinter.ext.swagger.schema.SwaggerAutoSchema',
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
 
 

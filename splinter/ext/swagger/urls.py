@@ -3,7 +3,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
-from splinter.ext.swagger.schema_generator import OpenAPISchemaGeneratorEx
+from splinter.ext.swagger.schema import OpenAPISchemaGeneratorEx
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -13,7 +13,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     generator_class=OpenAPISchemaGeneratorEx,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=(permissions.AllowAny, ),
 )
 
 urlpatterns = [
