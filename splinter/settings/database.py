@@ -21,5 +21,6 @@ def configure_database(settings):
     if settings['WITHIN_TEST_SUITE']:
         settings['USING_POSTGRES'] = False
         settings['DATABASES']['default'] = {
+            'NAME': ':memory:',
             'ENGINE': 'django.db.backends.sqlite3',
         }
