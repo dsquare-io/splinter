@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                'db_table': 'user_friendships',
+                'db_table': 'friendships',
                 'unique_together': {('source', 'target')},
             },
         ),

@@ -21,7 +21,7 @@ class Friendship(SoftDeleteModel, StateAwareModel):
     objects = FriendshipManager()
 
     class Meta:
-        db_table = 'user_friendships'
+        db_table = 'friendships'
         unique_together = ('source', 'target')
 
     def __str__(self):
