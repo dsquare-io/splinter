@@ -1,12 +1,15 @@
+from typing import Any, Dict
+
 from django.db import router
 from django.db.migrations.operations.base import Operation
+from django.db.models import Model
 
 
 class SeedModel(Operation):
     reduces_to_sql = False
     reversible = True
 
-    def __init__(self, model, values, hints=None, atomic=True):
+    def __init__(self, model: str, values, hints=None, atomic=True):
         if not isinstance(model, str) or model.count('.') != 1:
             raise ValueError('`model` must be specified as . separated string containing app label and model')
 
@@ -26,12 +29,13 @@ class SeedModel(Operation):
         if self.atomic is not None:
             kwargs['atomic'] = self.atomic
 
-        return (self.__class__.__name__, [self.model, self.values], kwargs)
+        return self.__class__.__name__, [self.model, self.values], kwargs
 
     def state_forwards(self, app_label, state):
         pass
 
-    def get_attributes(self, model_class, values):
+    @staticmethod
+    def get_attributes(model_class: Model, values: Dict[str, Any]) -> Dict[str, Any]:
         attribs = {}
         for name, value in values.items():
             if '__' in name:
@@ -53,7 +57,7 @@ class SeedModel(Operation):
             attribs = self.get_attributes(model_class, value)
             model_class.objects.create(**attribs)
 
-    def get_model(self, apps):
+    def get_model(self, apps) -> Model:
         return apps.get_model(*self.model.split('.'))
 
     def database_backwards(self, app_label, schema_editor, from_state, to_state):

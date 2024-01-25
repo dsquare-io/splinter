@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_static',
 
     # Internal Applications
+    'splinter.apps.currency',
     'splinter.apps.friend',
     'splinter.apps.group',
     'splinter.apps.mfa',
