@@ -1,10 +1,10 @@
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from splinter.apps.user.models import User
 from tests.apps.user.factories import UserFactory
 
 
-class SuggestUsernameTests(TransactionTestCase):
+class SuggestUsernameTests(TestCase):
     available_apps = ['splinter.apps.user']
 
     def test_no_conflict(self):

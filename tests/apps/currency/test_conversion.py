@@ -1,13 +1,13 @@
 from decimal import Decimal
 
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.utils import timezone
 
 from splinter.apps.currency.models import ConversionRate
 from tests.apps.currency.factories import CurrencyFactory
 
 
-class ConversionRateTests(TransactionTestCase):
+class ConversionRateTests(TestCase):
     available_apps = ['splinter.apps.currency']
     today = timezone.now()
 

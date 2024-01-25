@@ -1,10 +1,10 @@
-from django.test import TransactionTestCase
+from django.test import TestCase
 
 from splinter.apps.friend.models import Friendship
 from tests.apps.user.factories import UserFactory
 
 
-class FriendshipTestCase(TransactionTestCase):
+class FriendshipTestCase(TestCase):
     available_apps = ('splinter.apps.user', 'splinter.apps.friend')
 
     def setUp(self):
