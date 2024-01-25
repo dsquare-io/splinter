@@ -10,15 +10,15 @@ class PublicModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if self.public_id:
-            return super().save(*args, **kwargs)
+            return super().save(**kwargs)
 
         self.public_id = uuid.uuid4()
         while True:
             try:
                 with transaction.atomic():
-                    return super().save(*args, **kwargs)
+                    return super().save(**kwargs)
             except IntegrityError as ex:
                 pattern = fr'Key\s+\(public_id\)=\({re.escape(str(self.public_id))}\) already exists.'
 

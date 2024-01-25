@@ -50,8 +50,8 @@ class ConversionRate(models.Model):
         db_table = 'conversion_rates'
         unique_together = ('source', 'target', 'as_of')
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if not self.as_of:
             self.as_of = timezone.now()
 
-        super().save(*args, **kwargs)
+        super().save(**kwargs)

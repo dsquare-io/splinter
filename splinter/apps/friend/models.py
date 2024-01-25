@@ -6,12 +6,11 @@ from django.dispatch import receiver
 
 from splinter.apps.friend.managers import FriendshipManager
 from splinter.db.soft_delete import SoftDeleteModel
-from splinter.db.state_aware import StateAwareModel
 
 logger = logging.getLogger(__name__)
 
 
-class Friendship(SoftDeleteModel, StateAwareModel):
+class Friendship(SoftDeleteModel):
     source = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='friends')
     target = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
 

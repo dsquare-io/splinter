@@ -35,11 +35,11 @@ class User(SoftDeleteModel, AuthAbstractUser):
     def __str__(self):
         return f'{self.display_name} ({self.email})'
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         if not self.email:
             self.email = None
 
-        super().save(*args, **kwargs)
+        super().save(**kwargs)
 
 
 class EmailVerification(models.Model):
