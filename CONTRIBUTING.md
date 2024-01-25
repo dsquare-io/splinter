@@ -60,11 +60,13 @@ Our CI/CD pipeline uses the `type` to determine how the package's SemVer number 
 Should be one of the following:
 
 - **build:** Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- **chore:** Changes to the build process or auxiliary tools and libraries
 - **ci:** Changes to our CI configuration files and scripts (examples: CircleCi, SauceLabs)
 - **docs (or documentation):** Documentation only changes
 - **feat (or feature):** A new feature
 - **fix:** A bug fix
 - **perf (or performance):** A code change that improves performance
+- **style:** Changes that do not affect the meaning of the code (white-space, formatting, missing semicolons, etc.)
 - **refactor:** A code change that neither fixes a bug nor adds a feature
 - **test:** Adding missing tests or correcting existing tests
 
@@ -79,7 +81,7 @@ The `type`-to-SemVer-bump mapping is:
 All other `type` values do not bump the version, and therefore will not trigger a release.
 
 (Refer to the `python-semantic-release` library's 
-[Angular parser](https://github.com/python-semantic-release/python-semantic-release/blob/master/semantic_release/history/parser_angular.py)
+[Angular parser](https://python-semantic-release.readthedocs.io/en/latest/commit-parsing.html#semantic-release-commit-parser-angularcommitparser)
 to verify those mappings)
 
 #### scope
