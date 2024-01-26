@@ -1,13 +1,16 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from decimal import Decimal
-from typing import Type
+from typing import TYPE_CHECKING, List, Type
 
 from django.db import transaction
-from django.db.models import Model
+from django.db.models import Case, Model, Sum, Value, When
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from splinter.apps.expense.models import Expense, ExpenseSplit, FriendOutstandingBalance, UserOutstandingBalance
+
+if TYPE_CHECKING:
+    from splinter.apps.user.models import User
 
 
 @receiver(pre_save, sender=ExpenseSplit)
@@ -133,3 +136,22 @@ def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: D
             currency_id=currency_id,
             amount_delta=-amount_delta,
         )
+
+
+def populate_friend_outstanding_balances(friends: List['User'], current_user: 'User') -> None:
+    current_user_id = current_user.id
+
+    balances = FriendOutstandingBalance.objects.filter(user_id=current_user_id, friend__in=friends).annotate(
+        type=Case(When(group__isnull=True, then=Value('non_group')), default=Value('group'))
+    ).values('type', 'friend_id', 'currency_id').annotate(total_amount=Sum('amount'))
+
+    by_friend = defaultdict(lambda: defaultdict(dict))
+    for balance in balances:
+        friend_id = balance['friend_id']
+        currency_id = balance['currency_id']
+        balance_type = balance['type']
+
+        by_friend[friend_id][balance_type][currency_id] = balance['total_amount']
+
+    for friend in friends:
+        friend.outstanding_balances = by_friend.get(friend.id, {})

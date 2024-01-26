@@ -22,12 +22,12 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
                 'createdBy': {
                     'uid': self.user.username,
                     'name': self.user.display_name,
-                    'isActive': self.user.is_active,
+                    'invitationAccepted': self.user.is_active,
                 },
                 'members': [{
                     'uid': self.user.username,
                     'name': self.user.display_name,
-                    'isActive': self.user.is_active,
+                    'invitationAccepted': self.user.is_active,
                 }]
             }
         )
