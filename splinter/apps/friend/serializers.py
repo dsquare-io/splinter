@@ -8,10 +8,11 @@ from splinter.apps.user.serializers import CreateUserSerializer
 class FriendSerializer(serializers.ModelSerializer):
     uid = serializers.ReadOnlyField(source='username')
     name = serializers.ReadOnlyField(source='display_name')
+    invitation_accepted = serializers.ReadOnlyField(source='is_active')
 
     class Meta:
         model = User
-        fields = ('uid', 'name', 'is_active')
+        fields = ('uid', 'name', 'invitation_accepted')
 
 
 class InviteFriendSerializer(CreateUserSerializer):
