@@ -95,6 +95,9 @@ def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: D
     payer_id = expense.paid_by_id
     group_id = expense.group_id
 
+    if payee_id == payer_id:
+        return
+
     # Payer pays payee
     with transaction.atomic():
         # User outstanding balance
