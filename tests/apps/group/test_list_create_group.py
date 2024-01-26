@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from splinter.apps.group.models import Group, GroupMembership
 from tests.apps.group.factories import GroupFactory
 from tests.case import AuthenticatedAPITestCase
@@ -10,7 +12,9 @@ class ListCreateGroupViewTest(AuthenticatedAPITestCase):
 
         self.assertTrue(Group.objects.filter(name='Test Group').exists())
 
-    def test_list(self):
+    @patch('splinter.apps.group.views.populate_group_outstanding_balances')
+    @patch('splinter.apps.group.views.populate_group_members_outstanding_balances')
+    def test_list(self, populate_group_outstanding_balances_mock, populate_group_members_outstanding_balances_mock):
         for _ in range(5):
             group = GroupFactory(created_by=self.user)
             GroupMembership.objects.create(group=group, user=self.user)
@@ -19,3 +23,5 @@ class ListCreateGroupViewTest(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(len(response.json()['results']), 5)
+        populate_group_outstanding_balances_mock.assert_called_once()
+        populate_group_members_outstanding_balances_mock.assert_called_once()

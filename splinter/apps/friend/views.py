@@ -1,14 +1,14 @@
 from rest_framework.generics import ListAPIView
 
 from splinter.apps.expense.balance import populate_friend_outstanding_balances
-from splinter.apps.friend.serializers import FriendDetailSerializer, InviteFriendSerializer
+from splinter.apps.friend.serializers import FriendWithOutstandingBalanceSerializer, InviteFriendSerializer
 from splinter.apps.friend.shortcuts import get_user_friends
 from splinter.apps.user.shortcuts import invite_user
 from splinter.core.views import GenericAPIView
 
 
 class ListFiendView(ListAPIView, GenericAPIView):
-    serializer_class = FriendDetailSerializer
+    serializer_class = FriendWithOutstandingBalanceSerializer
 
     def get_serializer(self, queryset=None, *args, **kwargs):
         if queryset:

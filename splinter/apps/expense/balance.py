@@ -10,6 +10,7 @@ from django.dispatch import receiver
 from splinter.apps.expense.models import Expense, ExpenseSplit, FriendOutstandingBalance, UserOutstandingBalance
 
 if TYPE_CHECKING:
+    from splinter.apps.group.models import Group
     from splinter.apps.user.models import User
 
 
@@ -155,3 +156,34 @@ def populate_friend_outstanding_balances(friends: List['User'], current_user: 'U
 
     for friend in friends:
         friend.outstanding_balances = by_friend.get(friend.id, {})
+
+
+def populate_group_outstanding_balances(groups: List['Group'], current_user: 'User') -> None:
+    current_user_id = current_user.id
+
+    balances = FriendOutstandingBalance.objects \
+        .filter(user_id=current_user_id, group__in=groups) \
+        .values('group_id', 'currency_id') \
+        .annotate(total_amount=Sum('amount'))
+
+    by_group = defaultdict(dict)
+    for balance in balances:
+        group_id = balance['group_id']
+        currency_id = balance['currency_id']
+
+        by_group[group_id][currency_id] = balance['total_amount']
+
+    for group in groups:
+        group.outstanding_balances = by_group.get(group.id, {})
+
+
+def populate_group_members_outstanding_balances(groups: List['Group'], current_user: 'User') -> None:
+    current_user_id = current_user.id
+    balances = FriendOutstandingBalance.objects.filter(user_id=current_user_id, group__in=groups)
+
+    by_currency = defaultdict(lambda: defaultdict(list))
+    for balance in balances:
+        by_currency[balance.group_id][balance.currency_id].append({'friend': balance.friend, 'amount': balance.amount})
+
+    for group in groups:
+        group.members_outstanding_balances = by_currency.get(group.id, {})

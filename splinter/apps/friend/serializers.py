@@ -21,7 +21,7 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ('uid', 'name', 'invitation_accepted')
 
 
-class FriendDetailSerializer(FriendSerializer):
+class FriendWithOutstandingBalanceSerializer(FriendSerializer):
     outstanding_balances = serializers.SerializerMethodField()
     aggregated_outstanding_balances = serializers.SerializerMethodField()
 
