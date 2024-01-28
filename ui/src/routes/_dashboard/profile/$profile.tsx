@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 
-export const Route = createFileRoute('/profile/$profile')({
+export const Route = createFileRoute('/_dashboard/profile/$profile')({
   component: RootComponent,
 });
 

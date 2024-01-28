@@ -4,7 +4,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Avatar } from '@components/common/Avatar.tsx';
 import SingleEntryItem from './-components/SingleEntryItem.tsx';
 
-export const Route = createFileRoute('/friends/$friend')({
+export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
 });
 

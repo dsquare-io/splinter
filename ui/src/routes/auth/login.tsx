@@ -1,17 +1,25 @@
 import { Form, Button, TextField } from '@components/common';
 import { createFileRoute } from '@tanstack/react-router';
+import { ApiRoutes } from '../../api-types';
+import AuthLayout from './-layout.tsx';
 
 export const Route = createFileRoute('/auth/login')({
   component: RootComponent,
-})
+});
 
- function RootComponent() {
+function RootComponent() {
   return (
-    <Form>
-      <TextField name="email" type="email" isRequired label="Email" />
-      <TextField name="password" type="password" isRequired label="Password" />
+    <AuthLayout>
+      <Form
+        action={ApiRoutes.AUTHENTICATE_USER}
+        method="POST"
+        className="space-y-6"
+      >
+        <TextField name="email" type="email" isRequired label="Email"/>
+        <TextField name="password" type="password" isRequired label="Password"/>
 
-      <Button slot="submit" type="submit">Test</Button>
-    </Form>
+        <Button className="w-full" slot="submit" type="submit">Submit</Button>
+      </Form>
+    </AuthLayout>
   );
 }

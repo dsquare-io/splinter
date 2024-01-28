@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import {Avatar} from '@components/common/Avatar.tsx';
 
-export const Route = createFileRoute('/activity/$activity')({
+export const Route = createFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,
 });
 

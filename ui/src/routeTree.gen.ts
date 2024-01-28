@@ -3,36 +3,22 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProfileImport } from './routes/profile'
-import { Route as GroupsImport } from './routes/groups'
-import { Route as FriendsImport } from './routes/friends'
-import { Route as ActivityImport } from './routes/activity'
+import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
-import { Route as ProfileProfileImport } from './routes/profile/$profile'
-import { Route as GroupsGroupImport } from './routes/groups/$group'
-import { Route as FriendsFriendImport } from './routes/friends/$friend'
 import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as ActivityActivityImport } from './routes/activity/$activity'
+import { Route as DashboardProfileIndexImport } from './routes/_dashboard/profile/index'
+import { Route as DashboardGroupsIndexImport } from './routes/_dashboard/groups/index'
+import { Route as DashboardFriendsIndexImport } from './routes/_dashboard/friends/index'
+import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
+import { Route as DashboardProfileProfileImport } from './routes/_dashboard/profile/$profile'
+import { Route as DashboardGroupsGroupImport } from './routes/_dashboard/groups/$group'
+import { Route as DashboardFriendsFriendImport } from './routes/_dashboard/friends/$friend'
+import { Route as DashboardActivityActivityImport } from './routes/_dashboard/activity/$activity'
 
 // Create/Update Routes
 
-const ProfileRoute = ProfileImport.update({
-  path: '/profile',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const GroupsRoute = GroupsImport.update({
-  path: '/groups',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const FriendsRoute = FriendsImport.update({
-  path: '/friends',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ActivityRoute = ActivityImport.update({
-  path: '/activity',
+const DashboardRoute = DashboardImport.update({
+  id: '/_dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -41,29 +27,49 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProfileProfileRoute = ProfileProfileImport.update({
-  path: '/$profile',
-  getParentRoute: () => ProfileRoute,
-} as any)
-
-const GroupsGroupRoute = GroupsGroupImport.update({
-  path: '/$group',
-  getParentRoute: () => GroupsRoute,
-} as any)
-
-const FriendsFriendRoute = FriendsFriendImport.update({
-  path: '/$friend',
-  getParentRoute: () => FriendsRoute,
-} as any)
-
 const AuthLoginRoute = AuthLoginImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRoute,
 } as any)
 
-const ActivityActivityRoute = ActivityActivityImport.update({
-  path: '/$activity',
-  getParentRoute: () => ActivityRoute,
+const DashboardProfileIndexRoute = DashboardProfileIndexImport.update({
+  path: '/profile/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardGroupsIndexRoute = DashboardGroupsIndexImport.update({
+  path: '/groups/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardFriendsIndexRoute = DashboardFriendsIndexImport.update({
+  path: '/friends/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardActivityIndexRoute = DashboardActivityIndexImport.update({
+  path: '/activity/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardProfileProfileRoute = DashboardProfileProfileImport.update({
+  path: '/profile/$profile',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardGroupsGroupRoute = DashboardGroupsGroupImport.update({
+  path: '/groups/$group',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardFriendsFriendRoute = DashboardFriendsFriendImport.update({
+  path: '/friends/$friend',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardActivityActivityRoute = DashboardActivityActivityImport.update({
+  path: '/activity/$activity',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -74,41 +80,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/activity': {
-      preLoaderRoute: typeof ActivityImport
+    '/_dashboard': {
+      preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
-    }
-    '/friends': {
-      preLoaderRoute: typeof FriendsImport
-      parentRoute: typeof rootRoute
-    }
-    '/groups': {
-      preLoaderRoute: typeof GroupsImport
-      parentRoute: typeof rootRoute
-    }
-    '/profile': {
-      preLoaderRoute: typeof ProfileImport
-      parentRoute: typeof rootRoute
-    }
-    '/activity/$activity': {
-      preLoaderRoute: typeof ActivityActivityImport
-      parentRoute: typeof ActivityImport
     }
     '/auth/login': {
       preLoaderRoute: typeof AuthLoginImport
       parentRoute: typeof rootRoute
     }
-    '/friends/$friend': {
-      preLoaderRoute: typeof FriendsFriendImport
-      parentRoute: typeof FriendsImport
+    '/_dashboard/activity/$activity': {
+      preLoaderRoute: typeof DashboardActivityActivityImport
+      parentRoute: typeof DashboardImport
     }
-    '/groups/$group': {
-      preLoaderRoute: typeof GroupsGroupImport
-      parentRoute: typeof GroupsImport
+    '/_dashboard/friends/$friend': {
+      preLoaderRoute: typeof DashboardFriendsFriendImport
+      parentRoute: typeof DashboardImport
     }
-    '/profile/$profile': {
-      preLoaderRoute: typeof ProfileProfileImport
-      parentRoute: typeof ProfileImport
+    '/_dashboard/groups/$group': {
+      preLoaderRoute: typeof DashboardGroupsGroupImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/profile/$profile': {
+      preLoaderRoute: typeof DashboardProfileProfileImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/activity/': {
+      preLoaderRoute: typeof DashboardActivityIndexImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/friends/': {
+      preLoaderRoute: typeof DashboardFriendsIndexImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/groups/': {
+      preLoaderRoute: typeof DashboardGroupsIndexImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/profile/': {
+      preLoaderRoute: typeof DashboardProfileIndexImport
+      parentRoute: typeof DashboardImport
     }
   }
 }
@@ -117,9 +127,15 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
-  ActivityRoute.addChildren([ActivityActivityRoute]),
-  FriendsRoute.addChildren([FriendsFriendRoute]),
-  GroupsRoute.addChildren([GroupsGroupRoute]),
-  ProfileRoute.addChildren([ProfileProfileRoute]),
+  DashboardRoute.addChildren([
+    DashboardActivityActivityRoute,
+    DashboardFriendsFriendRoute,
+    DashboardGroupsGroupRoute,
+    DashboardProfileProfileRoute,
+    DashboardActivityIndexRoute,
+    DashboardFriendsIndexRoute,
+    DashboardGroupsIndexRoute,
+    DashboardProfileIndexRoute,
+  ]),
   AuthLoginRoute,
 ])

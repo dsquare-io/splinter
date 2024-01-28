@@ -1,18 +1,15 @@
 import {Outlet, RootRoute} from '@tanstack/react-router';
-import Sidebar from '@components/Sidebar.tsx';
-
-import BottomNav from '@components/BottomNav.tsx';
 
 function RootComponent() {
   return (
-    <div className="h-full flex flex-col md:contents">
-      <main className="flex-1 overflow-auto md:h-full md:ms-60">
+    // <div className="h-full flex flex-col md:contents">
+    //   <main className="flex-1 overflow-auto md:h-full md:ms-60">
         <Outlet />
-      </main>
-
-      <Sidebar />
-      <BottomNav />
-    </div>
+    //   </main>
+    //
+    //   <Sidebar />
+    //   <BottomNav />
+    // </div>
   );
 }
 

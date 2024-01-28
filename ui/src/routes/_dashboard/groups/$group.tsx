@@ -5,7 +5,7 @@ import {Avatar} from '@components/common/Avatar.tsx';
 import {items} from '@fake-data/friends.ts';
 import SingleEntryItem from '../friends/-components/SingleEntryItem.tsx';
 
-export const Route = createFileRoute('/groups/$group')({
+export const Route = createFileRoute('/_dashboard/groups/$group')({
   component: RootComponent,
 });
 

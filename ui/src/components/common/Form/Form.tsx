@@ -8,6 +8,7 @@ import { forwardRefType } from '@components/common/types.ts';
 import { FormContext } from './context';
 import type { FormProps, Method } from './types';
 import { ButtonContext } from 'react-aria-components';
+import { axiosInstance } from '../../../axios.ts';
 
 function Form<
   SubmitResponse = any,
@@ -35,7 +36,12 @@ function Form<
 
     // submission props
     onInvalid,
-    onSubmit,
+    onSubmit = (data, conf) => axiosInstance({
+      url: conf.action,
+      method: conf.method,
+      headers: conf.headers,
+      data,
+    }),
     onSubmitSuccess,
     onSubmitError,
     headers,
