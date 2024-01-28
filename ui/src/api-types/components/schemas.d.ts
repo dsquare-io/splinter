@@ -42,14 +42,14 @@ export interface Country {
   flag: string;
 }
 
+export interface CreateBulkGroupMembershipBadRequest {
+  group: string[];
+  members: string[];
+}
+
 export interface CreateGroupBadRequest {
   outstandingBalances?: string[];
   membersOutstandingBalances?: string[];
-}
-
-export interface CreateGroupMembershipBadRequest {
-  group: string[];
-  members: string[];
 }
 
 export interface Currency {
@@ -147,15 +147,15 @@ export interface GroupWithOutstandingBalance {
   };
 }
 
-export interface InviteFiendBadRequest {
-  email: string[];
-  name: string[];
-}
-
 export interface InviteFriend {
   /** Format: email */
   email: string;
   name: string;
+}
+
+export interface InviteFriendBadRequest {
+  email: string[];
+  name: string[];
 }
 
 export interface MfaToken {

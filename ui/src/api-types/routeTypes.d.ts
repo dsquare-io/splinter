@@ -9,10 +9,10 @@ export interface paths {
     get: operations["list-currency"];
   };
   "/api/friend/all": {
-    get: operations["list-fiend"];
+    get: operations["list-friend"];
   };
   "/api/friend/invite": {
-    post: operations["invite-fiend"];
+    post: operations["invite-friend"];
   };
   "/api/group/{group}": {
     get: operations["retrieve-group"];
@@ -27,7 +27,7 @@ export interface paths {
     post: operations["create-group"];
   };
   "/api/group/members": {
-    post: operations["create-group-membership"];
+    post: operations["create-bulk-group-membership"];
   };
   "/api/mfa/challenge/{device}": {
     post: operations["challenge-mfa-device"];
@@ -89,8 +89,8 @@ export interface components {
     ChangePasswordBadRequest: import('./components/schemas.d.ts').ChangePasswordBadRequest;
     ConfirmMfaDeviceBadRequest: import('./components/schemas.d.ts').ConfirmMfaDeviceBadRequest;
     Country: import('./components/schemas.d.ts').Country;
+    CreateBulkGroupMembershipBadRequest: import('./components/schemas.d.ts').CreateBulkGroupMembershipBadRequest;
     CreateGroupBadRequest: import('./components/schemas.d.ts').CreateGroupBadRequest;
-    CreateGroupMembershipBadRequest: import('./components/schemas.d.ts').CreateGroupMembershipBadRequest;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
@@ -106,8 +106,8 @@ export interface components {
     GroupDetail: import('./components/schemas.d.ts').GroupDetail;
     GroupMemberOutstandingBalance: import('./components/schemas.d.ts').GroupMemberOutstandingBalance;
     GroupWithOutstandingBalance: import('./components/schemas.d.ts').GroupWithOutstandingBalance;
-    InviteFiendBadRequest: import('./components/schemas.d.ts').InviteFiendBadRequest;
     InviteFriend: import('./components/schemas.d.ts').InviteFriend;
+    InviteFriendBadRequest: import('./components/schemas.d.ts').InviteFriendBadRequest;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFoundError: import('./components/schemas.d.ts').NotFoundError;
     PaginatedFriendWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedFriendWithOutstandingBalanceList;
@@ -147,7 +147,7 @@ export interface operations {
       };
     };
   };
-  "list-fiend": {
+  "list-friend": {
     parameters: {
       query?: {
         /** @description Number of results to return per page. */
@@ -174,7 +174,7 @@ export interface operations {
       };
     };
   };
-  "invite-fiend": {
+  "invite-friend": {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').InviteFriend;
@@ -187,7 +187,7 @@ export interface operations {
       };
       400: {
         content: {
-          "application/json": import('./components/schemas').InviteFiendBadRequest;
+          "application/json": import('./components/schemas').InviteFriendBadRequest;
         };
       };
       401: {
@@ -391,7 +391,7 @@ export interface operations {
       };
     };
   };
-  "create-group-membership": {
+  "create-bulk-group-membership": {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').BulkCreateGroupMembership;
@@ -404,7 +404,7 @@ export interface operations {
       };
       400: {
         content: {
-          "application/json": import('./components/schemas').CreateGroupMembershipBadRequest;
+          "application/json": import('./components/schemas').CreateBulkGroupMembershipBadRequest;
         };
       };
       401: {

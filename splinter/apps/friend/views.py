@@ -5,7 +5,7 @@ from splinter.apps.user.shortcuts import invite_user
 from splinter.core.views import CreateAPIView, ListAPIView
 
 
-class ListFiendView(ListAPIView):
+class ListFriendView(ListAPIView):
     serializer_class = FriendWithOutstandingBalanceSerializer
 
     def get_serializer(self, queryset=None, *args, **kwargs):
@@ -19,7 +19,7 @@ class ListFiendView(ListAPIView):
         return get_user_friends(self.request.user.id)
 
 
-class InviteFiendView(CreateAPIView):
+class InviteFriendView(CreateAPIView):
     serializer_class = InviteFriendSerializer
 
     def get_serializer_context(self):

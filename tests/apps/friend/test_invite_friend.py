@@ -5,7 +5,7 @@ from splinter.apps.user.models import User
 from tests.case import AuthenticatedAPITestCase
 
 
-class InviteFiendViewTests(AuthenticatedAPITestCase):
+class InviteFriendViewTests(AuthenticatedAPITestCase):
     @patch('splinter.apps.user.shortcuts.send_invitation_email')
     def test_invite_friend(self, send_invitation_email_mock: Mock):
         response = self.client.post(

@@ -30,7 +30,7 @@ function extractPaths(filePath) {
 
       let routeName = '';
       const routeOperations = new Set();
-      const regex = '_(list|create|partial_update|update|retrieve|destroy)$';
+      const regex = '^(list|create|partial-update|update|retrieve|destroy)-';
 
       for (const operationName of operationNames) {
         const m = operationName.match(new RegExp(regex));
