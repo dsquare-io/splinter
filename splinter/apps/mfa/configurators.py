@@ -1,9 +1,18 @@
-from typing import Dict, Type
+from typing import TYPE_CHECKING, Dict, List, Type, TypedDict
 
 from django.conf import settings
 from django_otp.models import Device
 from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.plugins.otp_totp.models import TOTPDevice
+
+if TYPE_CHECKING:
+    from splinter.apps.user.models import User
+
+
+class AuthenticationMethod(TypedDict):
+    id: int
+    type: str
+    name: str
 
 
 class DeviceConfigurator:
@@ -14,7 +23,7 @@ class DeviceConfigurator:
 
     __all__: Dict[str, 'DeviceConfigurator'] = {}
 
-    def configure(self, user, params=None):
+    def configure(self, user: 'User', params=None) -> Device:
         device = self.device_cls.objects.devices_for_user(user).first()
         if device is not None:
             return device
@@ -24,7 +33,7 @@ class DeviceConfigurator:
     def create_device(self, user, params=None) -> Device:
         raise NotImplementedError()
 
-    def authentication_methods(self, device: Device):
+    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
         raise NotImplementedError()
 
     @classmethod
@@ -48,7 +57,7 @@ class TOTPDeviceConfigurator(DeviceConfigurator):
     def create_device(self, user, params=None):
         return self.device_cls.objects.create(user=user, name=self.verbose_name, confirmed=False)
 
-    def authentication_methods(self, device: Device):
+    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
         return [{'id': device.id, 'type': self.slug, 'name': self.verbose_name}]
 
 
@@ -71,5 +80,5 @@ class StaticDeviceConfigurator(DeviceConfigurator):
 
         return device
 
-    def authentication_methods(self, device: Device):
-        return [{'id': device.id, 'slug': self.slug, 'name': self.verbose_name}]
+    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
+        return [{'id': device.id, 'type': self.slug, 'name': self.verbose_name}]

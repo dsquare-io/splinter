@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import base36_to_int, int_to_base36
+from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
@@ -20,7 +21,7 @@ from splinter.apps.user.serializers import (
     UserProfileSerializer,
 )
 from splinter.core.authentication import UserAccessTokenAuthentication
-from splinter.core.views import APIView, CreateAPIViewEx, GenericAPIView, UpdateAPIViewEx
+from splinter.core.views import APIView, CreateAPIView, GenericAPIView, UpdateAPIView
 
 
 class AuthenticateUserView(GenericAPIView):
@@ -36,7 +37,7 @@ class AuthenticateUserView(GenericAPIView):
         return AccessTokenSerializer(instance=access_token).data
 
 
-class UserProfileView(UpdateAPIViewEx, GenericAPIView):
+class UserProfileView(UpdateAPIView, GenericAPIView):
     permission_classes = (IsAuthenticated, )
     authentication_classes = (UserAccessTokenAuthentication, )
     serializer_class = UserProfileSerializer
@@ -50,7 +51,7 @@ class UserProfileView(UpdateAPIViewEx, GenericAPIView):
         return serializer.data
 
 
-class CreateAccountView(CreateAPIViewEx, GenericAPIView):
+class CreateAccountView(CreateAPIView):
     permission_classes = ()
     serializer_class = CreateUserSerializer
 
@@ -138,6 +139,7 @@ class ResetPasswordView(APIView):
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated, )
 
+    @extend_schema(responses={204: None}, request=None)
     def post(self, request):
         auth = request.auth
         if isinstance(auth, AccessToken):

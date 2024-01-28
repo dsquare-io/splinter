@@ -1,13 +1,11 @@
-from rest_framework.generics import ListAPIView
-
 from splinter.apps.expense.balance import populate_friend_outstanding_balances
 from splinter.apps.friend.serializers import FriendWithOutstandingBalanceSerializer, InviteFriendSerializer
 from splinter.apps.friend.shortcuts import get_user_friends
 from splinter.apps.user.shortcuts import invite_user
-from splinter.core.views import GenericAPIView
+from splinter.core.views import CreateAPIView, ListAPIView
 
 
-class ListFiendView(ListAPIView, GenericAPIView):
+class ListFiendView(ListAPIView):
     serializer_class = FriendWithOutstandingBalanceSerializer
 
     def get_serializer(self, queryset=None, *args, **kwargs):
@@ -21,7 +19,7 @@ class ListFiendView(ListAPIView, GenericAPIView):
         return get_user_friends(self.request.user.id)
 
 
-class InviteFiendView(GenericAPIView):
+class InviteFiendView(CreateAPIView):
     serializer_class = InviteFriendSerializer
 
     def get_serializer_context(self):
@@ -29,9 +27,7 @@ class InviteFiendView(GenericAPIView):
         context['user'] = self.request.user
         return context
 
-    def post(self, request, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+    def perform_create(self, serializer):
         user = serializer.save()
 
         if not user.is_active:

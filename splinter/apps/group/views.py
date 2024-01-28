@@ -1,4 +1,4 @@
-from rest_framework.generics import DestroyAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
+from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.balance import (
     populate_group_members_outstanding_balances,
@@ -6,14 +6,14 @@ from splinter.apps.expense.balance import (
 )
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.group.serializers import (
-    BulkCreateGroupMemberSerializer,
+    BulkCreateGroupMembershipSerializer,
     GroupDetailSerializer,
     GroupWithOutstandingBalanceSerializer,
 )
-from splinter.core.views import CreateAPIViewEx, GenericAPIView, UpdateAPIViewEx
+from splinter.core.views import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 
 
-class ListCreateGroupView(ListAPIView, CreateAPIViewEx):
+class ListCreateGroupView(ListAPIView, CreateAPIView):
     serializer_class = GroupWithOutstandingBalanceSerializer
 
     def get_queryset(self):
@@ -33,7 +33,7 @@ class ListCreateGroupView(ListAPIView, CreateAPIViewEx):
         GroupMembership.objects.create(group=serializer.instance, user_id=self.request.user.id)
 
 
-class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIViewEx):
+class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'group'
     serializer_class = GroupDetailSerializer
@@ -42,15 +42,15 @@ class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIViewEx):
         return Group.objects.of(self.request.user.id)
 
 
-class DestroyGroupMembershipView(DestroyAPIView, GenericAPIView):
+class DestroyGroupMembershipView(DestroyAPIView):
     def get_object(self):
         group = get_object_or_404(Group.objects.of(self.request.user.id), public_id=self.kwargs['group'])
         member = get_object_or_404(group.members.all(), username=self.kwargs['member'])
         return get_object_or_404(GroupMembership, group=group, user=member)
 
 
-class BulkCreateGroupMemberView(CreateAPIViewEx):
-    serializer_class = BulkCreateGroupMemberSerializer
+class BulkCreateGroupMembershipView(CreateAPIView):
+    serializer_class = BulkCreateGroupMembershipSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

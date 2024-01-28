@@ -32,8 +32,7 @@ dependencies = [
     "celery",
     "django-redis",
     "user-agents",
-    "setuptools", # required by drf-yasg
-    "drf-yasg"
+    "drf-spectacular"
 ]
 dynamic = ["version"]
 

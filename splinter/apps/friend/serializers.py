@@ -1,4 +1,4 @@
-from drf_yasg.utils import swagger_serializer_method
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from splinter.apps.friend.models import Friendship
@@ -12,9 +12,9 @@ class FriendOutstandingBalanceSerializer(serializers.Serializer):
 
 
 class FriendSerializer(serializers.ModelSerializer):
-    uid = serializers.ReadOnlyField(source='username')
-    name = serializers.ReadOnlyField(source='display_name')
-    invitation_accepted = serializers.ReadOnlyField(source='is_active')
+    uid = serializers.CharField(source='username')
+    name = serializers.CharField(source='display_name')
+    invitation_accepted = serializers.BooleanField(source='is_active')
 
     class Meta:
         model = User
@@ -29,11 +29,11 @@ class FriendWithOutstandingBalanceSerializer(FriendSerializer):
         model = User
         fields = ('uid', 'name', 'invitation_accepted', 'outstanding_balances', 'aggregated_outstanding_balances')
 
-    @swagger_serializer_method(FriendOutstandingBalanceSerializer)
+    @extend_schema_field(FriendOutstandingBalanceSerializer)
     def get_outstanding_balances(self, instance):
         return getattr(instance, 'outstanding_balances', {})
 
-    @swagger_serializer_method(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
+    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
     def get_aggregated_outstanding_balances(self, instance):
         aggregated = {}
 

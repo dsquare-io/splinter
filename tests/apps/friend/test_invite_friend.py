@@ -14,7 +14,7 @@ class InviteFiendViewTests(AuthenticatedAPITestCase):
                 'name': 'Someone Else'
             }, format='json'
         )
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 201)
 
         invited_user = User.objects.filter(email='someone@example.com').first()
         self.assertIsNotNone(invited_user)

@@ -1,5 +1,5 @@
 from django.db import transaction
-from drf_yasg.utils import swagger_serializer_method
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from splinter.apps.friend.fields import FriendSerializerField
@@ -27,11 +27,11 @@ class GroupWithOutstandingBalanceSerializer(GroupSerializer):
         model = Group
         fields = ('name', 'public_id', 'outstanding_balances', 'members_outstanding_balances')
 
-    @swagger_serializer_method(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
+    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
     def get_outstanding_balances(self, instance):
         return getattr(instance, 'outstanding_balances', {})
 
-    @swagger_serializer_method(
+    @extend_schema_field(
         serializers.DictField(child=serializers.ListField(child=GroupMemberOutstandingBalanceSerializer()))
     )
     def get_members_outstanding_balances(self, instance):
@@ -51,12 +51,12 @@ class GroupDetailSerializer(serializers.ModelSerializer):
         model = Group
         fields = ('name', 'public_id', 'created_by', 'members')
 
-    @staticmethod
-    def get_members(group: Group):
+    @extend_schema_field(FriendSerializer(many=True))
+    def get_members(self, group: Group):
         return FriendSerializer(group.members.all(), many=True).data
 
 
-class BulkCreateGroupMemberSerializer(serializers.Serializer):
+class BulkCreateGroupMembershipSerializer(serializers.Serializer):
     group = GroupSerializerField()
     members = serializers.ListField(child=FriendSerializerField())
 

@@ -1,11 +1,9 @@
-from rest_framework.generics import ListAPIView
-
 from splinter.apps.currency.models import Currency
 from splinter.apps.currency.serializers import CurrencySerializer
-from splinter.core.views import GenericAPIView
+from splinter.core.views import ListAPIView
 
 
-class ListCurrencyView(ListAPIView, GenericAPIView):
+class ListCurrencyView(ListAPIView):
     pagination_class = None
     permission_classes = ()
     authentication_classes = ()

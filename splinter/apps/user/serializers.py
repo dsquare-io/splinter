@@ -27,6 +27,8 @@ class AuthenticateUserSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    display_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
         fields = ('username', 'display_name', 'first_name', 'last_name', 'email', 'is_verified')

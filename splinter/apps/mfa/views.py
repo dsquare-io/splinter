@@ -5,14 +5,17 @@ from django.http import Http404
 from django.utils.functional import cached_property
 from django_otp import devices_for_user, user_has_device
 from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
+from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
-from rest_framework.generics import DestroyAPIView
+from rest_framework.fields import CharField, ListField
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ListSerializer
 
 from splinter.apps.mfa import serializers
 from splinter.apps.mfa.configurators import DeviceConfigurator, StaticDeviceConfigurator
+from splinter.apps.mfa.serializers import EnableMfaDeviceRequestSerializer
 from splinter.apps.token.serializers import AccessTokenSerializer
-from splinter.core.views import APIView
+from splinter.core.views import APIView, DestroyAPIView, GenericAPIView
 
 
 class MfaDeviceAPIView(APIView):
@@ -21,9 +24,9 @@ class MfaDeviceAPIView(APIView):
 
     @cached_property
     def configurator(self) -> DeviceConfigurator:
-        slug = self.kwargs['slug']
+        device = self.kwargs['device']
         try:
-            return DeviceConfigurator.get(slug)
+            return DeviceConfigurator.get(device)
         except KeyError:
             raise Http404()
 
@@ -46,7 +49,7 @@ class MfaDeviceAPIView(APIView):
 
         available_configurators = {
             configurator.device_cls: configurator
-            for slug, configurator in DeviceConfigurator.__all__.items()
+            for configurator in DeviceConfigurator.__all__.values()
         }
 
         for d in devices:
@@ -71,11 +74,12 @@ class MfaDeviceAPIView(APIView):
 class ListMfaDeviceView(MfaDeviceAPIView):
     permission_classes = (IsAuthenticated, )
 
+    @extend_schema(responses={200: serializers.UserDeviceInfoSerializer})
     def get(self, request):
         return self.user_devices_info()
 
 
-class DeleteMfaDeviceView(DestroyAPIView, MfaDeviceAPIView):
+class DestroyMfaDeviceView(DestroyAPIView, MfaDeviceAPIView):
     mfa_device_confirmed = None
 
     def get_object(self):
@@ -95,8 +99,9 @@ class DeleteMfaDeviceView(DestroyAPIView, MfaDeviceAPIView):
 
 
 class ChallengeMfaDeviceView(MfaDeviceAPIView):
+    @extend_schema(responses={200: serializers.ChallengeMfaDeviceResponseSerializer}, request=None)
     def post(self, request, **kwargs):
-        return self.mfa_device.generate_challenge()
+        return {'message': self.mfa_device.generate_challenge()}
 
 
 class VerifyMfaDeviceView(MfaDeviceAPIView):
@@ -114,9 +119,15 @@ class VerifyMfaDeviceView(MfaDeviceAPIView):
         return AccessTokenSerializer(instance=access_token).data
 
 
-class EnableMfaDeviceView(MfaDeviceAPIView):
+class EnableMfaDeviceView(MfaDeviceAPIView, GenericAPIView):
+    serializer_class = EnableMfaDeviceRequestSerializer
+
+    @extend_schema(responses={200: serializers.EnableMfaDeviceResponseSerializer})
     def post(self, request, **kwargs):
-        device = self.configurator.configure(request.user, params=request.data.get('params'))
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        device = self.configurator.configure(request.user, params=serializer.validated_data['params'])
         return {'config_url': getattr(device, 'config_url', None)}
 
 
@@ -150,9 +161,11 @@ class ListMfaStaticCodeView(APIView):
     def mfa_device(self):
         return DeviceConfigurator.get('static').create_device(self.request.user)
 
+    @extend_schema(responses={200: ListSerializer(child=CharField(max_length=8, min_length=8))})
     def get(self, request):
         return list(StaticToken.objects.filter(device=self.mfa_device).values_list('token', flat=True))
 
+    @extend_schema(responses={200: ListSerializer(child=CharField(max_length=8, min_length=8))}, request=None)
     def post(self, request):
         StaticToken.objects.filter(device=self.mfa_device).delete()
         StaticDeviceConfigurator.generate_tokens(self.mfa_device)
