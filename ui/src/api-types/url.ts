@@ -5,7 +5,7 @@ type FilteredParts<Path> = Path extends `${infer PartA}/${infer PartB}`
   ? IsParameter<PartA> | FilteredParts<PartB>
   : IsParameter<Path>;
 
-export type Args<Path> = {
+export type UrlArgs<Path> = {
   [Key in FilteredParts<Path>]: string | number;
 };
 
@@ -16,7 +16,7 @@ const baseUrl = 'http://example.com';
  */
 export function urlWithArgs<P extends string>(
   url: P,
-  args: A.Compute<Partial<Args<P>>, 'flat'>,
+  args: A.Compute<Partial<UrlArgs<P>>, 'flat'>,
   params: Partial<Record<string, string | number | undefined | string[]>> = {}
 ): P {
   let newUrl = url.replace(/{(\w+)}/g, (_, key: string) => (args as any)[key]?.toString() ?? '');
