@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Splinter API Reference</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script
+      id="api-reference"
+      data-url="{% url 'openapi:schema' %}"
+    ></script>
+    <!-- You can also set a full configuration object like this -->
+    <!-- easier for nested objects -->
+    <script>
+      var configuration = {
+        isEditable: false,
+        theme: 'purple',
+      }
+
+      var apiReference = document.getElementById('api-reference')
+      apiReference.dataset.configuration = JSON.stringify(configuration)
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  </body>
+</html>
