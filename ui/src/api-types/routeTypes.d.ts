@@ -6,73 +6,100 @@
 
 export interface paths {
   "/api/currency/all": {
-    get: operations["list-currency"];
+    /** List Currency */
+    get: operations["ListCurrency"];
   };
   "/api/friend/all": {
-    get: operations["list-friend"];
+    /** List Friend */
+    get: operations["ListFriend"];
   };
   "/api/friend/invite": {
-    post: operations["invite-friend"];
+    /** Invite Friend */
+    post: operations["InviteFriend"];
   };
-  "/api/group/{group}": {
-    get: operations["retrieve-group"];
-    put: operations["update-group"];
-    patch: operations["partial-update-group"];
+  "/api/group/{group_uid}": {
+    /** Retrieve Group */
+    get: operations["RetrieveGroup"];
+    /** Update Group */
+    put: operations["UpdateGroup"];
+    /** Partial Update Group */
+    patch: operations["PartialUpdateGroup"];
   };
-  "/api/group/{group}/members/{member}": {
-    delete: operations["destroy-group-membership"];
+  "/api/group/{group_uid}/members/{member_uid}": {
+    /** Destroy Group Membership */
+    delete: operations["DestroyGroupMembership"];
   };
   "/api/group/all": {
-    get: operations["list-group"];
-    post: operations["create-group"];
+    /** List Group */
+    get: operations["ListGroup"];
+    /** Create Group */
+    post: operations["CreateGroup"];
   };
   "/api/group/members": {
-    post: operations["create-bulk-group-membership"];
+    /** Bulk Create Group Membership */
+    post: operations["BulkCreateGroupMembership"];
   };
-  "/api/mfa/challenge/{device}": {
-    post: operations["challenge-mfa-device"];
+  "/api/mfa/challenge/{device_type}": {
+    /** Challenge Mfa Device */
+    post: operations["ChallengeMfaDevice"];
   };
-  "/api/mfa/confirm/{device}": {
-    post: operations["confirm-mfa-device"];
+  "/api/mfa/confirm/{device_type}": {
+    /** Confirm Mfa Device */
+    post: operations["ConfirmMfaDevice"];
   };
-  "/api/mfa/device/{device}:{id}": {
-    delete: operations["destroy-mfa-device"];
+  "/api/mfa/device/{device_type}:{id}": {
+    /** Destroy Mfa Device */
+    delete: operations["DestroyMfaDevice"];
   };
   "/api/mfa/devices": {
-    get: operations["list-mfa-device"];
+    /** List Mfa Device */
+    get: operations["ListMfaDevice"];
   };
-  "/api/mfa/enable/{device}": {
-    post: operations["enable-mfa-device"];
+  "/api/mfa/enable/{device_type}": {
+    /** Enable Mfa Device */
+    post: operations["EnableMfaDevice"];
   };
   "/api/mfa/static": {
-    get: operations["list-mfa-static-code"];
-    post: operations["mfa-static-code"];
+    /** List Mfa Static Code */
+    get: operations["ListMfaStaticCode"];
+    /** Mfa Static Code */
+    post: operations["MfaStaticCode"];
   };
-  "/api/mfa/verify/{device}": {
-    post: operations["verify-mfa-device"];
+  "/api/mfa/verify/{device_type}": {
+    /** Verify Mfa Device */
+    post: operations["VerifyMfaDevice"];
   };
   "/api/user/authenticate": {
-    post: operations["authenticate-user"];
+    /** Authenticate User */
+    post: operations["AuthenticateUser"];
   };
   "/api/user/forget": {
-    post: operations["forget-password"];
+    /** Forget Password */
+    post: operations["ForgetPassword"];
   };
   "/api/user/logout": {
-    post: operations["logout"];
+    /** Logout */
+    post: operations["Logout"];
   };
   "/api/user/password": {
-    post: operations["change-password"];
+    /** Change Password */
+    post: operations["ChangePassword"];
   };
   "/api/user/profile": {
-    get: operations["user-profile"];
-    put: operations["update-user-profile"];
-    patch: operations["partial-update-user-profile"];
+    /** Retrieve Profile */
+    get: operations["RetrieveProfile"];
+    /** Update Profile */
+    put: operations["UpdateProfile"];
+    /** Partial Update Profile */
+    patch: operations["PartialUpdateProfile"];
   };
   "/api/user/reset": {
-    post: operations["reset-password"];
+    /** Reset Password */
+    post: operations["ResetPassword"];
   };
   "/api/user/verify-email": {
-    post: operations["email-verification"];
+    /** Verify Email */
+    post: operations["VerifyEmail"];
   };
 }
 
@@ -81,25 +108,18 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
-    AuthenticateUserBadRequest: import('./components/schemas.d.ts').AuthenticateUserBadRequest;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
     BulkCreateGroupMembership: import('./components/schemas.d.ts').BulkCreateGroupMembership;
     ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
     ChangePassword: import('./components/schemas.d.ts').ChangePassword;
-    ChangePasswordBadRequest: import('./components/schemas.d.ts').ChangePasswordBadRequest;
-    ConfirmMfaDeviceBadRequest: import('./components/schemas.d.ts').ConfirmMfaDeviceBadRequest;
     Country: import('./components/schemas.d.ts').Country;
-    CreateBulkGroupMembershipBadRequest: import('./components/schemas.d.ts').CreateBulkGroupMembershipBadRequest;
-    CreateGroupBadRequest: import('./components/schemas.d.ts').CreateGroupBadRequest;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
-    EmailVerificationBadRequest: import('./components/schemas.d.ts').EmailVerificationBadRequest;
-    EnableMfaDeviceBadRequest: import('./components/schemas.d.ts').EnableMfaDeviceBadRequest;
     EnableMfaDeviceRequest: import('./components/schemas.d.ts').EnableMfaDeviceRequest;
     EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
+    Error: import('./components/schemas.d.ts').Error;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
-    ForgetPasswordBadRequest: import('./components/schemas.d.ts').ForgetPasswordBadRequest;
     Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
     FriendWithOutstandingBalance: import('./components/schemas.d.ts').FriendWithOutstandingBalance;
@@ -107,23 +127,15 @@ export interface components {
     GroupMemberOutstandingBalance: import('./components/schemas.d.ts').GroupMemberOutstandingBalance;
     GroupWithOutstandingBalance: import('./components/schemas.d.ts').GroupWithOutstandingBalance;
     InviteFriend: import('./components/schemas.d.ts').InviteFriend;
-    InviteFriendBadRequest: import('./components/schemas.d.ts').InviteFriendBadRequest;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
-    NotFoundError: import('./components/schemas.d.ts').NotFoundError;
+    NotFound: import('./components/schemas.d.ts').NotFound;
     PaginatedFriendWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedFriendWithOutstandingBalanceList;
     PaginatedGroupWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedGroupWithOutstandingBalanceList;
-    PartialUpdateGroupBadRequest: import('./components/schemas.d.ts').PartialUpdateGroupBadRequest;
-    PartialUpdateUserProfileBadRequest: import('./components/schemas.d.ts').PartialUpdateUserProfileBadRequest;
     PatchedGroupDetail: import('./components/schemas.d.ts').PatchedGroupDetail;
     PatchedUserProfile: import('./components/schemas.d.ts').PatchedUserProfile;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
-    ResetPasswordBadRequest: import('./components/schemas.d.ts').ResetPasswordBadRequest;
-    UnauthorizedError: import('./components/schemas.d.ts').UnauthorizedError;
-    UpdateGroupBadRequest: import('./components/schemas.d.ts').UpdateGroupBadRequest;
-    UpdateUserProfileBadRequest: import('./components/schemas.d.ts').UpdateUserProfileBadRequest;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
     UserProfile: import('./components/schemas.d.ts').UserProfile;
-    VerifyMfaDeviceBadRequest: import('./components/schemas.d.ts').VerifyMfaDeviceBadRequest;
   };
   responses: never;
   parameters: never;
@@ -138,7 +150,8 @@ export type external = Record<string, never>;
 
 export interface operations {
 
-  "list-currency": {
+  /** List Currency */
+  ListCurrency: {
     responses: {
       200: {
         content: {
@@ -147,7 +160,8 @@ export interface operations {
       };
     };
   };
-  "list-friend": {
+  /** List Friend */
+  ListFriend: {
     parameters: {
       query?: {
         /** @description Number of results to return per page. */
@@ -162,19 +176,22 @@ export interface operations {
           "application/json": import('./components/schemas').PaginatedFriendWithOutstandingBalanceList;
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "invite-friend": {
+  /** Invite Friend */
+  InviteFriend: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').InviteFriend;
@@ -185,27 +202,35 @@ export interface operations {
       201: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').InviteFriendBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "retrieve-group": {
+  /** Retrieve Group */
+  RetrieveGroup: {
     parameters: {
       path: {
-        group: string;
+        group_uid: string;
       };
     };
     responses: {
@@ -214,27 +239,30 @@ export interface operations {
           "application/json": import('./components/schemas').GroupDetail;
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "update-group": {
+  /** Update Group */
+  UpdateGroup: {
     parameters: {
       path: {
-        group: string;
+        group_uid: string;
       };
     };
     requestBody: {
@@ -247,32 +275,40 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').UpdateGroupBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "partial-update-group": {
+  /** Partial Update Group */
+  PartialUpdateGroup: {
     parameters: {
       path: {
-        group: string;
+        group_uid: string;
       };
     };
     requestBody?: {
@@ -285,33 +321,41 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').PartialUpdateGroupBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "destroy-group-membership": {
+  /** Destroy Group Membership */
+  DestroyGroupMembership: {
     parameters: {
       path: {
-        group: string;
-        member: string;
+        group_uid: string;
+        member_uid: string;
       };
     };
     responses: {
@@ -319,24 +363,27 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "list-group": {
+  /** List Group */
+  ListGroup: {
     parameters: {
       query?: {
         /** @description Number of results to return per page. */
@@ -351,19 +398,22 @@ export interface operations {
           "application/json": import('./components/schemas').PaginatedGroupWithOutstandingBalanceList;
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "create-group": {
+  /** Create Group */
+  CreateGroup: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').GroupWithOutstandingBalance;
@@ -374,24 +424,32 @@ export interface operations {
       201: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').CreateGroupBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "create-bulk-group-membership": {
+  /** Bulk Create Group Membership */
+  BulkCreateGroupMembership: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').BulkCreateGroupMembership;
@@ -402,27 +460,35 @@ export interface operations {
       201: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').CreateBulkGroupMembershipBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "challenge-mfa-device": {
+  /** Challenge Mfa Device */
+  ChallengeMfaDevice: {
     parameters: {
       path: {
-        device: string;
+        device_type: string;
       };
     };
     responses: {
@@ -431,27 +497,40 @@ export interface operations {
           "application/json": import('./components/schemas').ChallengeMfaDeviceResponse;
         };
       };
-      401: {
+      /** @description Bad Request */
+      400: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "confirm-mfa-device": {
+  /** Confirm Mfa Device */
+  ConfirmMfaDevice: {
     parameters: {
       path: {
-        device: string;
+        device_type: string;
       };
     };
     requestBody: {
@@ -465,32 +544,40 @@ export interface operations {
           "application/json": import('./components/schemas').MfaToken;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').ConfirmMfaDeviceBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "destroy-mfa-device": {
+  /** Destroy Mfa Device */
+  DestroyMfaDevice: {
     parameters: {
       path: {
-        device: string;
+        device_type: string;
         id: number;
       };
     };
@@ -499,46 +586,52 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "list-mfa-device": {
+  /** List Mfa Device */
+  ListMfaDevice: {
     responses: {
       200: {
         content: {
           "application/json": import('./components/schemas').UserDeviceInfo;
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "enable-mfa-device": {
+  /** Enable Mfa Device */
+  EnableMfaDevice: {
     parameters: {
       path: {
-        device: string;
+        device_type: string;
       };
     };
     requestBody?: {
@@ -552,70 +645,94 @@ export interface operations {
           "application/json": import('./components/schemas').EnableMfaDeviceResponse;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').EnableMfaDeviceBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "list-mfa-static-code": {
+  /** List Mfa Static Code */
+  ListMfaStaticCode: {
     responses: {
       200: {
         content: {
           "application/json": string[];
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "mfa-static-code": {
+  /** Mfa Static Code */
+  MfaStaticCode: {
     responses: {
       200: {
         content: {
           "application/json": string[];
         };
       };
-      401: {
+      /** @description Bad Request */
+      400: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "verify-mfa-device": {
+  /** Verify Mfa Device */
+  VerifyMfaDevice: {
     parameters: {
       path: {
-        device: string;
+        device_type: string;
       };
     };
     requestBody: {
@@ -629,29 +746,37 @@ export interface operations {
           "application/json": import('./components/schemas').MfaToken;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').VerifyMfaDeviceBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFoundError;
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
   };
-  "authenticate-user": {
+  /** Authenticate User */
+  AuthenticateUser: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').AuthenticateUser;
@@ -663,24 +788,32 @@ export interface operations {
           "application/json": import('./components/schemas').AuthenticateUser;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').AuthenticateUserBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "forget-password": {
+  /** Forget Password */
+  ForgetPassword: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').ForgetPassword;
@@ -692,42 +825,63 @@ export interface operations {
           "application/json": import('./components/schemas').ForgetPassword;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').ForgetPasswordBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  logout: {
+  /** Logout */
+  Logout: {
     responses: {
       /** @description No response body */
       204: {
         content: never;
       };
-      401: {
+      /** @description Bad Request */
+      400: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "change-password": {
+  /** Change Password */
+  ChangePassword: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').ChangePassword;
@@ -739,43 +893,54 @@ export interface operations {
           "application/json": import('./components/schemas').ChangePassword;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').ChangePasswordBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "user-profile": {
+  /** Retrieve Profile */
+  RetrieveProfile: {
     responses: {
       200: {
         content: {
           "application/json": import('./components/schemas').UserProfile;
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "update-user-profile": {
+  /** Update Profile */
+  UpdateProfile: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').UserProfile;
@@ -786,24 +951,32 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').UpdateUserProfileBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "partial-update-user-profile": {
+  /** Partial Update Profile */
+  PartialUpdateProfile: {
     requestBody?: {
       content: {
         "application/json": import('./components/schemas').PatchedUserProfile;
@@ -814,24 +987,32 @@ export interface operations {
       204: {
         content: never;
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').PartialUpdateUserProfileBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "reset-password": {
+  /** Reset Password */
+  ResetPassword: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').ResetPassword;
@@ -843,24 +1024,32 @@ export interface operations {
           "application/json": import('./components/schemas').ResetPassword;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').ResetPasswordBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
   };
-  "email-verification": {
+  /** Verify Email */
+  VerifyEmail: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').EmailVerification;
@@ -872,19 +1061,26 @@ export interface operations {
           "application/json": import('./components/schemas').EmailVerification;
         };
       };
+      /** @description Bad Request */
       400: {
         content: {
-          "application/json": import('./components/schemas').EmailVerificationBadRequest;
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
         };
       };
+      /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').UnauthorizedError;
+          "application/json": import('./components/schemas').Error;
         };
       };
     };

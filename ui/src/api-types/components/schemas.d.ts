@@ -4,11 +4,6 @@ export interface AuthenticateUser {
   password: string;
 }
 
-export interface AuthenticateUserBadRequest {
-  email: string[];
-  password: string[];
-}
-
 export interface AvailableDevice {
   type: string;
   name: string;
@@ -28,28 +23,9 @@ export interface ChangePassword {
   password: string;
 }
 
-export interface ChangePasswordBadRequest {
-  oldPassword?: string[];
-  password: string[];
-}
-
-export interface ConfirmMfaDeviceBadRequest {
-  token: string[];
-}
-
 export interface Country {
   name: string;
   flag: string;
-}
-
-export interface CreateBulkGroupMembershipBadRequest {
-  group: string[];
-  members: string[];
-}
-
-export interface CreateGroupBadRequest {
-  outstandingBalances?: string[];
-  membersOutstandingBalances?: string[];
 }
 
 export interface Currency {
@@ -68,14 +44,6 @@ export interface EmailVerification {
   token: string;
 }
 
-export interface EmailVerificationBadRequest {
-  token: string[];
-}
-
-export interface EnableMfaDeviceBadRequest {
-  params: string[];
-}
-
 export interface EnableMfaDeviceRequest {
   params?: {
     [key: string]: unknown;
@@ -87,13 +55,15 @@ export interface EnableMfaDeviceResponse {
   configUrl?: string | null;
 }
 
+export interface Error {
+  message: string;
+  /** @description Short code describing the error */
+  code: string;
+}
+
 export interface ForgetPassword {
   /** Format: email */
   email: string;
-}
-
-export interface ForgetPasswordBadRequest {
-  email: string[];
 }
 
 export interface Friend {
@@ -153,16 +123,11 @@ export interface InviteFriend {
   name: string;
 }
 
-export interface InviteFriendBadRequest {
-  email: string[];
-  name: string[];
-}
-
 export interface MfaToken {
   token: string;
 }
 
-export interface NotFoundError {
+export interface NotFound {
   detail: string;
 }
 
@@ -198,15 +163,6 @@ export interface PaginatedGroupWithOutstandingBalanceList {
   results?: GroupWithOutstandingBalance[];
 }
 
-export interface PartialUpdateGroupBadRequest {
-  createdBy?: string[];
-  members: string[];
-}
-
-export interface PartialUpdateUserProfileBadRequest {
-  displayName?: string[];
-}
-
 export interface PatchedGroupDetail {
   name?: string;
   /** Format: uuid */
@@ -232,25 +188,6 @@ export interface ResetPassword {
   password: string;
 }
 
-export interface ResetPasswordBadRequest {
-  uid: string[];
-  token: string[];
-  password: string[];
-}
-
-export interface UnauthorizedError {
-  detail: string;
-}
-
-export interface UpdateGroupBadRequest {
-  createdBy?: string[];
-  members: string[];
-}
-
-export interface UpdateUserProfileBadRequest {
-  displayName?: string[];
-}
-
 export interface UserDeviceInfo {
   availableDevices?: AvailableDevice[];
   configuredDevices?: Device[];
@@ -266,9 +203,5 @@ export interface UserProfile {
   /** Format: email */
   email?: string | null;
   isVerified?: boolean;
-}
-
-export interface VerifyMfaDeviceBadRequest {
-  token: string[];
 }
 

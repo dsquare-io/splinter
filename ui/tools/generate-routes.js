@@ -30,16 +30,16 @@ function extractPaths(filePath) {
 
       let routeName = '';
       const routeOperations = new Set();
-      const regex = '^(list|create|partial-update|update|retrieve|destroy)-';
+      const regex = '^(list|create|partial-update|update|retrieve|destroy)';
 
       for (const operationName of operationNames) {
-        const m = operationName.match(new RegExp(regex));
+        const m = operationName.match(new RegExp(regex, 'i'));
 
         if (m) {
           routeOperations.add(m[1]);
         }
 
-        const newRouteName = operationName.replaceAll(new RegExp(regex, 'g'), '');
+        const newRouteName = operationName.replaceAll(new RegExp(regex, 'gi'), '');
 
         if (newRouteName.length > routeName.length) {
           routeName = newRouteName;
@@ -57,7 +57,9 @@ function extractPaths(filePath) {
         routeName = `${routeName}_detail`;
       }
 
-      paths.set(routeName.toUpperCase(), path);
+      routeName = routeName.replace(/(([a-z])(?=[A-Z][a-zA-Z])|([A-Z])(?=[A-Z][a-z]))/g,'$1_').toUpperCase()
+
+      paths.set(routeName, path);
     });
   });
 
