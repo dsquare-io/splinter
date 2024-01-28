@@ -2,7 +2,7 @@ import logging
 
 from django.http import HttpResponse, HttpResponseServerError
 
-from splinter.ext.health.checks import DatabaseHealthCheck
+from splinter.core.health.checks import DatabaseHealthCheck
 
 logger = logging.getLogger(__name__)
 

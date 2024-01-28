@@ -18,7 +18,7 @@ class AuthenticationMethod(TypedDict):
 class DeviceConfigurator:
     device_cls: Type[Device] = None
 
-    slug: str = None
+    device_type: str = None
     verbose_name: str = None
 
     __all__: Dict[str, 'DeviceConfigurator'] = {}
@@ -38,15 +38,15 @@ class DeviceConfigurator:
 
     @classmethod
     def register(cls, configurator: Type['DeviceConfigurator']) -> Type['DeviceConfigurator']:
-        slug = configurator.device_cls.__name__.replace('Device', '').lower()
-        configurator.slug = slug
+        device_type = configurator.device_cls.__name__.replace('Device', '').lower()
+        configurator.device_type = device_type
 
-        cls.__all__[slug] = configurator()
+        cls.__all__[device_type] = configurator()
         return configurator
 
     @classmethod
-    def get(cls, slug: str) -> 'DeviceConfigurator':
-        return cls.__all__[slug]
+    def get(cls, device_type: str) -> 'DeviceConfigurator':
+        return cls.__all__[device_type]
 
 
 @DeviceConfigurator.register
@@ -58,7 +58,7 @@ class TOTPDeviceConfigurator(DeviceConfigurator):
         return self.device_cls.objects.create(user=user, name=self.verbose_name, confirmed=False)
 
     def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
-        return [{'id': device.id, 'type': self.slug, 'name': self.verbose_name}]
+        return [{'id': device.id, 'type': self.device_type, 'name': self.verbose_name}]
 
 
 @DeviceConfigurator.register
@@ -81,4 +81,4 @@ class StaticDeviceConfigurator(DeviceConfigurator):
         return device
 
     def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
-        return [{'id': device.id, 'type': self.slug, 'name': self.verbose_name}]
+        return [{'id': device.id, 'type': self.device_type, 'name': self.verbose_name}]

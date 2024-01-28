@@ -1,5 +1,6 @@
 from django.http.response import HttpResponseBase
 from rest_framework import status
+from rest_framework.exceptions import APIException
 from rest_framework.generics import GenericAPIView as DrfGenericAPIView
 from rest_framework.mixins import DestroyModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
@@ -12,6 +13,12 @@ from splinter.core.permissions import IsVerified
 class APIView(DrfAPIView):
     authentication_classes = (UserAccessTokenAuthentication, )
     permission_classes = (IsVerified, )
+
+    def handle_exception(self, exc):
+        if isinstance(exc, APIException):
+            return Response(exc.get_full_details(), status=exc.status_code)
+
+        return super().handle_exception(exc)
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response is None:

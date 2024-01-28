@@ -6,7 +6,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': ('splinter.core.parsers.CamelCaseJSONParser', ),
     'DEFAULT_PAGINATION_CLASS': 'splinter.core.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
-    'DEFAULT_SCHEMA_CLASS': 'splinter.ext.openapi.schema.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS': 'splinter.core.openapi.schema.AutoSchema',
 }
 
 SPECTACULAR_SETTINGS = {

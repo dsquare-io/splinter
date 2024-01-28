@@ -24,9 +24,8 @@ class MfaDeviceAPIView(APIView):
 
     @cached_property
     def configurator(self) -> DeviceConfigurator:
-        device = self.kwargs['device']
         try:
-            return DeviceConfigurator.get(device)
+            return DeviceConfigurator.get(self.kwargs['device_type'])
         except KeyError:
             raise Http404()
 

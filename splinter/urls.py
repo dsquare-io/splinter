@@ -3,8 +3,8 @@ from django.urls import include, path
 from splinter.core.views import APIErrorView
 
 urlpatterns = [
-    path('', include('splinter.ext.health.urls')),
-    path('', include('splinter.ext.openapi.urls', namespace='openapi')),
+    path('', include('splinter.core.health.urls')),
+    path('', include('splinter.core.openapi.urls', namespace='openapi')),
     path('api/currency/', include('splinter.apps.currency.urls')),
     path('api/expense/', include('splinter.apps.expense.urls')),
     path('api/friend/', include('splinter.apps.friend.urls')),
