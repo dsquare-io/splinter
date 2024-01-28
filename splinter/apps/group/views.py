@@ -35,7 +35,7 @@ class ListCreateGroupView(ListAPIView, CreateAPIView):
 
 class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIView):
     lookup_field = 'public_id'
-    lookup_url_kwarg = 'group'
+    lookup_url_kwarg = 'group_uid'
     serializer_class = GroupDetailSerializer
 
     def get_queryset(self):
@@ -44,8 +44,8 @@ class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIView):
 
 class DestroyGroupMembershipView(DestroyAPIView):
     def get_object(self):
-        group = get_object_or_404(Group.objects.of(self.request.user.id), public_id=self.kwargs['group'])
-        member = get_object_or_404(group.members.all(), username=self.kwargs['member'])
+        group = get_object_or_404(Group.objects.of(self.request.user.id), public_id=self.kwargs['group_uid'])
+        member = get_object_or_404(group.members.all(), username=self.kwargs['member_uid'])
         return get_object_or_404(GroupMembership, group=group, user=member)
 
 

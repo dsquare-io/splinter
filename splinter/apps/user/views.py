@@ -21,7 +21,7 @@ from splinter.apps.user.serializers import (
     UserProfileSerializer,
 )
 from splinter.core.authentication import UserAccessTokenAuthentication
-from splinter.core.views import APIView, CreateAPIView, GenericAPIView, UpdateAPIView
+from splinter.core.views import APIView, CreateAPIView, GenericAPIView, RetrieveAPIView, UpdateAPIView
 
 
 class AuthenticateUserView(GenericAPIView):
@@ -37,7 +37,7 @@ class AuthenticateUserView(GenericAPIView):
         return AccessTokenSerializer(instance=access_token).data
 
 
-class UserProfileView(UpdateAPIView, GenericAPIView):
+class RetrieveUpdateProfileView(RetrieveAPIView, UpdateAPIView):
     permission_classes = (IsAuthenticated, )
     authentication_classes = (UserAccessTokenAuthentication, )
     serializer_class = UserProfileSerializer
@@ -45,13 +45,8 @@ class UserProfileView(UpdateAPIView, GenericAPIView):
     def get_object(self):
         return self.request.user
 
-    def get(self, request):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return serializer.data
 
-
-class CreateAccountView(CreateAPIView):
+class CreateUserAccountView(CreateAPIView):
     permission_classes = ()
     serializer_class = CreateUserSerializer
 
@@ -60,7 +55,7 @@ class CreateAccountView(CreateAPIView):
         EmailVerification.objects.send_email(user)
 
 
-class EmailVerificationView(APIView):
+class VerifyEmailView(APIView):
     permission_classes = ()
     serializer_class = EmailVerificationSerializer
     token_generator = default_token_generator

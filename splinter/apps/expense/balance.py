@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, List, Type
 
 from django.db import transaction
-from django.db.models import Case, Model, Sum, Value, When
+from django.db.models import Case, Model, Sum, Value, When, DecimalField
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
@@ -142,9 +142,11 @@ def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: D
 def populate_friend_outstanding_balances(friends: List['User'], current_user: 'User') -> None:
     current_user_id = current_user.id
 
-    balances = FriendOutstandingBalance.objects.filter(user_id=current_user_id, friend__in=friends).annotate(
-        type=Case(When(group__isnull=True, then=Value('non_group')), default=Value('group'))
-    ).values('type', 'friend_id', 'currency_id').annotate(total_amount=Sum('amount'))
+    balances = FriendOutstandingBalance.objects\
+        .filter(user_id=current_user_id, friend__in=friends)\
+        .annotate(type=Case(When(group__isnull=True, then=Value('non_group')), default=Value('group')))\
+        .values('type', 'friend_id', 'currency_id')\
+        .annotate(total_amount=Sum('amount',output_field=DecimalField(max_digits=9, decimal_places=2)))
 
     by_friend = defaultdict(lambda: defaultdict(dict))
     for balance in balances:
@@ -164,7 +166,7 @@ def populate_group_outstanding_balances(groups: List['Group'], current_user: 'Us
     balances = FriendOutstandingBalance.objects \
         .filter(user_id=current_user_id, group__in=groups) \
         .values('group_id', 'currency_id') \
-        .annotate(total_amount=Sum('amount'))
+        .annotate(total_amount=Sum('amount', output_field=DecimalField(max_digits=9, decimal_places=2)))
 
     by_group = defaultdict(dict)
     for balance in balances:

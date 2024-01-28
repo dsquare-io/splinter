@@ -1,14 +1,15 @@
 import itertools
 import logging
 from functools import cached_property
-from typing import Set
+from typing import Optional, Set
 
 import uritemplate
+from django.conf import settings
 from drf_spectacular.openapi import AutoSchema as AutoSchemaBase
 from rest_framework import serializers
 
 from splinter.core.views import CreateAPIView, UpdateAPIView
-from splinter.utils.strings import pascal_to_slug, underscore_to_camel
+from splinter.utils.strings import pascal_to_title, underscore_to_camel
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +18,12 @@ def to_camel_case(d: dict) -> dict:
     return {underscore_to_camel(k): v for k, v in d.items()}
 
 
-class UnauthorizedErrorSerializer(serializers.Serializer):
-    detail = serializers.CharField()
+class ErrorSerializer(serializers.Serializer):
+    message = serializers.CharField()
+    code = serializers.CharField(help_text='Short code describing the error')
 
 
-class NotFoundErrorSerializer(serializers.Serializer):
+class NotFoundSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 
@@ -71,10 +73,8 @@ class AutoSchema(AutoSchemaBase):
         return selected_verb
 
     def get_request_serializer(self):
-        if self.method == 'DELETE':
-            return None
-
-        return super().get_request_serializer()
+        if self.method != 'DELETE':
+            return super().get_request_serializer()
 
     def _is_create_operation(self) -> bool:
         return isinstance(self.view, CreateAPIView) and self.method == 'POST'
@@ -83,10 +83,8 @@ class AutoSchema(AutoSchemaBase):
         return isinstance(self.view, UpdateAPIView) and self.method in ('PUT', 'PATCH')
 
     def get_response_serializers(self):
-        if self._is_create_operation() or self._is_update_operation():
-            return None
-
-        return super().get_response_serializers()
+        if not self._is_create_operation() and not self._is_update_operation():
+            return super().get_response_serializers()
 
     def _get_response_bodies(self, *args, **kwargs):
         bodies = super()._get_response_bodies(*args, **kwargs)
@@ -94,12 +92,35 @@ class AutoSchema(AutoSchemaBase):
             bodies['204'] = bodies.pop('200')
 
         if uritemplate.variables(self.path):
-            bodies['404'] = self._get_response_for_code(NotFoundErrorSerializer, '404')
+            bodies['404'] = self._get_response_for_code(NotFoundSerializer, '404')
 
         if self.method in ('POST', 'PUT', 'PATCH'):
-            serializer = self.build_bad_request_serializer()
-            if serializer:
-                bodies['400'] = self._get_response_for_code(serializer, '400')
+            bodies['400'] = {
+                'description': 'Bad Request',
+                'content': {
+                    'application/json': {
+                        'schema': {
+                            'type': 'object',
+                            'properties': {
+                                settings.REST_FRAMEWORK['NON_FIELD_ERRORS_KEY']: {
+                                    'required': False,
+                                    'type': 'array',
+                                    'items': {
+                                        'type': 'string',
+                                    },
+                                    'description': 'List of non-field errors',
+                                },
+                            },
+                            'additionalProperties': {
+                                'type': 'array',
+                                'items': {
+                                    'type': 'string',
+                                },
+                            },
+                        },
+                    },
+                },
+            }
 
         return bodies
 
@@ -110,30 +131,24 @@ class AutoSchema(AutoSchemaBase):
 
         return mapped
 
-    def build_bad_request_serializer(self):
-        fields = {}
-        serializer = self.get_request_serializer()
-        if serializer is not None:
-            for field in getattr(serializer, '_declared_fields', []):
-                fields[field] = serializers.ListField(child=serializers.CharField())
-
-        if not fields:
-            return None
-
-        serializer_name = f'{self.suggest_verb_from_view()}{self.resource_name}BadRequestSerializer'
-        return type(serializer_name, (serializers.Serializer, ), fields)
-
     def get_operation(self, *args, **kwargs):
         op = super().get_operation(*args, **kwargs)
         if not op:
             return op
 
         if 'security' in op:
-            op['responses']['401'] = self._get_response_for_code(UnauthorizedErrorSerializer, '401')
-            op['responses']['403'] = self._get_response_for_code(UnauthorizedErrorSerializer, '403')
+            op['responses']['401'] = self._get_response_for_code(ErrorSerializer, '401')
+            op['responses']['401']['description'] = 'Unauthorized'
+
+            op['responses']['403'] = self._get_response_for_code(ErrorSerializer, '403')
+            op['responses']['403']['description'] = 'Request Forbidden'
 
         return op
 
     def get_operation_id(self) -> str:
-        operation_name = f'{self.suggest_verb_from_view()}{self.resource_name}'
-        return pascal_to_slug(operation_name)
+        return f'{self.suggest_verb_from_view()}{self.resource_name}'
+
+    def get_summary(self) -> Optional[str]:
+        resource_name = self.resource_name
+        operation_name = f'{self.suggest_verb_from_view()}{resource_name}'
+        return pascal_to_title(operation_name)
