@@ -1,4 +1,4 @@
-import {ArrowTrendingUpIcon, UserIcon, UsersIcon} from '@heroicons/react/24/outline';
+import {ArrowTrendingUpIcon, PlusIcon, UserIcon, UsersIcon} from '@heroicons/react/24/outline';
 import {Link} from '@tanstack/react-router';
 
 export default function BottomNav() {
@@ -16,6 +16,13 @@ export default function BottomNav() {
         <UserIcon className="mb-1 size-6" />
         <span className="font-medium text-xs">Friends</span>
       </Link>
+
+      <div className="px-2 relative">
+        <button className="size-12 rounded-full bg-brand-600 -mt-2.5 flex items-center justify-center">
+          <PlusIcon className="size-5 text-white" strokeWidth={2} />
+          <span className="-inset-x-2.5 inset-y-0 absolute z-10" />
+        </button>
+      </div>
 
       <Link to="/activity"
             className="flex flex-col items-center py-2.5 px-3 text-gray-400 grow max-w-40 -mt-px border-t-2 border-transparent [&.active]:border-brand-600 [&.active]:text-brand-600">
