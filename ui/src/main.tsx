@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Router, RouterProvider } from '@tanstack/react-router';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { setupIonicReact } from '@ionic/react';
 
@@ -11,7 +11,7 @@ import '@ionic/react/css/core.css';
 
 setupIonicReact({ mode: 'md' });
 
-const router = new Router({
+const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
 });

@@ -1,6 +1,6 @@
-import {FileRoute, Link, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet, ScrollRestoration, useMatchRoute } from '@tanstack/react-router';
 import clsx from 'clsx';
-import {Avatar} from "@components/Avatar.tsx";
+import {Avatar} from "@components/common/Avatar.tsx";
 import {
     AdjustmentsVerticalIcon,
     CameraIcon,
@@ -9,7 +9,7 @@ import {
     EnvelopeIcon, BellIcon, LockClosedIcon, StarIcon, QuestionMarkCircleIcon, ArrowLeftOnRectangleIcon
 } from "@heroicons/react/24/outline";
 
-export const Route = new FileRoute('/profile').createRoute({
+export const Route = createFileRoute('/profile')({
     component: ProfileLayout,
 });
 

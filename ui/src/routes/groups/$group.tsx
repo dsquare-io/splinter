@@ -1,11 +1,11 @@
-import {FileRoute, Link, Navigate} from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 import {groups} from '@fake-data/groups.ts';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
-import {Avatar} from '@components/Avatar.tsx';
+import {Avatar} from '@components/common/Avatar.tsx';
 import {items} from '@fake-data/friends.ts';
 import SingleEntryItem from '../friends/-components/SingleEntryItem.tsx';
 
-export const Route = new FileRoute('/groups/$group').createRoute({
+export const Route = createFileRoute('/groups/$group')({
   component: RootComponent,
 });
 

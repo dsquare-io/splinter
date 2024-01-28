@@ -1,4 +1,4 @@
-import {FileRoute, Link, Navigate} from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {activities} from '@fake-data/acitivities.ts';
 import {
@@ -7,9 +7,9 @@ import {
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import {Avatar} from '@components/Avatar.tsx';
+import {Avatar} from '@components/common/Avatar.tsx';
 
-export const Route = new FileRoute('/activity/$activity').createRoute({
+export const Route = createFileRoute('/activity/$activity')({
   component: RootComponent,
 });
 

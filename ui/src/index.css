@@ -2,50 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Scale up hit targets on high resolution mobile devices. */
+@media (min-resolution: 200dpi) {
+  html {
+    font-size: 18px;
+  }
+
+  .text-sm {
+    /* ensure minimum font size of 16px */
+    font-size: 0.9rem;
+  }
+}
+
 body {
   font-family: 'Figtree', sans-serif;
-}
-
-/* Ionic components style overrides */
-ion-tab-bar {
-  --border: none;
-  --background: white;
-  /*@apply animate-in fade-in duration-300;*/
-}
-
-ion-tab-button {
-  --padding-bottom: 10px;
-  --padding-top: 10px;
-  position: relative;
-}
-
-ion-tab-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  height: 1px;
-  background-color: #EAEAEA;
-  @apply inset-x-0;
-}
-
-ion-tab-button.tab-selected::before {
-  background-color: #013332;
-}
-
-ion-tab-button:not(.tab-selected) svg {
-  color: #aaa;
-}
-
-ion-tab-button:not(.tab-selected) ion-label {
-  color: #828181;
-}
-
-ion-tab-button ion-label {
-  font-size: 10px;
-  line-height: 1.6;
-  font-weight: 600;
-}
-
-ion-tab-bar {
-  height: 64px;
 }

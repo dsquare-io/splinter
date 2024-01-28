@@ -1,10 +1,10 @@
-import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
+import { createFileRoute, Outlet, ScrollRestoration, useMatchRoute } from '@tanstack/react-router';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import {activities} from "@fake-data/acitivities.ts";
 import ActivityListItem from "./activity/-components/ActivityListItem.tsx";
 
-export const Route = new FileRoute('/activity').createRoute({
+export const Route = createFileRoute('/activity')({
     component: ActivityLayout,
 });
 

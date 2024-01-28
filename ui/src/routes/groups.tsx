@@ -1,10 +1,10 @@
-import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
+import { createFileRoute, Outlet, ScrollRestoration, useMatchRoute } from '@tanstack/react-router';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import GroupListItem from "./groups/-components/GroupListItem.tsx";
 import {groups} from "@fake-data/groups.ts";
 
-export const Route = new FileRoute('/groups').createRoute({
+export const Route = createFileRoute('/groups')({
     component: GroupsLayout,
 });
 

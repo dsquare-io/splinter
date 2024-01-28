@@ -1,10 +1,10 @@
-import {FileRoute, Outlet, ScrollRestoration, useMatchRoute} from '@tanstack/react-router';
+import { createFileRoute, Outlet, ScrollRestoration, useMatchRoute } from '@tanstack/react-router';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import FriendListItem from './friends/-components/FriendListItem.tsx';
 import {friends} from '@fake-data/friends.ts';
 import clsx from 'clsx';
 
-export const Route = new FileRoute('/friends').createRoute({
+export const Route = createFileRoute('/friends')({
   component: FriendsLayout,
 });
 
