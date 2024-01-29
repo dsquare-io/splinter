@@ -21,26 +21,26 @@ class GroupMemberOutstandingBalanceSerializer(serializers.Serializer):
 
 class GroupWithOutstandingBalanceSerializer(GroupSerializer):
     outstanding_balances = serializers.SerializerMethodField()
-    members_outstanding_balances = serializers.SerializerMethodField()
+    aggregated_outstanding_balances = serializers.SerializerMethodField()
 
     class Meta:
         model = Group
-        fields = ('name', 'public_id', 'outstanding_balances', 'members_outstanding_balances')
-
-    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
-    def get_outstanding_balances(self, instance):
-        return getattr(instance, 'outstanding_balances', {})
+        fields = ('name', 'public_id', 'outstanding_balances', 'aggregated_outstanding_balances')
 
     @extend_schema_field(
         serializers.DictField(child=serializers.ListField(child=GroupMemberOutstandingBalanceSerializer()))
     )
-    def get_members_outstanding_balances(self, instance):
+    def get_outstanding_balances(self, instance):
         members_outstanding_balances = getattr(instance, 'members_outstanding_balances', {})
 
         return {
             currency_id: GroupMemberOutstandingBalanceSerializer(balances, many=True).data
             for currency_id, balances in members_outstanding_balances.items()
         }
+
+    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
+    def get_aggregated_outstanding_balances(self, instance):
+        return getattr(instance, 'aggregated_outstanding_balances', {})
 
 
 class GroupDetailSerializer(serializers.ModelSerializer):

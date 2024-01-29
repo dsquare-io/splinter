@@ -19,11 +19,11 @@ class PopulateGroupOutstandingBalancesTests(ExpenseTestCase):
     def test_populate_group_outstanding_balances(self):
         populate_group_outstanding_balances(self.groups, self.friends[0])
 
-        self.assertDictEqual(self.groups[0].outstanding_balances, {self.currency.iso_code: 75})
-        self.assertDictEqual(self.groups[1].outstanding_balances, {self.currency.iso_code: 150})
+        self.assertDictEqual(self.groups[0].aggregated_outstanding_balances, {self.currency.iso_code: 75})
+        self.assertDictEqual(self.groups[1].aggregated_outstanding_balances, {self.currency.iso_code: 150})
 
         for group in self.groups[2:]:
-            self.assertDictEqual(group.outstanding_balances, {})
+            self.assertDictEqual(group.aggregated_outstanding_balances, {})
 
     def test_populate_group_members_outstanding_balances(self):
         populate_group_members_outstanding_balances(self.groups, self.friends[0])
