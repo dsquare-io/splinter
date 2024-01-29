@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, List, Type
 
 from django.db import transaction
-from django.db.models import Case, Model, Sum, Value, When, DecimalField
+from django.db.models import Case, DecimalField, Model, Sum, Value, When
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
@@ -142,11 +142,11 @@ def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: D
 def populate_friend_outstanding_balances(friends: List['User'], current_user: 'User') -> None:
     current_user_id = current_user.id
 
-    balances = FriendOutstandingBalance.objects\
-        .filter(user_id=current_user_id, friend__in=friends)\
-        .annotate(type=Case(When(group__isnull=True, then=Value('non_group')), default=Value('group')))\
-        .values('type', 'friend_id', 'currency_id')\
-        .annotate(total_amount=Sum('amount',output_field=DecimalField(max_digits=9, decimal_places=2)))
+    balances = FriendOutstandingBalance.objects \
+        .filter(user_id=current_user_id, friend__in=friends) \
+        .annotate(type=Case(When(group__isnull=True, then=Value('non_group')), default=Value('group'))) \
+        .values('type', 'friend_id', 'currency_id') \
+        .annotate(total_amount=Sum('amount', output_field=DecimalField(max_digits=9, decimal_places=2)))
 
     by_friend = defaultdict(lambda: defaultdict(dict))
     for balance in balances:
@@ -157,7 +157,7 @@ def populate_friend_outstanding_balances(friends: List['User'], current_user: 'U
         by_friend[friend_id][balance_type][currency_id] = balance['total_amount']
 
     for friend in friends:
-        friend.outstanding_balances = by_friend.get(friend.id, {})
+        setattr(friend, 'outstanding_balances', by_friend.get(friend.id, {}))
 
 
 def populate_group_outstanding_balances(groups: List['Group'], current_user: 'User') -> None:
@@ -176,7 +176,7 @@ def populate_group_outstanding_balances(groups: List['Group'], current_user: 'Us
         by_group[group_id][currency_id] = balance['total_amount']
 
     for group in groups:
-        group.outstanding_balances = by_group.get(group.id, {})
+        setattr(group, 'aggregated_outstanding_balances', by_group.get(group.id, {}))
 
 
 def populate_group_members_outstanding_balances(groups: List['Group'], current_user: 'User') -> None:
@@ -188,4 +188,4 @@ def populate_group_members_outstanding_balances(groups: List['Group'], current_u
         by_currency[balance.group_id][balance.currency_id].append({'friend': balance.friend, 'amount': balance.amount})
 
     for group in groups:
-        group.members_outstanding_balances = by_currency.get(group.id, {})
+        setattr(group, 'members_outstanding_balances', by_currency.get(group.id, {}))

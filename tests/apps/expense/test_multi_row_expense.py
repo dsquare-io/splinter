@@ -1,5 +1,4 @@
 from splinter.apps.expense.models import Expense, ExpenseSplit
-from tests.apps.currency.factories import CurrencyFactory
 from tests.apps.expense.case import ExpenseTestCase
 from tests.apps.user.factories import UserFactory
 
