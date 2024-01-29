@@ -12,4 +12,12 @@ export default defineConfig({
       '@fake-data': path.resolve(__dirname, './src/fake-data'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    }
+  }
 });

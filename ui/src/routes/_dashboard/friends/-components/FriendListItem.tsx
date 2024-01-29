@@ -1,39 +1,33 @@
 import {Avatar} from '@components/common/Avatar.tsx';
 import {Link} from '@tanstack/react-router';
+import { FriendWithOutstandingBalance } from '../../../../api-types/components/schemas';
 
-interface FriendItemProps {
-  id: number;
-  name: string;
-  balance: number;
-  currency: string;
-}
-
-export default function FriendListItem({id, name, balance, currency}: FriendItemProps) {
+export default function FriendListItem({name, uid, aggregatedOutstandingBalances}: FriendWithOutstandingBalance) {
   return (
     <Link
       to="/friends/$friend"
-      params={{friend: id.toString()}}
+      params={{friend: uid}}
       className="px-6 py-3 flex items-center gap-x-3 hover:bg-neutral-100 data-[status]:bg-brand-50"
     >
       <Avatar className="size-8" fallback="AF" />
       <div className="grow text-sm font-medium text-gray-800">
         {name}
       </div>
-      {balance === 0 && (
+      {+aggregatedOutstandingBalances!['PKR'] === 0 && (
         <div className="text-xs text-gray-400">
           Settled up
         </div>
       )}
-      {balance > 0 && (
+      {+aggregatedOutstandingBalances!['PKR'] > 0 && (
         <div className="text-right">
           <div className="text-xs text-gray-400">You lent</div>
-          <div className="text-sm text-green-700">{currency} {balance}</div>
+          <div className="text-sm text-green-700">PKR {+aggregatedOutstandingBalances!['PKR']}</div>
         </div>
       )}
-      {balance < 0 && (
+      {+aggregatedOutstandingBalances!['PKR'] < 0 && (
         <div className="text-right">
           <div className="text-xs text-gray-400">You borrowed</div>
-          <div className="text-sm text-rose-700">{currency} {balance}</div>
+          <div className="text-sm text-rose-700">PKR {+aggregatedOutstandingBalances!['PKR']}</div>
         </div>
       )}
     </Link>

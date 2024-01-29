@@ -2,8 +2,12 @@ import {Link} from '@tanstack/react-router';
 import clsx from 'clsx';
 import {ArrowLeftStartOnRectangleIcon, ArrowTrendingUpIcon, UserIcon, UsersIcon, PlusIcon} from '@heroicons/react/24/outline';
 import {ComponentProps} from 'react';
+import { useApiQuery } from '../hooks/useApiQuery.ts';
+import { ApiRoutes } from '../api-types';
 
 export default function Sidebar(props: ComponentProps<'div'>) {
+  const {data} = useApiQuery(ApiRoutes.PARTIAL_UPDATE_PROFILE);
+
   return (
     <div
       {...props}
@@ -90,8 +94,8 @@ export default function Sidebar(props: ComponentProps<'div'>) {
             <span className="text-sm text-gray-600">AF</span>
           </div>
           <div>
-            <div className="font-medium text-sm text-gray-700">Nauman Umer</div>
-            <div className="font-medium text-xs text-gray-500">nmanumr@gmail.com</div>
+            <div className="font-medium text-sm text-gray-700">{data?.displayName}</div>
+            <div className="font-medium text-xs text-gray-500">{data?.email}</div>
           </div>
         </Link>
       </div>

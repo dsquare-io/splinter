@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import { createFileRoute, Outlet, ScrollRestoration, useMatchRoute } from '@tanstack/react-router';
 import { AdjustmentsVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-
-import { friends } from '@fake-data/friends.ts';
 import FriendListItem from './-components/FriendListItem.tsx';
+import { useApiQuery } from '../../../hooks/useApiQuery.ts';
+import { ApiRoutes } from '../../../api-types';
 
 export const Route = createFileRoute('/_dashboard/friends/')({
   component: FriendsLayout,
@@ -12,6 +12,8 @@ export const Route = createFileRoute('/_dashboard/friends/')({
 function FriendsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/friends' });
+
+  const { data } = useApiQuery(ApiRoutes.FRIEND);
 
   return (
     <>
@@ -51,8 +53,8 @@ function FriendsLayout() {
         </div>
 
         <div>
-          {friends.map((e) => (
-            <FriendListItem key={e.id} {...e} />
+          {data?.results?.map((e) => (
+            <FriendListItem key={e.uid} {...e} />
           ))}
         </div>
 

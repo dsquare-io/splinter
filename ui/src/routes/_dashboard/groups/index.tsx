@@ -2,7 +2,8 @@ import { createFileRoute, Outlet, ScrollRestoration, useMatchRoute } from '@tans
 import { AdjustmentsVerticalIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import GroupListItem from './-components/GroupListItem.tsx';
-import { groups } from '@fake-data/groups.ts';
+import { useApiQuery } from '../../../hooks/useApiQuery.ts';
+import { ApiRoutes } from '../../../api-types';
 
 export const Route = createFileRoute('/_dashboard/groups/')({
   component: GroupsLayout,
@@ -11,6 +12,8 @@ export const Route = createFileRoute('/_dashboard/groups/')({
 function GroupsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/groups' });
+
+  const { data } = useApiQuery(ApiRoutes.GROUP);
 
   return (
     <>
@@ -50,8 +53,8 @@ function GroupsLayout() {
         </div>
 
         <div>
-          {groups.map((e) => (
-            <GroupListItem key={e.id} {...e} />
+          {data?.results?.map((e) => (
+            <GroupListItem key={e.publicId} {...e} />
           ))}
         </div>
 

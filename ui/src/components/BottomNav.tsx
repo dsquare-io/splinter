@@ -30,7 +30,7 @@ export default function BottomNav() {
         <span className="font-medium text-xs">Activity</span>
       </Link>
 
-      <Link to="/profile/me"
+      <Link to="/profile"
             className="flex flex-col items-center py-2.5 px-3 text-gray-400 grow max-w-40 -mt-px border-t-2 border-transparent [&.active]:border-brand-600 [&.active]:text-brand-600">
         <div className="size-6 mb-1 rounded-full border border-gray-200 brand flex items-center justify-center bg-gray-50">
           <span className="text-[10px] font-medium text-gray-600">AF</span>

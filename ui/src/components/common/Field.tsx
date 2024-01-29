@@ -1,48 +1,78 @@
 import {
-  FieldErrorProps,
+  type FieldErrorProps,
   Group,
   GroupProps,
   InputProps,
   LabelProps,
-  FieldError as RACFieldError,
   Input as RACInput,
   Label as RACLabel,
   Text,
   TextProps,
   composeRenderProps,
 } from 'react-aria-components';
+
+import {
+  FieldError as RACFieldError,
+} from '@components/common/Form/FieldError.tsx';
+
 import { twMerge } from 'tailwind-merge';
 import { tv } from 'tailwind-variants';
 import { composeTailwindRenderProps, focusRing } from './utils';
 import { RefAttributes } from 'react';
 
 export function Label(props: LabelProps) {
-  return <RACLabel {...props}
-                   className={twMerge('text-sm text-gray-500 dark:text-zinc-400 font-medium cursor-default w-fit', props.className)}
-  />;
+  return (
+    <RACLabel
+      {...props}
+      className={twMerge('select-none text-base/6 text-zinc-950 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-white', props.className)}
+    />
+  );
 }
 
 export function Description(props: TextProps) {
-  return <Text {...props} slot="description" className={twMerge('text-sm text-gray-600', props.className)}/>;
+  return (
+    <Text
+      {...props}
+      slot="description"
+      className={twMerge('text-base/6 text-zinc-500 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-zinc-400', props.className)}
+    />
+  );
 }
 
 export function FieldError(props: FieldErrorProps) {
-  return <RACFieldError {...props}
-                        className={composeTailwindRenderProps(props.className, 'text-sm text-red-600 forced-colors:text-[Mark]')}
+  return <RACFieldError
+    {...props}
+    className={composeTailwindRenderProps(props.className, 'text-base/6 text-red-600 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-red-500')}
   />;
 }
 
 export const fieldBorderStyles = tv({
+  base: [
+    // Basic layout
+    'relative block w-full appearance-none rounded-lg px-[calc(theme(spacing[3.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing[3])-1px)] sm:py-[calc(theme(spacing[1.5])-1px)]',
+
+    // Typography
+    'text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white',
+
+    // Border
+    'border border-zinc-950/10 data-[hover]:border-zinc-950/20 dark:border-white/10 dark:data-[hover]:border-white/20',
+
+    // Background color
+    'bg-transparent dark:bg-white/5',
+
+    // Hide default focus styles
+    'focus:outline-none',
+  ],
   variants: {
     isFocusWithin: {
-      false: 'border-gray-300 dark:border-zinc-500 forced-colors:border-[ButtonBorder]',
-      true: 'border-gray-600 dark:border-zinc-300 forced-colors:border-[Highlight]',
+      false: '',
+      true: 'rounded-lg ring-inset ring-transparent sm:ring-2 sm:ring-brand-500',
     },
     isInvalid: {
-      true: 'border-red-600 dark:border-red-600 forced-colors:border-[Mark]',
+      true: 'border-red-500 data-[hover]:border-red-500 dark:border-red-500 data-[hover]:dark:border-red-500',
     },
     isDisabled: {
-      true: 'border-gray-200 dark:border-zinc-700 forced-colors:border-[GrayText]',
+      true: 'border-zinc-950/20 dark:data-[hover]:border-white/15 dark:border-white/15 dark:bg-white/[2.5%]',
     },
   },
 });

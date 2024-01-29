@@ -57,7 +57,7 @@ function Form<
     resetOptions,
     resolver,
     context,
-    shouldFocusError,
+    shouldFocusError = true,
     shouldUnregister,
     shouldUseNativeValidation,
     progressive,
