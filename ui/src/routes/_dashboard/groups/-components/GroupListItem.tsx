@@ -17,13 +17,13 @@ export default function GroupListItem({
       to="/groups/$group"
       params={{group: publicId!}}
       className={clx(
-        'flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-blue-50',
+        'flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-brand-50',
         membersOutstandingBalances?.['PKR'].length == 0 ? 'item-center' : 'items-start'
       )}
     >
       <Avatar
         className="size-12 rounded-lg"
-        fallback="AF"
+        fallback={name}
       />
       <div className="grow text-sm font-medium text-gray-800">
         {name}

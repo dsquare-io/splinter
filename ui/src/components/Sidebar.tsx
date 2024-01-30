@@ -1,7 +1,8 @@
+import { setHeaders } from '@/axios.ts';
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
-import {Button} from '@components/common';
+import { Avatar, Button } from '@components/common';
 import {
   ArrowLeftStartOnRectangleIcon,
   ArrowTrendingUpIcon,
@@ -99,6 +100,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         <button
           onClick={() => {
             setToken();
+            setHeaders();
             return navigate({to: '/auth/login'});
           }}
           className="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
@@ -116,9 +118,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
             '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
           )}
         >
-          <div className="brand flex size-8 items-center justify-center rounded-full border border-gray-200">
-            <span className="text-sm text-gray-600">AF</span>
-          </div>
+          <Avatar className="size-8" fallback={data?.displayName}></Avatar>
           <div>
             <div className="text-sm font-medium text-gray-700">{data?.displayName}</div>
             <div className="text-xs font-medium text-gray-500">{data?.email}</div>

@@ -1,3 +1,4 @@
+import { setHeaders } from '@/axios.ts';
 import {TextField} from 'react-aria-components';
 
 import {Button, FieldError, Form, Input, Label, inputStyles} from '@components/common';
@@ -24,6 +25,7 @@ function RootComponent() {
         method="POST"
         onSubmitSuccess={(res) => {
           setToken({access: res.data.accessToken, refresh: ''});
+          setHeaders(res.data.accessToken);
           return navigate({to: '/friends'});
         }}
         className="space-y-6"
@@ -63,7 +65,7 @@ function RootComponent() {
           slot="submit"
           type="submit"
         >
-          Submit
+          Login
         </Button>
       </Form>
     </AuthLayout>

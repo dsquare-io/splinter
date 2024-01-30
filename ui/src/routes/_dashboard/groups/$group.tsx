@@ -1,3 +1,4 @@
+import { Button } from '@components/common';
 import {Avatar} from '@components/common/Avatar';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
@@ -36,7 +37,7 @@ function RootComponent() {
               <div className="flex">
                 <Avatar
                   className="size-24 bg-gray-200 text-3xl"
-                  fallback="GP"
+                  fallback={data.name}
                 />
               </div>
               <div className="mt-6 flex w-full items-end justify-between">
@@ -54,12 +55,9 @@ function RootComponent() {
                   {/*    className="text-green-700">{group.currency} {group.balance}</span></p>*/}
                   {/*) : undefined}*/}
                 </div>
-                <button
-                  type="button"
-                  className="inline-flex justify-center gap-x-1.5 rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-gray-200 shadow-sm ring-1 ring-inset ring-blue-300 hover:bg-blue-50"
-                >
+                <Button>
                   Settle up
-                </button>
+                </Button>
               </div>
             </div>
             <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">

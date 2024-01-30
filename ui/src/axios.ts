@@ -10,9 +10,8 @@ export const axiosInstance = axios.create({
 });
 
 export function setHeaders(accessToken?: string) {
-  const token = accessToken ?? localStorage.getItem('splinter:access_token');
-  if (token) {
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${token}`;
+  if (accessToken) {
+    axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {
     axiosInstance.defaults.headers.common.Authorization = null;
   }

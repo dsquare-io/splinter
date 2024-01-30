@@ -22,6 +22,7 @@ function GroupsLayout() {
     <>
       <div
         className={clsx(
+          'bg-white',
           !isRootLayout &&
             'fixed inset-y-0 left-60 hidden w-96 overflow-auto border-e border-gray-200 xl:block',
           isRootLayout &&
