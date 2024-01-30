@@ -24,7 +24,8 @@
     "baseUrl": "./",
     "paths": {
       "@components/*": ["./src/components/*"],
-      "@fake-data/*": ["./src/fake-data/*"]
+      "@fake-data/*": ["./src/fake-data/*"],
+      "@/*": ["./src/*"]
     }
   },
   "include": ["src"],

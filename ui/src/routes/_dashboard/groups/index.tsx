@@ -13,7 +13,7 @@ function GroupsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/groups' });
 
-  const { data } = useApiQuery(ApiRoutes.GROUP);
+  const { data } = useApiQuery(ApiRoutes.GROUP_LIST);
 
   return (
     <>

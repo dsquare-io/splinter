@@ -13,7 +13,7 @@ function FriendsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/friends' });
 
-  const { data } = useApiQuery(ApiRoutes.FRIEND);
+  const { data } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   return (
     <>

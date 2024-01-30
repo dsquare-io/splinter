@@ -10,6 +10,7 @@ export default defineConfig({
     alias: {
       '@components': path.resolve(__dirname, './src/components'),
       '@fake-data': path.resolve(__dirname, './src/fake-data'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {

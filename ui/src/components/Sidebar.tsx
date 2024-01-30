@@ -6,7 +6,7 @@ import { useApiQuery } from '../hooks/useApiQuery.ts';
 import { ApiRoutes } from '../api-types';
 
 export default function Sidebar(props: ComponentProps<'div'>) {
-  const {data} = useApiQuery(ApiRoutes.PARTIAL_UPDATE_PROFILE);
+  const {data} = useApiQuery(ApiRoutes.PROFILE);
 
   return (
     <div
