@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
+import {Button} from '@components/common';
 import {
   ArrowLeftStartOnRectangleIcon,
   ArrowTrendingUpIcon,
@@ -8,13 +9,17 @@ import {
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import {Link} from '@tanstack/react-router';
+import {Link, useNavigate} from '@tanstack/react-router';
+
+import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';
 import {useApiQuery} from '../hooks/useApiQuery.ts';
 
 export default function Sidebar(props: ComponentProps<'div'>) {
   const {data} = useApiQuery(ApiRoutes.PROFILE);
+  const {setToken} = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -49,15 +54,10 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         <div className="font-medium text-gray-800">Splinter</div>
       </Link>
 
-      <button
-        className={clsx(
-          'flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-white transition-colors',
-          'bg-brand-600 hover:bg-brand-700'
-        )}
-      >
-        <PlusIcon className="size-5" />
-        <div className="text-sm font-medium">Add Expense</div>
-      </button>
+      <Button className="justify-start gap-x-3.5 px-3">
+        <PlusIcon />
+        <div>Add Expense</div>
+      </Button>
 
       <div className="grow space-y-1">
         <Link
@@ -96,13 +96,16 @@ export default function Sidebar(props: ComponentProps<'div'>) {
       </div>
 
       <div className="space-y-1">
-        <a
-          href="#"
-          className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
+        <button
+          onClick={() => {
+            setToken();
+            return navigate({to: '/auth/login'});
+          }}
+          className="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
         >
           <ArrowLeftStartOnRectangleIcon className="size-5" />
           <div className="text-sm font-medium">Logout</div>
-        </a>
+        </button>
 
         <Link
           to="/profile/$profile"

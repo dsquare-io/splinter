@@ -4,8 +4,9 @@ import {Button, FieldError, Form, Input, Label, inputStyles} from '@components/c
 import {Field} from '@components/common/Form/Field.tsx';
 import {createFileRoute, useNavigate} from '@tanstack/react-router';
 
-import {ApiRoutes} from '../../api-types';
-import {setHeaders} from '../../axios.ts';
+import {ApiRoutes} from '@/api-types';
+import useAuth from '@/hooks/useAuth.ts';
+
 import AuthLayout from './-layout.tsx';
 
 export const Route = createFileRoute('/auth/login')({
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/auth/login')({
 
 function RootComponent() {
   const navigate = useNavigate();
+  const {setToken} = useAuth();
 
   return (
     <AuthLayout>
@@ -21,7 +23,7 @@ function RootComponent() {
         action={ApiRoutes.AUTHENTICATE_USER}
         method="POST"
         onSubmitSuccess={(res) => {
-          setHeaders(res.data.accessToken);
+          setToken({access: res.data.accessToken, refresh: ''});
           return navigate({to: '/friends'});
         }}
         className="space-y-6"
