@@ -1,43 +1,45 @@
-import { Avatar } from '@components/common/Avatar';
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ApiRoutes } from '@/api-types';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
+import {Avatar} from '@components/common/Avatar';
+import {ChevronLeftIcon} from '@heroicons/react/24/solid';
+import {Link, createFileRoute} from '@tanstack/react-router';
+
+import {ApiRoutes} from '@/api-types';
+import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
+import {queryClient} from '@/queryClient.ts';
 
 export const Route = createFileRoute('/_dashboard/groups/$group')({
-  loader: ({ params: { group: group_uid } }) => queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })),
+  loader: ({params: {group: group_uid}}) =>
+    queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.GROUP_DETAIL, {group_uid})),
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });
 
 function RootComponent() {
-  const { group: group_uid } = Route.useParams();
+  const {group: group_uid} = Route.useParams();
 
-  const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const {data} = useApiQuery(ApiRoutes.GROUP_DETAIL, {group_uid});
   if (!data) return null;
 
   return (
     <div className="">
       <Link
-        className="px-6 pt-6 pb-4 flex items-center gap-x-1.5 xl:hidden text-sm text-brand-700 font-medium mb-1"
+        className="mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
         to="/friends"
       >
-        <ChevronLeftIcon className="size-3"/>
+        <ChevronLeftIcon className="size-3" />
         Group
       </Link>
       <article>
         <div>
-          <div className="h-32 lg:h-48">
-          </div>
+          <div className="h-32 lg:h-48"></div>
           <div className="mx-auto  px-4 sm:px-6 lg:px-8">
-            <div className="-mt-12 sm:flex sm:items-end space-x-3">
+            <div className="-mt-12 space-x-3 sm:flex sm:items-end">
               <div className="flex">
-                <Avatar className="bg-gray-200 size-24 text-3xl" fallback="GP"/>
+                <Avatar
+                  className="size-24 bg-gray-200 text-3xl"
+                  fallback="GP"
+                />
               </div>
-              <div
-                className="mt-6 flex items-end justify-between w-full"
-              >
+              <div className="mt-6 flex w-full items-end justify-between">
                 <div className="mt-6 min-w-0 flex-1">
                   <h1 className="truncate text-2xl font-bold text-gray-800">{data.name}</h1>
                   {/*{group.balance == 0 ? (*/}
