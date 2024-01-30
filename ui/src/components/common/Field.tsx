@@ -1,3 +1,4 @@
+import {RefAttributes} from 'react';
 import {
   type FieldErrorProps,
   Group,
@@ -11,20 +12,20 @@ import {
   composeRenderProps,
 } from 'react-aria-components';
 
-import {
-  FieldError as RACFieldError,
-} from '@components/common/Form/FieldError.tsx';
+import {FieldError as RACFieldError} from '@components/common/Form/FieldError.tsx';
+import {twMerge} from 'tailwind-merge';
+import {tv} from 'tailwind-variants';
 
-import { twMerge } from 'tailwind-merge';
-import { tv } from 'tailwind-variants';
-import { composeTailwindRenderProps, focusRing } from './utils';
-import { RefAttributes } from 'react';
+import {composeTailwindRenderProps, focusRing} from './utils';
 
 export function Label(props: LabelProps) {
   return (
     <RACLabel
       {...props}
-      className={twMerge('select-none text-base/6 text-zinc-950 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-white', props.className)}
+      className={twMerge(
+        'select-none text-base/6 text-zinc-950 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-white',
+        props.className
+      )}
     />
   );
 }
@@ -34,16 +35,24 @@ export function Description(props: TextProps) {
     <Text
       {...props}
       slot="description"
-      className={twMerge('text-base/6 text-zinc-500 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-zinc-400', props.className)}
+      className={twMerge(
+        'text-base/6 text-zinc-500 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-zinc-400',
+        props.className
+      )}
     />
   );
 }
 
 export function FieldError(props: FieldErrorProps) {
-  return <RACFieldError
-    {...props}
-    className={composeTailwindRenderProps(props.className, 'text-base/6 text-red-600 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-red-500')}
-  />;
+  return (
+    <RACFieldError
+      {...props}
+      className={composeTailwindRenderProps(
+        props.className,
+        'text-base/6 text-red-600 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-red-500'
+      )}
+    />
+  );
 }
 
 export const fieldBorderStyles = tv({
@@ -84,17 +93,29 @@ export const fieldGroupStyles = tv({
 });
 
 export function FieldGroup(props: GroupProps) {
-  return <Group {...props} className={composeRenderProps(props.className, (className, renderProps) => fieldGroupStyles({
-    ...renderProps,
-    className,
-  }))}
-  />;
+  return (
+    <Group
+      {...props}
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        fieldGroupStyles({
+          ...renderProps,
+          className,
+        })
+      )}
+    />
+  );
 }
 
 // why inpRef? just trying to avoid forwardRef here.
-export function Input({ inpRef, ...props }: InputProps & { inpRef?: RefAttributes<HTMLInputElement>['ref'] }) {
-  return <RACInput
-    ref={inpRef} {...props}
-    className={composeTailwindRenderProps(props.className, 'px-2 py-1.5 flex-1 min-w-0 outline outline-0 bg-white dark:bg-zinc-900 text-sm text-gray-800 dark:text-zinc-200 disabled:text-gray-200 dark:disabled:text-zinc-600')}
-  />;
+export function Input({inpRef, ...props}: InputProps & {inpRef?: RefAttributes<HTMLInputElement>['ref']}) {
+  return (
+    <RACInput
+      ref={inpRef}
+      {...props}
+      className={composeTailwindRenderProps(
+        props.className,
+        'min-w-0 flex-1 bg-white px-2 py-1.5 text-sm text-gray-800 outline outline-0 disabled:text-gray-200 dark:bg-zinc-900 dark:text-zinc-200 dark:disabled:text-zinc-600'
+      )}
+    />
+  );
 }

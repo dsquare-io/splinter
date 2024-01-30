@@ -1,7 +1,7 @@
-import {defineConfig} from 'vite';
-import path from 'node:path';
+import {TanStackRouterVite} from '@tanstack/router-vite-plugin';
 import react from '@vitejs/plugin-react-swc';
-import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import path from 'node:path';
+import {defineConfig} from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,6 +18,6 @@ export default defineConfig({
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-    }
-  }
+    },
+  },
 });

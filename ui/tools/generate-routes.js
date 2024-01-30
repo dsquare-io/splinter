@@ -1,5 +1,5 @@
-import ts from 'typescript';
 import fs from 'node:fs';
+import ts from 'typescript';
 
 function extractPaths(filePath) {
   const program = ts.createProgram([filePath], {});
@@ -57,7 +57,7 @@ function extractPaths(filePath) {
         routeName = `${routeName}_detail`;
       }
 
-      routeName = routeName.replace(/(([a-z])(?=[A-Z][a-zA-Z])|([A-Z])(?=[A-Z][a-z]))/g,'$1_').toUpperCase()
+      routeName = routeName.replace(/(([a-z])(?=[A-Z][a-zA-Z])|([A-Z])(?=[A-Z][a-z]))/g, '$1_').toUpperCase();
 
       paths.set(routeName, path);
     });
@@ -80,9 +80,7 @@ function buildPathsRecord(paths, recordName) {
   return output.join('\n');
 }
 
-const routePaths = [
-  ['./src/api-types/routeTypes.d.ts', 'Paths'],
-]
+const routePaths = [['./src/api-types/routeTypes.d.ts', 'Paths']]
   .map(([filePath, recordName]) => buildPathsRecord(extractPaths(filePath), recordName))
   .join('\n\n');
 

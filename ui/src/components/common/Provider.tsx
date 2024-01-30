@@ -15,16 +15,7 @@ type ProviderValues<A, B, C, D, E, F, G, H> =
       ProviderValue<C>,
       ProviderValue<D>,
       ProviderValue<E>,
-      ProviderValue<F>
-    ]
-  | [
-      ProviderValue<A>,
-      ProviderValue<B>,
-      ProviderValue<C>,
-      ProviderValue<D>,
-      ProviderValue<E>,
       ProviderValue<F>,
-      ProviderValue<G>
     ]
   | [
       ProviderValue<A>,
@@ -34,7 +25,16 @@ type ProviderValues<A, B, C, D, E, F, G, H> =
       ProviderValue<E>,
       ProviderValue<F>,
       ProviderValue<G>,
-      ProviderValue<H>
+    ]
+  | [
+      ProviderValue<A>,
+      ProviderValue<B>,
+      ProviderValue<C>,
+      ProviderValue<D>,
+      ProviderValue<E>,
+      ProviderValue<F>,
+      ProviderValue<G>,
+      ProviderValue<H>,
     ];
 
 interface ProviderProps<A, B, C, D, E, F, G, H> {
