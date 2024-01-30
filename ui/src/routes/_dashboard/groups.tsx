@@ -3,19 +3,20 @@ import clsx from 'clsx';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 
-import {ApiRoutes} from '../../../api-types';
-import {useApiQuery} from '../../../hooks/useApiQuery.ts';
-import FriendListItem from './-components/FriendListItem.tsx';
+import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
-export const Route = createFileRoute('/_dashboard/friends/')({
-  component: FriendsLayout,
+import {ApiRoutes} from '../../api-types';
+import GroupListItem from './groups/-components/GroupListItem';
+
+export const Route = createFileRoute('/_dashboard/groups')({
+  component: GroupsLayout,
 });
 
-function FriendsLayout() {
+function GroupsLayout() {
   const matchRoute = useMatchRoute();
-  const isRootLayout = matchRoute({to: '/friends'});
+  const isRootLayout = matchRoute({to: '/groups'});
 
-  const {data} = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const {data} = useApiQuery(ApiRoutes.GROUP_LIST);
 
   return (
     <>
@@ -28,7 +29,7 @@ function FriendsLayout() {
         )}
       >
         <div className="sticky top-0 z-10 bg-white px-6 pb-4 pt-6">
-          <h2 className="text-lg font-medium text-gray-900">Friends</h2>
+          <h2 className="text-lg font-medium text-gray-900">Groups</h2>
           <p className="text-sm text-gray-600">
             Overall, you are owed <span className="text-green-700">Rs 46,043</span>
           </p>
@@ -63,8 +64,8 @@ function FriendsLayout() {
 
         <div>
           {data?.results?.map((e) => (
-            <FriendListItem
-              key={e.uid}
+            <GroupListItem
+              key={e.publicId}
               {...e}
             />
           ))}
