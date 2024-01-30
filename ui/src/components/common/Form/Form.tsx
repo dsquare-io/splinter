@@ -1,22 +1,21 @@
-import { ForwardedRef, forwardRef, useId } from 'react';
-import { type FieldValues, FormProvider, useForm } from 'react-hook-form';
+import {ForwardedRef, forwardRef, useId} from 'react';
+import {ButtonContext} from 'react-aria-components';
+import {type FieldValues, FormProvider, useForm} from 'react-hook-form';
 
-import { Provider } from '@components/common/Provider.tsx';
-import { useContextProps } from '@components/common/use-context-props.ts';
-import { forwardRefType } from '@components/common/types.ts';
+import {Provider} from '@components/common/Provider.tsx';
+import {forwardRefType} from '@components/common/types.ts';
+import {useContextProps} from '@components/common/use-context-props.ts';
 
-import { FormContext } from './context';
-import type { FormProps, Method } from './types';
-import { ButtonContext } from 'react-aria-components';
-import { axiosInstance } from '../../../axios.ts';
+import {axiosInstance} from '../../../axios.ts';
+import {FormContext} from './context';
+import type {FormProps, Method} from './types';
 
-function Form<
-  SubmitResponse = any,
-  TFieldValues extends FieldValues = FieldValues,
-  TransformedData = any
->({ ...props }: FormProps<SubmitResponse, TFieldValues, TransformedData>, ref: ForwardedRef<HTMLFormElement>) {
+function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValues, TransformedData = any>(
+  {...props}: FormProps<SubmitResponse, TFieldValues, TransformedData>,
+  ref: ForwardedRef<HTMLFormElement>
+) {
   const formId = useId();
-  const { onSubmit: formSubmitHandler } = props;
+  const {onSubmit: formSubmitHandler} = props;
 
   if (!props.name) {
     props.name = props?.id ?? formId;
@@ -36,12 +35,13 @@ function Form<
 
     // submission props
     onInvalid,
-    onSubmit = (data, conf) => axiosInstance({
-      url: conf.action,
-      method: conf.method,
-      headers: conf.headers,
-      data,
-    }),
+    onSubmit = (data, conf) =>
+      axiosInstance({
+        url: conf.action,
+        method: conf.method,
+        headers: conf.headers,
+        data,
+      }),
     onSubmitSuccess,
     onSubmitError,
     headers,
@@ -103,14 +103,14 @@ function Form<
                     control.formState.isSubmitting ||
                     control.formState.isValidating,
                 },
-                'reset': {
+                reset: {
                   isDisabled:
                     control.formState.isLoading ||
                     control.formState.isSubmitting ||
                     control.formState.isValidating,
                   onPress: () => control.reset(),
                 },
-                'submit': {
+                submit: {
                   isDisabled:
                     control.formState.isLoading ||
                     control.formState.isSubmitting ||
@@ -145,7 +145,7 @@ function Form<
             // resolve headers
             const resolvedHeaders =
               typeof headers === 'function'
-                ? await headers(transformedData, { method: method as Method, action }, event)
+                ? await headers(transformedData, {method: method as Method, action}, event)
                 : headers;
 
             if (resolvedHeaders === null) {
@@ -155,7 +155,7 @@ function Form<
             // call submission handler
             let response: any;
             try {
-              response = await onSubmit?.(transformedData, { method, action, headers: resolvedHeaders }, event);
+              response = await onSubmit?.(transformedData, {method, action, headers: resolvedHeaders}, event);
             } catch (err: unknown) {
               // call submission error hook
               // submission error hook should be responsible for decorating api errors on form fields
@@ -175,4 +175,4 @@ function Form<
 }
 
 const Form2 = (forwardRef as forwardRefType)(Form);
-export { Form2 as Form };
+export {Form2 as Form};

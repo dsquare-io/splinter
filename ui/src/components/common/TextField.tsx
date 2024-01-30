@@ -1,6 +1,7 @@
-import { tv } from 'tailwind-variants';
-import { fieldBorderStyles } from './Field';
-import { focusRing } from './utils';
+import {tv} from 'tailwind-variants';
+
+import {fieldBorderStyles} from './Field';
+import {focusRing} from './utils';
 
 export const inputStyles = tv({
   extend: focusRing,
@@ -10,4 +11,3 @@ export const inputStyles = tv({
     ...fieldBorderStyles.variants,
   },
 });
-

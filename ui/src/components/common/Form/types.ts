@@ -1,6 +1,6 @@
-import { BaseSyntheticEvent, ComponentProps } from 'react';
-import { FieldErrors, type FieldValues, UseFormProps, type UseFormReturn } from 'react-hook-form';
-import { SlotProps } from 'react-aria-components';
+import {BaseSyntheticEvent, ComponentProps} from 'react';
+import {SlotProps} from 'react-aria-components';
+import {FieldErrors, type FieldValues, UseFormProps, type UseFormReturn} from 'react-hook-form';
 
 export type Method =
   | 'get'
@@ -16,7 +16,6 @@ export type Method =
   | 'patch'
   | 'PATCH';
 
-
 export interface SubmissionConf {
   method?: Method;
   action?: string;
@@ -28,35 +27,33 @@ interface FormSubmissionProps<SubmitResponse, TFieldValues extends FieldValues, 
   onInvalid?: (error: FieldErrors, event?: BaseSyntheticEvent) => any | Promise<any>;
   onSubmitSuccess?: (
     res: SubmitResponse | undefined,
-    control: UseFormReturn<TFieldValues>,
+    control: UseFormReturn<TFieldValues>
   ) => any | Promise<any>;
   onSubmitError?: (err: unknown, control: UseFormReturn<TFieldValues>) => any;
   headers?:
     | Record<string, string>
     | ((
-    data: TransformedData,
-    conf: Omit<SubmissionConf, 'headers'>,
-    event?: BaseSyntheticEvent,
-  ) => Record<string, string> | Promise<Record<string, string> | null> | null);
+        data: TransformedData,
+        conf: Omit<SubmissionConf, 'headers'>,
+        event?: BaseSyntheticEvent
+      ) => Record<string, string> | Promise<Record<string, string> | null> | null);
   transformData?: (data: TFieldValues) => TransformedData | Promise<TransformedData>;
   action?: string;
   method?: Method;
   onSubmit?: (
     data: TransformedData,
     conf: SubmissionConf,
-    event?: BaseSyntheticEvent,
+    event?: BaseSyntheticEvent
   ) => Promise<SubmitResponse> | void;
 }
 
 export type FormProps<
   SubmitResponse,
   TFieldValues extends FieldValues,
-  TransformedData
-> =
-  FormSubmissionProps<SubmitResponse, TFieldValues, TransformedData>
-  & SlotProps
-  & ComponentProps<'form'>
-  & UseFormProps<TFieldValues>
-  & {
-  control?: UseFormReturn<TFieldValues>;
-};
+  TransformedData,
+> = FormSubmissionProps<SubmitResponse, TFieldValues, TransformedData> &
+  SlotProps &
+  ComponentProps<'form'> &
+  UseFormProps<TFieldValues> & {
+    control?: UseFormReturn<TFieldValues>;
+  };

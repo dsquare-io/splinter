@@ -204,4 +204,3 @@ export interface UserProfile {
   email?: string | null;
   isVerified?: boolean;
 }
-
