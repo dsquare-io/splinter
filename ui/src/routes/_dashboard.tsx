@@ -1,6 +1,6 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router';
-import Sidebar from '@components/Sidebar.tsx';
 import BottomNav from '@components/BottomNav.tsx';
+import Sidebar from '@components/Sidebar.tsx';
+import {Outlet, createFileRoute} from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,
@@ -8,13 +8,13 @@ export const Route = createFileRoute('/_dashboard')({
 
 function DashboardLayout() {
   return (
-    <div className="h-full flex flex-col md:contents">
-      <main className="flex-1 overflow-auto md:h-full md:ms-60">
-        <Outlet/>
+    <div className="flex h-full flex-col md:contents">
+      <main className="flex-1 overflow-auto  md:ms-60  md:h-full">
+        <Outlet />
       </main>
 
-      <Sidebar/>
-      <BottomNav/>
+      <Sidebar />
+      <BottomNav />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import {Context, ForwardedRef, RefObject, useContext, useEffect, useMemo} from 'react';
+import {SlotProps} from 'react-aria-components';
 
 import {mergeProps, mergeRefs, useObjectRef} from '@react-aria/utils';
-import { SlotProps } from 'react-aria-components';
 
 export type WithRef<T, E> = T & {ref?: ForwardedRef<E>};
 

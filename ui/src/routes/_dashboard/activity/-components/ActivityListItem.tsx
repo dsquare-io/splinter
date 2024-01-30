@@ -15,28 +15,48 @@ export default function ActivityListItem({id, verb, subject, object, balance, cu
     <Link
       to="/activity/$activity"
       params={{activity: id.toString()}}
-      className="px-6 py-3 flex gap-x-3 hover:bg-neutral-100 data-[status]:bg-blue-50"
+      className="flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-blue-50"
     >
-      <Avatar className="size-12 rounded-lg" fallback="AF" />
+      <Avatar
+        className="size-12 rounded-lg"
+        fallback="AF"
+      />
       <div className="grow text-sm  text-gray-800">
         {verb === 'updated' && (
-          <p>"{subject}" {verb} {object}</p>
-        )}
-        {verb === 'setting' && (
-          <p>"{subject}" was {object}</p>
-        )}
-        {verb === 'paid' && (
-          <p>"{subject}" paid {object}</p>
-        )}
-        {balance > 0 ? (
-          <p className="text-gray-500 font-normal mt-1"> You Recieved {' '}
-            <span className="text-green-700 font-medium">{currency} {balance}</span></p>
-        ) : (
-          <p className="text-gray-500 font-normal mt-1"> You borrowed {' '}
-            <span className="text-rose-700 font-medium"> {currency}{balance}</span>
+          <p>
+            "{subject}" {verb} {object}
           </p>
         )}
-        <p className="text-gray-400 font-normal mt-1 text-xs">Yesterday, 22:30</p>
+        {verb === 'setting' && (
+          <p>
+            "{subject}" was {object}
+          </p>
+        )}
+        {verb === 'paid' && (
+          <p>
+            "{subject}" paid {object}
+          </p>
+        )}
+        {balance > 0 ? (
+          <p className="mt-1 font-normal text-gray-500">
+            {' '}
+            You Recieved{' '}
+            <span className="font-medium text-green-700">
+              {currency} {balance}
+            </span>
+          </p>
+        ) : (
+          <p className="mt-1 font-normal text-gray-500">
+            {' '}
+            You borrowed{' '}
+            <span className="font-medium text-rose-700">
+              {' '}
+              {currency}
+              {balance}
+            </span>
+          </p>
+        )}
+        <p className="mt-1 text-xs font-normal text-gray-400">Yesterday, 22:30</p>
       </div>
     </Link>
   );

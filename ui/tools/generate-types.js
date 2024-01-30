@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-
 import openapiTS from 'openapi-typescript';
 
 if (!fs.existsSync('./src/api-types')) {
@@ -50,11 +49,13 @@ const commonRouteTypes = await openapiTS('http://localhost:8000/api/schema', {
 });
 fs.writeFileSync('./src/api-types/routeTypes.d.ts', commonRouteTypes);
 
-const routeSchemaTypes = Array.from(schemas.entries()).map(([name, schemaUnions]) => {
-  const isInterface = schemaUnions.length === 1 && schemaUnions[0].match(/^\s*\{/);
-  return isInterface
-    ? `export interface ${name} ${schemaUnions[0]}\n`
-    : `export type ${name} = ${schemaUnions.join(' | ')};\n`;
-}).join('\n');
+const routeSchemaTypes = Array.from(schemas.entries())
+  .map(([name, schemaUnions]) => {
+    const isInterface = schemaUnions.length === 1 && schemaUnions[0].match(/^\s*\{/);
+    return isInterface
+      ? `export interface ${name} ${schemaUnions[0]}\n`
+      : `export type ${name} = ${schemaUnions.join(' | ')};\n`;
+  })
+  .join('\n');
 
 fs.writeFileSync('./src/api-types/components/schemas.d.ts', `${routeSchemaTypes}\n`);

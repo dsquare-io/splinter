@@ -1,7 +1,8 @@
-import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
-import { friends, items } from '@fake-data/friends.ts';
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Avatar } from '@components/common/Avatar.tsx';
+import {Avatar} from '@components/common/Avatar.tsx';
+import {friends, items} from '@fake-data/friends.ts';
+import {ChevronLeftIcon} from '@heroicons/react/24/solid';
+import {Link, Navigate, createFileRoute} from '@tanstack/react-router';
+
 import SingleEntryItem from './-components/SingleEntryItem.tsx';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
@@ -9,20 +10,21 @@ export const Route = createFileRoute('/_dashboard/friends/$friend')({
 });
 
 function RootComponent() {
-  const { friend: friendId } = Route.useParams();
+  const {friend: friendId} = Route.useParams();
 
   const friend = friends.find((e) => e.id.toString() === friendId);
 
   if (!friend) {
-    return (
-      <Navigate to="/friends"/>
-    );
+    return <Navigate to="/friends" />;
   }
 
   return (
     <div>
-      <Link className="flex items-center gap-x-1.5 xl:hidden text-sm text-brand-700 font-medium mb-1" to="/friends">
-        <ChevronLeftIcon className="size-3"/>
+      <Link
+        className="mb-1 flex items-center gap-x-1.5 text-sm font-medium text-brand-700 xl:hidden"
+        to="/friends"
+      >
+        <ChevronLeftIcon className="size-3" />
         Friend
       </Link>
       <article>
@@ -34,27 +36,34 @@ function RootComponent() {
             />
           </div>
           <div className="mx-auto  px-4 sm:px-6 lg:px-8">
-            <div className="-mt-12 sm:flex sm:items-end space-x-3">
+            <div className="-mt-12 space-x-3 sm:flex sm:items-end">
               <div className="flex">
-                <Avatar className="bg-gray-200 size-24 text-3xl" fallback="AF"/>
+                <Avatar
+                  className="size-24 bg-gray-200 text-3xl"
+                  fallback="AF"
+                />
               </div>
-              <div
-                className="mt-6 flex items-end justify-between w-full"
-              >
+              <div className="mt-6 flex w-full items-end justify-between">
                 <div className="mt-6 min-w-0 flex-1">
                   <h1 className="truncate text-2xl font-bold text-gray-800">{friend.name}</h1>
                   {friend.balance == 0 ? (
                     <p className="text-sm font-medium text-gray-400">All settled up</p>
                   ) : undefined}
                   {friend.balance > 0 ? (
-                    <p className="text-sm font-normal text-gray-400">{friend.name} owes you <span
-                      className="text-green-700"
-                    >{friend.currency} {friend.balance}</span></p>
+                    <p className="text-sm font-normal text-gray-400">
+                      {friend.name} owes you{' '}
+                      <span className="text-green-700">
+                        {friend.currency} {friend.balance}
+                      </span>
+                    </p>
                   ) : undefined}
                   {friend.balance < 0 ? (
-                    <p className="text-sm font-normal text-gray-400">You owe {friend.name}<span
-                      className="text-green-700"
-                    >{friend.currency} {friend.balance}</span></p>
+                    <p className="text-sm font-normal text-gray-400">
+                      You owe {friend.name}
+                      <span className="text-green-700">
+                        {friend.currency} {friend.balance}
+                      </span>
+                    </p>
                   ) : undefined}
                 </div>
                 <button
@@ -70,20 +79,26 @@ function RootComponent() {
             </div>
           </div>
         </div>
-        <div className="w-full mb-4 mt-8 border-t border-blue-100/70"/>
-        <p className="text-sm font-medium text-gray-500 px-4 sm:px-6 lg:px-8">December 2022</p>
+        <div className="mb-4 mt-8 w-full border-t border-blue-100/70" />
+        <p className="px-4 text-sm font-medium text-gray-500 sm:px-6 lg:px-8">December 2022</p>
         <div className=" divide-y divide-gray-200 border-b border-gray-200">
           {items.map((item) => {
             return (
-              <SingleEntryItem {...item} key={item.id}/>
+              <SingleEntryItem
+                {...item}
+                key={item.id}
+              />
             );
           })}
         </div>
-        <p className="text-sm font-medium text-gray-500 px-4 sm:px-6 lg:px-8 mt-6">January 2023</p>
+        <p className="mt-6 px-4 text-sm font-medium text-gray-500 sm:px-6 lg:px-8">January 2023</p>
         <div className=" divide-y divide-gray-200">
           {items.map((item) => {
             return (
-              <SingleEntryItem {...item} key={item.id}/>
+              <SingleEntryItem
+                {...item}
+                key={item.id}
+              />
             );
           })}
         </div>

@@ -1,17 +1,18 @@
+import {ReactNode} from 'react';
 import {
-  NumberFieldContext,
-  Provider,
-  TextFieldContext,
-  SwitchContext,
-  SliderContext,
-  RadioGroupContext,
   CheckboxContext,
   CheckboxGroupContext,
+  NumberFieldContext,
+  Provider,
+  RadioGroupContext,
+  SliderContext,
+  SwitchContext,
+  TextFieldContext,
 } from 'react-aria-components';
-import { ReactNode } from 'react';
-import { useController, type UseControllerProps, type RegisterOptions } from 'react-hook-form';
-import { messagifyValidationRules } from '@components/common/Form/validations';
-import { FieldErrorContext } from '@components/common/Form/FieldError';
+import {type RegisterOptions, type UseControllerProps, useController} from 'react-hook-form';
+
+import {FieldErrorContext} from '@components/common/Form/FieldError';
+import {messagifyValidationRules} from '@components/common/Form/validations';
 
 const focusableInputElments = [
   'input:not([disabled]):not([type=hidden])',
@@ -20,7 +21,6 @@ const focusableInputElments = [
 ];
 
 const FOCUSABLE_INPUT_ELEMENT_SELECTOR = focusableInputElments.join(':not([hidden]),');
-
 
 function getFocusableRef(rootNode: HTMLElement) {
   const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ELEMENT, {
@@ -44,7 +44,7 @@ function getFocusableRef(rootNode: HTMLElement) {
 }
 
 type FieldProps = {
-  children?: ReactNode
+  children?: ReactNode;
   required?: RegisterOptions['required'];
   deps?: RegisterOptions['deps'];
   pattern?: RegisterOptions['pattern'];
@@ -73,22 +73,30 @@ type FieldProps = {
  * @constructor
  */
 export function Field({
-                        children,
-                        min,
-                        max,
-                        minLength,
-                        maxLength,
-                        required,
-                        pattern,
-                        deps,
-                        ...props
-                      }: FieldProps) {
-  const { field: { value, onBlur, onChange, ref }, fieldState: { invalid, error } } = useController({
+  children,
+  min,
+  max,
+  minLength,
+  maxLength,
+  required,
+  pattern,
+  deps,
+  ...props
+}: FieldProps) {
+  const {
+    field: {value, onBlur, onChange, ref},
+    fieldState: {invalid, error},
+  } = useController({
     ...props,
     rules: {
       deps,
       ...messagifyValidationRules({
-        min, max, minLength, maxLength, required, pattern,
+        min,
+        max,
+        minLength,
+        maxLength,
+        required,
+        pattern,
       }),
     },
   });
@@ -97,68 +105,89 @@ export function Field({
     <Provider
       values={[
         [FieldErrorContext, error ?? null],
-        [CheckboxContext, {
-          value: value,
-          onChange: onChange,
-          ref,
-          isInvalid: invalid,
-          validationBehavior: 'aria',
-          name: props.name,
-          isRequired: !!required,
-        }],
-        [CheckboxGroupContext, {
-          value: value,
-          onChange: onChange,
-          ref: (el) => el && ref(getFocusableRef(el)),
-          isInvalid: invalid,
-          validationBehavior: 'aria',
-          name: props.name,
-          isRequired: !!required,
-        }],
-        [RadioGroupContext, {
-          value: value,
-          onBlur,
-          onChange,
-          ref: (el) => el && ref(getFocusableRef(el)),
-          isInvalid: invalid,
-          validationBehavior: 'aria',
-          name: props.name,
-          isRequired: !!required,
-        }],
-        [SliderContext, {
-          value: value,
-          onChange,
-          ref: (el) => el && ref(getFocusableRef(el)),
-          // todo: handle name and isRequired
-        }],
-        [SwitchContext, {
-          value: value,
-          onBlur,
-          onChange,
-          ref,
-          name: props.name,
-          // todo: handle isRequired
-        }],
-        [TextFieldContext, {
-          value: value,
-          onBlur,
-          onChange,
-          isInvalid: invalid,
-          ref: (el) => el && ref(getFocusableRef(el)),
-          validationBehavior: 'aria',
-          name: props.name,
-          isRequired: !!required,
-        }],
-        [NumberFieldContext, {
-          value: value,
-          onBlur,
-          onChange,
-          isInvalid: invalid,
-          ref: (el) => el && ref(getFocusableRef(el)),
-          validationBehavior: 'aria',
-          name: props.name,
-          isRequired: !!required,
-        }],
+        [
+          CheckboxContext,
+          {
+            value: value,
+            onChange: onChange,
+            ref,
+            isInvalid: invalid,
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
+        [
+          CheckboxGroupContext,
+          {
+            value: value,
+            onChange: onChange,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            isInvalid: invalid,
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
+        [
+          RadioGroupContext,
+          {
+            value: value,
+            onBlur,
+            onChange,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            isInvalid: invalid,
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
+        [
+          SliderContext,
+          {
+            value: value,
+            onChange,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            // todo: handle name and isRequired
+          },
+        ],
+        [
+          SwitchContext,
+          {
+            value: value,
+            onBlur,
+            onChange,
+            ref,
+            name: props.name,
+            // todo: handle isRequired
+          },
+        ],
+        [
+          TextFieldContext,
+          {
+            value: value,
+            onBlur,
+            onChange,
+            isInvalid: invalid,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
+        [
+          NumberFieldContext,
+          {
+            value: value,
+            onBlur,
+            onChange,
+            isInvalid: invalid,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
       ]}
     >
       {children}

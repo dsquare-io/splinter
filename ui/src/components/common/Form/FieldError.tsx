@@ -1,6 +1,6 @@
-import { FieldError as RACFieldError } from 'react-aria-components';
-import { type ComponentProps, createContext, useContext } from 'react';
-import { type FieldError } from 'react-hook-form';
+import {type ComponentProps, createContext, useContext} from 'react';
+import {FieldError as RACFieldError} from 'react-aria-components';
+import {type FieldError} from 'react-hook-form';
 
 export const FieldErrorContext = createContext<FieldError | null>(null);
 
@@ -9,10 +9,11 @@ export function FieldError(props: ComponentProps<typeof RACFieldError>) {
 
   return (
     <RACFieldError {...props}>
-      {props.children ?? ((validation) => {
-        const RACErrors = validation.validationErrors.join(' ');
-        return context?.message ?? RACErrors;
-      })}
+      {props.children ??
+        ((validation) => {
+          const RACErrors = validation.validationErrors.join(' ');
+          return context?.message ?? RACErrors;
+        })}
     </RACFieldError>
   );
 }
