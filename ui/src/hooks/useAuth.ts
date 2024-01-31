@@ -19,9 +19,13 @@ export enum AuthStatus {
 export default function useAuth() {
   const [accessToken, setToken, removeToken] = useLocalStorage({
     key: 'splinter:access_token',
+    serialize: (v) => v,
+    deserialize: (v) => v!,
   });
   const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage({
     key: 'splinter:refresh_token',
+    serialize: (v) => v,
+    deserialize: (v) => v!,
   });
   const [validationResponse, setValidation] = useState<boolean | undefined>();
 
