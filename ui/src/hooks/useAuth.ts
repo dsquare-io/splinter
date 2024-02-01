@@ -58,8 +58,6 @@ export default function useAuth() {
     status,
     token: {accessToken, refreshToken},
     setToken: ({access, refresh} = {access: '', refresh: ''}) => {
-      console.log('here', {access, refresh});
-
       if (access) {
         setToken(access);
       } else {
