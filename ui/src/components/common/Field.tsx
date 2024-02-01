@@ -1,8 +1,6 @@
 import {RefAttributes} from 'react';
 import {
   type FieldErrorProps,
-  Group,
-  GroupProps,
   InputProps,
   LabelProps,
   Input as RACInput,
@@ -16,16 +14,13 @@ import {FieldError as RACFieldError} from '@components/common/Form/FieldError.ts
 import {twMerge} from 'tailwind-merge';
 import {tv} from 'tailwind-variants';
 
-import {composeTailwindRenderProps, focusRing} from './utils';
+import {composeTailwindRenderProps} from './utils';
 
 export function Label(props: LabelProps) {
   return (
     <RACLabel
       {...props}
-      className={twMerge(
-        'select-none text-base/6 text-zinc-950 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-white',
-        props.className
-      )}
+      className={twMerge('mb-1 text-sm font-bold leading-relaxed text-gray-800', props.className)}
     />
   );
 }
@@ -35,10 +30,7 @@ export function Description(props: TextProps) {
     <Text
       {...props}
       slot="description"
-      className={twMerge(
-        'text-base/6 text-zinc-500 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-zinc-400',
-        props.className
-      )}
+      className={twMerge('mt-1 block text-xs text-gray-600', props.className)}
     />
   );
 }
@@ -47,74 +39,80 @@ export function FieldError(props: FieldErrorProps) {
   return (
     <RACFieldError
       {...props}
-      className={composeTailwindRenderProps(
-        props.className,
-        'text-base/6 text-red-600 data-[disabled]:opacity-50 sm:text-sm/6 dark:text-red-500'
-      )}
+      className={composeTailwindRenderProps(props.className, 'mt-1 block text-xs text-red-600')}
     />
   );
 }
 
-export const fieldBorderStyles = tv({
+export const fieldBorderStyles = tv(
+  {
+    base: [
+      'relative block w-full appearance-none rounded px-4',
+      'text-base text-gray-950',
+      'border border-gray-300',
+      'bg-white',
+      'focus:outline-none',
+      'transition-colors duration-75'
+    ],
+    variants: {
+      isFocusWithin: {
+        true: 'ring',
+      },
+      isInvalid: {
+        true: 'border-red-500 data-[hover]:border-red-500',
+      },
+      isDisabled: {
+        true: 'border-zinc-950/20',
+      },
+      size: {
+        lg: 'py-[9px]',
+        sm: 'py-[5px]',
+      },
+    },
+    compoundVariants: [
+      {
+        isFocusWithin: false,
+        isInvalid: false,
+        class: 'hover:border-gray-400',
+      },
+      {
+        isFocusWithin: true,
+        isInvalid: false,
+        class: 'ring-brand-400/30 border-brand-500',
+      },
+      {
+        isFocusWithin: true,
+        isInvalid: true,
+        class: 'ring-red-400/30',
+      },
+    ],
+    defaultVariants: {
+      isInvalid: false,
+      isFocusWithin: false,
+      size: 'lg',
+    },
+  }
+);
+
+export const inputStyles = tv({
+  extend: fieldBorderStyles,
   base: [
-    // Basic layout
-    'relative block w-full appearance-none rounded-lg px-[calc(theme(spacing[3.5])-1px)] py-[calc(theme(spacing[2.5])-1px)] sm:px-[calc(theme(spacing[3])-1px)] sm:py-[calc(theme(spacing[1.5])-1px)]',
-
-    // Typography
-    'text-base/6 text-zinc-950 placeholder:text-zinc-500 sm:text-sm/6 dark:text-white',
-
-    // Border
-    'border border-zinc-950/10 data-[hover]:border-zinc-950/20 dark:border-white/10 dark:data-[hover]:border-white/20',
-
-    // Background color
-    'bg-transparent dark:bg-white/5',
-
-    // Hide default focus styles
-    'focus:outline-none',
+    'min-w-0 flex-1 bg-white text-sm text-gray-800 outline outline-0 disabled:text-gray-200',
+    'placeholder:text-gray-500'
   ],
-  variants: {
-    isFocusWithin: {
-      false: '',
-      true: 'rounded-lg ring-inset ring-transparent sm:ring-2 sm:ring-brand-500',
-    },
-    isInvalid: {
-      true: 'border-red-500 data-[hover]:border-red-500 dark:border-red-500 data-[hover]:dark:border-red-500',
-    },
-    isDisabled: {
-      true: 'border-zinc-950/20 dark:data-[hover]:border-white/15 dark:border-white/15 dark:bg-white/[2.5%]',
-    },
-  },
 });
 
-export const fieldGroupStyles = tv({
-  extend: focusRing,
-  base: 'group flex items-center h-9 bg-white dark:bg-zinc-900 forced-colors:bg-[Field] border-2 rounded-lg overflow-hidden',
-  variants: fieldBorderStyles.variants,
-});
-
-export function FieldGroup(props: GroupProps) {
-  return (
-    <Group
-      {...props}
-      className={composeRenderProps(props.className, (className, renderProps) =>
-        fieldGroupStyles({
-          ...renderProps,
-          className,
-        })
-      )}
-    />
-  );
-}
-
-// why inpRef? just trying to avoid forwardRef here.
 export function Input({inpRef, ...props}: InputProps & {inpRef?: RefAttributes<HTMLInputElement>['ref']}) {
   return (
     <RACInput
       ref={inpRef}
       {...props}
-      className={composeTailwindRenderProps(
-        props.className,
-        'min-w-0 flex-1 bg-white px-2 py-1.5 text-sm text-gray-800 outline outline-0 disabled:text-gray-200 dark:bg-zinc-900 dark:text-zinc-200 dark:disabled:text-zinc-600'
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        inputStyles({
+          ...renderProps,
+          isFocusWithin: renderProps.isFocused,
+          className,
+        })
       )}
     />
   );

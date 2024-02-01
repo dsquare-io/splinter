@@ -1,14 +1,18 @@
-import { setHeaders } from '@/axios.ts';
-import {TextField} from 'react-aria-components';
-
-import {Button, FieldError, Form, Input, Label, inputStyles} from '@components/common';
-import {Field} from '@components/common/Form/Field.tsx';
+import {
+  Button,
+  FieldError,
+  Form,
+  Input,
+  Label,
+  TextFormField,
+} from '@components/common';
 import {createFileRoute, useNavigate} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
-import useAuth from '@/hooks/useAuth.ts';
+import {setHeaders} from '@/axios';
+import useAuth from '@/hooks/useAuth';
 
-import AuthLayout from './-layout.tsx';
+import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/login')({
   component: RootComponent,
@@ -30,35 +34,23 @@ function RootComponent() {
         }}
         className="space-y-6"
       >
-        <Field
+        <TextFormField
           name="email"
           required
-          defaultValue=""
         >
-          <TextField className="my-1 flex flex-col">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              className={inputStyles}
-            />
-            <FieldError />
-          </TextField>
-        </Field>
+          <Label>Email</Label>
+          <Input type="email" placeholder="Enter your email" />
+          <FieldError />
+        </TextFormField>
 
-        <Field
+        <TextFormField
           name="password"
           required
-          defaultValue=""
         >
-          <TextField className="my-1 flex flex-col">
-            <Label>Password</Label>
-            <Input
-              type="password"
-              className={inputStyles}
-            />
-            <FieldError />
-          </TextField>
-        </Field>
+          <Label>Password</Label>
+          <Input type="password" placeholder="Enter your password" />
+          <FieldError />
+        </TextFormField>
 
         <Button
           className="w-full"
