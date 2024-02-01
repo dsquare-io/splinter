@@ -1,9 +1,11 @@
+import { Button, Input } from '@components/common';
 import clsx from 'clsx';
 
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
+import { TextField } from 'react-aria-components';
 
 import {ApiRoutes} from '../../api-types';
 import GroupListItem from './groups/-components/GroupListItem';
@@ -36,30 +38,23 @@ function GroupsLayout() {
           </p>
 
           <div className="mt-6 flex items-center gap-x-2">
-            <div className="grow">
-              <label
-                htmlFor="search"
-                className="sr-only"
-              >
-                Search
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <MagnifyingGlassIcon className="size-5 text-gray-400" />
-                </div>
-                <input
-                  type="search"
-                  name="search"
-                  id="search"
-                  className="block w-full rounded-md bg-white/60 py-1.5 pl-10 ring-1 ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
-                  placeholder="Search"
-                />
+            <TextField
+              className="relative w-full"
+              aria-label="search"
+            >
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3">
+                <MagnifyingGlassIcon className="size-5 text-gray-400" />
               </div>
-            </div>
+              <Input
+                className="pl-10"
+                placeholder="Search..."
+                type="search"
+              />
+            </TextField>
 
-            <button className="flex shrink-0 items-center justify-center rounded-md border border-gray-300 p-2 hover:bg-gray-50">
-              <AdjustmentsVerticalIcon className="size-5 text-gray-600" />
-            </button>
+            <Button variant="outline">
+              <AdjustmentsVerticalIcon />
+            </Button>
           </div>
         </div>
 

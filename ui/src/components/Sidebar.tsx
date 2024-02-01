@@ -1,17 +1,17 @@
-import { setHeaders } from '@/axios.ts';
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
-import { Avatar, Button } from '@components/common';
+import {Avatar, Button} from '@components/common';
 import {
   ArrowLeftStartOnRectangleIcon,
-  ArrowTrendingUpIcon,
+  // ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
 import {Link, useNavigate} from '@tanstack/react-router';
 
+import {setHeaders} from '@/axios.ts';
 import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';
@@ -83,17 +83,17 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           <UserIcon className="size-5" />
           <div className="text-sm font-medium">Friends</div>
         </Link>
-        <Link
-          to="/activity"
-          className={clsx(
-            'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
-            'hover:bg-gray-100 hover:text-gray-800',
-            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
-          )}
-        >
-          <ArrowTrendingUpIcon className="size-5" />
-          <div className="text-sm font-medium">Activity</div>
-        </Link>
+        {/*<Link*/}
+        {/*  to="/activity"*/}
+        {/*  className={clsx(*/}
+        {/*    'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',*/}
+        {/*    'hover:bg-gray-100 hover:text-gray-800',*/}
+        {/*    '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'*/}
+        {/*  )}*/}
+        {/*>*/}
+        {/*  <ArrowTrendingUpIcon className="size-5" />*/}
+        {/*  <div className="text-sm font-medium">Activity</div>*/}
+        {/*</Link>*/}
       </div>
 
       <div className="space-y-1">
@@ -118,7 +118,10 @@ export default function Sidebar(props: ComponentProps<'div'>) {
             '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
           )}
         >
-          <Avatar className="size-8" fallback={data?.displayName}></Avatar>
+          <Avatar
+            className="size-8"
+            fallback={data?.displayName}
+          ></Avatar>
           <div>
             <div className="text-sm font-medium text-gray-700">{data?.displayName}</div>
             <div className="text-xs font-medium text-gray-500">{data?.email}</div>

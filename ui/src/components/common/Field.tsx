@@ -20,7 +20,7 @@ export function Label(props: LabelProps) {
   return (
     <RACLabel
       {...props}
-      className={twMerge('mb-1 text-sm font-bold leading-relaxed text-gray-800', props.className)}
+      className={twMerge('mb-1 block text-sm font-bold leading-relaxed text-gray-800', props.className)}
     />
   );
 }
@@ -30,7 +30,7 @@ export function Description(props: TextProps) {
     <Text
       {...props}
       slot="description"
-      className={twMerge('mt-1 block text-xs text-gray-600', props.className)}
+      className={twMerge('mt-1.5 block text-xs text-gray-600', props.className)}
     />
   );
 }
@@ -39,7 +39,7 @@ export function FieldError(props: FieldErrorProps) {
   return (
     <RACFieldError
       {...props}
-      className={composeTailwindRenderProps(props.className, 'mt-1 block text-xs text-red-600')}
+      className={composeTailwindRenderProps(props.className, 'mt-1.5 block text-xs text-red-600')}
     />
   );
 }
@@ -47,7 +47,7 @@ export function FieldError(props: FieldErrorProps) {
 export const fieldBorderStyles = tv(
   {
     base: [
-      'relative block w-full appearance-none rounded px-4',
+      'relative block w-full appearance-none rounded-md px-4',
       'text-base text-gray-950',
       'border border-gray-300',
       'bg-white',
@@ -65,7 +65,7 @@ export const fieldBorderStyles = tv(
         true: 'border-zinc-950/20',
       },
       size: {
-        lg: 'py-[9px]',
+        lg: 'py-[8px]',
         sm: 'py-[5px]',
       },
     },
