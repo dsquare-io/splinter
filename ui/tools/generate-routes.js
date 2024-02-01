@@ -30,13 +30,13 @@ function extractPaths(filePath) {
 
       let routeName = '';
       const routeOperations = new Set();
-      const regex = '^(list|create|partial-update|update|retrieve|destroy)';
+      const regex = '^(list|create|partialUpdate|update|retrieve|destroy)';
 
       for (const operationName of operationNames) {
         const m = operationName.match(new RegExp(regex, 'i'));
 
         if (m) {
-          routeOperations.add(m[1]);
+          routeOperations.add(m[1].toLowerCase());
         }
 
         const newRouteName = operationName.replaceAll(new RegExp(regex, 'gi'), '');
@@ -51,8 +51,8 @@ function extractPaths(filePath) {
       }
 
       if (
-        path.split('/').at(-2).includes('{') &&
-        ['partial_update', 'update', 'retrieve', 'destroy'].some((e) => routeOperations.has(e))
+        path.replace(/\/$/, '').split('/').at(-1).includes('{') &&
+        ['partialupdate', 'update', 'retrieve', 'destroy'].some((e) => routeOperations.has(e))
       ) {
         routeName = `${routeName}_detail`;
       }

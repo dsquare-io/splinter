@@ -1,20 +1,26 @@
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
+import {Avatar, Button} from '@components/common';
 import {
   ArrowLeftStartOnRectangleIcon,
-  ArrowTrendingUpIcon,
+  // ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import {Link} from '@tanstack/react-router';
+import {Link, useNavigate} from '@tanstack/react-router';
+
+import {setHeaders} from '@/axios.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';
 import {useApiQuery} from '../hooks/useApiQuery.ts';
 
 export default function Sidebar(props: ComponentProps<'div'>) {
-  const {data} = useApiQuery(ApiRoutes.PARTIAL_UPDATE_PROFILE);
+  const {data} = useApiQuery(ApiRoutes.PROFILE);
+  const {setToken} = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div
@@ -49,15 +55,10 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         <div className="font-medium text-gray-800">Splinter</div>
       </Link>
 
-      <button
-        className={clsx(
-          'flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-white transition-colors',
-          'bg-brand-600 hover:bg-brand-700'
-        )}
-      >
-        <PlusIcon className="size-5" />
-        <div className="text-sm font-medium">Add Expense</div>
-      </button>
+      <Button className="justify-start gap-x-3.5 px-3">
+        <PlusIcon />
+        <div>Add Expense</div>
+      </Button>
 
       <div className="grow space-y-1">
         <Link
@@ -82,27 +83,31 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           <UserIcon className="size-5" />
           <div className="text-sm font-medium">Friends</div>
         </Link>
-        <Link
-          to="/activity"
-          className={clsx(
-            'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
-            'hover:bg-gray-100 hover:text-gray-800',
-            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
-          )}
-        >
-          <ArrowTrendingUpIcon className="size-5" />
-          <div className="text-sm font-medium">Activity</div>
-        </Link>
+        {/*<Link*/}
+        {/*  to="/activity"*/}
+        {/*  className={clsx(*/}
+        {/*    'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',*/}
+        {/*    'hover:bg-gray-100 hover:text-gray-800',*/}
+        {/*    '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'*/}
+        {/*  )}*/}
+        {/*>*/}
+        {/*  <ArrowTrendingUpIcon className="size-5" />*/}
+        {/*  <div className="text-sm font-medium">Activity</div>*/}
+        {/*</Link>*/}
       </div>
 
       <div className="space-y-1">
-        <a
-          href="#"
-          className="flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
+        <button
+          onClick={() => {
+            setToken();
+            setHeaders();
+            return navigate({to: '/auth/login'});
+          }}
+          className="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
         >
           <ArrowLeftStartOnRectangleIcon className="size-5" />
           <div className="text-sm font-medium">Logout</div>
-        </a>
+        </button>
 
         <Link
           to="/profile/$profile"
@@ -113,9 +118,10 @@ export default function Sidebar(props: ComponentProps<'div'>) {
             '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
           )}
         >
-          <div className="brand flex size-8 items-center justify-center rounded-full border border-gray-200">
-            <span className="text-sm text-gray-600">AF</span>
-          </div>
+          <Avatar
+            className="size-8"
+            fallback={data?.displayName}
+          ></Avatar>
           <div>
             <div className="text-sm font-medium text-gray-700">{data?.displayName}</div>
             <div className="text-xs font-medium text-gray-500">{data?.email}</div>

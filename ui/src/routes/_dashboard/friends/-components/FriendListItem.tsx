@@ -16,7 +16,7 @@ export default function FriendListItem({
     >
       <Avatar
         className="size-8"
-        fallback="AF"
+        fallback={name}
       />
       <div className="grow text-sm font-medium text-gray-800">{name}</div>
       {+aggregatedOutstandingBalances!['PKR'] === 0 && (
