@@ -1,4 +1,5 @@
 import datetime
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser as AuthAbstractUser
@@ -12,6 +13,11 @@ from splinter.db.soft_delete import SoftDeleteModel
 
 
 class User(SoftDeleteModel, AuthAbstractUser):
+    UID_FIELD = 'username'
+
+    if TYPE_CHECKING:
+        urn: str
+
     username_validator = ASCIIUsernameValidator()
     email = models.EmailField(unique=True, null=True, blank=True)
 

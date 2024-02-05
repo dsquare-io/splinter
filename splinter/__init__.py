@@ -4,3 +4,8 @@ __description__ = (
     'settle debts seamlessly, making financial harmony a breeze.'
 )
 __author__ = 'dSquare'
+
+try:
+    import splinter.db.urn  # NOQA
+except ImportError:
+    pass
