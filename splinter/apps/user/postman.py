@@ -8,7 +8,7 @@ from splinter.tasks import send_template_mail
 
 if TYPE_CHECKING:
     from splinter.apps.user.models import User
-    from splinter.apps.user.request_identity import RequestIdentity
+    from splinter.core.request_identity import RequestIdentity
 
 
 def send_password_reset_email(user: 'User', password_reset_url: str, request_identity: 'RequestIdentity') -> None:
