@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser as AuthAbstractUser
 from django.contrib.auth.validators import ASCIIUsernameValidator
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils import timezone
 
@@ -29,7 +28,6 @@ class User(SoftDeleteModel, AuthAbstractUser):
     date_joined = None
 
     objects = UserManager()
-    access_tokens = GenericRelation('token.AccessToken')
 
     class Meta:
         db_table = 'users'

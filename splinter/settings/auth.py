@@ -1,10 +1,6 @@
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'sessions'
 
-LOGIN_URL = '/login'
-LOGOUT_URL = '/logout'
-
-LOGIN_REDIRECT_URL = '/'
 CSRF_USE_SESSIONS = True
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -23,6 +19,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = ('splinter.apps.user.backend.AuthBackend', )
+
+AUTHN_JTI_LENGTH = 8
+AUTHN_REFRESH_TOKEN_ENABLED = True
 
 OTP_TOTP_ISSUER = 'Splinter'
 AUTH_USER_MODEL = 'user.User'

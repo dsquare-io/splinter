@@ -7,14 +7,15 @@ from django_otp import devices_for_user, user_has_device
 from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, ListField
+from rest_framework.fields import CharField
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ListSerializer
 
+from splinter.apps.authn.serializers import AuthTokenDataSerializer
+from splinter.apps.authn.shortcuts import generate_user_access_token
 from splinter.apps.mfa import serializers
 from splinter.apps.mfa.configurators import DeviceConfigurator, StaticDeviceConfigurator
 from splinter.apps.mfa.serializers import EnableMfaDeviceRequestSerializer
-from splinter.apps.token.serializers import AccessTokenSerializer
 from splinter.core.views import APIView, DestroyAPIView, GenericAPIView
 
 
@@ -106,6 +107,7 @@ class ChallengeMfaDeviceView(MfaDeviceAPIView):
 class VerifyMfaDeviceView(MfaDeviceAPIView):
     serializer_class = serializers.MfaTokenSerializer
 
+    @extend_schema(responses={200: AuthTokenDataSerializer})
     def post(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -113,9 +115,7 @@ class VerifyMfaDeviceView(MfaDeviceAPIView):
         if not self.mfa_device.verify_token(serializer.validated_data['token']):
             raise ValidationError('Failed to validate MFA token', code='mfa_device_token_invalid')
 
-        self.request.auth.delete()  # Delete current access token
-        access_token = self.request.user.access_tokens.create(owner=self.request.user)
-        return AccessTokenSerializer(instance=access_token).data
+        return generate_user_access_token(self.request.user, require_mfa=False)
 
 
 class EnableMfaDeviceView(MfaDeviceAPIView, GenericAPIView):

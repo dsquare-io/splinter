@@ -32,7 +32,8 @@ dependencies = [
     "celery",
     "django-redis",
     "user-agents",
-    "drf-spectacular"
+    "drf-spectacular",
+    "pyjwt[crypto]"
 ]
 dynamic = ["version"]
 

@@ -6,7 +6,7 @@ from rest_framework.mixins import DestroyModelMixin, ListModelMixin, RetrieveMod
 from rest_framework.response import Response
 from rest_framework.views import APIView as DrfAPIView
 
-from splinter.core.authentication import UserAccessTokenAuthentication
+from splinter.authentication import UserAccessTokenAuthentication
 from splinter.core.permissions import IsVerified
 
 

@@ -5,14 +5,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
-from splinter.apps.token.models import AccessToken
-from splinter.apps.token.serializers import AccessTokenSerializer
-from splinter.apps.token.shortcuts import generate_user_access_token
+from splinter.apps.authn.serializers import AuthTokenDataSerializer
+from splinter.apps.authn.shortcuts import rotate_user_access_token
 from splinter.apps.user import postman
 from splinter.apps.user.models import EmailVerification, User
-from splinter.apps.user.request_identity import RequestIdentity
 from splinter.apps.user.serializers import (
-    AuthenticateUserSerializer,
     ChangePasswordSerializer,
     CreateUserSerializer,
     EmailVerificationSerializer,
@@ -20,21 +17,9 @@ from splinter.apps.user.serializers import (
     ResetPasswordSerializer,
     UserProfileSerializer,
 )
-from splinter.core.authentication import UserAccessTokenAuthentication
-from splinter.core.views import APIView, CreateAPIView, GenericAPIView, RetrieveAPIView, UpdateAPIView
-
-
-class AuthenticateUserView(GenericAPIView):
-    serializer_class = AuthenticateUserSerializer
-    permission_classes = ()
-
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-
-        access_token = generate_user_access_token(user)
-        return AccessTokenSerializer(instance=access_token).data
+from splinter.authentication import UserAccessTokenAuthentication
+from splinter.core.request_identity import RequestIdentity
+from splinter.core.views import APIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
 
 
 class RetrieveUpdateProfileView(RetrieveAPIView, UpdateAPIView):
@@ -110,6 +95,7 @@ class ResetPasswordView(APIView):
     serializer_class = ResetPasswordSerializer
     token_generator = default_token_generator
 
+    @extend_schema(responses={200: AuthTokenDataSerializer})
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -127,15 +113,4 @@ class ResetPasswordView(APIView):
         user.is_active = True
         user.save()
 
-        access_token = generate_user_access_token(user)
-        return AccessTokenSerializer(instance=access_token).data
-
-
-class LogoutView(APIView):
-    permission_classes = (IsAuthenticated, )
-
-    @extend_schema(responses={204: None}, request=None)
-    def post(self, request):
-        auth = request.auth
-        if isinstance(auth, AccessToken):
-            auth.delete()
+        return rotate_user_access_token(user)

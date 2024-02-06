@@ -1,29 +1,7 @@
-from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 
 from splinter.apps.user.models import User
-
-
-class AuthenticateUserSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=64, trim_whitespace=False, required=True, min_length=1)
-    password = serializers.CharField(max_length=64, trim_whitespace=False, required=True, min_length=1)
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
-
-        user = authenticate(request=self.context.get('request'), username=email, password=password)
-
-        # The authenticate call simply returns None for is_active=False
-        # users. (Assuming the default ModelBackend authentication
-        # backend.)
-        if not user:
-            msg = 'Invalid email/username or password.'
-            raise serializers.ValidationError(msg, code='invalid_credentials')
-
-        attrs['user'] = user
-        return attrs
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

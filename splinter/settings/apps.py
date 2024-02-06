@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'splinter.core.health',
     'splinter.core.openapi',
 
-    # Internal Applications
+    # Other Apps
+    'splinter.apps.authn',
     'splinter.apps.currency',
     'splinter.apps.expense',
     'splinter.apps.friend',

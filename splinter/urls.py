@@ -5,6 +5,7 @@ from splinter.core.views import APIErrorView
 urlpatterns = [
     path('', include('splinter.core.health.urls')),
     path('', include('splinter.core.openapi.urls', namespace='openapi')),
+    path('api/authn/', include('splinter.apps.authn.urls')),
     path('api/currency/', include('splinter.apps.currency.urls')),
     path('api/expense/', include('splinter.apps.expense.urls')),
     path('api/friend/', include('splinter.apps.friend.urls')),
