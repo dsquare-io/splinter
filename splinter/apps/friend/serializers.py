@@ -27,7 +27,7 @@ class FriendWithOutstandingBalanceSerializer(FriendSerializer):
 
     class Meta:
         model = User
-        fields = ('uid', 'name', 'invitation_accepted', 'outstanding_balances', 'aggregated_outstanding_balances')
+        fields = FriendSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
 
     @extend_schema_field(FriendOutstandingBalanceSerializer)
     def get_outstanding_balances(self, instance):
