@@ -69,7 +69,7 @@ class AccessTokenProvider:
 
     @classmethod
     def for_user(cls: Type[AccessTokenProviderType], user: User, **kwargs) -> AccessTokenProviderType:
-        user_secret = UserSecret.objects.get(user=user)
+        user_secret, _ = UserSecret.objects.get_or_create(user=user)
         return cls(
             subject=user,
             token_identifier=user_secret.jti.decode(),
