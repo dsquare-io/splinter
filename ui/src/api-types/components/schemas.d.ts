@@ -1,6 +1,18 @@
+export interface AccessToken {
+  accessToken?: string;
+  /** Format: date-time */
+  expiresAt?: string;
+}
+
+export interface AuthTokenData {
+  accessToken?: string;
+  refreshToken?: string;
+  /** Format: date-time */
+  expiresAt?: string;
+}
+
 export interface AuthenticateUser {
-  /** Format: email */
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -110,10 +122,10 @@ export interface GroupWithOutstandingBalance {
   /** Format: uuid */
   publicId?: string;
   outstandingBalances?: {
-    [key: string]: string;
-  };
-  membersOutstandingBalances?: {
     [key: string]: GroupMemberOutstandingBalance[];
+  };
+  aggregatedOutstandingBalances?: {
+    [key: string]: string;
   };
 }
 
@@ -182,6 +194,10 @@ export interface PatchedUserProfile {
   isVerified?: boolean;
 }
 
+export interface RefreshAccessToken {
+  refreshToken?: string;
+}
+
 export interface ResetPassword {
   uid: string;
   token: string;
@@ -204,3 +220,4 @@ export interface UserProfile {
   email?: string | null;
   isVerified?: boolean;
 }
+

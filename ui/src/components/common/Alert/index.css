@@ -1,0 +1,19 @@
+.alert {
+    display: grid;
+    grid-template-columns: [icon] auto [main] 1fr [action] auto;
+    grid-template-rows: auto auto;
+
+    &>[data-slot="icon"] {
+      grid-column-start: icon;
+        margin-right: 1rem;
+    }
+
+    &>[slot="title"] {
+        grid-column-start: main;
+    }
+
+    &>[slot="description"] {
+        grid-column-start: main;
+    }
+}
+
