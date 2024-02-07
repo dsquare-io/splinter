@@ -1,13 +1,9 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 
+import {useLocalStorage} from '@mantine/hooks';
 
-
-import { useLocalStorage } from '@mantine/hooks';
-
-
-
-import { ApiRoutes } from '@/api-types';
-import { axiosInstance, setHeaders } from '@/axios.ts';
+import {ApiRoutes} from '@/api-types';
+import {axiosInstance, setHeaders} from '@/axios.ts';
 
 
 export enum AuthStatus {
@@ -39,14 +35,14 @@ export default function useAuth() {
   useEffect(() => {
     if (accessToken) {
       axiosInstance
-        .get(ApiRoutes.PROFILE)
-        .then(() => setValidation(true))
-        .catch(() => {
-          removeToken();
-          removeRefreshToken();
-          setHeaders();
-          setValidation(false);
-        });
+         .get(ApiRoutes.PROFILE)
+         .then(() => setValidation(true))
+         .catch(() => {
+           removeToken();
+           removeRefreshToken();
+           setHeaders();
+           setValidation(false);
+         });
     } else {
       // user is logged out intentionally
       setValidation(false);

@@ -28,7 +28,7 @@ function RootComponent() {
           action={ApiRoutes.PASSWORD_LOGIN}
           method="POST"
           onSubmitSuccess={(res) => {
-            setToken({access: res.data.accessToken, refresh: ''});
+            setToken({access: res.data.accessToken, refresh: res.data.refreshToken});
             setHeaders(res.data.accessToken);
             return navigate({to: '/friends'});
           }}
