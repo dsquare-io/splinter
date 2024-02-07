@@ -1,11 +1,4 @@
-import {
-  Button,
-  FieldError,
-  Form,
-  Input,
-  Label,
-  TextFormField,
-} from '@components/common';
+import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField,} from '@components/common';
 import {createFileRoute, useNavigate} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
@@ -34,6 +27,8 @@ function RootComponent() {
           }}
           className="space-y-6"
        >
+         <FormRootErrors />
+
          <TextFormField
             name="username"
             required
