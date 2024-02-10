@@ -1,6 +1,9 @@
+@import "./modal.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 /* Scale up hit targets on high resolution mobile devices. */
 @media (min-resolution: 200dpi) {
