@@ -1,9 +1,12 @@
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from django.db.models import Exists, OuterRef, Q, QuerySet
 
 from splinter.apps.user.models import User
 from splinter.db.soft_delete import SoftDeleteManager
+
+if TYPE_CHECKING:
+    from splinter.apps.friend.models import Friendship
 
 
 class FriendshipManager(SoftDeleteManager):
@@ -14,3 +17,6 @@ class FriendshipManager(SoftDeleteManager):
         target_id = user if isinstance(user, int) else user.pk
         qs = self.filter(Q(user_a=OuterRef('pk'), user_b=target_id) | Q(user_a=target_id, user_b=OuterRef('pk')))
         return User.objects.filter(Exists(qs))
+
+    def of(self, user_a: User, user_b: User) -> 'Friendship':
+        return self.filter(Q(user_a=user_a, user_b=user_b) | Q(user_a=user_b, user_b=user_a)).get()
