@@ -15,7 +15,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
 
         for i in range(5):
             friend = UserFactory()
-            Friendship.objects.create(source=self.user, target=friend)
+            Friendship.objects.create(user_a=self.user, user_b=friend)
             self.friends.append(friend)
 
     @patch('splinter.apps.friend.views.populate_friend_outstanding_balances')
@@ -31,7 +31,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
         user1 = UserFactory()
         user2 = UserFactory()
 
-        Friendship.objects.create(source=user1, target=user2)
+        Friendship.objects.create(user_a=user1, user_b=user2)
 
         response = self.client.get('/api/friend/all')
         self.assertEqual(response.status_code, 200)
