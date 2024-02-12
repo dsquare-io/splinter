@@ -47,32 +47,18 @@ class FriendWithOutstandingBalanceSerializer(FriendSerializer):
         return aggregated
 
 
-class InviteFriendSerializer(CreateUserSerializer):
-    default_error_messages = {
-        'email_collision': 'A user with with given email is already in your friend list',
-    }
-
+class CreateFriendshipSerializer(CreateUserSerializer):
     class Meta:
         model = User
-        fields = ('name', 'email', 'user_role')
+        fields = ('name', 'email')
 
     def validate_email(self, email: str):
-        existing = Friendship.objects.filter(source=self.context['user'], target__email__iexact=email).first()
-        if existing is not None:
-            raise serializers.ValidationError(self.error_messages['email_collision'], code='email_collision')
-
-        return email
+        return User.objects.normalize_email(email)
 
     def create(self, validated_data):
-        validated_data['password'] = User.objects.make_random_password()
-        validated_data['is_active'] = False
-
         user = User.objects.filter(email__iexact=validated_data['email']).first()
         if user is None:
             user = super().create(validated_data)
 
-        Friendship.objects.create(
-            source=self.context['user'],
-            target=user,
-        )
+        Friendship.objects.create(user_a=self.context['user'], user_b=user)
         return user

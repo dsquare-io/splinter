@@ -13,7 +13,7 @@ class RetrieveFriendViewTests(AuthenticatedAPITestCase):
         super().setUp()
 
         self.friend = UserFactory()
-        Friendship.objects.create(source=self.user, target=self.friend)
+        Friendship.objects.create(user_a=self.user, user_b=self.friend)
 
     @patch('splinter.apps.friend.views.populate_friend_outstanding_balances')
     def test_retrieve_friend(self, populate_friend_outstanding_balances_mock: Mock):

@@ -9,9 +9,6 @@ if TYPE_CHECKING:
 
 
 class GroupManager(SoftDeleteManager):
-    def is_friend_with(self, source: 'User', target: 'User') -> bool:
-        return self.filter(source=source, target=target).exists()
-
     def of(self, user: Union['User', int]):
         from splinter.apps.group.models import GroupMembership
 

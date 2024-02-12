@@ -13,8 +13,8 @@ class FriendshipTestCase(TestCase):
 
     def test_create_friendship(self):
         Friendship.objects.create(
-            source=self.user1,
-            target=self.user2,
+            user_a=self.user1,
+            user_b=self.user2,
         )
 
         self.assertTrue(Friendship.objects.is_friend_with(self.user1, self.user2))

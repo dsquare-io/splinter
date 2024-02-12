@@ -59,6 +59,20 @@ class ExpenseSplit(AbstractExpenseModel):
         return f'{self.user} - {self.amount}'
 
 
+class ExpenseParty(models.Model):
+    expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='friendships')
+    friendship = models.ForeignKey('friend.Friendship', on_delete=models.CASCADE, related_name='+')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_parties'
+        unique_together = ('expense', 'friendship')
+
+    def __str__(self):
+        return f'{self.expense} - {self.friendship}'
+
+
 # All *OutstandingBalance models are denormalized views of the same data-
 # -to make querying easier
 class AbstractOutstandingBalanceModel(SoftDeleteModel):

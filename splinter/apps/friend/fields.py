@@ -2,7 +2,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework.relations import SlugRelatedField
 
-from splinter.apps.friend.shortcuts import get_user_friends
+from splinter.apps.friend.models import Friendship
 
 
 @extend_schema_field(OpenApiTypes.STR)
@@ -12,4 +12,4 @@ class FriendSerializerField(SlugRelatedField):
         super().__init__(**kwargs)
 
     def get_queryset(self):
-        return get_user_friends(self.context['request'].user.id)
+        return Friendship.objects.get_user_friends(self.context['request'].user)

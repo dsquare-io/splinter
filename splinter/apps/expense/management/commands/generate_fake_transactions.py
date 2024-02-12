@@ -68,7 +68,7 @@ class Command(BaseCommand):
         user_5 = User.objects.create_user('user5', email='user5@dsquare.io', first_name='User', last_name='Five')
 
         for user in (user_2, user_3, user_4, user_5):
-            Friendship.objects.create(source=user_1, target=user)
+            Friendship.objects.create(user_a=user_1, user_b=user)
 
         group_1 = Group.objects.create(name='Group One', created_by=user_1)
         group_2 = Group.objects.create(name='Group Two', created_by=user_2)

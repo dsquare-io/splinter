@@ -1,6 +1,6 @@
 from splinter.apps.expense.balance import populate_friend_outstanding_balances
-from splinter.apps.friend.serializers import FriendWithOutstandingBalanceSerializer, InviteFriendSerializer
-from splinter.apps.friend.shortcuts import get_user_friends
+from splinter.apps.friend.models import Friendship
+from splinter.apps.friend.serializers import CreateFriendshipSerializer, FriendWithOutstandingBalanceSerializer
 from splinter.apps.user.shortcuts import invite_user
 from splinter.core.views import CreateAPIView, ListAPIView, RetrieveAPIView
 
@@ -8,7 +8,7 @@ from splinter.core.views import CreateAPIView, ListAPIView, RetrieveAPIView
 class ListCreateFriendView(ListAPIView, CreateAPIView):
     def get_serializer_class(self):
         if self.request.method == 'POST':
-            return InviteFriendSerializer
+            return CreateFriendshipSerializer
 
         return FriendWithOutstandingBalanceSerializer
 
@@ -25,7 +25,7 @@ class ListCreateFriendView(ListAPIView, CreateAPIView):
         return super().get_serializer(queryset, *args, **kwargs)
 
     def get_queryset(self):
-        return get_user_friends(self.request.user)
+        return Friendship.objects.get_user_friends(self.request.user)
 
     def perform_create(self, serializer):
         user = serializer.save()
@@ -40,7 +40,7 @@ class RetrieveFriendView(RetrieveAPIView):
     lookup_field = 'username'
 
     def get_queryset(self):
-        return get_user_friends(self.request.user)
+        return Friendship.objects.get_user_friends(self.request.user)
 
     def get_object(self):
         friend = super().get_object()

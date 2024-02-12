@@ -15,7 +15,7 @@ class BulkCreateGroupMemberViewTest(AuthenticatedAPITestCase):
         members_to_add = []
         for _ in range(5):
             user = UserFactory()
-            Friendship.objects.create(source=self.user, target=user)
+            Friendship.objects.create(user_a=self.user, user_b=user)
             members_to_add.append(user.username)
 
         response = self.client.post(
