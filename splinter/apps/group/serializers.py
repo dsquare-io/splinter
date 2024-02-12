@@ -9,9 +9,12 @@ from splinter.apps.group.models import Group, GroupMembership
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    urn = serializers.CharField(read_only=True)
+    uid = serializers.CharField(source='public_id', read_only=True)
+
     class Meta:
         model = Group
-        fields = ('name', 'public_id')
+        fields = ('uid', 'urn', 'name')
 
 
 class GroupMemberOutstandingBalanceSerializer(serializers.Serializer):

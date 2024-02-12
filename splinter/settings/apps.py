@@ -18,17 +18,18 @@ INSTALLED_APPS = [
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
 
+    # Core Apps
     'splinter.core.health',
     'splinter.core.openapi',
 
     # Other Apps
+    'splinter.apps.activity',
     'splinter.apps.authn',
     'splinter.apps.currency',
     'splinter.apps.expense',
     'splinter.apps.friend',
     'splinter.apps.group',
     'splinter.apps.mfa',
-    'splinter.apps.token',
     'splinter.apps.user',
 ]
 
