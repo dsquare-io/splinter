@@ -1,12 +1,7 @@
-import { Button as RACButton, ButtonProps as RACButtonProps, composeRenderProps } from 'react-aria-components';
+import {Button as RACButton, ButtonProps as RACButtonProps, composeRenderProps} from 'react-aria-components';
+import {tv, VariantProps} from 'tailwind-variants';
 
-
-
-import { VariantProps, tv } from 'tailwind-variants';
-
-
-
-import { focusRing } from './utils';
+import {focusRing} from './utils';
 
 
 const button = tv({
@@ -108,17 +103,18 @@ const button = tv({
   },
 });
 
-export interface ButtonProps extends RACButtonProps, VariantProps<typeof button> {}
+export interface ButtonProps extends RACButtonProps, VariantProps<typeof button> {
+}
 
 export function Button({variant, color, ...props}: ButtonProps) {
   if (['submit', 'reset'].includes(props.type!) && !props.slot) props.slot = props.type;
 
   return (
-    <RACButton
-      {...props}
-      className={composeRenderProps(props.className, (className, renderProps) =>
-        button({...renderProps, variant, color, className})
-      )}
-    />
+     <RACButton
+        {...props}
+        className={composeRenderProps(props.className, (className, renderProps) =>
+           button({...renderProps, variant, color, className})
+        )}
+     />
   );
 }
