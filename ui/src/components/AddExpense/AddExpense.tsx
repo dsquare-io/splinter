@@ -1,3 +1,4 @@
+import ExpenseItems from '@components/AddExpense/ExpenseItems.tsx';
 import {useContext} from 'react';
 import {Dialog, Heading, Modal, ModalOverlay, OverlayTriggerStateContext} from 'react-aria-components';
 
@@ -22,7 +23,7 @@ function CloseButton() {
 export function AddExpense() {
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal h-[--visual-viewport-height] max-h-[580px] sm:max-w-xl">
+      <Modal className="react-aria-Modal h-[--visual-viewport-height] max-h-[580px] sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex flex-col h-full">
           <div className="mb-4">
             <Heading slot="title">Add Expense</Heading>
@@ -30,6 +31,7 @@ export function AddExpense() {
           </div>
 
           <ExpenseParticipantsSelector />
+          <ExpenseItems />
 
           <div className="-mx-4 flex justify-between border-t border-neutral-300 px-4 pt-4 sm:-mx-6 sm:px-6">
             <Button variant="outline">
