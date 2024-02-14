@@ -1,6 +1,6 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 
-import {ApiResponse, type UrlArgs, paths, urlWithArgs} from '../api-types';
+import {ApiResponse, type UrlArgs, paths, urlWithArgs} from '@/api-types';
 import {axiosInstance} from '../axios.ts';
 
 export function apiQueryOptions<Path extends keyof paths>(

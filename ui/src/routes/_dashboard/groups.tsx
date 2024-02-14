@@ -59,10 +59,10 @@ function GroupsLayout() {
         </div>
 
         <div>
-          {data?.results?.map((e) => (
+          {data?.results?.map((group) => (
             <GroupListItem
-              key={e.publicId}
-              {...e}
+              key={group.publicId}
+              {...group}
             />
           ))}
         </div>

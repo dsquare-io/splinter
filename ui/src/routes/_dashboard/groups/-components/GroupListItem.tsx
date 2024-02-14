@@ -4,7 +4,7 @@ import {Fragment} from 'react';
 import {Avatar} from '@components/common/Avatar.tsx';
 import {Link} from '@tanstack/react-router';
 
-import {GroupWithOutstandingBalance} from '../../../../api-types/components/schemas';
+import {GroupWithOutstandingBalance} from '@/api-types/components/schemas';
 
 export default function GroupListItem({
   publicId,
