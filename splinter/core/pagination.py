@@ -1,32 +1,11 @@
 import urllib.parse
 
 from rest_framework.pagination import LimitOffsetPagination as DrfLimitOffsetPagination
-from rest_framework.pagination import PageNumberPagination as DrfPageNumberPagination
-from rest_framework.response import Response
 
 
 def strip_host(url: str) -> str:
     (scheme, netloc, path, query, fragment) = urllib.parse.urlsplit(url)
     return urllib.parse.urlunsplit(('', '', path, query, fragment))
-
-
-class PageNumberPagination(DrfPageNumberPagination):
-    def get_paginated_response(self, data):
-        return Response({
-            'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,
-            'results': data
-        })
-
-    def get_paginated_response_schema(self, schema):
-        response_schema = super().get_paginated_response_schema(schema)
-        response_schema['properties']['total_pages'] = {
-            'type': 'integer',
-            'example': 123,
-        }
-        response_schema['properties'].pop('next')
-        response_schema['properties'].pop('previous')
-        return response_schema
 
 
 class LimitOffsetPagination(DrfLimitOffsetPagination):
@@ -43,3 +22,14 @@ class LimitOffsetPagination(DrfLimitOffsetPagination):
             prev_link = strip_host(prev_link)
 
         return prev_link
+
+    def get_schema_operation_parameters(self, view):
+        parameters = super().get_schema_operation_parameters(view)
+
+        for parameter in parameters:
+            if parameter['name'] == 'limit':
+                parameter['schema']['default'] = self.default_limit
+            elif parameter['name'] == 'offset':
+                parameter['schema']['default'] = 0
+
+        return parameters
