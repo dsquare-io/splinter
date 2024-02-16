@@ -4,7 +4,7 @@ from rest_framework import serializers
 from splinter.apps.activity.logger import ActivityType
 from splinter.apps.activity.models import Activity, Comment
 from splinter.apps.group.serializers import GroupSerializer
-from splinter.apps.user.models import User
+from splinter.apps.user.serializers import UserSerializer
 
 
 class TargetSerializer(serializers.Serializer):
@@ -25,17 +25,6 @@ class TargetSerializer(serializers.Serializer):
     @extend_schema_field(serializers.CharField(help_text='String representation of the target object'))
     def get_obj_value(self, obj) -> str:
         return str(obj)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(source='username', read_only=True)
-    urn = serializers.CharField(read_only=True)
-
-    name = serializers.CharField(source='display_name', read_only=True)
-
-    class Meta:
-        model = User
-        fields = ('uid', 'urn', 'name')
 
 
 class ActivitySerializer(serializers.ModelSerializer):

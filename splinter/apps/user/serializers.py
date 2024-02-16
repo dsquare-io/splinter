@@ -4,13 +4,23 @@ from rest_framework import serializers
 from splinter.apps.user.models import User
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    display_name = serializers.CharField(read_only=True)
+class UserSerializer(serializers.ModelSerializer):
+    uid = serializers.CharField(source='username')
+    urn = serializers.CharField(read_only=True)
+
+    full_name = serializers.CharField(read_only=True)
+    is_active = serializers.CharField(help_text='Indicates whether the user is active or not.', read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'display_name', 'first_name', 'last_name', 'email', 'is_verified')
-        read_only_fields = ('display_name', 'is_verified')
+        fields = ('uid', 'urn', 'full_name', 'is_active')
+
+
+class UserProfileSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = UserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified')
+        read_only_fields = ('is_verified', )
 
 
 class EmailVerificationSerializer(serializers.Serializer):

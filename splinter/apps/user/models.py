@@ -33,11 +33,11 @@ class User(SoftDeleteModel, AuthAbstractUser):
         db_table = 'users'
 
     @property
-    def display_name(self):
+    def full_name(self):
         return self.get_full_name() or self.username
 
     def __str__(self):
-        return f'{self.display_name} ({self.email})'
+        return f'{self.full_name} ({self.email})'
 
     def save(self, **kwargs):
         if not self.email:

@@ -12,4 +12,4 @@ class GroupSerializerField(SlugRelatedField):
         super().__init__(**kwargs)
 
     def get_queryset(self):
-        return Group.objects.of(self.context['request'].user.id)
+        return Group.objects.of(self.context['request'].user)

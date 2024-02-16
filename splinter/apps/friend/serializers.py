@@ -1,39 +1,30 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from splinter.apps.expense.fields import OutstandingBalanceSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.user.models import User
-from splinter.apps.user.serializers import CreateUserSerializer
+from splinter.apps.user.serializers import CreateUserSerializer, UserSerializer
 
 
 class FriendOutstandingBalanceSerializer(serializers.Serializer):
-    group = serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2))
-    non_group = serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2))
+    group = OutstandingBalanceSerializerField()
+    non_group = OutstandingBalanceSerializerField()
 
 
-class FriendSerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(source='username')
-    name = serializers.CharField(source='display_name')
-    invitation_accepted = serializers.BooleanField(source='is_active')
-
-    class Meta:
-        model = User
-        fields = ('uid', 'name', 'invitation_accepted')
-
-
-class FriendWithOutstandingBalanceSerializer(FriendSerializer):
+class FriendWithOutstandingBalanceSerializer(UserSerializer):
     outstanding_balances = serializers.SerializerMethodField()
     aggregated_outstanding_balances = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = FriendSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
+        fields = UserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
 
     @extend_schema_field(FriendOutstandingBalanceSerializer)
     def get_outstanding_balances(self, instance):
         return getattr(instance, 'outstanding_balances', {})
 
-    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
+    @extend_schema_field(OutstandingBalanceSerializerField)
     def get_aggregated_outstanding_balances(self, instance):
         aggregated = {}
 

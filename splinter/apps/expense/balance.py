@@ -3,7 +3,8 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, List, Type
 
 from django.db import transaction
-from django.db.models import Case, DecimalField, Model, Sum, Value, When
+from django.db.models import Case, DecimalField, F, Model, Sum, Value, When, Window
+from django.db.models.functions import RowNumber
 
 from splinter.apps.expense.models import ExpenseSplit, FriendOutstandingBalance, UserOutstandingBalance
 
@@ -112,11 +113,22 @@ def populate_group_outstanding_balances(groups: List['Group'], current_user: 'Us
 
 def populate_group_members_outstanding_balances(groups: List['Group'], current_user: 'User') -> None:
     current_user_id = current_user.id
-    balances = FriendOutstandingBalance.objects.filter(user_id=current_user_id, group__in=groups)
+    qs = FriendOutstandingBalance.objects.filter(group__in=groups)
 
-    by_currency = defaultdict(lambda: defaultdict(list))
-    for balance in balances:
-        by_currency[balance.group_id][balance.currency_id].append({'friend': balance.friend, 'amount': balance.amount})
+    qs = qs.annotate(
+        priority=Case(When(user_id=current_user_id, then=1), default=0),
+        row_number=Window(
+            expression=RowNumber(),
+            partition_by=F('group_id'),
+            order_by=F('priority').desc(),
+        )
+    )
+
+    qs = qs.order_by('group_id', '-priority').filter(row_number__lte=3)
+
+    by_group = defaultdict(list)
+    for balance in qs:
+        by_group[balance.group_id].append(balance)
 
     for group in groups:
-        setattr(group, 'members_outstanding_balances', by_currency.get(group.id, {}))
+        setattr(group, 'members_outstanding_balances', by_group.get(group.id, []))
