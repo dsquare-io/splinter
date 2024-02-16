@@ -7,7 +7,7 @@ from tests.case import AuthenticatedAPITestCase
 
 class ListCreateGroupViewTest(AuthenticatedAPITestCase):
     def test_create(self):
-        response = self.client.post('/api/group/all', {'name': 'Test Group'}, format='json')
+        response = self.client.post('/api/groups', {'name': 'Test Group'}, format='json')
         self.assertEqual(response.status_code, 201)
 
         self.assertTrue(Group.objects.filter(name='Test Group').exists())
@@ -19,7 +19,7 @@ class ListCreateGroupViewTest(AuthenticatedAPITestCase):
             group = GroupFactory(created_by=self.user)
             GroupMembership.objects.create(group=group, user=self.user)
 
-        response = self.client.get('/api/group/all')
+        response = self.client.get('/api/groups')
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(len(response.json()['results']), 5)

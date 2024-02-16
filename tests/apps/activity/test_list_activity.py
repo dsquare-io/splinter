@@ -12,7 +12,7 @@ class ListActivityTests(AuthenticatedAPITestCase):
             ActivityAudience.objects.create(activity=activity, user=self.user)
 
     def test_list_activities(self):
-        response = self.client.get('/api/activity/all')
+        response = self.client.get('/api/activities')
         self.assertEqual(response.status_code, 200)
 
         response_json = response.json()

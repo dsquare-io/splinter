@@ -11,7 +11,7 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
         GroupMembership.objects.create(group=self.group, user=self.user)
 
     def test_retrieve(self):
-        response = self.client.get(f'/api/group/{self.group.public_id}')
+        response = self.client.get(f'/api/groups/{self.group.public_id}')
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.json(), {
@@ -34,7 +34,7 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
 
     def test_update(self):
         response = self.client.patch(
-            f'/api/group/{self.group.public_id}',
+            f'/api/groups/{self.group.public_id}',
             data={
                 'name': 'new name',
             },

@@ -17,7 +17,7 @@ class RetrieveFriendViewTests(AuthenticatedAPITestCase):
 
     @patch('splinter.apps.friend.views.populate_friend_outstanding_balances')
     def test_retrieve_friend(self, populate_friend_outstanding_balances_mock: Mock):
-        response = self.client.get(f'/api/friend/{self.friend.username}')
+        response = self.client.get(f'/api/friends/{self.friend.username}')
         self.assertEqual(response.status_code, 200)
 
         populate_friend_outstanding_balances_mock.assert_called_once()

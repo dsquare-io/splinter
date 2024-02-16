@@ -10,7 +10,7 @@ class ListCommentTests(AuthenticatedAPITestCase):
         CommentFactory.create_batch(5, activity=self.activity)
 
     def test_list_comment(self):
-        response = self.client.get(f'/api/activity/{self.activity.public_id}/comments')
+        response = self.client.get(f'/api/activities/{self.activity.public_id}/comments')
         self.assertEqual(response.status_code, 200)
 
         response_json = response.json()
