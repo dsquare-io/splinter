@@ -19,18 +19,18 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
                 'uid':
                     str(self.group.public_id),
                 'urn':
-                    f'urn:splinter:group:group/{self.group.public_id}',
+                    f'urn:splinter:group/{self.group.public_id}',
                 'name':
                     self.group.name,
                 'createdBy': {
                     'uid': self.user.username,
-                    'urn': f'urn:splinter:user:user/{self.user.username}',
+                    'urn': f'urn:splinter:user/{self.user.username}',
                     'fullName': self.user.full_name,
                     'isActive': self.user.is_active,
                 },
                 'members': [{
                     'uid': self.user.username,
-                    'urn': f'urn:splinter:user:user/{self.user.username}',
+                    'urn': f'urn:splinter:user/{self.user.username}',
                     'fullName': self.user.full_name,
                     'isActive': self.user.is_active,
                 }]

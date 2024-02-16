@@ -26,7 +26,10 @@ class ResourceName:
         return apps.get_model(self.app_label, self.model_name)
 
     def __str__(self) -> str:
-        s = f'urn:splinter:{self.app_label}:{self.model_name}'
+        s = f'urn:splinter:{self.app_label}'
+        if self.app_label != self.model_name:
+            s += f':{self.model_name}'
+
         if self.uid:
             s += f'/{self.uid}'
 
@@ -34,20 +37,23 @@ class ResourceName:
 
     @classmethod
     def parse(cls, resource_name: str) -> 'ResourceName':
-        parts = resource_name.lower().split(':')
-        if len(parts) != 4:
+        urn_parts = resource_name.lower().split(':')
+        if len(urn_parts) > 4 or len(urn_parts) < 3:
             raise ValueError('Invalid resource name')
 
-        if parts[0] != 'urn' or parts[1] != 'splinter':
+        if urn_parts[0] != 'urn' or urn_parts[1] != 'splinter':
             raise ValueError('Unsupported URN scheme')
 
-        app_label = parts[2]
-        parts = parts[3].split('/')
-        if len(parts) > 2:
+        app_label = urn_parts[2]
+        uid_parts = urn_parts[-1].split('/')
+        if len(uid_parts) > 2:
             raise ValueError('Invalid resource name')
 
-        model_name = parts[0]
-        uid = parts[1] if len(parts) == 2 else None
+        model_name = uid_parts[0]
+        uid = uid_parts[1] if len(uid_parts) == 2 else None
+
+        if len(urn_parts) == 3:
+            app_label = model_name
 
         return cls(app_label=app_label, model_name=model_name, uid=uid)
 
