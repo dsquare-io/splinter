@@ -34,7 +34,7 @@ function ExpenseParticipantList() {
               <Command.Item
                 onSelect={() => {
                   dispatch(addParticipant({id: group.publicId!, type: 'group', name: group.name}));
-                  dispatch(toggleSearchActive(false))
+                  dispatch(toggleSearchActive(false));
                 }}
                 key={group.publicId!}
                 tabIndex={-1}
@@ -63,7 +63,7 @@ function ExpenseParticipantList() {
               <Command.Item
                 onSelect={() => {
                   dispatch(addParticipant({id: friend.uid, type: 'friend', name: friend.name}));
-                  dispatch(toggleSearchActive(false))
+                  dispatch(toggleSearchActive(false));
                 }}
                 tabIndex={-1}
                 key={friend.uid}
@@ -105,7 +105,7 @@ export default function ExpenseParticipantsSelector() {
       className={selectedParticipants.length > 0 ? 'relative' : 'contents'}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) {
-          dispatch(toggleSearchActive(false))
+          dispatch(toggleSearchActive(false));
         }
       }}
     >
