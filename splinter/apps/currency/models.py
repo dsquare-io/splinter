@@ -1,27 +1,42 @@
+from typing import TYPE_CHECKING
+
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 from splinter.apps.currency.managers import ConversionRateManager
 
 
 class Country(models.Model):
-    name = models.CharField(max_length=128, unique=True)
+    UID_FIELD = 'code'
+
+    if TYPE_CHECKING:
+        urn: str
+
+    code = models.CharField(max_length=2, primary_key=True, help_text='ISO 3166-1 Alpha-2 Country Code')
+    name = models.CharField(max_length=128)
     flag = models.CharField(max_length=8)
 
     class Meta:
         db_table = 'countries'
         verbose_name_plural = 'Countries'
+        constraints = [models.UniqueConstraint(Lower('code'), name='country_code_unique_constraint')]
 
     def __str__(self):
         return self.name
 
 
 class Currency(models.Model):
-    iso_code = models.CharField(max_length=3, primary_key=True)
+    UID_FIELD = 'code'
+
+    if TYPE_CHECKING:
+        urn: str
+
+    code = models.CharField(max_length=3, primary_key=True, help_text='ISO 4217 Currency Code')
     symbol = models.CharField(max_length=3, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
 
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -31,7 +46,7 @@ class Currency(models.Model):
         verbose_name_plural = 'Currencies'
 
     def __str__(self):
-        return self.iso_code
+        return self.code
 
 
 class ConversionRate(models.Model):

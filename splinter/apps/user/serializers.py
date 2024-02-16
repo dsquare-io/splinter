@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     urn = serializers.CharField(read_only=True)
 
     full_name = serializers.CharField(read_only=True)
-    is_active = serializers.CharField(help_text='Indicates whether the user is active or not.', read_only=True)
+    is_active = serializers.BooleanField(help_text='Indicates whether the user is active or not.', read_only=True)
 
     class Meta:
         model = User

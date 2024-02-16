@@ -23,10 +23,10 @@ class PopulateFriendOutstandingBalancesTests(ExpenseTestCase):
             self.assertDictEqual(
                 friend.outstanding_balances, {
                     'group': {
-                        self.currency.iso_code: Decimal('25')
+                        self.currency.code: Decimal('25')
                     },
                     'non_group': {
-                        self.currency.iso_code: Decimal('25')
+                        self.currency.code: Decimal('25')
                     }
                 }
             )

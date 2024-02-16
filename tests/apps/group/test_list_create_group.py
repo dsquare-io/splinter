@@ -13,8 +13,8 @@ class ListCreateGroupViewTest(AuthenticatedAPITestCase):
         self.assertTrue(Group.objects.filter(name='Test Group').exists())
 
     @patch('splinter.apps.group.views.populate_group_outstanding_balances')
-    @patch('splinter.apps.group.views.populate_group_members_outstanding_balances')
-    def test_list(self, populate_group_outstanding_balances_mock, populate_group_members_outstanding_balances_mock):
+    @patch('splinter.apps.group.views.populate_group_friends_outstanding_balances')
+    def test_list(self, populate_group_outstanding_balances_mock, populate_group_friends_outstanding_balances_mock):
         for _ in range(5):
             group = GroupFactory(created_by=self.user)
             GroupMembership.objects.create(group=group, user=self.user)
@@ -24,4 +24,4 @@ class ListCreateGroupViewTest(AuthenticatedAPITestCase):
 
         self.assertEqual(len(response.json()['results']), 5)
         populate_group_outstanding_balances_mock.assert_called_once()
-        populate_group_members_outstanding_balances_mock.assert_called_once()
+        populate_group_friends_outstanding_balances_mock.assert_called_once()

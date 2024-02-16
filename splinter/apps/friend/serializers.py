@@ -39,10 +39,6 @@ class FriendWithOutstandingBalanceSerializer(UserSerializer):
 
 
 class CreateFriendshipSerializer(CreateUserSerializer):
-    class Meta:
-        model = User
-        fields = ('name', 'email')
-
     def validate_email(self, email: str):
         return User.objects.normalize_email(email)
 

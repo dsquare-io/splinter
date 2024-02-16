@@ -15,19 +15,20 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
             response.json(), {
-                'publicId':
-                    str(self.group.public_id),
-                'name':
-                    self.group.name,
+                'uid': str(self.group.public_id),
+                'urn': f'urn:splinter:group:group/{self.group.public_id}',
+                'name': self.group.name,
                 'createdBy': {
                     'uid': self.user.username,
-                    'name': self.user.display_name,
-                    'invitationAccepted': self.user.is_active,
+                    'urn': f'urn:splinter:user:user/{self.user.username}',
+                    'fullName': self.user.full_name,
+                    'isActive': self.user.is_active,
                 },
                 'members': [{
                     'uid': self.user.username,
-                    'name': self.user.display_name,
-                    'invitationAccepted': self.user.is_active,
+                    'urn': f'urn:splinter:user:user/{self.user.username}',
+                    'fullName': self.user.full_name,
+                    'isActive': self.user.is_active,
                 }]
             }
         )

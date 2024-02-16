@@ -2,6 +2,7 @@
 
 import django.db.models.deletion
 from django.db import migrations, models
+from django.db.models.functions import Lower
 
 from splinter.db.migration_operations import SeedModel
 
@@ -16,8 +17,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Country',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=128, unique=True)),
+                ('code', models.CharField(max_length=2, primary_key=True, serialize=False)),
+                ('name', models.CharField(max_length=128)),
                 ('flag', models.CharField(max_length=8)),
             ],
             options={
@@ -25,10 +26,14 @@ class Migration(migrations.Migration):
                 'db_table': 'countries',
             },
         ),
+        migrations.AddConstraint(
+            model_name='country',
+            constraint=models.UniqueConstraint(Lower('code'), name='country_code_unique_constraint'),
+        ),
         migrations.CreateModel(
             name='Currency',
             fields=[
-                ('iso_code', models.CharField(max_length=3, primary_key=True, serialize=False)),
+                ('code', models.CharField(max_length=3, primary_key=True, serialize=False)),
                 ('symbol', models.CharField(blank=True, max_length=3, null=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
@@ -72,15 +77,14 @@ class Migration(migrations.Migration):
             },
         ),
         SeedModel('currency.Country', {
+            'code': 'PK',
             'name': 'Pakistan',
             'flag': '🇵🇰'
         }),
-        SeedModel(
-            'currency.Currency', {
-                'iso_code': 'PKR',
-                'symbol': 'Rs',
-                'country__name': 'Pakistan',
-                'is_active': True
-            }
-        )
+        SeedModel('currency.Currency', {
+            'code': 'PKR',
+            'symbol': 'Rs',
+            'country__name': 'Pakistan',
+            'is_active': True
+        })
     ]

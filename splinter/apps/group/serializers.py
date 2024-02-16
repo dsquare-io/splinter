@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.expense.fields import OutstandingBalanceSerializerField
+from splinter.apps.expense.models import FriendOutstandingBalance
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.group.models import Group, GroupMembership
@@ -19,11 +20,21 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name')
 
 
-class GroupMemberOutstandingBalanceSerializer(serializers.Serializer):
-    user = UserSerializer(read_only=True)
+class GroupFriendOutstandingBalanceSerializer(serializers.ModelSerializer):
     friend = UserSerializer(read_only=True)
-    amount = serializers.DecimalField(max_digits=9, decimal_places=2)
-    currency = CurrencySerializerField()
+    currency = CurrencySerializerField(read_only=True)
+
+    class Meta:
+        model = FriendOutstandingBalance
+        fields = ('friend', 'amount', 'currency')
+
+
+class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FriendOutstandingBalance
+        fields = GroupFriendOutstandingBalanceSerializer.Meta.fields + ('user', )
 
 
 class GroupWithOutstandingBalanceSerializer(GroupSerializer):
@@ -34,12 +45,12 @@ class GroupWithOutstandingBalanceSerializer(GroupSerializer):
         model = Group
         fields = GroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
 
-    @extend_schema_field(GroupMemberOutstandingBalanceSerializer(many=True))
+    @extend_schema_field(GroupFriendOutstandingBalanceSerializer(many=True))
     def get_outstanding_balances(self, instance):
-        members_outstanding_balances = getattr(instance, 'members_outstanding_balances', [])
-        return GroupMemberOutstandingBalanceSerializer(members_outstanding_balances, many=True).data
+        friends_outstanding_balances = getattr(instance, 'friends_outstanding_balances', [])
+        return GroupFriendOutstandingBalanceSerializer(friends_outstanding_balances, many=True).data
 
-    @extend_schema_field(OutstandingBalanceSerializerField())
+    @extend_schema_field(OutstandingBalanceSerializerField)
     def get_aggregated_outstanding_balances(self, instance):
         return getattr(instance, 'aggregated_outstanding_balances', {})
 

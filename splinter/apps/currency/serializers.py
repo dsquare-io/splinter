@@ -4,14 +4,20 @@ from splinter.apps.currency.models import Country, Currency
 
 
 class CountrySerializer(serializers.ModelSerializer):
+    uid = serializers.CharField(source='name')
+    urn = serializers.CharField(read_only=True)
+
     class Meta:
         model = Country
-        fields = ('name', 'flag')
+        fields = ('uid', 'urn', 'name', 'flag')
 
 
 class CurrencySerializer(serializers.ModelSerializer):
+    uid = serializers.CharField(source='code')
+    urn = serializers.CharField(read_only=True)
+
     country = CountrySerializer(read_only=True)
 
     class Meta:
         model = Currency
-        fields = ('iso_code', 'symbol', 'country')
+        fields = ('uid', 'urn', 'symbol', 'country')

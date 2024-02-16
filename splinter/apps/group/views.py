@@ -1,7 +1,7 @@
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.balance import (
-    populate_group_members_outstanding_balances,
+    populate_group_friends_outstanding_balances,
     populate_group_outstanding_balances,
 )
 from splinter.apps.group.models import Group, GroupMembership
@@ -23,7 +23,7 @@ class ListCreateGroupView(ListAPIView, CreateAPIView):
         if queryset:
             queryset = list(queryset)
             populate_group_outstanding_balances(queryset, self.request.user)
-            populate_group_members_outstanding_balances(queryset, self.request.user)
+            populate_group_friends_outstanding_balances(queryset, self.request.user)
 
         return super().get_serializer(queryset, *args, **kwargs)
 
