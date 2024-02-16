@@ -16,6 +16,7 @@
     "@ionic/react": "^7.6.6",
     "@mantine/hooks": "^7.5.0",
     "@radix-ui/react-avatar": "^1.0.4",
+    "@react-aria/i18n": "^3.10.2",
     "@react-aria/utils": "^3.23.0",
     "@tanstack/react-query": "^5.17.19",
     "@tanstack/react-router": "^1.14.0",
