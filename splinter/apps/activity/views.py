@@ -10,9 +10,7 @@ class ListActivityView(ListAPIView):
     serializer_class = ActivitySerializer
 
     def get_queryset(self):
-        return Activity.objects.of(self.request.user.id)\
-            .prefetch_related('user', 'group', 'target')\
-            .order_by('-created_at')
+        return Activity.objects.of(self.request.user.id).order_by('-created_at')
 
 
 class GenericActivityView(GenericAPIView):
@@ -25,7 +23,7 @@ class ListCreateCommentView(ListAPIView, CreateAPIView, GenericActivityView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        return Comment.objects.filter(activity=self.activity).prefetch_related('user').order_by('-created_at')
+        return Comment.objects.filter(activity=self.activity).order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(activity=self.activity, user_id=self.request.user.id)
