@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import serializers
 
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
@@ -53,19 +54,31 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
         aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
             .filter(user=self.context['request'].user)
 
-        return queryset.prefetch_related(
+        return super().prefetch_queryset(queryset).prefetch_related(
             OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs, limit=3),
             AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs)
         )
 
 
-class GroupDetailSerializer(SimpleGroupSerializer):
+class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
+    outstanding_balances = GroupOutstandingBalanceSerializer(many=True, read_only=True)
+
     created_by = SimpleUserSerializer(read_only=True)
     members = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta(SimpleGroupSerializer.Meta):
         model = Group
-        fields = SimpleGroupSerializer.Meta.fields + ('created_by', 'members')
+        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'created_by', 'members')
+
+    def prefetch_queryset(self, queryset=None):
+        user_q = Q(user=self.context['request'].user)
+
+        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
+            .filter(user_q | (Q(amount__gt=0) & ~user_q))
+
+        return super().prefetch_queryset(queryset).prefetch_related(
+            OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs),
+        )
 
 
 class BulkCreateGroupMembershipSerializer(serializers.Serializer):

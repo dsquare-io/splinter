@@ -1,7 +1,11 @@
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.group.serializers import BulkCreateGroupMembershipSerializer, GroupDetailSerializer, GroupSerializer
+from splinter.apps.group.serializers import (
+    BulkCreateGroupMembershipSerializer,
+    ExtendedGroupSerializer,
+    GroupSerializer,
+)
 from splinter.core.views import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 
 
@@ -20,7 +24,7 @@ class ListCreateGroupView(ListAPIView, CreateAPIView):
 class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'group_uid'
-    serializer_class = GroupDetailSerializer
+    serializer_class = ExtendedGroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)
@@ -35,8 +39,3 @@ class DestroyGroupMembershipView(DestroyAPIView):
 
 class BulkCreateGroupMembershipView(CreateAPIView):
     serializer_class = BulkCreateGroupMembershipSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['user'] = self.request.user
-        return context

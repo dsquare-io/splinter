@@ -28,6 +28,7 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
                     'fullName': self.user.full_name,
                     'isActive': self.user.is_active,
                 },
+                'outstandingBalances': [],
                 'members': [{
                     'uid': self.user.username,
                     'urn': f'urn:splinter:user/{self.user.username}',
