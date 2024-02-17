@@ -20,7 +20,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
 
     @patch('splinter.apps.friend.views.populate_friend_outstanding_balances')
     def test_list_friends(self, populate_friend_outstanding_balances_mock: Mock):
-        response = self.client.get('/api/friend/all')
+        response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 5)
 
@@ -33,6 +33,6 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
 
         Friendship.objects.create(user_a=user1, user_b=user2)
 
-        response = self.client.get('/api/friend/all')
+        response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 5)

@@ -1,5 +1,5 @@
 from splinter.apps.expense.balance import (
-    populate_group_members_outstanding_balances,
+    populate_group_friends_outstanding_balances,
     populate_group_outstanding_balances,
 )
 from tests.apps.expense.case import ExpenseTestCase
@@ -19,52 +19,25 @@ class PopulateGroupOutstandingBalancesTests(ExpenseTestCase):
     def test_populate_group_outstanding_balances(self):
         populate_group_outstanding_balances(self.groups, self.friends[0])
 
-        self.assertDictEqual(self.groups[0].aggregated_outstanding_balances, {self.currency.iso_code: 75})
-        self.assertDictEqual(self.groups[1].aggregated_outstanding_balances, {self.currency.iso_code: 150})
+        self.assertDictEqual(self.groups[0].aggregated_outstanding_balances, {self.currency.code: 75})
+        self.assertDictEqual(self.groups[1].aggregated_outstanding_balances, {self.currency.code: 150})
 
         for group in self.groups[2:]:
             self.assertDictEqual(group.aggregated_outstanding_balances, {})
 
-    def test_populate_group_members_outstanding_balances(self):
-        populate_group_members_outstanding_balances(self.groups, self.friends[0])
+    def test_populate_group_friends_outstanding_balances(self):
+        populate_group_friends_outstanding_balances(self.groups, self.friends[0])
 
-        self.assertDictEqual(
-            self.groups[0].members_outstanding_balances, {
-                self.currency.iso_code: [
-                    {
-                        'friend': self.friends[1],
-                        'amount': 25
-                    },
-                    {
-                        'friend': self.friends[2],
-                        'amount': 25
-                    },
-                    {
-                        'friend': self.friends[3],
-                        'amount': 25
-                    },
-                ]
-            }
-        )
+        for group, expected_amount in zip(self.groups[:2], [25, 50]):
+            self.assertEqual(len(group.friends_outstanding_balances), 3)
+            self.assertEqual(group.friends_outstanding_balances[0].friend, self.friends[1])
+            self.assertEqual(group.friends_outstanding_balances[1].friend, self.friends[2])
+            self.assertEqual(group.friends_outstanding_balances[2].friend, self.friends[3])
 
-        self.assertDictEqual(
-            self.groups[1].members_outstanding_balances, {
-                self.currency.iso_code: [
-                    {
-                        'friend': self.friends[1],
-                        'amount': 50
-                    },
-                    {
-                        'friend': self.friends[2],
-                        'amount': 50
-                    },
-                    {
-                        'friend': self.friends[3],
-                        'amount': 50
-                    },
-                ]
-            }
-        )
+            for outstanding_balance in group.friends_outstanding_balances:
+                self.assertEqual(outstanding_balance.user, self.friends[0])
+                self.assertEqual(outstanding_balance.amount, expected_amount)
+                self.assertEqual(outstanding_balance.currency, self.currency)
 
         for group in self.groups[2:]:
-            self.assertDictEqual(group.members_outstanding_balances, {})
+            self.assertListEqual(group.friends_outstanding_balances, [])

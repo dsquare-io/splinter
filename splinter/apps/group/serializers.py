@@ -2,10 +2,13 @@ from django.db import transaction
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from splinter.apps.currency.fields import CurrencySerializerField
+from splinter.apps.expense.fields import OutstandingBalanceSerializerField
+from splinter.apps.expense.models import FriendOutstandingBalance
 from splinter.apps.friend.fields import FriendSerializerField
-from splinter.apps.friend.serializers import FriendSerializer
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.group.models import Group, GroupMembership
+from splinter.apps.user.serializers import UserSerializer
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -17,9 +20,21 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name')
 
 
-class GroupMemberOutstandingBalanceSerializer(serializers.Serializer):
-    friend = FriendSerializer(read_only=True)
-    amount = serializers.DecimalField(max_digits=9, decimal_places=2)
+class GroupFriendOutstandingBalanceSerializer(serializers.ModelSerializer):
+    friend = UserSerializer(read_only=True)
+    currency = CurrencySerializerField(read_only=True)
+
+    class Meta:
+        model = FriendOutstandingBalance
+        fields = ('friend', 'amount', 'currency')
+
+
+class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FriendOutstandingBalance
+        fields = GroupFriendOutstandingBalanceSerializer.Meta.fields + ('user', )
 
 
 class GroupWithOutstandingBalanceSerializer(GroupSerializer):
@@ -28,35 +43,29 @@ class GroupWithOutstandingBalanceSerializer(GroupSerializer):
 
     class Meta:
         model = Group
-        fields = ('name', 'public_id', 'outstanding_balances', 'aggregated_outstanding_balances')
+        fields = GroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
 
-    @extend_schema_field(
-        serializers.DictField(child=serializers.ListField(child=GroupMemberOutstandingBalanceSerializer()))
-    )
+    @extend_schema_field(GroupFriendOutstandingBalanceSerializer(many=True))
     def get_outstanding_balances(self, instance):
-        members_outstanding_balances = getattr(instance, 'members_outstanding_balances', {})
+        friends_outstanding_balances = getattr(instance, 'friends_outstanding_balances', [])
+        return GroupFriendOutstandingBalanceSerializer(friends_outstanding_balances, many=True).data
 
-        return {
-            currency_id: GroupMemberOutstandingBalanceSerializer(balances, many=True).data
-            for currency_id, balances in members_outstanding_balances.items()
-        }
-
-    @extend_schema_field(serializers.DictField(child=serializers.DecimalField(max_digits=9, decimal_places=2)))
+    @extend_schema_field(OutstandingBalanceSerializerField)
     def get_aggregated_outstanding_balances(self, instance):
         return getattr(instance, 'aggregated_outstanding_balances', {})
 
 
-class GroupDetailSerializer(serializers.ModelSerializer):
-    created_by = FriendSerializer(read_only=True)
+class GroupDetailSerializer(GroupSerializer):
+    created_by = UserSerializer(read_only=True)
     members = serializers.SerializerMethodField()
 
     class Meta:
         model = Group
-        fields = ('name', 'public_id', 'created_by', 'members')
+        fields = GroupSerializer.Meta.fields + ('created_by', 'members')
 
-    @extend_schema_field(FriendSerializer(many=True))
+    @extend_schema_field(UserSerializer(many=True))
     def get_members(self, group: Group):
-        return FriendSerializer(group.members.all(), many=True).data
+        return UserSerializer(group.members.all(), many=True).data
 
 
 class BulkCreateGroupMembershipSerializer(serializers.Serializer):

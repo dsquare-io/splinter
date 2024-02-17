@@ -11,30 +11,35 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
         GroupMembership.objects.create(group=self.group, user=self.user)
 
     def test_retrieve(self):
-        response = self.client.get(f'/api/group/{self.group.public_id}')
+        response = self.client.get(f'/api/groups/{self.group.public_id}')
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(
-            response.json(), {
-                'publicId':
+            response.json(),
+            {
+                'uid':
                     str(self.group.public_id),
+                'urn':
+                    f'urn:splinter:group/{self.group.public_id}',
                 'name':
                     self.group.name,
                 'createdBy': {
                     'uid': self.user.username,
-                    'name': self.user.display_name,
-                    'invitationAccepted': self.user.is_active,
+                    'urn': f'urn:splinter:user/{self.user.username}',
+                    'fullName': self.user.full_name,
+                    'isActive': self.user.is_active,
                 },
                 'members': [{
                     'uid': self.user.username,
-                    'name': self.user.display_name,
-                    'invitationAccepted': self.user.is_active,
+                    'urn': f'urn:splinter:user/{self.user.username}',
+                    'fullName': self.user.full_name,
+                    'isActive': self.user.is_active,
                 }]
-            }
+            },
         )
 
     def test_update(self):
         response = self.client.patch(
-            f'/api/group/{self.group.public_id}',
+            f'/api/groups/{self.group.public_id}',
             data={
                 'name': 'new name',
             },

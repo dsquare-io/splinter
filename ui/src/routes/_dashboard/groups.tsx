@@ -1,11 +1,12 @@
-import { Button, Input } from '@components/common';
 import clsx from 'clsx';
+import {TextField} from 'react-aria-components';
 
+import Currency from '@components/Currency.tsx';
+import {Button, Input} from '@components/common';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
-import { TextField } from 'react-aria-components';
 
 import {ApiRoutes} from '../../api-types';
 import GroupListItem from './groups/-components/GroupListItem';
@@ -19,6 +20,16 @@ function GroupsLayout() {
   const isRootLayout = matchRoute({to: '/groups'});
 
   const {data} = useApiQuery(ApiRoutes.GROUP_LIST);
+
+  const aggregatedOutstandingBalance = data?.results?.reduce(
+    (acc, group) => {
+      for (const currency of Object.keys(group.aggregatedOutstandingBalances ?? {})) {
+        acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalances?.[currency] ?? 0);
+      }
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return (
     <>
@@ -34,7 +45,17 @@ function GroupsLayout() {
         <div className="sticky top-0 z-10 bg-white px-6 pb-4 pt-6">
           <h2 className="text-lg font-medium text-gray-900">Groups</h2>
           <p className="text-sm text-gray-600">
-            Overall, you are owed <span className="text-green-700">Rs 46,043</span>
+            {!aggregatedOutstandingBalance?.['PKR'] ? (
+              'You are all settled up'
+            ) : (
+              <>
+                Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
+                <Currency
+                  currency={'PKR'}
+                  value={aggregatedOutstandingBalance?.['PKR']}
+                />
+              </>
+            )}
           </p>
 
           <div className="mt-6 flex items-center gap-x-2">
@@ -61,7 +82,7 @@ function GroupsLayout() {
         <div>
           {data?.results?.map((group) => (
             <GroupListItem
-              key={group.publicId}
+              key={group.uid}
               {...group}
             />
           ))}

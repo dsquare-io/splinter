@@ -41,7 +41,7 @@ def send_verification_email(user: 'User', email_verification_url: str) -> None:
 
 def send_invitation_email(user: 'User', accept_invitation_url: str, invited_by: 'User') -> None:
     send_template_mail(
-        subject=f'{invited_by.display_name} Invites You to Join {settings.SITE_NAME}',
+        subject=f'{invited_by.full_name} Invites You to Join {settings.SITE_NAME}',
         recipients=user.email,
         template_name='user/invitation.html',
         context={

@@ -19,7 +19,7 @@ class BulkCreateGroupMemberViewTest(AuthenticatedAPITestCase):
             members_to_add.append(user.username)
 
         response = self.client.post(
-            '/api/group/members',
+            '/api/groups/members',
             {
                 'group': self.group.public_id,
                 'members': members_to_add,

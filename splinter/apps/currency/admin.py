@@ -10,7 +10,7 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(Currency)
 class CurrencyAdmin(admin.ModelAdmin):
-    list_display = ('iso_code', 'symbol', 'is_active')
+    list_display = ('code', 'symbol', 'is_active')
 
 
 @admin.register(ConversionRate)

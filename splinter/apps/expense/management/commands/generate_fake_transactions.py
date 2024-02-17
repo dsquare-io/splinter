@@ -84,7 +84,7 @@ class Command(BaseCommand):
             for member in members:
                 GroupMembership.objects.create(user=member, group=group)
 
-        currency = Currency.objects.get(iso_code='PKR')
+        currency = Currency.objects.get(code='PKR')
         for i in range(8, -1, -1):
             create_equal_split_expense(
                 amount=1000 + random.randint(0, 1000),

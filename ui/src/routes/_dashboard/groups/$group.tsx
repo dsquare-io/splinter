@@ -24,10 +24,10 @@ function RootComponent() {
     <div className="">
       <Link
         className="mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
-        to="/friends"
+        to="/groups"
       >
         <ChevronLeftIcon className="size-3" />
-        Group
+        Groups
       </Link>
       <article>
         <div>

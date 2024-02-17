@@ -9,7 +9,7 @@ class CreateCommentTests(AuthenticatedAPITestCase):
 
         self.activity = ActivityFactory(user=self.user)
         self.response = self.client.post(
-            f'/api/activity/{self.activity.public_id}/comments', format='json', data={'content': 'This is a comment'}
+            f'/api/activities/{self.activity.public_id}/comments', format='json', data={'content': 'This is a comment'}
         )
 
     def test_response_code(self):
