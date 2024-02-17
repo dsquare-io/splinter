@@ -46,7 +46,18 @@ class APIErrorView(APIView):
 
 
 class GenericAPIView(APIView, DrfGenericAPIView):
-    pass
+    def prefetch_queryset(self, queryset):
+        serializer = self.get_serializer()
+        if hasattr(serializer, 'prefetch_queryset'):
+            return serializer.prefetch_queryset(queryset)
+
+        return queryset
+
+    def filter_queryset(self, queryset):
+        if self.request.method == 'GET':
+            queryset = self.prefetch_queryset(queryset)
+
+        return super().filter_queryset(queryset)
 
 
 class ListAPIView(ListModelMixin, GenericAPIView):

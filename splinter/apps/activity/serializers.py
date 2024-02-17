@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from splinter.apps.activity.logger import ActivityType
 from splinter.apps.activity.models import Activity, Comment
-from splinter.apps.group.serializers import GroupSerializer
+from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.serializers import UserSerializer
 
 
@@ -32,7 +32,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     urn = serializers.CharField(read_only=True)
 
     user = UserSerializer(read_only=True)
-    group = GroupSerializer(read_only=True)
+    group = SimpleGroupSerializer(read_only=True)
 
     target = TargetSerializer(read_only=True)
     template = serializers.SerializerMethodField()

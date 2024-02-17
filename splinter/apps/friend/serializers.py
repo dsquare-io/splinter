@@ -1,41 +1,40 @@
-from drf_spectacular.utils import extend_schema_field
-from rest_framework import serializers
-
-from splinter.apps.expense.fields import OutstandingBalanceSerializerField
+from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
+from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerializer, OutstandingBalanceSerializer
 from splinter.apps.friend.models import Friendship
+from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.models import User
 from splinter.apps.user.serializers import CreateUserSerializer, UserSerializer
+from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
-class FriendOutstandingBalanceSerializer(serializers.Serializer):
-    group = OutstandingBalanceSerializerField()
-    non_group = OutstandingBalanceSerializerField()
+class FriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
+    group = SimpleGroupSerializer(read_only=True)
+
+    class Meta(OutstandingBalanceSerializer.Meta):
+        fields = OutstandingBalanceSerializer.Meta.fields + ('group', )
+
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset(queryset).prefetch_related('group')
 
 
-class FriendWithOutstandingBalanceSerializer(UserSerializer):
-    outstanding_balances = serializers.SerializerMethodField()
-    aggregated_outstanding_balances = serializers.SerializerMethodField()
+class FriendSerializer(PrefetchQuerysetSerializerMixin, UserSerializer):
+    outstanding_balances = FriendOutstandingBalanceSerializer(many=True, read_only=True)
+    aggregated_outstanding_balances = AggregatedOutstandingBalanceSerializer(read_only=True)
 
-    class Meta:
-        model = User
+    class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
 
-    @extend_schema_field(FriendOutstandingBalanceSerializer)
-    def get_outstanding_balances(self, instance):
-        return getattr(instance, 'outstanding_balances', {})
+    def prefetch_queryset(self, queryset=None):
+        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
+            .filter(user_id=self.context['request'].user.id)
 
-    @extend_schema_field(OutstandingBalanceSerializerField)
-    def get_aggregated_outstanding_balances(self, instance):
-        aggregated = {}
+        aggregated_outstanding_balances_qs = self.prefetch_nested_queryset('aggregated_outstanding_balances') \
+            .filter(user_id=self.context['request'].user.id)
 
-        outstanding_balances = getattr(instance, 'outstanding_balances', {})
-        group = outstanding_balances.get('group', {})
-        non_group = outstanding_balances.get('non_group', {})
-
-        for currency in set(group.keys()) | set(non_group.keys()):
-            aggregated[currency] = group.get(currency, 0) + non_group.get(currency, 0)
-
-        return aggregated
+        return queryset.prefetch_related(
+            OutstandingBalancePrefetch('user', queryset=outstanding_balance_qs, limit=3),
+            AggregatedOutstandingBalancePrefetch('user', queryset=aggregated_outstanding_balances_qs),
+        )
 
 
 class CreateFriendshipSerializer(CreateUserSerializer):

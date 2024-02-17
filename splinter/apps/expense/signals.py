@@ -1,11 +1,16 @@
 from collections import Counter
+from decimal import Decimal
+from typing import Type, TypeVar
 
+from django.db import transaction
+from django.db.models import Model
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from splinter.apps.expense.balance import update_all_outstanding_balances
-from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit
+from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit, OutstandingBalance
 from splinter.apps.friend.models import Friendship
+
+TModel = TypeVar('TModel', bound=Model)
 
 
 @receiver(pre_save, sender=ExpenseSplit)
@@ -100,3 +105,45 @@ def update_expense_parties(expense: Expense) -> None:
         ExpenseParty.objects.bulk_create(to_create)
 
     ExpenseParty.objects.filter(pk__in=existing_parties - current_parties).delete()
+
+
+def update_outstanding_balance(model_cls: Type[Model], amount_delta: Decimal, **kwargs) -> None:
+    instance = model_cls.objects.select_for_update().filter(**kwargs).first()
+
+    if instance is None:
+        model_cls.objects.create(amount=amount_delta, **kwargs)
+    else:
+        instance.amount += Decimal(amount_delta)
+        instance.save(update_fields=('amount', ))
+
+
+def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: Decimal) -> None:
+    payee_id = expense_split.user_id
+    currency_id = expense_split.currency_id
+
+    expense = expense_split.expense
+    payer_id = expense.paid_by_id
+    group_id = expense.group_id
+
+    if payee_id == payer_id:
+        return
+
+    # Payer pays payee
+    with transaction.atomic():
+        update_outstanding_balance(
+            OutstandingBalance,
+            group_id=group_id,
+            user_id=payer_id,
+            friend_id=payee_id,
+            currency_id=currency_id,
+            amount_delta=amount_delta,
+        )
+
+        update_outstanding_balance(
+            OutstandingBalance,
+            group_id=group_id,
+            user_id=payee_id,
+            friend_id=payer_id,
+            currency_id=currency_id,
+            amount_delta=-amount_delta,
+        )

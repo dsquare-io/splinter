@@ -1,5 +1,3 @@
-from unittest.mock import Mock, patch
-
 from splinter.apps.friend.models import Friendship
 from tests.apps.user.factories import UserFactory
 from tests.case import AuthenticatedAPITestCase
@@ -18,15 +16,11 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
             Friendship.objects.create(user_a=self.user, user_b=friend)
             self.friends.append(friend)
 
-    @patch('splinter.apps.friend.views.populate_friend_outstanding_balances')
-    def test_list_friends(self, populate_friend_outstanding_balances_mock: Mock):
+    def test_list_friends(self):
         response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()['results']), 5)
 
-        populate_friend_outstanding_balances_mock.assert_called_once()
-
-    @patch('splinter.apps.friend.views.populate_friend_outstanding_balances', new=Mock())
     def test_list_only_logged_in_user_friends(self):
         user1 = UserFactory()
         user2 = UserFactory()

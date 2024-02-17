@@ -1,31 +1,15 @@
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.expense.balance import (
-    populate_group_friends_outstanding_balances,
-    populate_group_outstanding_balances,
-)
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.group.serializers import (
-    BulkCreateGroupMembershipSerializer,
-    GroupDetailSerializer,
-    GroupWithOutstandingBalanceSerializer,
-)
+from splinter.apps.group.serializers import BulkCreateGroupMembershipSerializer, GroupDetailSerializer, GroupSerializer
 from splinter.core.views import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
-    serializer_class = GroupWithOutstandingBalanceSerializer
+    serializer_class = GroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)
-
-    def get_serializer(self, queryset=None, *args, **kwargs):
-        if queryset:
-            queryset = list(queryset)
-            populate_group_outstanding_balances(queryset, self.request.user)
-            populate_group_friends_outstanding_balances(queryset, self.request.user)
-
-        return super().get_serializer(queryset, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
