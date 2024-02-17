@@ -15,7 +15,7 @@ from splinter.apps.user.serializers import (
     EmailVerificationSerializer,
     ForgetPasswordSerializer,
     ResetPasswordSerializer,
-    UserProfileSerializer,
+    UserSerializer,
 )
 from splinter.authentication import UserAccessTokenAuthentication
 from splinter.core.request_identity import RequestIdentity
@@ -25,7 +25,7 @@ from splinter.core.views import APIView, CreateAPIView, RetrieveAPIView, UpdateA
 class RetrieveUpdateProfileView(RetrieveAPIView, UpdateAPIView):
     permission_classes = (IsAuthenticated, )
     authentication_classes = (UserAccessTokenAuthentication, )
-    serializer_class = UserProfileSerializer
+    serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user

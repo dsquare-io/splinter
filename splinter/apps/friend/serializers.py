@@ -3,7 +3,7 @@ from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerial
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.models import User
-from splinter.apps.user.serializers import CreateUserSerializer, UserSerializer
+from splinter.apps.user.serializers import CreateUserSerializer, SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
@@ -17,12 +17,12 @@ class FriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
         return super().prefetch_queryset(queryset).prefetch_related('group')
 
 
-class FriendSerializer(PrefetchQuerysetSerializerMixin, UserSerializer):
+class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):
     outstanding_balances = FriendOutstandingBalanceSerializer(many=True, read_only=True)
     aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(read_only=True)
 
-    class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
+    class Meta(SimpleUserSerializer.Meta):
+        fields = SimpleUserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from splinter.apps.activity.logger import ActivityType
 from splinter.apps.activity.models import Activity, Comment
 from splinter.apps.group.serializers import SimpleGroupSerializer
-from splinter.apps.user.serializers import UserSerializer
+from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
@@ -32,7 +32,7 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
     uid = serializers.ReadOnlyField(source='public_id')
     urn = serializers.CharField(read_only=True)
 
-    user = UserSerializer(read_only=True)
+    user = SimpleUserSerializer(read_only=True)
     group = SimpleGroupSerializer(read_only=True)
 
     target = TargetSerializer(read_only=True)
@@ -58,7 +58,7 @@ class CommentSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
     uid = serializers.ReadOnlyField(source='public_id')
     urn = serializers.CharField(read_only=True)
 
-    user = UserSerializer(read_only=True)
+    user = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
