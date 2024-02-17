@@ -6,7 +6,7 @@ from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerial
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.user.serializers import UserSerializer
+from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
@@ -20,7 +20,7 @@ class SimpleGroupSerializer(serializers.ModelSerializer):
 
 
 class GroupFriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
-    friend = UserSerializer(read_only=True)
+    friend = SimpleUserSerializer(read_only=True)
 
     class Meta(OutstandingBalanceSerializer.Meta):
         fields = OutstandingBalanceSerializer.Meta.fields + ('friend', )
@@ -30,7 +30,7 @@ class GroupFriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
 
 
 class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer):
-    user = UserSerializer(read_only=True)
+    user = SimpleUserSerializer(read_only=True)
 
     class Meta(GroupFriendOutstandingBalanceSerializer.Meta):
         fields = GroupFriendOutstandingBalanceSerializer.Meta.fields + ('user', )
@@ -60,8 +60,8 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
 
 
 class GroupDetailSerializer(SimpleGroupSerializer):
-    created_by = UserSerializer(read_only=True)
-    members = UserSerializer(many=True, read_only=True)
+    created_by = SimpleUserSerializer(read_only=True)
+    members = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta(SimpleGroupSerializer.Meta):
         model = Group
