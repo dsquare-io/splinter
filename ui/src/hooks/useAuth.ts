@@ -11,6 +11,8 @@ export enum AuthStatus {
   LOGGED_IN = 4,
 }
 
+let profileRequest: Promise<any> | undefined;
+
 export default function useAuth() {
   const [accessToken, setToken, removeToken] = useLocalStorage({
     key: 'splinter:access_token',
@@ -34,15 +36,21 @@ export default function useAuth() {
   }
 
   useEffect(() => {
+    if (!profileRequest) {
+      profileRequest = axiosInstance.get(ApiRoutes.PROFILE);
+    }
+
     if (accessToken) {
-      axiosInstance
-        .get(ApiRoutes.PROFILE)
+      profileRequest
         .then(() => setValidation(true))
         .catch(() => {
           removeToken();
           removeRefreshToken();
           setHeaders();
           setValidation(false);
+        })
+        .finally(() => {
+          profileRequest = undefined;
         });
     } else {
       // user is logged out intentionally
