@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Literal, Optional
 
 from django.db import connection
 from django.db.models import F, FloatField, Prefetch, Sum, Window
-from django.db.models.functions import Cast, RowNumber
+from django.db.models.functions import Abs, Cast, RowNumber
 
 from splinter.apps.expense.models import AggregatedOutstandingBalance, OutstandingBalance
 
@@ -15,7 +15,7 @@ class OutstandingBalancePrefetch(Prefetch):
 
     def __init__(
         self,
-        partition_by: Literal['user', 'group'],
+        partition_by: Literal['friend', 'group'],
         limit: Optional[int] = None,
         lookup: str = 'outstanding_balances',
         queryset: 'QuerySet' = None,
@@ -42,14 +42,15 @@ class OutstandingBalancePrefetch(Prefetch):
                 qs = qs.annotate(numeric_amount=Cast('amount', FloatField()))
 
             qs = qs.annotate(
+                abs_amount=Abs(amount_field_name),
                 row_number=Window(
                     expression=RowNumber(),
                     partition_by=self.partition_by,
-                    order_by=F(amount_field_name).desc(),
+                    order_by=F('abs_amount').desc(),
                 )
             )
 
-            qs = qs.order_by(self.partition_by, f'-{amount_field_name}').filter(row_number__lte=self.limit)
+            qs = qs.order_by(self.partition_by, f'-abs_amount').filter(row_number__lte=self.limit)
 
         return [qs]
 
@@ -59,7 +60,7 @@ class AggregatedOutstandingBalancePrefetch(Prefetch):
 
     def __init__(
         self,
-        partition_by: Literal['user', 'group'],
+        partition_by: Literal['friend', 'group'],
         lookup: str = 'outstanding_balances',
         queryset: 'QuerySet' = None,
         to_attr: Optional[str] = 'aggregated_outstanding_balance',

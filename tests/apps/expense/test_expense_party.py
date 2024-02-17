@@ -14,7 +14,7 @@ class ExpensePartyTests(ExpenseTestCase):
 
     def assertExpenseParties(self, expense: Expense, friends: List[User]):
         parties = list(ExpenseParty.objects.filter(expense=expense))
-        self.assertEqual(len(parties), len(friends))
+        self.assertEqual(len(parties), max(0, len(friends) - 1))  # -1 for paid_by
 
         friend_ids = set(i.id for i in friends)
 

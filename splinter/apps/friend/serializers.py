@@ -32,8 +32,8 @@ class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):
             .filter(user_id=self.context['request'].user.id)
 
         return queryset.prefetch_related(
-            OutstandingBalancePrefetch('user', queryset=outstanding_balance_qs, limit=3),
-            AggregatedOutstandingBalancePrefetch('user', queryset=aggregated_outstanding_balance_qs),
+            OutstandingBalancePrefetch('friend', queryset=outstanding_balance_qs, limit=3),
+            AggregatedOutstandingBalancePrefetch('friend', queryset=aggregated_outstanding_balance_qs),
         )
 
 

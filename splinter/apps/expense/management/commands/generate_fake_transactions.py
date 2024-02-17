@@ -24,7 +24,7 @@ def create_equal_split_expense(amount: int, currency: Currency, participants: Tu
         **kwargs,
     )
 
-    share_amount = round(amount / (len(participants) + 1), 2)
+    share_amount = round(amount / len(participants), 2)
 
     for user in participants[1:]:
         ExpenseSplit.objects.create(
@@ -37,7 +37,7 @@ def create_equal_split_expense(amount: int, currency: Currency, participants: Tu
     ExpenseSplit.objects.create(
         expense=expense,
         user=participants[0],
-        amount=amount - (share_amount * len(participants)),
+        amount=amount - (share_amount * (len(participants) - 1)),
         currency=currency,
     )
 

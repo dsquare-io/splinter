@@ -92,6 +92,9 @@ def update_expense_parties(expense: Expense) -> None:
 
     users = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
     for user_id in users:
+        if user_id == expense.paid_by_id:
+            continue  # Skip the payer
+
         try:
             friendship = Friendship.objects.of(expense.paid_by_id, user_id)
         except Friendship.DoesNotExist:

@@ -75,11 +75,11 @@ class ExpenseParty(models.Model):
 
 
 class OutstandingBalance(SoftDeleteModel):
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='outstanding_balances')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
     group = models.ForeignKey(
         'group.Group', on_delete=models.CASCADE, related_name='outstanding_balances', null=True, blank=True
     )
-    friend = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+    friend = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='outstanding_balances')
 
     currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
     amount = models.DecimalField(max_digits=9, decimal_places=2)
