@@ -34,5 +34,16 @@ class AggregatedOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, se
         return queryset.prefetch_related('currency')
 
     def to_representation(self, instances: List['AggregatedOutstandingBalance']):
-        # TODO: Convert all user prefered currency
-        return super().to_representation({'currency': None, 'amount': 0, 'balances': instances})
+        amount_by_currency = Counter()
+        for instance in instances:
+            amount_by_currency[instance.currency_id] += instance.amount
+
+        # TODO: Convert to user preferred currency
+        currency = instances[0].currency if instances else None
+        total_amount = sum(amount_by_currency.values())
+
+        return super().to_representation({
+            'currency': currency,
+            'amount': total_amount,
+            'balances': instances,
+        })
