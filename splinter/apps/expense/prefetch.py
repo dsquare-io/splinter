@@ -62,7 +62,7 @@ class AggregatedOutstandingBalancePrefetch(Prefetch):
         partition_by: Literal['user', 'group'],
         lookup: str = 'outstanding_balances',
         queryset: 'QuerySet' = None,
-        to_attr: Optional[str] = 'aggregated_outstanding_balances',
+        to_attr: Optional[str] = 'aggregated_outstanding_balance',
     ):
         if queryset is None:
             queryset = AggregatedOutstandingBalance.objects.all()

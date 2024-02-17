@@ -19,21 +19,21 @@ class FriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
 
 class FriendSerializer(PrefetchQuerysetSerializerMixin, UserSerializer):
     outstanding_balances = FriendOutstandingBalanceSerializer(many=True, read_only=True)
-    aggregated_outstanding_balances = AggregatedOutstandingBalanceSerializer(read_only=True)
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(read_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
+        fields = UserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
             .filter(user_id=self.context['request'].user.id)
 
-        aggregated_outstanding_balances_qs = self.prefetch_nested_queryset('aggregated_outstanding_balances') \
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
             .filter(user_id=self.context['request'].user.id)
 
         return queryset.prefetch_related(
             OutstandingBalancePrefetch('user', queryset=outstanding_balance_qs, limit=3),
-            AggregatedOutstandingBalancePrefetch('user', queryset=aggregated_outstanding_balances_qs),
+            AggregatedOutstandingBalancePrefetch('user', queryset=aggregated_outstanding_balance_qs),
         )
 
 

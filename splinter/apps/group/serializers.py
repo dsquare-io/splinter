@@ -41,21 +41,21 @@ class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer)
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
     outstanding_balances = GroupFriendOutstandingBalanceSerializer(many=True, read_only=True)
-    aggregated_outstanding_balances = AggregatedOutstandingBalanceSerializer(read_only=True)
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(read_only=True)
 
     class Meta(SimpleGroupSerializer.Meta):
-        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balances')
+        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
             .filter(user=self.context['request'].user)
 
-        aggregated_outstanding_balances_qs = self.prefetch_nested_queryset('aggregated_outstanding_balances') \
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
             .filter(user=self.context['request'].user)
 
         return queryset.prefetch_related(
             OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs, limit=3),
-            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balances_qs)
+            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs)
         )
 
 

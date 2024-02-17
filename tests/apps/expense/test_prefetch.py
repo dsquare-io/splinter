@@ -56,7 +56,7 @@ class GroupOutstandingBalancePrefetchTests(ExpenseTestCase):
 
         for group, expected_amount in zip(groups[:2], [75, 150]):
             with self.assertNumQueries(0):
-                outstanding_balances = group.aggregated_outstanding_balances
+                outstanding_balances = group.aggregated_outstanding_balance
                 self.assertEqual(len(outstanding_balances), 1)
                 self.assertEqual(outstanding_balances[0].amount, expected_amount)
                 self.assertEqual(outstanding_balances[0].currency_id, self.currency.pk)
