@@ -8,7 +8,7 @@ import {Link} from '@tanstack/react-router';
 import {GroupWithOutstandingBalance} from '../../../../api-types/components/schemas';
 
 export default function GroupListItem({
-  publicId,
+  uid,
   name,
   outstandingBalances,
   aggregatedOutstandingBalances,
@@ -16,10 +16,10 @@ export default function GroupListItem({
   return (
     <Link
       to="/groups/$group"
-      params={{group: publicId!}}
+      params={{group: uid!}}
       className={clx(
         'flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-brand-50',
-        outstandingBalances?.['PKR'].length == 0 ? 'item-center' : 'items-start'
+        outstandingBalances?.length == 0 ? 'item-center' : 'items-start'
       )}
     >
       <Avatar
@@ -32,36 +32,36 @@ export default function GroupListItem({
         </div>
         <div className="mt-1.5 text-xs font-normal text-gray-400 space-y-1">
           {+(aggregatedOutstandingBalances?.['PKR'] ?? 0) === 0 ||
-          outstandingBalances?.['PKR'].length == 0 ? (
+          outstandingBalances?.length == 0 ? (
             <p>
               <span className="font-medium text-brand-700">Settled up</span>
             </p>
           ) : undefined}
-          {outstandingBalances?.['PKR'].slice(0, 2).map((e) => (
+          {outstandingBalances?.slice(0, 3).map((e) => (
             <Fragment key={e.friend.uid}>
               {+e.amount != 0 && +e.amount > 0 && (
                 <p>
-                  {e.friend.name.split(' ')[0]} borrowed{' '}
+                  {e.friend.fullName?.split(' ')[0]} borrowed{' '}
                   <Currency
-                    currency="PKR"
+                    currency={e.currency}
                     value={parseFloat(e.amount)}
                   />
                 </p>
               )}
               {+e.amount != 0 && +e.amount < 0 && (
                 <p>
-                  {e.friend.name.split(' ')[0]} lent you {' '}
+                  {e.friend.fullName?.split(' ')[0]} lent you {' '}
                   <Currency
-                    currency="PKR"
+                    currency={e.currency}
                     value={parseFloat(e.amount)}
                   />
                 </p>
               )}
             </Fragment>
           ))}
-          {(outstandingBalances?.['PKR']?.length ?? 0) > 2 && (
+          {(outstandingBalances?.length ?? 0) > 3 && (
             <p className="text font-light text-gray-400">
-              and {(outstandingBalances?.['PKR']?.length ?? 0) - 2} more
+              and {(outstandingBalances?.length ?? 0) - 3} more
             </p>
           )}
         </div>

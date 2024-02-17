@@ -5,7 +5,6 @@ import {useLocalStorage} from '@mantine/hooks';
 import {ApiRoutes} from '@/api-types';
 import {axiosInstance, setHeaders} from '@/axios.ts';
 
-
 export enum AuthStatus {
   LOGGED_OUT = 1,
   VALIDATING = 2,
@@ -17,11 +16,13 @@ export default function useAuth() {
     key: 'splinter:access_token',
     serialize: (v) => v,
     deserialize: (v) => v!,
+    getInitialValueInEffect: false,
   });
   const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage({
     key: 'splinter:refresh_token',
     serialize: (v) => v,
     deserialize: (v) => v!,
+    getInitialValueInEffect: false,
   });
   const [validationResponse, setValidation] = useState<boolean | undefined>();
 
@@ -35,14 +36,14 @@ export default function useAuth() {
   useEffect(() => {
     if (accessToken) {
       axiosInstance
-         .get(ApiRoutes.PROFILE)
-         .then(() => setValidation(true))
-         .catch(() => {
-           removeToken();
-           removeRefreshToken();
-           setHeaders();
-           setValidation(false);
-         });
+        .get(ApiRoutes.PROFILE)
+        .then(() => setValidation(true))
+        .catch(() => {
+          removeToken();
+          removeRefreshToken();
+          setHeaders();
+          setValidation(false);
+        });
     } else {
       // user is logged out intentionally
       setValidation(false);

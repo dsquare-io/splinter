@@ -4,6 +4,19 @@ export interface AccessToken {
   expiresAt?: string;
 }
 
+export interface Activity {
+  /** Format: uuid */
+  uid: string;
+  urn: string;
+  user: User;
+  group: Group;
+  template: string;
+  description: string;
+  target: Target;
+  /** Format: date-time */
+  createdAt?: string;
+}
+
 export interface AuthTokenData {
   accessToken?: string;
   refreshToken?: string;
@@ -35,13 +48,32 @@ export interface ChangePassword {
   password: string;
 }
 
+export interface Comment {
+  /** Format: uuid */
+  uid: string;
+  urn: string;
+  user: User;
+  content: string;
+  /** Format: date-time */
+  createdAt?: string;
+}
+
 export interface Country {
+  uid: string;
+  urn: string;
   name: string;
   flag: string;
 }
 
+export interface CreateFriendship {
+  /** Format: email */
+  email: string;
+  name: string;
+}
+
 export interface Currency {
-  isoCode?: string;
+  uid: string;
+  urn: string;
   symbol?: string | null;
   country: Country;
 }
@@ -78,16 +110,20 @@ export interface ForgetPassword {
   email: string;
 }
 
-export interface Friend {
-  uid: string;
-  name: string;
-  invitationAccepted?: boolean;
-}
-
 export interface FriendOutstandingBalance {
+  /**
+   * @example {
+   *   "USD": "100.00"
+   * }
+   */
   group: {
     [key: string]: string;
   };
+  /**
+   * @example {
+   *   "USD": "100.00"
+   * }
+   */
   nonGroup?: {
     [key: string]: string;
   };
@@ -95,44 +131,56 @@ export interface FriendOutstandingBalance {
 
 export interface FriendWithOutstandingBalance {
   uid: string;
-  name: string;
-  invitationAccepted?: boolean;
+  urn: string;
+  fullName?: string;
+  /** @description Indicates whether the user is active or not. */
+  isActive?: boolean;
   outstandingBalances?: FriendOutstandingBalance;
+  /**
+   * @example {
+   *   "USD": "100.00"
+   * }
+   */
   aggregatedOutstandingBalances?: {
     [key: string]: string;
   };
+}
+
+export interface Group {
+  uid: string;
+  urn: string;
+  name: string;
 }
 
 export interface GroupDetail {
+  uid: string;
+  urn: string;
   name: string;
-  /** Format: uuid */
-  publicId?: string;
-  createdBy?: Friend;
-  members: readonly Friend[];
+  createdBy?: User;
+  members: readonly User[];
 }
 
-export interface GroupMemberOutstandingBalance {
-  friend: Friend;
+export interface GroupFriendOutstandingBalance {
+  friend: User;
   /** Format: decimal */
   amount: string;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
 }
 
 export interface GroupWithOutstandingBalance {
+  uid: string;
+  urn: string;
   name: string;
-  /** Format: uuid */
-  publicId?: string;
-  outstandingBalances?: {
-    [key: string]: GroupMemberOutstandingBalance[];
-  };
+  outstandingBalances?: readonly GroupFriendOutstandingBalance[];
+  /**
+   * @example {
+   *   "USD": "100.00"
+   * }
+   */
   aggregatedOutstandingBalances?: {
     [key: string]: string;
   };
-}
-
-export interface InviteFriend {
-  /** Format: email */
-  email: string;
-  name: string;
 }
 
 export interface MfaToken {
@@ -141,6 +189,38 @@ export interface MfaToken {
 
 export interface NotFound {
   detail: string;
+}
+
+export interface PaginatedActivityList {
+  /** @example 123 */
+  count?: number;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=400&limit=100
+   */
+  next?: string | null;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=200&limit=100
+   */
+  previous?: string | null;
+  results?: Activity[];
+}
+
+export interface PaginatedCommentList {
+  /** @example 123 */
+  count?: number;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=400&limit=100
+   */
+  next?: string | null;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=200&limit=100
+   */
+  previous?: string | null;
+  results?: Comment[];
 }
 
 export interface PaginatedFriendWithOutstandingBalanceList {
@@ -176,17 +256,19 @@ export interface PaginatedGroupWithOutstandingBalanceList {
 }
 
 export interface PatchedGroupDetail {
+  uid?: string;
+  urn?: string;
   name?: string;
-  /** Format: uuid */
-  publicId?: string;
-  createdBy?: Friend;
-  members?: readonly Friend[];
+  createdBy?: User;
+  members?: readonly User[];
 }
 
 export interface PatchedUserProfile {
-  /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-  username?: string;
-  displayName?: string;
+  uid?: string;
+  urn?: string;
+  fullName?: string;
+  /** @description Indicates whether the user is active or not. */
+  isActive?: boolean;
   firstName?: string;
   lastName?: string;
   /** Format: email */
@@ -204,6 +286,24 @@ export interface ResetPassword {
   password: string;
 }
 
+export interface Target {
+  /** @description Unique identifier of the target object */
+  uid: string;
+  urn: string;
+  /** @description Type of the target object */
+  type: string;
+  /** @description String representation of the target object */
+  value: string;
+}
+
+export interface User {
+  uid: string;
+  urn: string;
+  fullName?: string;
+  /** @description Indicates whether the user is active or not. */
+  isActive?: boolean;
+}
+
 export interface UserDeviceInfo {
   availableDevices?: AvailableDevice[];
   configuredDevices?: Device[];
@@ -211,9 +311,11 @@ export interface UserDeviceInfo {
 }
 
 export interface UserProfile {
-  /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-  username: string;
-  displayName?: string;
+  uid: string;
+  urn: string;
+  fullName?: string;
+  /** @description Indicates whether the user is active or not. */
+  isActive?: boolean;
   firstName?: string;
   lastName?: string;
   /** Format: email */

@@ -5,7 +5,7 @@ import {Link} from '@tanstack/react-router';
 import {FriendWithOutstandingBalance} from '../../../../api-types/components/schemas';
 
 export default function FriendListItem({
-  name,
+  fullName,
   uid,
   aggregatedOutstandingBalances,
 }: FriendWithOutstandingBalance) {
@@ -17,9 +17,9 @@ export default function FriendListItem({
     >
       <Avatar
         className="size-10"
-        fallback={name}
+        fallback={fullName}
       />
-      <div className="grow text-md py-1 font-medium text-gray-800">{name}</div>
+      <div className="grow text-md py-1 font-medium text-gray-800">{fullName}</div>
       {+aggregatedOutstandingBalances!['PKR'] === 0 ? (
         <div className="text-xs text-gray-400">Settled up</div>
       ) : (

@@ -5,6 +5,20 @@
 
 
 export interface paths {
+  "/api/activities": {
+    /** List Activity */
+    get: operations["ListActivity"];
+  };
+  "/api/activities/{activity_uid}/comments": {
+    /** List Comment */
+    get: operations["ListComment"];
+    /** Create Comment */
+    post: operations["CreateComment"];
+  };
+  "/api/activities/{activity_uid}/comments/{comment_uid}": {
+    /** Destroy Comment */
+    delete: operations["DestroyComment"];
+  };
   "/api/authn/password": {
     /** Password Login */
     post: operations["PasswordLogin"];
@@ -13,21 +27,27 @@ export interface paths {
     /** Refresh Access Token */
     post: operations["RefreshAccessToken"];
   };
-  "/api/currency/all": {
+  "/api/currencies": {
     /** List Currency */
     get: operations["ListCurrency"];
   };
-  "/api/friend/{username}": {
-    /** Retrieve Friend */
-    get: operations["RetrieveFriend"];
-  };
-  "/api/friend/all": {
+  "/api/friends": {
     /** List Friend */
     get: operations["ListFriend"];
     /** Create Friend */
     post: operations["CreateFriend"];
   };
-  "/api/group/{group_uid}": {
+  "/api/friends/{username}": {
+    /** Retrieve Friend */
+    get: operations["RetrieveFriend"];
+  };
+  "/api/groups": {
+    /** List Group */
+    get: operations["ListGroup"];
+    /** Create Group */
+    post: operations["CreateGroup"];
+  };
+  "/api/groups/{group_uid}": {
     /** Retrieve Group */
     get: operations["RetrieveGroup"];
     /** Update Group */
@@ -35,19 +55,13 @@ export interface paths {
     /** Partial Update Group */
     patch: operations["PartialUpdateGroup"];
   };
-  "/api/group/{group_uid}/members/{member_uid}": {
+  "/api/groups/{group_uid}/members/{member_uid}": {
     /** Destroy Group Membership */
     delete: operations["DestroyGroupMembership"];
   };
-  "/api/group/all": {
-    /** List Group */
-    get: operations["ListGroup"];
-    /** Create Group */
-    post: operations["CreateGroup"];
-  };
-  "/api/group/members": {
-    /** Create Group Membership */
-    post: operations["CreateGroupMembership"];
+  "/api/groups/members": {
+    /** Bulk Create Group Membership */
+    post: operations["BulkCreateGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -110,13 +124,16 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
+    Activity: import('./components/schemas.d.ts').Activity;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
     BulkCreateGroupMembership: import('./components/schemas.d.ts').BulkCreateGroupMembership;
     ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
     ChangePassword: import('./components/schemas.d.ts').ChangePassword;
+    Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
+    CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
@@ -124,21 +141,24 @@ export interface components {
     EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
     Error: import('./components/schemas.d.ts').Error;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
-    Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
     FriendWithOutstandingBalance: import('./components/schemas.d.ts').FriendWithOutstandingBalance;
+    Group: import('./components/schemas.d.ts').Group;
     GroupDetail: import('./components/schemas.d.ts').GroupDetail;
-    GroupMemberOutstandingBalance: import('./components/schemas.d.ts').GroupMemberOutstandingBalance;
+    GroupFriendOutstandingBalance: import('./components/schemas.d.ts').GroupFriendOutstandingBalance;
     GroupWithOutstandingBalance: import('./components/schemas.d.ts').GroupWithOutstandingBalance;
-    InviteFriend: import('./components/schemas.d.ts').InviteFriend;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
+    PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
+    PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
     PaginatedFriendWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedFriendWithOutstandingBalanceList;
     PaginatedGroupWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedGroupWithOutstandingBalanceList;
     PatchedGroupDetail: import('./components/schemas.d.ts').PatchedGroupDetail;
     PatchedUserProfile: import('./components/schemas.d.ts').PatchedUserProfile;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
+    Target: import('./components/schemas.d.ts').Target;
+    User: import('./components/schemas.d.ts').User;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
     UserProfile: import('./components/schemas.d.ts').UserProfile;
   };
@@ -155,6 +175,152 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /** List Activity */
+  ListActivity: {
+    parameters: {
+      query?: {
+        /** @description Number of results to return per page. */
+        limit?: number;
+        /** @description The initial index from which to return the results. */
+        offset?: number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').PaginatedActivityList;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** List Comment */
+  ListComment: {
+    parameters: {
+      query?: {
+        /** @description Number of results to return per page. */
+        limit?: number;
+        /** @description The initial index from which to return the results. */
+        offset?: number;
+      };
+      path: {
+        activity_uid: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').PaginatedCommentList;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Create Comment */
+  CreateComment: {
+    parameters: {
+      path: {
+        activity_uid: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').Comment;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      201: {
+        content: never;
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Comment */
+  DestroyComment: {
+    parameters: {
+      path: {
+        activity_uid: string;
+        comment_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
   /** Password Login */
   PasswordLogin: {
     requestBody: {
@@ -215,38 +381,6 @@ export interface operations {
       };
     };
   };
-  /** Retrieve Friend */
-  RetrieveFriend: {
-    parameters: {
-      path: {
-        username: string;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": import('./components/schemas').FriendWithOutstandingBalance;
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      404: {
-        content: {
-          "application/json": import('./components/schemas').NotFound;
-        };
-      };
-    };
-  };
   /** List Friend */
   ListFriend: {
     parameters: {
@@ -281,7 +415,105 @@ export interface operations {
   CreateFriend: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').InviteFriend;
+        "application/json": import('./components/schemas').CreateFriendship;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      201: {
+        content: never;
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Retrieve Friend */
+  RetrieveFriend: {
+    parameters: {
+      path: {
+        username: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').FriendWithOutstandingBalance;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** List Group */
+  ListGroup: {
+    parameters: {
+      query?: {
+        /** @description Number of results to return per page. */
+        limit?: number;
+        /** @description The initial index from which to return the results. */
+        offset?: number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').PaginatedGroupWithOutstandingBalanceList;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Create Group */
+  CreateGroup: {
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').GroupWithOutstandingBalance;
       };
     };
     responses: {
@@ -469,74 +701,8 @@ export interface operations {
       };
     };
   };
-  /** List Group */
-  ListGroup: {
-    parameters: {
-      query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
-      };
-    };
-    responses: {
-      200: {
-        content: {
-          "application/json": import('./components/schemas').PaginatedGroupWithOutstandingBalanceList;
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-    };
-  };
-  /** Create Group */
-  CreateGroup: {
-    requestBody: {
-      content: {
-        "application/json": import('./components/schemas').GroupWithOutstandingBalance;
-      };
-    };
-    responses: {
-      /** @description No response body */
-      201: {
-        content: never;
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": {
-            /** @description List of non-field errors */
-            ""?: string[];
-            [key: string]: string[] | undefined;
-          };
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-    };
-  };
-  /** Create Group Membership */
-  CreateGroupMembership: {
+  /** Bulk Create Group Membership */
+  BulkCreateGroupMembership: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').BulkCreateGroupMembership;
