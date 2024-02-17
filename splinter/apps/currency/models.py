@@ -20,7 +20,7 @@ class Country(models.Model):
     class Meta:
         db_table = 'countries'
         verbose_name_plural = 'Countries'
-        constraints = [models.UniqueConstraint(Lower('code'), name='country_code_unique_constraint')]
+        constraints = (models.UniqueConstraint(Lower('code'), name='country_code_unique_constraint'), )
 
     def __str__(self):
         return self.name
