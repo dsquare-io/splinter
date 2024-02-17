@@ -37,7 +37,9 @@ export default function useAuth() {
 
   useEffect(() => {
     if (!profileRequest) {
-      profileRequest = axiosInstance.get(ApiRoutes.PROFILE);
+      profileRequest = axiosInstance.get(ApiRoutes.PROFILE).finally(() => {
+        profileRequest = undefined;
+      });
     }
 
     if (accessToken) {
@@ -48,9 +50,6 @@ export default function useAuth() {
           removeRefreshToken();
           setHeaders();
           setValidation(false);
-        })
-        .finally(() => {
-          profileRequest = undefined;
         });
     } else {
       // user is logged out intentionally

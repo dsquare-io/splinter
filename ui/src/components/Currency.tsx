@@ -5,7 +5,7 @@ import {twMerge} from 'tailwind-merge';
 
 interface Props extends Omit<ComponentProps<'span'>, 'children'> {
   currency: string;
-  value: number;
+  value: number | string;
 }
 
 export default function Currency({value, currency, className, ...props}: Props) {
@@ -20,9 +20,9 @@ export default function Currency({value, currency, className, ...props}: Props) 
   return (
     <span
       {...props}
-      className={twMerge('tabular-nums', className, value < 0 ? 'text-red-600' : 'text-green-700')}
+      className={twMerge('tabular-nums', className, +value < 0 ? 'text-red-600' : 'text-green-700')}
     >
-      {formatter.format(value)}
+      {formatter.format(+value)}
     </span>
   );
 }

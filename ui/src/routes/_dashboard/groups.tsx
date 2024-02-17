@@ -23,9 +23,8 @@ function GroupsLayout() {
 
   const aggregatedOutstandingBalance = data?.results?.reduce(
     (acc, group) => {
-      for (const currency of Object.keys(group.aggregatedOutstandingBalances ?? {})) {
-        acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalances?.[currency] ?? 0);
-      }
+      const currency = group.aggregatedOutstandingBalance?.currency.uid ?? '';
+      acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalance?.amount ?? 0);
       return acc;
     },
     {} as Record<string, number>
