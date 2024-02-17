@@ -4,7 +4,7 @@ from splinter.apps.currency.models import Country, Currency
 
 
 class CountrySerializer(serializers.ModelSerializer):
-    uid = serializers.CharField(source='name')
+    uid = serializers.CharField(source='code')
     urn = serializers.CharField(read_only=True)
 
     class Meta:

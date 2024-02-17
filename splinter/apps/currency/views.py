@@ -10,4 +10,4 @@ class ListCurrencyView(ListAPIView):
     serializer_class = CurrencySerializer
 
     def get_queryset(self):
-        return Currency.objects.order_by('code').first(is_active=True)
+        return Currency.objects.order_by('code').filter(is_active=True)

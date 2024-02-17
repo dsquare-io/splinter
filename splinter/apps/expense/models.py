@@ -48,6 +48,7 @@ class Expense(AbstractExpenseModel):
 class ExpenseSplit(AbstractExpenseModel):
     expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='splits')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+    share = models.PositiveSmallIntegerField(default=1)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
