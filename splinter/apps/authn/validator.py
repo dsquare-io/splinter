@@ -32,10 +32,10 @@ class TokenValidator:
                 code='authn:token_expired',
             )
 
-        if isinstance(ex, jwt.InvalidTokenError):
-            return self.error_class(f'Invalid token: {ex}', code='authn:invalid_token')
+        if isinstance(ex, jwt.DecodeError):
+            return self.error_class(f'Unable to decode JWT token. Reason: {ex}', code='authn:jwt_decode_error')
 
-        return self.error_class(f'Unable to decode JWT token. Reason: {ex}', code='authn:jwt_error')
+        return self.error_class(f'Invalid token: {ex}', code='authn:invalid_token')
 
     def validate_kind(self, token: str) -> None:
         if jwt.get_unverified_header(token).get('kid') != self.kind:
@@ -61,9 +61,8 @@ class TokenValidator:
         return user_secret
 
     def validate(self, token: str) -> ValidatedToken:
-        self.validate_kind(token)
-
         try:
+            self.validate_kind(token)
             decoded_payload = jwt.decode(token, options={'verify_signature': False})
         except jwt.PyJWTError as ex:
             raise self.translate_jwt_error(ex)
