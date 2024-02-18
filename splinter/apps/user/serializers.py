@@ -4,7 +4,7 @@ from rest_framework import serializers
 from splinter.apps.user.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class SimpleUserSerializer(serializers.ModelSerializer):
     uid = serializers.CharField(source='username')
     urn = serializers.CharField(read_only=True)
 
@@ -16,10 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'full_name', 'is_active')
 
 
-class UserProfileSerializer(UserSerializer):
-    class Meta:
-        model = User
-        fields = UserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified')
+class UserSerializer(SimpleUserSerializer):
+    class Meta(SimpleUserSerializer.Meta):
+        fields = SimpleUserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified')
         read_only_fields = ('is_verified', )
 
 

@@ -1,6 +1,6 @@
 export const Paths = {
   ACTIVITY_LIST: '/api/activities',
-  BULK_CREATE_GROUP_MEMBERSHIP: '/api/groups/members',
+  BULK_GROUP_MEMBERSHIP: '/api/groups/members',
   CHALLENGE_MFA_DEVICE: '/api/mfa/challenge/{device_type}',
   CHANGE_PASSWORD: '/api/user/password',
   COMMENT_DETAIL: '/api/activities/{activity_uid}/comments/{comment_uid}',

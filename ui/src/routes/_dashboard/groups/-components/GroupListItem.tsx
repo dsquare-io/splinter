@@ -5,14 +5,14 @@ import Currency from '@components/Currency.tsx';
 import {Avatar} from '@components/common/Avatar.tsx';
 import {Link} from '@tanstack/react-router';
 
-import {GroupWithOutstandingBalance} from '@/api-types/components/schemas';
+import {Group} from '@/api-types/components/schemas';
 
 export default function GroupListItem({
   uid,
   name,
   outstandingBalances,
-  aggregatedOutstandingBalances,
-}: GroupWithOutstandingBalance) {
+  aggregatedOutstandingBalance,
+}: Group) {
   return (
     <Link
       to="/groups/$group"
@@ -27,32 +27,29 @@ export default function GroupListItem({
         fallback={name}
       />
       <div className="grow text-sm font-medium text-gray-800">
-        <div className="text-md py-1">
-          {name}
-        </div>
-        <div className="mt-1.5 text-xs font-normal text-gray-400 space-y-1">
-          {+(aggregatedOutstandingBalances?.['PKR'] ?? 0) === 0 ||
-          outstandingBalances?.length == 0 ? (
+        <div className="text-md py-1">{name}</div>
+        <div className="mt-1.5 space-y-1 text-xs font-normal text-gray-400">
+          {+(aggregatedOutstandingBalance?.amount ?? 0) === 0 && (
             <p>
               <span className="font-medium text-brand-700">Settled up</span>
             </p>
-          ) : undefined}
+          )}
           {outstandingBalances?.slice(0, 3).map((e) => (
             <Fragment key={e.friend.uid}>
               {+e.amount != 0 && +e.amount > 0 && (
                 <p>
-                  {e.friend.fullName?.split(' ')[0]} borrowed{' '}
+                  {e.friend.fullName} borrowed{' '}
                   <Currency
-                    currency={e.currency}
+                    currency={e.currency.uid}
                     value={parseFloat(e.amount)}
                   />
                 </p>
               )}
               {+e.amount != 0 && +e.amount < 0 && (
                 <p>
-                  {e.friend.fullName?.split(' ')[0]} lent you {' '}
+                  {e.friend.fullName} lent you{' '}
                   <Currency
-                    currency={e.currency}
+                    currency={e.currency.uid}
                     value={parseFloat(e.amount)}
                   />
                 </p>
@@ -60,22 +57,20 @@ export default function GroupListItem({
             </Fragment>
           ))}
           {(outstandingBalances?.length ?? 0) > 3 && (
-            <p className="text font-light text-gray-400">
-              and {(outstandingBalances?.length ?? 0) - 3} more
-            </p>
+            <p className="text font-light text-gray-400">and {(outstandingBalances?.length ?? 0) - 3} more</p>
           )}
         </div>
       </div>
-      {+(aggregatedOutstandingBalances?.['PKR'] ?? 0) === 0 ? (
+      {+(aggregatedOutstandingBalance?.amount ?? 0) === 0 ? (
         <div className="text-xs text-gray-400">Settled up</div>
       ) : (
-        <div className="text-right text-sm -mt-1">
+        <div className="-mt-1 text-right text-sm">
           <div className="text-xs text-gray-400">
-            {parseFloat(aggregatedOutstandingBalances?.['PKR'] ?? '0') > 0 ? 'You lent' : 'You borrowed'}
+            {parseFloat(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
           </div>
           <Currency
             currency="PKR"
-            value={parseFloat(aggregatedOutstandingBalances?.['PKR'] ?? '0')}
+            value={aggregatedOutstandingBalance?.amount ?? '0'}
           />
         </div>
       )}

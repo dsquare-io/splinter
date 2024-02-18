@@ -8,13 +8,20 @@ export interface Activity {
   /** Format: uuid */
   uid: string;
   urn: string;
-  user: User;
-  group: Group;
+  user: SimpleUser;
+  group: SimpleGroup;
   template: string;
   description: string;
   target: Target;
   /** Format: date-time */
   createdAt?: string;
+}
+
+export interface AggregatedOutstandingBalance {
+  currency: SimpleCurrency;
+  /** Format: decimal */
+  amount: string;
+  balances: readonly OutstandingBalance[];
 }
 
 export interface AuthTokenData {
@@ -52,7 +59,7 @@ export interface Comment {
   /** Format: uuid */
   uid: string;
   urn: string;
-  user: User;
+  user: SimpleUser;
   content: string;
   /** Format: date-time */
   createdAt?: string;
@@ -110,77 +117,44 @@ export interface ForgetPassword {
   email: string;
 }
 
-export interface FriendOutstandingBalance {
-  /**
-   * @example {
-   *   "USD": "100.00"
-   * }
-   */
-  group: {
-    [key: string]: string;
-  };
-  /**
-   * @example {
-   *   "USD": "100.00"
-   * }
-   */
-  nonGroup?: {
-    [key: string]: string;
-  };
-}
-
-export interface FriendWithOutstandingBalance {
+export interface Friend {
   uid: string;
   urn: string;
   fullName?: string;
   /** @description Indicates whether the user is active or not. */
   isActive?: boolean;
-  outstandingBalances?: FriendOutstandingBalance;
-  /**
-   * @example {
-   *   "USD": "100.00"
-   * }
-   */
-  aggregatedOutstandingBalances?: {
-    [key: string]: string;
-  };
+  outstandingBalances?: readonly FriendOutstandingBalance[];
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
+}
+
+export interface FriendOutstandingBalance {
+  /** Format: decimal */
+  amount: string;
+  currency: SimpleCurrency;
+  group: SimpleGroup;
 }
 
 export interface Group {
   uid: string;
   urn: string;
   name: string;
+  outstandingBalances?: readonly GroupFriendOutstandingBalance[];
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
 }
 
 export interface GroupDetail {
   uid: string;
   urn: string;
   name: string;
-  createdBy?: User;
-  members: readonly User[];
+  createdBy?: SimpleUser;
+  members: readonly SimpleUser[];
 }
 
 export interface GroupFriendOutstandingBalance {
-  friend: User;
   /** Format: decimal */
   amount: string;
-  /** @description ISO 4217 Currency Code */
-  currency: string;
-}
-
-export interface GroupWithOutstandingBalance {
-  uid: string;
-  urn: string;
-  name: string;
-  outstandingBalances?: readonly GroupFriendOutstandingBalance[];
-  /**
-   * @example {
-   *   "USD": "100.00"
-   * }
-   */
-  aggregatedOutstandingBalances?: {
-    [key: string]: string;
-  };
+  currency: SimpleCurrency;
+  friend: SimpleUser;
 }
 
 export interface MfaToken {
@@ -189,6 +163,12 @@ export interface MfaToken {
 
 export interface NotFound {
   detail: string;
+}
+
+export interface OutstandingBalance {
+  /** Format: decimal */
+  amount: string;
+  currency: SimpleCurrency;
 }
 
 export interface PaginatedActivityList {
@@ -223,7 +203,7 @@ export interface PaginatedCommentList {
   results?: Comment[];
 }
 
-export interface PaginatedFriendWithOutstandingBalanceList {
+export interface PaginatedFriendList {
   /** @example 123 */
   count?: number;
   /**
@@ -236,10 +216,10 @@ export interface PaginatedFriendWithOutstandingBalanceList {
    * @example http://api.example.org/accounts/?offset=200&limit=100
    */
   previous?: string | null;
-  results?: FriendWithOutstandingBalance[];
+  results?: Friend[];
 }
 
-export interface PaginatedGroupWithOutstandingBalanceList {
+export interface PaginatedGroupList {
   /** @example 123 */
   count?: number;
   /**
@@ -252,18 +232,18 @@ export interface PaginatedGroupWithOutstandingBalanceList {
    * @example http://api.example.org/accounts/?offset=200&limit=100
    */
   previous?: string | null;
-  results?: GroupWithOutstandingBalance[];
+  results?: Group[];
 }
 
 export interface PatchedGroupDetail {
   uid?: string;
   urn?: string;
   name?: string;
-  createdBy?: User;
-  members?: readonly User[];
+  createdBy?: SimpleUser;
+  members?: readonly SimpleUser[];
 }
 
-export interface PatchedUserProfile {
+export interface PatchedUser {
   uid?: string;
   urn?: string;
   fullName?: string;
@@ -286,6 +266,26 @@ export interface ResetPassword {
   password: string;
 }
 
+export interface SimpleCurrency {
+  uid: string;
+  urn: string;
+  symbol?: string | null;
+}
+
+export interface SimpleGroup {
+  uid: string;
+  urn: string;
+  name: string;
+}
+
+export interface SimpleUser {
+  uid: string;
+  urn: string;
+  fullName?: string;
+  /** @description Indicates whether the user is active or not. */
+  isActive?: boolean;
+}
+
 export interface Target {
   /** @description Unique identifier of the target object */
   uid: string;
@@ -302,24 +302,16 @@ export interface User {
   fullName?: string;
   /** @description Indicates whether the user is active or not. */
   isActive?: boolean;
+  firstName?: string;
+  lastName?: string;
+  /** Format: email */
+  email?: string | null;
+  isVerified?: boolean;
 }
 
 export interface UserDeviceInfo {
   availableDevices?: AvailableDevice[];
   configuredDevices?: Device[];
   authenticationMethods?: Device[];
-}
-
-export interface UserProfile {
-  uid: string;
-  urn: string;
-  fullName?: string;
-  /** @description Indicates whether the user is active or not. */
-  isActive?: boolean;
-  firstName?: string;
-  lastName?: string;
-  /** Format: email */
-  email?: string | null;
-  isVerified?: boolean;
 }
 

@@ -60,8 +60,8 @@ export interface paths {
     delete: operations["DestroyGroupMembership"];
   };
   "/api/groups/members": {
-    /** Bulk Create Group Membership */
-    post: operations["BulkCreateGroupMembership"];
+    /** Create Bulk Group Membership */
+    post: operations["CreateBulkGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -125,6 +125,7 @@ export interface components {
   schemas: {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
+    AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
@@ -141,26 +142,28 @@ export interface components {
     EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
     Error: import('./components/schemas.d.ts').Error;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
+    Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
-    FriendWithOutstandingBalance: import('./components/schemas.d.ts').FriendWithOutstandingBalance;
     Group: import('./components/schemas.d.ts').Group;
     GroupDetail: import('./components/schemas.d.ts').GroupDetail;
     GroupFriendOutstandingBalance: import('./components/schemas.d.ts').GroupFriendOutstandingBalance;
-    GroupWithOutstandingBalance: import('./components/schemas.d.ts').GroupWithOutstandingBalance;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
+    OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
-    PaginatedFriendWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedFriendWithOutstandingBalanceList;
-    PaginatedGroupWithOutstandingBalanceList: import('./components/schemas.d.ts').PaginatedGroupWithOutstandingBalanceList;
+    PaginatedFriendList: import('./components/schemas.d.ts').PaginatedFriendList;
+    PaginatedGroupList: import('./components/schemas.d.ts').PaginatedGroupList;
     PatchedGroupDetail: import('./components/schemas.d.ts').PatchedGroupDetail;
-    PatchedUserProfile: import('./components/schemas.d.ts').PatchedUserProfile;
+    PatchedUser: import('./components/schemas.d.ts').PatchedUser;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
+    SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
+    SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
+    SimpleUser: import('./components/schemas.d.ts').SimpleUser;
     Target: import('./components/schemas.d.ts').Target;
     User: import('./components/schemas.d.ts').User;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
-    UserProfile: import('./components/schemas.d.ts').UserProfile;
   };
   responses: never;
   parameters: never;
@@ -394,7 +397,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedFriendWithOutstandingBalanceList;
+          "application/json": import('./components/schemas').PaginatedFriendList;
         };
       };
       /** @description Unauthorized */
@@ -457,7 +460,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').FriendWithOutstandingBalance;
+          "application/json": import('./components/schemas').Friend;
         };
       };
       /** @description Unauthorized */
@@ -492,7 +495,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedGroupWithOutstandingBalanceList;
+          "application/json": import('./components/schemas').PaginatedGroupList;
         };
       };
       /** @description Unauthorized */
@@ -513,7 +516,7 @@ export interface operations {
   CreateGroup: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').GroupWithOutstandingBalance;
+        "application/json": import('./components/schemas').Group;
       };
     };
     responses: {
@@ -701,8 +704,8 @@ export interface operations {
       };
     };
   };
-  /** Bulk Create Group Membership */
-  BulkCreateGroupMembership: {
+  /** Create Bulk Group Membership */
+  CreateBulkGroupMembership: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').BulkCreateGroupMembership;
@@ -1107,7 +1110,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').UserProfile;
+          "application/json": import('./components/schemas').User;
         };
       };
       /** @description Unauthorized */
@@ -1128,7 +1131,7 @@ export interface operations {
   UpdateProfile: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').UserProfile;
+        "application/json": import('./components/schemas').User;
       };
     };
     responses: {
@@ -1164,7 +1167,7 @@ export interface operations {
   PartialUpdateProfile: {
     requestBody?: {
       content: {
-        "application/json": import('./components/schemas').PatchedUserProfile;
+        "application/json": import('./components/schemas').PatchedUser;
       };
     };
     responses: {

@@ -19,4 +19,4 @@ class FriendshipManager(SoftDeleteManager):
         return User.objects.filter(Exists(qs))
 
     def of(self, user_a: User, user_b: User) -> 'Friendship':
-        return self.filter(Q(user_a=user_a, user_b=user_b) | Q(user_a=user_b, user_b=user_a)).get()
+        return self.get(Q(user_a=user_a, user_b=user_b) | Q(user_a=user_b, user_b=user_a))

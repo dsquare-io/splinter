@@ -3,12 +3,7 @@ from typing import Dict, List, Optional, Type
 
 from django.test import TestCase
 
-from splinter.apps.expense.models import (
-    AbstractOutstandingBalanceModel,
-    ExpenseSplit,
-    FriendOutstandingBalance,
-    UserOutstandingBalance,
-)
+from splinter.apps.expense.models import ExpenseSplit, OutstandingBalance
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
 from tests.apps.currency.factories import CurrencyFactory
@@ -61,15 +56,15 @@ class ExpenseTestCase(TestCase):
         return expense
 
     @staticmethod
-    def get_outstanding_balance(model_cls: Type[AbstractOutstandingBalanceModel], **filters) -> Optional[Decimal]:
-        instance = model_cls.objects.filter(**filters).first()
+    def get_outstanding_balance(**filters) -> Optional[Decimal]:
+        instance = OutstandingBalance.objects.filter(**filters).first()
         if instance is not None:
             return instance.amount
 
     def assertUserOutstandingBalance(self, amount_by_user: Dict[User, Optional[int]]) -> None:
         for i, (user, expected_amount) in enumerate(amount_by_user.items(), 1):
             self.assertEqual(
-                self.get_outstanding_balance(UserOutstandingBalance, user=user, currency=self.currency),
+                OutstandingBalance.objects.get_user_balance(user=user).get(self.currency.code, None),
                 expected_amount,
                 f'User {i} outstanding balance should be {expected_amount}',
             )
@@ -79,16 +74,14 @@ class ExpenseTestCase(TestCase):
     ) -> None:
         for i, (friend, expected_amount) in enumerate(amount_by_friend.items(), 1):
             self.assertEqual(
-                self.get_outstanding_balance(
-                    FriendOutstandingBalance, user=payer, friend=friend, currency=self.currency, group=group
-                ), expected_amount, f'Payer outstanding balance with Friend {i} should be {expected_amount}'
+                self.get_outstanding_balance(user=payer, friend=friend, currency=self.currency, group=group),
+                expected_amount, f'Payer outstanding balance with Friend {i} should be {expected_amount}'
             )
 
             inverse_expected_amount = -expected_amount if expected_amount else expected_amount
 
             self.assertEqual(
-                self.get_outstanding_balance(
-                    FriendOutstandingBalance, user=friend, friend=payer, currency=self.currency, group=group
-                ), inverse_expected_amount,
+                self.get_outstanding_balance(user=friend, friend=payer, currency=self.currency,
+                                             group=group), inverse_expected_amount,
                 f'Friend {i} outstanding balance with Payer should be {inverse_expected_amount}'
             )

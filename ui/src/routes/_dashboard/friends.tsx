@@ -22,14 +22,13 @@ function FriendsLayout() {
   const {data} = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   const aggregatedOutstandingBalance = data?.results?.reduce(
-    (acc, friendship) => {
-      for (const currency of Object.keys(friendship.aggregatedOutstandingBalances ?? {})) {
-        acc[currency] = (acc[currency] ?? 0) + +(friendship.aggregatedOutstandingBalances?.[currency] ?? 0);
-      }
+    (acc, friend) => {
+      const currency = friend.aggregatedOutstandingBalance?.currency?.uid ?? '';
+      acc[currency] = (acc[currency] ?? 0) + +(friend.aggregatedOutstandingBalance?.amount ?? 0);
       return acc;
     },
     {} as Record<string, number>
-  ) as Record<string, number>;
+  );
 
   return (
     <>

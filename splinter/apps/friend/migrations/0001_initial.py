@@ -22,15 +22,13 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 (
-                    'source',
+                    'user_a',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        related_name='friends',
-                        to=settings.AUTH_USER_MODEL
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
                     )
                 ),
                 (
-                    'target',
+                    'user_b',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
                     )
@@ -38,7 +36,13 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'friendships',
-                'unique_together': {('source', 'target')},
+                'unique_together': {('user_a', 'user_b')},
             },
+        ),
+        migrations.AddConstraint(
+            model_name='friendship',
+            constraint=models.CheckConstraint(
+                check=~models.Q(('user_a', models.F('user_b'))), name='no_self_friendship'
+            ),
         ),
     ]

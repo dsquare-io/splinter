@@ -3,8 +3,9 @@ from rest_framework import serializers
 
 from splinter.apps.activity.logger import ActivityType
 from splinter.apps.activity.models import Activity, Comment
-from splinter.apps.group.serializers import GroupSerializer
-from splinter.apps.user.serializers import UserSerializer
+from splinter.apps.group.serializers import SimpleGroupSerializer
+from splinter.apps.user.serializers import SimpleUserSerializer
+from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
 class TargetSerializer(serializers.Serializer):
@@ -27,12 +28,12 @@ class TargetSerializer(serializers.Serializer):
         return str(obj)
 
 
-class ActivitySerializer(serializers.ModelSerializer):
+class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     uid = serializers.ReadOnlyField(source='public_id')
     urn = serializers.CharField(read_only=True)
 
-    user = UserSerializer(read_only=True)
-    group = GroupSerializer(read_only=True)
+    user = SimpleUserSerializer(read_only=True)
+    group = SimpleGroupSerializer(read_only=True)
 
     target = TargetSerializer(read_only=True)
     template = serializers.SerializerMethodField()
@@ -40,6 +41,9 @@ class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = ('uid', 'urn', 'user', 'group', 'template', 'description', 'target', 'created_at')
+
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset(queryset).prefetch_related('user', 'group', 'target')
 
     @extend_schema_field(serializers.CharField())
     def get_template(self, activity: 'Activity') -> str:
@@ -50,12 +54,15 @@ class ActivitySerializer(serializers.ModelSerializer):
         return template
 
 
-class CommentSerializer(serializers.ModelSerializer):
+class CommentSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     uid = serializers.ReadOnlyField(source='public_id')
     urn = serializers.CharField(read_only=True)
 
-    user = UserSerializer(read_only=True)
+    user = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
         fields = ('uid', 'urn', 'user', 'content', 'created_at')
+
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset(queryset).prefetch_related('user')

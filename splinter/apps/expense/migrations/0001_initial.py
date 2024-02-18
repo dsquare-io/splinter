@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('currency', '0001_initial'),
         ('group', '0001_initial'),
+        ('friend', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -75,6 +76,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('public_id', models.UUIDField(editable=False, unique=True)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=9)),
+                ('share', models.PositiveSmallIntegerField(default=1)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 (
@@ -102,7 +104,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='FriendOutstandingBalance',
+            name='OutstandingBalance',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('removed_at', models.DateTimeField(blank=True, db_index=True, editable=False, null=True)),
@@ -118,7 +120,9 @@ class Migration(migrations.Migration):
                 (
                     'friend',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='outstanding_balances',
+                        to=settings.AUTH_USER_MODEL
                     )
                 ),
                 (
@@ -127,7 +131,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name='+',
+                        related_name='outstanding_balances',
                         to='group.group'
                     )
                 ),
@@ -139,34 +143,41 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                'db_table': 'friend_outstanding_balances',
+                'db_table': 'outstanding_balances',
                 'unique_together': {('group', 'user', 'friend', 'currency', 'removed_at')},
             },
         ),
         migrations.CreateModel(
-            name='UserOutstandingBalance',
+            name='AggregatedOutstandingBalance',
+            fields=[],
+            options={
+                'proxy': True,
+                'indexes': [],
+                'constraints': [],
+            },
+            bases=('expense.outstandingbalance', ),
+        ),
+        migrations.CreateModel(
+            name='ExpenseParty',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('removed_at', models.DateTimeField(blank=True, db_index=True, editable=False, null=True)),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
                 (
-                    'currency',
+                    'expense',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
+                        on_delete=django.db.models.deletion.CASCADE, related_name='friendships', to='expense.expense'
                     )
                 ),
                 (
-                    'user',
+                    'friendship',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='friend.friendship'
                     )
                 ),
             ],
             options={
-                'db_table': 'user_outstanding_balances',
-                'unique_together': {('user', 'currency', 'removed_at')},
+                'db_table': 'expense_parties',
+                'unique_together': {('expense', 'friendship')},
             },
         ),
     ]

@@ -17,7 +17,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Country',
             fields=[
-                ('code', models.CharField(max_length=2, primary_key=True, serialize=False)),
+                (
+                    'code',
+                    models.CharField(
+                        help_text='ISO 3166-1 Alpha-2 Country Code', max_length=2, primary_key=True, serialize=False
+                    )
+                ),
                 ('name', models.CharField(max_length=128)),
                 ('flag', models.CharField(max_length=8)),
             ],
@@ -33,7 +38,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Currency',
             fields=[
-                ('code', models.CharField(max_length=3, primary_key=True, serialize=False)),
+                (
+                    'code',
+                    models.CharField(
+                        max_length=3, primary_key=True, serialize=False, help_text='ISO 4217 Currency Code'
+                    )
+                ),
                 ('symbol', models.CharField(blank=True, max_length=3, null=True)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

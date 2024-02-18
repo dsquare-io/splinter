@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.manager import BaseManager
+from django.db.models.manager import BaseManager, Manager
 from django.utils import timezone
 
 
@@ -11,7 +11,7 @@ class SoftDeleteQuerySet(models.QuerySet):
         return True, self.update(removed_at=timezone.now())
 
 
-class SoftDeleteManager(BaseManager.from_queryset(SoftDeleteQuerySet)):
+class SoftDeleteManager(Manager, BaseManager.from_queryset(SoftDeleteQuerySet)):
     def get_queryset(self):
         return super().get_queryset().filter(removed_at__isnull=True)
 
