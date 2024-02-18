@@ -13,7 +13,7 @@ class ListCreateFriendView(ListAPIView, CreateAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['outstanding_balance_limit'] = 3
+        context['outstanding_balance_limit'] = 5
         return context
 
     def get_queryset(self):

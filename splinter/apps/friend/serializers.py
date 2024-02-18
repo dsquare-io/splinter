@@ -18,8 +18,12 @@ class FriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
 
 
 class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):
-    outstanding_balances = FriendOutstandingBalanceSerializer(many=True, read_only=True)
-    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(read_only=True)
+    outstanding_balances = FriendOutstandingBalanceSerializer(
+        many=True, read_only=True, help_text='Outstanding balances for current user. Only top 5 on list view'
+    )
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(
+        read_only=True, help_text='Aggregated outstanding balance for the current user'
+    )
 
     class Meta(SimpleUserSerializer.Meta):
         fields = SimpleUserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')

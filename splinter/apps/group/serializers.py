@@ -41,8 +41,12 @@ class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer)
 
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
-    outstanding_balances = GroupFriendOutstandingBalanceSerializer(many=True, read_only=True)
-    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(read_only=True)
+    outstanding_balances = GroupFriendOutstandingBalanceSerializer(
+        many=True, read_only=True, help_text='Top 5 Outstanding balances for current user'
+    )
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(
+        read_only=True, help_text='Aggregated outstanding balance for the current user'
+    )
 
     class Meta(SimpleGroupSerializer.Meta):
         fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
@@ -55,20 +59,27 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
             .filter(user=self.context['request'].user)
 
         return super().prefetch_queryset(queryset).prefetch_related(
-            OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs, limit=3),
-            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs)
+            OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs, limit=5),
+            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
         )
 
 
 class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
-    outstanding_balances = GroupOutstandingBalanceSerializer(many=True, read_only=True)
+    outstanding_balances = GroupOutstandingBalanceSerializer(
+        many=True, read_only=True, help_text='Outstanding balances for all group members'
+    )
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(
+        read_only=True, help_text='Aggregated outstanding balance for the current user'
+    )
 
     created_by = SimpleUserSerializer(read_only=True)
     members = SimpleUserSerializer(many=True, read_only=True)
 
     class Meta(SimpleGroupSerializer.Meta):
         model = Group
-        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'created_by', 'members')
+        fields = SimpleGroupSerializer.Meta.fields + (
+            'outstanding_balances', 'aggregated_outstanding_balance', 'created_by', 'members'
+        )
 
     def prefetch_queryset(self, queryset=None):
         user_q = Q(user=self.context['request'].user)
@@ -76,8 +87,12 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
             .filter(user_q | (Q(amount__gt=0) & ~user_q))
 
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
+            .filter(user_q)
+
         return super().prefetch_queryset(queryset).prefetch_related(
             OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs),
+            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
         )
 
 
