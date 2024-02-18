@@ -1,4 +1,3 @@
-from collections import Counter
 from decimal import Decimal
 from typing import List
 
@@ -8,6 +7,7 @@ from rest_framework import serializers
 
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
+from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -104,7 +104,6 @@ class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.
 class AggregatedOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
     currency = SimpleCurrencySerializer(read_only=True)
     amount = serializers.DecimalField(max_digits=9, decimal_places=2)
-
     balances = OutstandingBalanceSerializer(many=True, read_only=True)
 
     def prefetch_queryset(self, queryset=None):
@@ -114,16 +113,41 @@ class AggregatedOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, se
         return queryset.prefetch_related('currency')
 
     def to_representation(self, instances: List['AggregatedOutstandingBalance']):
-        amount_by_currency = Counter()
-        for instance in instances:
-            amount_by_currency[instance.currency_id] += instance.amount
-
-        # TODO: Convert to user preferred currency
-        currency = instances[0].currency if instances else None
-        total_amount = sum(amount_by_currency.values())
-
+        converted = simplify_outstanding_balances(self.context['request'].user, instances)
         return super().to_representation({
-            'currency': currency,
-            'amount': total_amount,
+            'currency': converted.currency,
+            'amount': converted.amount,
             'balances': instances,
+        })
+
+
+class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
+    currency = SimpleCurrencySerializer(read_only=True)
+    amount = serializers.DecimalField(max_digits=9, decimal_places=2)
+
+    paid = AggregatedOutstandingBalanceSerializer(read_only=True)
+    borrowed = AggregatedOutstandingBalanceSerializer(read_only=True)
+
+    def prefetch_queryset(self, queryset=None):
+        if queryset is None:
+            queryset = OutstandingBalance.objects.all()
+
+        return queryset.prefetch_related('currency')
+
+    def to_representation(self, instances: List['AggregatedOutstandingBalance']):
+        paid = []
+        borrowed = []
+
+        for balance in instances:
+            if balance.amount > 0:
+                paid.append(balance)
+            else:
+                borrowed.append(balance)
+
+        converted = simplify_outstanding_balances(self.context['request'].user, instances)
+        return super().to_representation({
+            'paid': paid,
+            'borrowed': borrowed,
+            'currency': converted.currency,
+            'amount': converted.amount,
         })

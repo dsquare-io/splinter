@@ -1,15 +1,16 @@
 from functools import cached_property
 
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Case, Exists, IntegerField, OuterRef, Q, Sum, When, Window
+from django.db.models.functions import RowNumber
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.expense.models import Expense, ExpenseParty
-from splinter.apps.expense.serializers import ExpenseSerializer
+from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
+from splinter.apps.expense.serializers import ExpenseSerializer, UserOutstandingBalanceSerializer
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
-from splinter.core.views import ListAPIView
+from splinter.core.views import GenericAPIView, ListAPIView
 
 
 class AbstractListExpenseView(ListAPIView):
@@ -42,3 +43,18 @@ class ListGroupExpenseView(AbstractListExpenseView):
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(group=self.group)
+
+
+class RetrieveUserOutstandingBalanceView(GenericAPIView):
+    serializer_class = UserOutstandingBalanceSerializer
+
+    def get(self, *args, **kwargs):
+        qs = AggregatedOutstandingBalance.objects.annotate(
+            balance_type=Case(When(amount__gt=0, then=1), default=0, output_field=IntegerField()),
+        ).annotate(
+            total_amount=Window(expression=Sum('amount'), partition_by=('balance_type', 'currency')),
+            row_number=Window(expression=RowNumber(), partition_by=('balance_type', 'currency'))
+        ).filter(row_number=1, user=self.request.user)
+
+        qs = self.get_serializer().prefetch_queryset(qs)
+        return self.get_serializer(list(qs)).data
