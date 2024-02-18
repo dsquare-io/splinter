@@ -8,13 +8,14 @@ from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
 class FriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
+    friend = SimpleUserSerializer(read_only=True)
     group = SimpleGroupSerializer(read_only=True)
 
     class Meta(OutstandingBalanceSerializer.Meta):
-        fields = OutstandingBalanceSerializer.Meta.fields + ('group', )
+        fields = OutstandingBalanceSerializer.Meta.fields + ('group', 'friend')
 
     def prefetch_queryset(self, queryset=None):
-        return super().prefetch_queryset(queryset).prefetch_related('group')
+        return super().prefetch_queryset(queryset).prefetch_related('group', 'friend')
 
 
 class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):

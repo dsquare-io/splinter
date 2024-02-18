@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from splinter.apps.friend.models import Friendship
 from splinter.apps.friend.serializers import CreateFriendshipSerializer, FriendSerializer
 from splinter.apps.user.shortcuts import invite_user
@@ -13,7 +15,7 @@ class ListCreateFriendView(ListAPIView, CreateAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['outstanding_balance_limit'] = 5
+        context['outstanding_balance_limit'] = settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT
         return context
 
     def get_queryset(self):

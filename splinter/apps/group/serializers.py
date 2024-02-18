@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import serializers
@@ -20,29 +21,22 @@ class SimpleGroupSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name')
 
 
-class GroupFriendOutstandingBalanceSerializer(OutstandingBalanceSerializer):
+class GroupOutstandingBalanceSerializer(OutstandingBalanceSerializer):
+    user = SimpleUserSerializer(read_only=True)
     friend = SimpleUserSerializer(read_only=True)
 
     class Meta(OutstandingBalanceSerializer.Meta):
-        fields = OutstandingBalanceSerializer.Meta.fields + ('friend', )
+        fields = OutstandingBalanceSerializer.Meta.fields + ('user', 'friend')
 
     def prefetch_queryset(self, queryset=None):
-        return super().prefetch_queryset(queryset).prefetch_related('friend')
-
-
-class GroupOutstandingBalanceSerializer(GroupFriendOutstandingBalanceSerializer):
-    user = SimpleUserSerializer(read_only=True)
-
-    class Meta(GroupFriendOutstandingBalanceSerializer.Meta):
-        fields = GroupFriendOutstandingBalanceSerializer.Meta.fields + ('user', )
-
-    def prefetch_queryset(self, queryset=None):
-        return super().prefetch_queryset(queryset).prefetch_related('user')
+        return super().prefetch_queryset(queryset).prefetch_related('user', 'friend')
 
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
-    outstanding_balances = GroupFriendOutstandingBalanceSerializer(
-        many=True, read_only=True, help_text='Top 5 Outstanding balances for current user'
+    outstanding_balances = OutstandingBalanceSerializer(
+        many=True,
+        read_only=True,
+        help_text=f'Top {settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT} Outstanding balances for current user'
     )
     aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(
         read_only=True, help_text='Aggregated outstanding balance for the current user'
@@ -59,7 +53,9 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
             .filter(user=self.context['request'].user)
 
         return super().prefetch_queryset(queryset).prefetch_related(
-            OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs, limit=5),
+            OutstandingBalancePrefetch(
+                'group', queryset=outstanding_balance_qs, limit=settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT
+            ),
             AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
         )
 
