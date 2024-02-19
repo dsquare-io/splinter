@@ -22,6 +22,15 @@ class ExpenseShareSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseSplit
         fields = ('user', 'share', 'amount')
+        read_only_fields = ('amount',)
+        extra_kwargs = {
+            'share': {
+                'help_text': 'The share of the user in the expense',
+            },
+            'amount': {
+                'help_text': 'The amount of the user in the expense',
+            },
+        }
 
 
 class ExpenseRowSerializer(serializers.Serializer):
@@ -44,8 +53,8 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
     class Meta:
         model = Expense
         fields = (
-            'uid', 'urn', 'datetime', 'description', 'paid_by', 'created_by', 'currency', 'outstanding_balance',
-            'expenses'
+            'uid', 'urn', 'datetime', 'description', 'amount', 'currency', 'outstanding_balance', 'expenses',
+            'paid_by', 'created_by',
         )
 
     def prefetch_queryset(self, queryset=None):
