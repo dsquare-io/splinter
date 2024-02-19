@@ -11,8 +11,8 @@ import {
 } from 'react-aria-components';
 import {type RegisterOptions, type UseControllerProps, useController} from 'react-hook-form';
 
-import {FieldErrorContext} from '@components/common/Form/FieldError';
-import {messagifyValidationRules} from '@components/common/Form/validations';
+import {FieldErrorContext} from '@/components/common/Form/FieldError';
+import {messagifyValidationRules} from '@/components/common/Form/validations';
 
 const focusableInputElments = [
   'input:not([disabled]):not([type=hidden])',

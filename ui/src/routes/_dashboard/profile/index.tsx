@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 
-import {Avatar} from '@components/common/Avatar.tsx';
 import {
   AdjustmentsVerticalIcon,
   ArrowLeftOnRectangleIcon,
@@ -14,6 +13,8 @@ import {
   StarIcon,
 } from '@heroicons/react/24/outline';
 import {Link, Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
+
+import {Avatar} from '@/components/common';
 
 export const Route = createFileRoute('/_dashboard/profile/')({
   component: ProfileLayout,

@@ -1,7 +1,7 @@
-import BottomNav from '@components/BottomNav.tsx';
-import Sidebar from '@components/Sidebar.tsx';
 import {Navigate, Outlet, createFileRoute} from '@tanstack/react-router';
 
+import BottomNav from '@/components/BottomNav.tsx';
+import Sidebar from '@/components/Sidebar.tsx';
 import useAuth, {AuthStatus} from '@/hooks/useAuth.ts';
 
 export const Route = createFileRoute('/_dashboard')({

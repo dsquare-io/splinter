@@ -9,7 +9,7 @@ import {
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, Navigate, createFileRoute} from '@tanstack/react-router';
 
-import {Avatar} from '@/components/common/Avatar.tsx';
+import {Avatar} from '@/components/common';
 
 export const Route = createFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,

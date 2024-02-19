@@ -1,14 +1,13 @@
 import clsx from 'clsx';
 import {Fragment} from 'react';
 
-import Currency from '@components/Currency.tsx';
-import {Button} from '@components/common';
-import {Avatar} from '@components/common/Avatar';
 import {BanknotesIcon, Cog8ToothIcon, UserPlusIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
+import Currency from '@/components/Currency.tsx';
+import {Avatar, Button} from '@/components/common';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
 

@@ -1,4 +1,4 @@
-import {Avatar} from '@components/common/Avatar.tsx';
+import {Avatar} from '@/components/common';
 
 interface SingleEntryItemProps {
   id: number;

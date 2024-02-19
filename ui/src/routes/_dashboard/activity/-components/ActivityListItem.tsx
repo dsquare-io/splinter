@@ -1,5 +1,6 @@
-import {Avatar} from '@components/common/Avatar.tsx';
 import {Link} from '@tanstack/react-router';
+
+import {Avatar} from '@/components/common';
 
 interface ActivityItemProps {
   id: number;

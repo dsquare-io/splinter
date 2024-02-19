@@ -1,11 +1,11 @@
 import clx from 'clsx';
 import {Fragment} from 'react';
 
-import Currency from '@components/Currency.tsx';
-import {Avatar} from '@components/common/Avatar.tsx';
 import {Link} from '@tanstack/react-router';
 
 import {Group} from '@/api-types/components/schemas';
+import Currency from '@/components/Currency.tsx';
+import {Avatar} from '@/components/common';
 
 export default function GroupListItem({uid, name, outstandingBalances, aggregatedOutstandingBalance}: Group) {
   return (

@@ -1,14 +1,13 @@
 import clsx from 'clsx';
 import {Fragment} from 'react';
 
-import Currency from '@components/Currency.tsx';
-import {Button} from '@components/common';
-import {Avatar} from '@components/common/Avatar.tsx';
 import {BanknotesIcon, Cog8ToothIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
+import Currency from '@/components/Currency.tsx';
+import {Avatar, Button} from '@/components/common';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({

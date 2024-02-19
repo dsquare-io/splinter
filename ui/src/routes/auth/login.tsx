@@ -1,8 +1,8 @@
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@components/common';
 import {createFileRoute, useNavigate} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
 import {setHeaders} from '@/axios';
+import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
 import useAuth from '@/hooks/useAuth';
 
 import AuthLayout from './-layout';
