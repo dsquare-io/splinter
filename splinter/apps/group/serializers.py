@@ -33,7 +33,7 @@ class GroupOutstandingBalanceSerializer(OutstandingBalanceSerializer):
 
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
-    outstanding_balances = OutstandingBalanceSerializer(
+    outstanding_balances = GroupOutstandingBalanceSerializer(
         many=True,
         read_only=True,
         help_text=f'Top {settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT} Outstanding balances for current user'
