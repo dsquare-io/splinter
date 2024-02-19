@@ -32,6 +32,7 @@ class RetrieveFriendView(RetrieveAPIView):
     serializer_class = FriendSerializer
 
     lookup_field = 'username'
+    lookup_url_kwarg = 'friend_uid'
 
     def get_queryset(self):
         return Friendship.objects.get_user_friends(self.request.user)
