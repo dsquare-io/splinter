@@ -38,7 +38,7 @@ function InitialsAvatar({name}: {name?: string}) {
 
   return (
     <svg
-      className="select-none fill-current text-[48px] font-medium uppercase h-[85%] w-[85%]"
+      className="h-[85%] w-[85%] select-none fill-current text-[48px] font-medium uppercase"
       viewBox="0 0 100 100"
       aria-hidden={name ? undefined : 'true'}
     >
@@ -61,7 +61,7 @@ export function Avatar({img, fallback, className, ...props}: AvatarProps) {
   return (
     <AvatarRoot
       {...props}
-      className={twMerge('size-8 relative', className)}
+      className={twMerge('relative size-8', className)}
     >
       {img ? (
         <>

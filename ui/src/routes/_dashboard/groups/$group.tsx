@@ -106,6 +106,8 @@ function RootComponent() {
           </Button>
         </div>
       </div>
+
+      <div className="px-4 py-4 sm:px-6 md:px-8">Test</div>
     </div>
   );
 }

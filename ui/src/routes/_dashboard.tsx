@@ -1,7 +1,8 @@
-import useAuth, { AuthStatus } from '@/hooks/useAuth.ts';
 import BottomNav from '@components/BottomNav.tsx';
 import Sidebar from '@components/Sidebar.tsx';
-import { Outlet, createFileRoute, Navigate } from '@tanstack/react-router';
+import {Navigate, Outlet, createFileRoute} from '@tanstack/react-router';
+
+import useAuth, {AuthStatus} from '@/hooks/useAuth.ts';
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,

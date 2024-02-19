@@ -7,12 +7,7 @@ import {Link} from '@tanstack/react-router';
 
 import {Group} from '@/api-types/components/schemas';
 
-export default function GroupListItem({
-  uid,
-  name,
-  outstandingBalances,
-  aggregatedOutstandingBalance,
-}: Group) {
+export default function GroupListItem({uid, name, outstandingBalances, aggregatedOutstandingBalance}: Group) {
   return (
     <Link
       to="/groups/$group"

@@ -1,5 +1,5 @@
 import {ComponentProps} from 'react';
-import { NumberField, TextField } from 'react-aria-components';
+import {NumberField, TextField} from 'react-aria-components';
 
 import {FormField} from '@components/common/Form/FormField.tsx';
 import {tv} from 'tailwind-variants';

@@ -1,4 +1,3 @@
-import {Avatar} from '@components/common/Avatar.tsx';
 import {activities} from '@fake-data/acitivities.ts';
 import {
   BriefcaseIcon,
@@ -9,6 +8,8 @@ import {
 } from '@heroicons/react/24/outline';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, Navigate, createFileRoute} from '@tanstack/react-router';
+
+import {Avatar} from '@/components/common/Avatar.tsx';
 
 export const Route = createFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,

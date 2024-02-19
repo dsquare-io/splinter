@@ -1,13 +1,8 @@
-import { Button as RACButton, ButtonProps as RACButtonProps, composeRenderProps } from 'react-aria-components';
+import {Button as RACButton, ButtonProps as RACButtonProps, composeRenderProps} from 'react-aria-components';
 
+import {VariantProps, tv} from 'tailwind-variants';
 
-
-import { VariantProps, tv } from 'tailwind-variants';
-
-
-
-import { focusRing } from './utils';
-
+import {focusRing} from './utils';
 
 const button = tv({
   extend: focusRing,
@@ -26,7 +21,7 @@ const button = tv({
   variants: {
     size: {
       large: 'px-3.5 py-2.5 sm:py-1.5 sm:text-sm/6 [&>[data-slot=icon]]:size-5 [&>[data-slot=icon]]:my-0.5',
-      small: 'px-3 py-2 text-xs [&>[data-slot=icon]]:size-4'
+      small: 'px-3 py-2 text-xs [&>[data-slot=icon]]:size-4',
     },
     isFocused: {
       true: 'outline-none',
@@ -38,12 +33,8 @@ const button = tv({
       true: '',
     },
     variant: {
-      solid: [
-        'border-transparent bg-[--btn-border]',
-      ],
-      outline: [
-        'text-gray-950'
-      ],
+      solid: ['border-transparent bg-[--btn-border]'],
+      outline: ['text-gray-950'],
       plain: [
         // Base
         'border-transparent text-gray-950 data-[pressed]:bg-zinc-950/5 data-[hovered]:bg-zinc-950/5',
@@ -67,7 +58,7 @@ const button = tv({
 
         // Icon
         '[--btn-icon:theme(colors.white)] data-[pressed]:[--btn-icon:theme(colors.white)] data-[hovered]:[--btn-icon:theme(colors.white)]',
-      ]
+      ],
     },
     {
       color: 'primary',
@@ -78,7 +69,7 @@ const button = tv({
 
         // Icon
         '[--btn-icon:theme(colors.gray.600)]',
-      ]
+      ],
     },
     {
       color: 'danger',
@@ -89,7 +80,7 @@ const button = tv({
 
         // Icon
         '[--btn-icon:theme(colors.white)]',
-      ]
+      ],
     },
     {
       color: 'danger',
@@ -100,13 +91,13 @@ const button = tv({
 
         // Icon
         '[--btn-icon:theme(colors.red.500)] data-[hovered]:[--btn-icon:theme(colors.red.600)]',
-      ]
-    }
+      ],
+    },
   ],
   defaultVariants: {
     variant: 'solid',
     color: 'primary',
-    size: 'large'
+    size: 'large',
   },
 });
 

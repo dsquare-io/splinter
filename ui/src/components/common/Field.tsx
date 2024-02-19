@@ -10,9 +10,10 @@ import {
   composeRenderProps,
 } from 'react-aria-components';
 
-import {FieldError as RACFieldError} from '@components/common/Form/FieldError.tsx';
 import {twMerge} from 'tailwind-merge';
 import {tv} from 'tailwind-variants';
+
+import {FieldError as RACFieldError} from '@/components/common/Form/FieldError.tsx';
 
 import {composeTailwindRenderProps} from './utils';
 
@@ -44,61 +45,59 @@ export function FieldError(props: FieldErrorProps) {
   );
 }
 
-export const fieldBorderStyles = tv(
-  {
-    base: [
-      'relative block w-full appearance-none rounded-md px-4',
-      'text-base text-gray-950',
-      'border border-gray-300',
-      'bg-white',
-      'focus:outline-none',
-      'transition-colors duration-75'
-    ],
-    variants: {
-      isFocusWithin: {
-        true: 'ring',
-      },
-      isInvalid: {
-        true: 'border-red-500 data-[hover]:border-red-500',
-      },
-      isDisabled: {
-        true: 'border-zinc-950/20',
-      },
-      size: {
-        lg: 'py-[8px]',
-        sm: 'py-[5px]',
-      },
+export const fieldBorderStyles = tv({
+  base: [
+    'relative block w-full appearance-none rounded-md px-4',
+    'text-base text-gray-950',
+    'border border-gray-300',
+    'bg-white',
+    'focus:outline-none',
+    'transition-colors duration-75',
+  ],
+  variants: {
+    isFocusWithin: {
+      true: 'ring',
     },
-    compoundVariants: [
-      {
-        isFocusWithin: false,
-        isInvalid: false,
-        class: 'hover:border-gray-400',
-      },
-      {
-        isFocusWithin: true,
-        isInvalid: false,
-        class: 'ring-brand-400/30 border-brand-500',
-      },
-      {
-        isFocusWithin: true,
-        isInvalid: true,
-        class: 'ring-red-400/30',
-      },
-    ],
-    defaultVariants: {
-      isInvalid: false,
+    isInvalid: {
+      true: 'border-red-500 data-[hover]:border-red-500',
+    },
+    isDisabled: {
+      true: 'border-zinc-950/20',
+    },
+    size: {
+      lg: 'py-[8px]',
+      sm: 'py-[5px]',
+    },
+  },
+  compoundVariants: [
+    {
       isFocusWithin: false,
-      size: 'lg',
+      isInvalid: false,
+      class: 'hover:border-gray-400',
     },
-  }
-);
+    {
+      isFocusWithin: true,
+      isInvalid: false,
+      class: 'ring-brand-400/30 border-brand-500',
+    },
+    {
+      isFocusWithin: true,
+      isInvalid: true,
+      class: 'ring-red-400/30',
+    },
+  ],
+  defaultVariants: {
+    isInvalid: false,
+    isFocusWithin: false,
+    size: 'lg',
+  },
+});
 
 export const inputStyles = tv({
   extend: fieldBorderStyles,
   base: [
     'min-w-0 flex-1 bg-white text-sm text-gray-800 outline outline-0 disabled:text-gray-200',
-    'placeholder:text-gray-500'
+    'placeholder:text-gray-500',
   ],
 });
 

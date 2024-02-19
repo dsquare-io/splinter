@@ -382,4 +382,3 @@ export interface UserDeviceInfo {
   configuredDevices?: Device[];
   authenticationMethods?: Device[];
 }
-

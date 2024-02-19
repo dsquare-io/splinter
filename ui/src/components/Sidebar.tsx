@@ -1,10 +1,8 @@
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
-import {Avatar, Button} from '@components/common';
 import {
-  ArrowLeftStartOnRectangleIcon,
-  // ArrowTrendingUpIcon,
+  ArrowLeftStartOnRectangleIcon, // ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
@@ -12,6 +10,7 @@ import {
 import {Link, useNavigate} from '@tanstack/react-router';
 
 import {setHeaders} from '@/axios.ts';
+import {Avatar, Button} from '@/components/common';
 import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';

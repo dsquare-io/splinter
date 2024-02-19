@@ -1,8 +1,9 @@
 import type {FieldErrors, FieldValues, UseFormReturn} from 'react-hook-form';
-import {isAxiosError} from "axios";
+
+import {isAxiosError} from 'axios';
 
 export type DrfErrors = {
-  [key: string]: { message: string, code: string }[] | string;
+  [key: string]: {message: string; code: string}[] | string;
 };
 
 const API_ERROR_MESSAGE = {
@@ -24,19 +25,22 @@ export function drfToFieldErrors(error: unknown) {
         if (typeof error[0]?.message === 'string') {
           formErrors[fieldName || 'root'] = {
             type: 'validate',
-            types: error.reduce((acc, e: any) => {
-              acc[e.code] = e.message;
-              return acc;
-            }, {} as Record<string, any>),
+            types: error.reduce(
+              (acc, e: any) => {
+                acc[e.code] = e.message;
+                return acc;
+              },
+              {} as Record<string, any>
+            ),
             message: error[0].message,
           };
         } else {
-          throw new Error('shouldn\'t be here.')
+          throw new Error("shouldn't be here.");
         }
       } else if (typeof error === 'object') {
         formErrors[fieldName || 'root'] = {
           type: 'validate',
-          message: (error as { message: string, code: string }).message
+          message: (error as {message: string; code: string}).message,
         };
       } else if (typeof error === 'string') {
         formErrors[fieldName || 'root'] = {
@@ -52,11 +56,11 @@ export function drfToFieldErrors(error: unknown) {
   if (!isAxiosError(error)) {
     // not an axios error means something in code wet wrong.
     return {
-      'root': {
+      root: {
         type: 'internal',
         message: 'Something went wrong please try again',
-      }
-    }
+      },
+    };
   }
 
   if (error.response && error.response.data) {
@@ -83,10 +87,10 @@ export function drfToFieldErrors(error: unknown) {
     }
 
     return {
-      'root': {
+      root: {
         type: 'internal',
         message: errorText,
-      }
+      },
     };
   }
 
@@ -94,22 +98,25 @@ export function drfToFieldErrors(error: unknown) {
     // so request was constructed properly but got no response
     // means most probably network error
     return {
-      'root': {
+      root: {
         type: 'network',
         message: 'Something went wrong please check your internet connection and try again.',
-      }
+      },
     };
   }
 
   return {
-    'root': {
+    root: {
       type: 'internal',
       message: 'Something went wrong please try again',
-    }
+    },
   };
 }
 
-export function handleSubmissionError<TFieldValues extends FieldValues = FieldValues>(error: unknown, control: UseFormReturn<TFieldValues>) {
+export function handleSubmissionError<TFieldValues extends FieldValues = FieldValues>(
+  error: unknown,
+  control: UseFormReturn<TFieldValues>
+) {
   const fieldErrors = drfToFieldErrors(error);
 
   for (const [field, fieldError] of Object.entries(fieldErrors)) {

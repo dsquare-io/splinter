@@ -1,14 +1,15 @@
+import clsx from 'clsx';
+import {Fragment} from 'react';
+
+import Currency from '@components/Currency.tsx';
 import {Button} from '@components/common';
 import {Avatar} from '@components/common/Avatar.tsx';
-import Currency from '@components/Currency.tsx';
 import {BanknotesIcon, Cog8ToothIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 
 import {ApiRoutes} from '@/api-types';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
-import clsx from 'clsx';
-import { Fragment } from 'react';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
@@ -23,10 +24,12 @@ function RootComponent() {
 
   return (
     <div>
-      <div className={clsx(
-        'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
-        (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
-      )}>
+      <div
+        className={clsx(
+          'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+        )}
+      >
         <div
           className="absolute inset-0 -z-10 overflow-hidden"
           aria-hidden="true"
@@ -55,7 +58,7 @@ function RootComponent() {
           fallback={data.fullName}
         />
         <div>
-          <div className="text-2xl font-semibold text-gray-900 mt-1">{data.fullName}</div>
+          <div className="mt-1 text-2xl font-semibold text-gray-900">{data.fullName}</div>
           <div className="mt-1.5 space-y-0.5 text-xs font-normal text-gray-500">
             {data.outstandingBalances?.slice(0, 3).map((e) => (
               <Fragment key={e.group?.uid ?? e.currency.uid}>
@@ -71,23 +74,25 @@ function RootComponent() {
               </Fragment>
             ))}
             {(data.outstandingBalances?.length ?? 0) > 3 && (
-              <p className="text font-light text-gray-400">and {(data.outstandingBalances?.length ?? 0) - 3} more</p>
+              <p className="text font-light text-gray-400">
+                and {(data.outstandingBalances?.length ?? 0) - 3} more
+              </p>
             )}
           </div>
         </div>
 
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
           <Button size="small">
-            <BanknotesIcon/>
+            <BanknotesIcon />
             Settle Up
           </Button>
-          <div className="flex-1"/>
+          <div className="flex-1" />
           <Button
             variant="outline"
             className="bg-white"
             size="small"
           >
-            <Cog8ToothIcon/>
+            <Cog8ToothIcon />
             Settings
           </Button>
         </div>
