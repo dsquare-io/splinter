@@ -84,7 +84,7 @@ function FriendsLayout() {
           {Object.entries(
             groupBy(data?.results ?? [], (friend) => friend.fullName?.[0]?.toLowerCase() ?? '')
           ).map(([letter, friends]) => (
-            <div className="relative -space-y-px">
+            <div key={letter} className="relative -space-y-px">
               <div className="sticky top-[150px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                 <h3 className="uppercase">{letter}</h3>
               </div>

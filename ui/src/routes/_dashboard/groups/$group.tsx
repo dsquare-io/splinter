@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import {Fragment} from 'react';
+import {Tab, TabList, TabPanel, Tabs} from 'react-aria-components';
 
 import {BanknotesIcon, Cog8ToothIcon, UserPlusIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
@@ -10,6 +11,8 @@ import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
+import {GroupActivityTab} from '@/routes/_dashboard/groups/-components/GroupActivityTab.tsx';
+import {GroupBalancesTab} from '@/routes/_dashboard/groups/-components/GroupBalancesTab.tsx';
 
 export const Route = createFileRoute('/_dashboard/groups/$group')({
   loader: ({params: {group: group_uid}}) =>
@@ -106,7 +109,23 @@ function RootComponent() {
         </div>
       </div>
 
-      <div className="px-4 py-4 sm:px-6 md:px-8">Test</div>
+      <Tabs className="react-aria-Tabs px-4 py-3 sm:px-6 md:px-8">
+        <div className="border-b border-gray-200">
+          <TabList
+            aria-label="Tabs"
+            className="react-aria-TabList -mb-px flex space-x-2"
+          >
+            <Tab id="activity">Activity</Tab>
+            <Tab id="balance">Balances</Tab>
+          </TabList>
+        </div>
+        <TabPanel id="activity">
+          <GroupActivityTab group_uid={group_uid} />
+        </TabPanel>
+        <TabPanel id="balance">
+          <GroupBalancesTab group_uid={group_uid} />
+        </TabPanel>
+      </Tabs>
     </div>
   );
 }
