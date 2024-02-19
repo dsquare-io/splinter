@@ -22,13 +22,18 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
                     f'urn:splinter:group/{self.group.public_id}',
                 'name':
                     self.group.name,
+                'outstandingBalances': [],
+                'aggregatedOutstandingBalance': {
+                    'currency': None,
+                    'amount': '0.00',
+                    'balances': []
+                },
                 'createdBy': {
                     'uid': self.user.username,
                     'urn': f'urn:splinter:user/{self.user.username}',
                     'fullName': self.user.full_name,
-                    'isActive': self.user.is_active,
+                    'isActive': self.user.is_active
                 },
-                'outstandingBalances': [],
                 'members': [{
                     'uid': self.user.username,
                     'urn': f'urn:splinter:user/{self.user.username}',
