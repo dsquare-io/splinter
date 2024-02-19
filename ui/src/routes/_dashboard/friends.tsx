@@ -5,6 +5,7 @@ import Currency from '@components/Currency.tsx';
 import {Button, Input} from '@components/common';
 import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
+import groupBy from 'just-group-by';
 
 import {ApiRoutes} from '@/api-types';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
@@ -41,7 +42,8 @@ function FriendsLayout() {
             'xl:fixed xl:inset-y-0 xl:left-60 xl:w-96 xl:overflow-auto xl:border-e xl:border-gray-200'
         )}
       >
-        <div className="sticky top-0 z-10 bg-white px-6 pb-4 pt-6">
+        <div className="absolute inset-y-0 right-0 w-px bg-gray-100" />
+        <div className="sticky top-0 z-20 bg-white px-6 pb-4 pt-6">
           <h2 className="text-lg font-medium text-gray-900">Friends</h2>
           <p className="text-sm text-gray-600">
             {!aggregatedOutstandingBalance?.['PKR'] ? (
@@ -79,18 +81,31 @@ function FriendsLayout() {
         </div>
 
         <div>
-          {data?.results?.map((e) => (
-            <FriendListItem
-              key={e.uid}
-              {...e}
-            />
+          {Object.entries(
+            groupBy(data?.results ?? [], (friend) => friend.fullName?.[0]?.toLowerCase() ?? '')
+          ).map(([letter, friends]) => (
+            <div className="relative -space-y-px">
+              <div
+                className="sticky top-[150px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500"
+              >
+                <h3 className="uppercase">{letter}</h3>
+              </div>
+              <div className="-space-y-px">
+                {friends.map((friend) => (
+                  <FriendListItem
+                    key={friend.uid}
+                    {...friend}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
 
-        <ScrollRestoration />
+        <ScrollRestoration/>
       </div>
       <div className="xl:ms-96">
-        <Outlet />
+        <Outlet/>
       </div>
     </>
   );

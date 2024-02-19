@@ -18,7 +18,9 @@ export default function GroupListItem({
       to="/groups/$group"
       params={{group: uid!}}
       className={clx(
-        'flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-brand-50',
+        'relative flex gap-x-3 px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'border-y border-gray-200',
+        '[&.active]:z-10 [&.active]:border-brand-200',
         outstandingBalances?.length == 0 ? 'item-center' : 'items-start'
       )}
     >

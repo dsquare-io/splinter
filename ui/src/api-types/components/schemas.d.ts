@@ -112,6 +112,50 @@ export interface Error {
   code: string;
 }
 
+export interface Expense {
+  /** Format: uuid */
+  uid: string;
+  urn: string;
+  /** Format: date-time */
+  datetime: string;
+  description: string;
+  paidBy?: SimpleUser;
+  createdBy?: SimpleUser;
+  currency: SimpleCurrency;
+  /**
+   * Format: decimal
+   * @description The outstanding balance of current user in this expense document
+   */
+  outstandingBalance?: string;
+  expenses: readonly ExpenseRow[];
+}
+
+export interface ExpenseRow {
+  /** Format: decimal */
+  amount: string;
+  description: string;
+  shares: ExpenseShare[];
+}
+
+export interface ExpenseShare {
+  user: string;
+  share?: number;
+  /** Format: decimal */
+  amount: string;
+}
+
+export interface ExtendedGroup {
+  uid: string;
+  urn: string;
+  name: string;
+  /** @description Outstanding balances for all group members */
+  outstandingBalances?: readonly GroupOutstandingBalance[];
+  /** @description Aggregated outstanding balance for the current user */
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
+  createdBy?: SimpleUser;
+  members: readonly SimpleUser[];
+}
+
 export interface ForgetPassword {
   /** Format: email */
   email: string;
@@ -123,7 +167,9 @@ export interface Friend {
   fullName?: string;
   /** @description Indicates whether the user is active or not. */
   isActive?: boolean;
+  /** @description Outstanding balances for current user. Only top 5 on list view */
   outstandingBalances?: readonly FriendOutstandingBalance[];
+  /** @description Aggregated outstanding balance for the current user */
   aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
 }
 
@@ -138,16 +184,10 @@ export interface Group {
   uid: string;
   urn: string;
   name: string;
+  /** @description Top 5 Outstanding balances for current user */
   outstandingBalances?: readonly GroupFriendOutstandingBalance[];
+  /** @description Aggregated outstanding balance for the current user */
   aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-}
-
-export interface GroupDetail {
-  uid: string;
-  urn: string;
-  name: string;
-  createdBy?: SimpleUser;
-  members: readonly SimpleUser[];
 }
 
 export interface GroupFriendOutstandingBalance {
@@ -155,6 +195,14 @@ export interface GroupFriendOutstandingBalance {
   amount: string;
   currency: SimpleCurrency;
   friend: SimpleUser;
+}
+
+export interface GroupOutstandingBalance {
+  /** Format: decimal */
+  amount: string;
+  currency: SimpleCurrency;
+  friend: SimpleUser;
+  user: SimpleUser;
 }
 
 export interface MfaToken {
@@ -203,6 +251,22 @@ export interface PaginatedCommentList {
   results?: Comment[];
 }
 
+export interface PaginatedExpenseList {
+  /** @example 123 */
+  count?: number;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=400&limit=100
+   */
+  next?: string | null;
+  /**
+   * Format: uri
+   * @example http://api.example.org/accounts/?offset=200&limit=100
+   */
+  previous?: string | null;
+  results?: Expense[];
+}
+
 export interface PaginatedFriendList {
   /** @example 123 */
   count?: number;
@@ -235,10 +299,14 @@ export interface PaginatedGroupList {
   results?: Group[];
 }
 
-export interface PatchedGroupDetail {
+export interface PatchedExtendedGroup {
   uid?: string;
   urn?: string;
   name?: string;
+  /** @description Outstanding balances for all group members */
+  outstandingBalances?: readonly GroupOutstandingBalance[];
+  /** @description Aggregated outstanding balance for the current user */
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
   createdBy?: SimpleUser;
   members?: readonly SimpleUser[];
 }

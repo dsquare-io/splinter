@@ -1,5 +1,10 @@
-import { Button } from '@components/common';
+import clsx from 'clsx';
+import {Fragment} from 'react';
+
+import Currency from '@components/Currency.tsx';
+import {Button} from '@components/common';
 import {Avatar} from '@components/common/Avatar';
+import {BanknotesIcon, Cog8ToothIcon, UserPlusIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 
@@ -18,71 +23,89 @@ function RootComponent() {
   const {group: group_uid} = Route.useParams();
 
   const {data} = useApiQuery(ApiRoutes.GROUP_DETAIL, {group_uid});
+  const {data: profileData} = useApiQuery(ApiRoutes.PROFILE);
   if (!data) return null;
 
+  const myOutstandingBalances =
+    data.outstandingBalances?.filter((e) => e.user.uid === profileData?.uid) ?? [];
+
   return (
-    <div className="">
-      <Link
-        className="mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
-        to="/groups"
+    <div>
+      <div
+        className={clsx(
+          'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+        )}
       >
-        <ChevronLeftIcon className="size-3" />
-        Groups
-      </Link>
-      <article>
-        <div>
-          <div className="h-32 lg:h-48"></div>
-          <div className="mx-auto  px-4 sm:px-6 lg:px-8">
-            <div className="-mt-12 space-x-3 sm:flex sm:items-end">
-              <div className="flex">
-                <Avatar
-                  className="size-24 bg-gray-200 text-3xl"
-                  fallback={data.name}
-                />
-              </div>
-              <div className="mt-6 flex w-full items-end justify-between">
-                <div className="mt-6 min-w-0 flex-1">
-                  <h1 className="truncate text-2xl font-bold text-gray-800">{data.name}</h1>
-                  {/*{group.balance == 0 ? (*/}
-                  {/*  <p className="text-sm font-medium text-gray-400">All settled up</p>*/}
-                  {/*) : undefined}*/}
-                  {/*{group.balance > 0 ? (*/}
-                  {/*  <p className="text-sm font-normal text-gray-400">{group.name} owes you <span*/}
-                  {/*    className="text-green-700">{group.currency} {group.balance}</span></p>*/}
-                  {/*) : undefined}*/}
-                  {/*{group.balance < 0 ? (*/}
-                  {/*  <p className="text-sm font-normal text-gray-400">You owe {group.name}<span*/}
-                  {/*    className="text-green-700">{group.currency} {group.balance}</span></p>*/}
-                  {/*) : undefined}*/}
-                </div>
-                <Button>
-                  Settle up
-                </Button>
-              </div>
-            </div>
-            <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
-              <h1 className="truncate text-2xl font-bold text-gray-900">hi</h1>
-            </div>
+        <div
+          className="absolute inset-0 -z-10 overflow-hidden"
+          aria-hidden="true"
+        >
+          <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
+            <div
+              className="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#267360] to-[#9089FC]"
+              style={{
+                clipPath:
+                  'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
+              }}
+            ></div>
           </div>
         </div>
-        {/*<div className="w-full mb-4 mt-8 border-t border-blue-100/70"/>*/}
-        {/*<p className="text-sm font-medium text-gray-500 px-4 sm:px-6 lg:px-8">December 2022</p>*/}
-        {/*<div className=" divide-y divide-gray-200 border-b border-gray-200">*/}
-        {/*  {items.map((item) => {*/}
-        {/*    return (*/}
-        {/*      <SingleEntryItem {...item} key={item.id}/>*/}
-        {/*    );*/}
-        {/*  })}*/}
-        {/*</div>*/}
-        {/*<p className="text-sm font-medium text-gray-500 px-4 sm:px-6 lg:px-8 mt-6">January 2023</p>*/}
-        {/*<div className="divide-y divide-gray-200">*/}
-        {/*  {items.map((item) => {*/}
-        {/*    return (*/}
-        {/*      <SingleEntryItem {...item} key={item.id}/>*/}
-        {/*    );*/}
-        {/*  })}*/}
-        {/*</div>*/}
-      </article>
+
+        <Link
+          className="col-span-2 mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
+          to="/groups"
+        >
+          <ChevronLeftIcon className="size-3" />
+          Groups
+        </Link>
+
+        <Avatar
+          className="size-16 rounded-lg bg-white"
+          fallback={data.name}
+        />
+        <div>
+          <div className="text-2xl font-semibold text-gray-900">{data.name}</div>
+          <div className="mt-1.5 space-y-0.5 text-xs font-normal text-gray-500">
+            {myOutstandingBalances.map((e) => (
+              <Fragment key={e.friend?.uid ?? e.currency.uid}>
+                <p>
+                  {+e.amount > 0 && <>{e.friend.fullName} borrowed </>}
+                  {+e.amount < 0 && <>{e.friend.fullName} lent you </>}
+                  <Currency
+                    currency={e.currency.uid}
+                    value={e.amount}
+                  />
+                </p>
+              </Fragment>
+            ))}
+          </div>
+        </div>
+
+        <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
+          <Button size="small">
+            <BanknotesIcon />
+            Settle Up
+          </Button>
+          <div className="flex-1" />
+          <Button
+            variant="outline"
+            className="bg-white"
+            size="small"
+          >
+            <UserPlusIcon />
+            Invite Member
+          </Button>
+          <Button
+            variant="outline"
+            className="bg-white"
+            size="small"
+          >
+            <Cog8ToothIcon />
+            Settings
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

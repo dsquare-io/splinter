@@ -18,7 +18,9 @@ export default function FriendListItem({
       to="/friends/$friend"
       params={{friend: uid}}
       className={clx(
-        'relative flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-brand-50',
+        'relative flex gap-x-3 px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'border-y border-gray-200',
+        '[&.active]:z-10 [&.active]:border-brand-200',
         outstandingBalances?.length == 0 ? 'item-center' : 'items-start'
       )}
     >
@@ -50,7 +52,7 @@ export default function FriendListItem({
       {+(aggregatedOutstandingBalance?.amount ?? '0') === 0 ? (
         <div className="text-xs text-gray-400">Settled up</div>
       ) : (
-        <div className="text-right text-sm absolute right-6 top-2">
+        <div className="absolute right-6 top-3 text-right text-sm">
           <div className="text-xs text-gray-400">
             {+(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
           </div>

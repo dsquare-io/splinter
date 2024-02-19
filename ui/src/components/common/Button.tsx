@@ -15,18 +15,19 @@ const button = tv({
     // Base
     'relative isolate inline-flex items-center justify-center gap-x-2 rounded-md border text-base/6 font-medium',
 
-    // Sizing
-    'px-3.5 py-2.5 sm:px-3 sm:py-1.5 sm:text-sm/6',
-
     'transitions-colors duration-75',
 
     // Disabled
     'data-[disabled]:opacity-50',
 
     // Icon
-    '[&>[data-slot=icon]]:my-0.5 [&>[data-slot=icon]]:size-5 [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-[--btn-icon] forced-colors:[--btn-icon:ButtonText] forced-colors:data-[hovered]:[--btn-icon:ButtonText]',
+    '  [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-[--btn-icon] forced-colors:[--btn-icon:ButtonText] forced-colors:data-[hovered]:[--btn-icon:ButtonText]',
   ],
   variants: {
+    size: {
+      large: 'px-3.5 py-2.5 sm:py-1.5 sm:text-sm/6 [&>[data-slot=icon]]:size-5 [&>[data-slot=icon]]:my-0.5',
+      small: 'px-3 py-2 text-xs [&>[data-slot=icon]]:size-4'
+    },
     isFocused: {
       true: 'outline-none',
     },
@@ -105,19 +106,20 @@ const button = tv({
   defaultVariants: {
     variant: 'solid',
     color: 'primary',
+    size: 'large'
   },
 });
 
 export interface ButtonProps extends RACButtonProps, VariantProps<typeof button> {}
 
-export function Button({variant, color, ...props}: ButtonProps) {
+export function Button({variant, color, size, ...props}: ButtonProps) {
   if (['submit', 'reset'].includes(props.type!) && !props.slot) props.slot = props.type;
 
   return (
     <RACButton
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
-        button({...renderProps, variant, color, className})
+        button({...renderProps, variant, color, size, className})
       )}
     />
   );

@@ -41,11 +41,19 @@ export interface paths {
     /** Retrieve Friend */
     get: operations["RetrieveFriend"];
   };
+  "/api/friends/{username}/expenses": {
+    /** List Friend Expense */
+    get: operations["ListFriendExpense"];
+  };
   "/api/groups": {
     /** List Group */
     get: operations["ListGroup"];
     /** Create Group */
     post: operations["CreateGroup"];
+  };
+  "/api/groups/{group_id}/expenses": {
+    /** List Group Expense */
+    get: operations["ListGroupExpense"];
   };
   "/api/groups/{group_uid}": {
     /** Retrieve Group */
@@ -60,8 +68,8 @@ export interface paths {
     delete: operations["DestroyGroupMembership"];
   };
   "/api/groups/members": {
-    /** Create Bulk Group Membership */
-    post: operations["CreateBulkGroupMembership"];
+    /** Bulk Create Group Membership */
+    post: operations["BulkCreateGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -141,20 +149,25 @@ export interface components {
     EnableMfaDeviceRequest: import('./components/schemas.d.ts').EnableMfaDeviceRequest;
     EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
     Error: import('./components/schemas.d.ts').Error;
+    Expense: import('./components/schemas.d.ts').Expense;
+    ExpenseRow: import('./components/schemas.d.ts').ExpenseRow;
+    ExpenseShare: import('./components/schemas.d.ts').ExpenseShare;
+    ExtendedGroup: import('./components/schemas.d.ts').ExtendedGroup;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
     Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
     Group: import('./components/schemas.d.ts').Group;
-    GroupDetail: import('./components/schemas.d.ts').GroupDetail;
     GroupFriendOutstandingBalance: import('./components/schemas.d.ts').GroupFriendOutstandingBalance;
+    GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
+    PaginatedExpenseList: import('./components/schemas.d.ts').PaginatedExpenseList;
     PaginatedFriendList: import('./components/schemas.d.ts').PaginatedFriendList;
     PaginatedGroupList: import('./components/schemas.d.ts').PaginatedGroupList;
-    PatchedGroupDetail: import('./components/schemas.d.ts').PatchedGroupDetail;
+    PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
     PatchedUser: import('./components/schemas.d.ts').PatchedUser;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
@@ -482,6 +495,44 @@ export interface operations {
       };
     };
   };
+  /** List Friend Expense */
+  ListFriendExpense: {
+    parameters: {
+      query?: {
+        /** @description Number of results to return per page. */
+        limit?: number;
+        /** @description The initial index from which to return the results. */
+        offset?: number;
+      };
+      path: {
+        username: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').PaginatedExpenseList;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
   /** List Group */
   ListGroup: {
     parameters: {
@@ -548,6 +599,44 @@ export interface operations {
       };
     };
   };
+  /** List Group Expense */
+  ListGroupExpense: {
+    parameters: {
+      query?: {
+        /** @description Number of results to return per page. */
+        limit?: number;
+        /** @description The initial index from which to return the results. */
+        offset?: number;
+      };
+      path: {
+        group_id: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').PaginatedExpenseList;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
   /** Retrieve Group */
   RetrieveGroup: {
     parameters: {
@@ -558,7 +647,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').GroupDetail;
+          "application/json": import('./components/schemas').ExtendedGroup;
         };
       };
       /** @description Unauthorized */
@@ -589,7 +678,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').GroupDetail;
+        "application/json": import('./components/schemas').ExtendedGroup;
       };
     };
     responses: {
@@ -635,7 +724,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": import('./components/schemas').PatchedGroupDetail;
+        "application/json": import('./components/schemas').PatchedExtendedGroup;
       };
     };
     responses: {
@@ -704,8 +793,8 @@ export interface operations {
       };
     };
   };
-  /** Create Bulk Group Membership */
-  CreateBulkGroupMembership: {
+  /** Bulk Create Group Membership */
+  BulkCreateGroupMembership: {
     requestBody: {
       content: {
         "application/json": import('./components/schemas').BulkCreateGroupMembership;

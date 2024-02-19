@@ -25,6 +25,7 @@
     "axios": "^1.6.7",
     "clsx": "^2.1.0",
     "concurrently": "^8.2.2",
+    "just-group-by": "^2.2.0",
     "openapi-typescript": "^6.7.4",
     "react": "^18.2.0",
     "react-aria-components": "^1.0.1",
