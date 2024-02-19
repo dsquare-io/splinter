@@ -14,13 +14,13 @@ export function GroupActivityTab({group_uid}: Props) {
 
   if (!data) return null;
 
-  const monthlyActicity = Object.entries(
+  const monthlyActivity = Object.entries(
     groupBy(data.results ?? [], (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01')
   );
 
   return (
     <div>
-      {monthlyActicity.map(([month, expenses]) => (
+      {monthlyActivity.map(([month, expenses]) => (
         <div key={month}>
           <h3 className="pt-4 text-sm text-neutral-500">{format(new Date(month), 'MMM YYY')}</h3>
           <div className="pt-1.6">
