@@ -4,14 +4,15 @@ from tests.apps.user.factories import UserFactory
 
 
 class MultiRowExpenseTest(ExpenseTestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.friends = UserFactory.create_batch(4)
-        self.root_expense = self.create_multi_row_expense([
+        cls.friends = UserFactory.create_batch(4)
+        cls.root_expense = cls.create_multi_row_expense([
             100,
             200,
-        ], self.friends)
+        ], cls.friends)
 
     def assertSplitByUser(self, amount: float):
         splits_by_user = {i.user: i for i in ExpenseSplit.objects.filter(expense=self.root_expense)}

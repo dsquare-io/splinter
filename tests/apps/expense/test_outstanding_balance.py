@@ -5,9 +5,10 @@ from tests.apps.user.factories import UserFactory
 
 
 class OutstandingBalanceTest(ExpenseTestCase):
-    def setUp(self):
-        super().setUp()
-        self.friends = UserFactory.create_batch(4)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.friends = UserFactory.create_batch(4)
 
     def test_create_expense(self):
         self.create_equal_split_expense(100, self.friends)

@@ -1,8 +1,10 @@
 from decimal import Decimal
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional
 
+from django.conf import settings
 from django.test import TestCase
 
+from splinter.apps.currency.models import Currency
 from splinter.apps.expense.models import ExpenseSplit, OutstandingBalance
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
@@ -13,25 +15,38 @@ from tests.apps.expense.factories import ExpenseFactory
 class ExpenseTestCase(TestCase):
     available_apps = ('splinter.apps.currency', 'splinter.apps.expense', 'splinter.apps.group', 'splinter.apps.user')
 
-    def setUp(self):
-        self.currency = CurrencyFactory()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.currency = CurrencyFactory()
+        cls.default_currency = Currency.objects.get(code=settings.CURRENCY_DEFAULT_USER_PREFERENCE)
 
-    def create_multi_row_expense(self, amounts: List[int], participants: List[User]):
+    @staticmethod
+    def serialize_currency(currency: 'Currency') -> dict:
+        return {
+            'uid': currency.code,
+            'urn': currency.urn,
+            'symbol': currency.symbol,
+        }
+
+    @classmethod
+    def create_multi_row_expense(cls, amounts: List[int], participants: List[User]):
         parent_expense = ExpenseFactory(
             amount=sum(amounts),
             paid_by=participants[0],
-            currency=self.currency,
+            currency=cls.currency,
         )
 
         for amount in amounts:
-            self.create_equal_split_expense(amount, participants, parent=parent_expense)
+            cls.create_equal_split_expense(amount, participants, parent=parent_expense)
 
         return parent_expense
 
-    def create_equal_split_expense(self, amount: int, participants: List[User], **kwargs):
+    @classmethod
+    def create_equal_split_expense(cls, amount: int, participants: List[User], **kwargs):
         expense = ExpenseFactory(
             amount=amount,
-            currency=self.currency,
+            currency=cls.currency,
             paid_by=participants[0],
             **kwargs,
         )
@@ -43,14 +58,14 @@ class ExpenseTestCase(TestCase):
                 expense=expense,
                 user=user,
                 amount=share_amount,
-                currency=self.currency,
+                currency=cls.currency,
             )
 
         ExpenseSplit.objects.create(
             expense=expense,
             user=participants[0],
             amount=amount - (share_amount * (len(participants) - 1)),
-            currency=self.currency,
+            currency=cls.currency,
         )
 
         return expense

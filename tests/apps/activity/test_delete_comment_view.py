@@ -3,11 +3,14 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class DeleteCommentViewTests(AuthenticatedAPITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.activity = ActivityFactory(user=cls.user)
+        cls.comment = CommentFactory(activity=cls.activity)
+
     def setUp(self):
         super().setUp()
-
-        self.activity = ActivityFactory(user=self.user)
-        self.comment = CommentFactory(activity=self.activity)
         self.response = self.client.delete(
             f'/api/activities/{self.activity.public_id}/comments/{self.comment.public_id}'
         )

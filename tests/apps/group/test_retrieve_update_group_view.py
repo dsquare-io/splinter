@@ -4,11 +4,12 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.group = GroupFactory(created_by=self.user)
-        GroupMembership.objects.create(group=self.group, user=self.user)
+        cls.group = GroupFactory(created_by=cls.user)
+        GroupMembership.objects.create(group=cls.group, user=cls.user)
 
     def test_retrieve(self):
         response = self.client.get(f'/api/groups/{self.group.public_id}')

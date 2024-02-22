@@ -6,15 +6,16 @@ from tests.case import AuthenticatedAPITestCase
 class ListFriendViewTest(AuthenticatedAPITestCase):
     available_apps = ('splinter.apps.user', 'splinter.apps.friend')
 
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.friends = []
+        cls.friends = []
 
         for i in range(5):
             friend = UserFactory()
-            Friendship.objects.create(user_a=self.user, user_b=friend)
-            self.friends.append(friend)
+            Friendship.objects.create(user_a=cls.user, user_b=friend)
+            cls.friends.append(friend)
 
     def test_list_friends(self):
         response = self.client.get('/api/friends')

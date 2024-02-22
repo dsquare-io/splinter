@@ -6,10 +6,11 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class BulkCreateGroupMemberViewTest(AuthenticatedAPITestCase):
-    def setUp(self):
-        super().setUp()
-        self.group = GroupFactory(created_by=self.user)
-        GroupMembership.objects.create(group=self.group, user=self.user)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.group = GroupFactory(created_by=cls.user)
+        GroupMembership.objects.create(group=cls.group, user=cls.user)
 
     def test_create(self):
         members_to_add = []

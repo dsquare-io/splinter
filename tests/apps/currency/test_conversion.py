@@ -11,14 +11,15 @@ class ConversionRateTests(TestCase):
     available_apps = ['splinter.apps.currency']
     today = timezone.now()
 
-    def setUp(self):
-        self.source = CurrencyFactory()
-        self.target = CurrencyFactory()
+    @classmethod
+    def setUpTestData(cls):
+        cls.source = CurrencyFactory()
+        cls.target = CurrencyFactory()
 
         ConversionRate.objects.create(
-            source=self.source,
-            target=self.target,
-            as_of=self.today,
+            source=cls.source,
+            target=cls.target,
+            as_of=cls.today,
             rate=100,
         )
 

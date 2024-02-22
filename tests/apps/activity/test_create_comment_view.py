@@ -4,10 +4,13 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class CreateCommentViewTests(AuthenticatedAPITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.activity = ActivityFactory(user=cls.user)
+
     def setUp(self):
         super().setUp()
-
-        self.activity = ActivityFactory(user=self.user)
         self.response = self.client.post(
             f'/api/activities/{self.activity.public_id}/comments', format='json', data={'content': 'This is a comment'}
         )

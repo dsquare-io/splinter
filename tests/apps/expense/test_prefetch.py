@@ -7,14 +7,15 @@ from tests.apps.user.factories import UserFactory
 
 
 class GroupOutstandingBalancePrefetchTests(ExpenseTestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.groups = GroupFactory.create_batch(4)
-        self.friends = UserFactory.create_batch(4)
-        self.create_equal_split_expense(100, self.friends[:2])
-        self.create_equal_split_expense(100, self.friends, group=self.groups[0])
-        self.create_equal_split_expense(200, self.friends, group=self.groups[1])
+        cls.groups = GroupFactory.create_batch(4)
+        cls.friends = UserFactory.create_batch(4)
+        cls.create_equal_split_expense(100, cls.friends[:2])
+        cls.create_equal_split_expense(100, cls.friends, group=cls.groups[0])
+        cls.create_equal_split_expense(200, cls.friends, group=cls.groups[1])
 
     def test_group_outstanding_balance_prefetch(self):
         qs = OutstandingBalance.objects.filter(user=self.friends[0])

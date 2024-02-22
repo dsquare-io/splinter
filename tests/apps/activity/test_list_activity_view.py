@@ -4,12 +4,13 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class ListActivityViewTests(AuthenticatedAPITestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
         for i in range(5):
-            activity = (ActivityFactory if i < 2 else GroupActivityFactory)(user=self.user)
-            ActivityAudience.objects.create(activity=activity, user=self.user)
+            activity = (ActivityFactory if i < 2 else GroupActivityFactory)(user=cls.user)
+            ActivityAudience.objects.create(activity=activity, user=cls.user)
 
     def test_list_activities(self):
         response = self.client.get('/api/activities')

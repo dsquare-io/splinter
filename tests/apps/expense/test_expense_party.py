@@ -7,10 +7,11 @@ from tests.apps.user.factories import UserFactory
 
 
 class ExpensePartyTests(ExpenseTestCase):
-    def setUp(self):
-        super().setUp()
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
 
-        self.friends = UserFactory.create_batch(4)
+        cls.friends = UserFactory.create_batch(4)
 
     def assertExpenseParties(self, expense: Expense, friends: List[User]):
         parties = list(ExpenseParty.objects.filter(expense=expense))

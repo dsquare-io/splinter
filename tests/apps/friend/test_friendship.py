@@ -7,9 +7,10 @@ from tests.apps.user.factories import UserFactory
 class FriendshipTestCase(TestCase):
     available_apps = ('splinter.apps.user', 'splinter.apps.friend')
 
-    def setUp(self):
-        self.user1 = UserFactory()
-        self.user2 = UserFactory()
+    @classmethod
+    def setUpTestData(cls):
+        cls.user1 = UserFactory()
+        cls.user2 = UserFactory()
 
     def test_create_friendship(self):
         Friendship.objects.create(
