@@ -2,7 +2,7 @@ from tests.apps.activity.factories import ActivityFactory, CommentFactory
 from tests.case import AuthenticatedAPITestCase
 
 
-class ListCommentTests(AuthenticatedAPITestCase):
+class ListCommentViewTests(AuthenticatedAPITestCase):
     def setUp(self):
         super().setUp()
 

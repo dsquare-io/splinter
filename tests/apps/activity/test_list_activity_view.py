@@ -3,7 +3,7 @@ from tests.apps.activity.factories import ActivityFactory, GroupActivityFactory
 from tests.case import AuthenticatedAPITestCase
 
 
-class ListActivityTests(AuthenticatedAPITestCase):
+class ListActivityViewTests(AuthenticatedAPITestCase):
     def setUp(self):
         super().setUp()
 

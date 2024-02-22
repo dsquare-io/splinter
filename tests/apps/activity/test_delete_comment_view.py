@@ -2,7 +2,7 @@ from tests.apps.activity.factories import ActivityFactory, CommentFactory
 from tests.case import AuthenticatedAPITestCase
 
 
-class DeleteCommentTests(AuthenticatedAPITestCase):
+class DeleteCommentViewTests(AuthenticatedAPITestCase):
     def setUp(self):
         super().setUp()
 
