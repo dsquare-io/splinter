@@ -1,13 +1,15 @@
 from decimal import Decimal
 from typing import TYPE_CHECKING, Union
 
+from django.conf import settings
 from django.db.models import Manager
 from django.utils import timezone
 
 from splinter.apps.currency.types import ConversionRate
 
 if TYPE_CHECKING:
-    from splinter.apps.currency.models import Currency
+    from splinter.apps.currency.models import Currency, UserCurrency
+    from splinter.apps.user.models import User
 
 
 class ConversionRateNotAvailable(ValueError):
@@ -48,3 +50,16 @@ class ConversionRateManager(Manager):
             rate=rate,
             as_of=instance.as_of,
         )
+
+
+class UserCurrencyManager(Manager):
+    def of(self, user: Union[int, 'User']) -> 'UserCurrency':
+        user_id = user if isinstance(user, int) else user.pk
+        instance = self.filter(user_id=user_id).select_related('currency').first()
+        if instance is None:
+            instance = self.model(user_id=user_id, currency_id=settings.CURRENCY_DEFAULT_USER_PREFERENCE)
+
+        return instance
+
+    def get_preference(self, user: Union[int, 'User']) -> 'Currency':
+        return self.of(user).currency

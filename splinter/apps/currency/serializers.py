@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from splinter.apps.currency.models import Country, Currency
+from splinter.apps.currency.fields import CurrencySerializerField
+from splinter.apps.currency.models import Country, Currency, UserCurrency
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -26,3 +27,11 @@ class CurrencySerializer(SimpleCurrencySerializer):
 
     class Meta(SimpleCurrencySerializer.Meta):
         fields = SimpleCurrencySerializer.Meta.fields + ('country', )
+
+
+class UserCurrencySerializer(serializers.ModelSerializer):
+    currency = CurrencySerializerField()
+
+    class Meta:
+        model = UserCurrency
+        fields = ('currency', )

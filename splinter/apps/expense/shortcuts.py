@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING, List
 
+from splinter.apps.currency.models import Currency, UserCurrency
 from splinter.apps.currency.shortcuts import convert_currency
 
 if TYPE_CHECKING:
-    from splinter.apps.currency.models import Currency
     from splinter.apps.expense.models import OutstandingBalance
     from splinter.apps.user.models import User
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 @dataclass(frozen=True, slots=True)
 class SimplifiedOutstandingBalance:
     amount: Decimal
-    currency: 'Currency'
+    currency: Currency
 
 
 def simplify_outstanding_balances(user: 'User', balances: List['OutstandingBalance']) -> SimplifiedOutstandingBalance:
@@ -21,8 +21,7 @@ def simplify_outstanding_balances(user: 'User', balances: List['OutstandingBalan
     Converts all outstanding balances to the user preferred currency and returns the total amount.
     """
 
-    # TODO: Get user preferred currency
-    currency = balances[0].currency if balances else None
+    currency = UserCurrency.objects.get_preference(user)
 
     total_amount = Decimal(0)
     for balance in balances:

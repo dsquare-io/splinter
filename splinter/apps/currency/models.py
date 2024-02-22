@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.utils import timezone
 
-from splinter.apps.currency.managers import ConversionRateManager
+from splinter.apps.currency.managers import ConversionRateManager, UserCurrencyManager
 
 
 class Country(models.Model):
@@ -70,3 +70,17 @@ class ConversionRate(models.Model):
             self.as_of = timezone.now()
 
         super().save(**kwargs)
+
+
+class UserCurrency(models.Model):
+    user = models.OneToOneField('user.User', on_delete=models.CASCADE, primary_key=True)
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserCurrencyManager()
+
+    class Meta:
+        db_table = 'user_currencies'
+        verbose_name_plural = 'User Currencies'
