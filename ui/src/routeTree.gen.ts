@@ -8,9 +8,8 @@ import { Route as IndexImport } from './routes/index'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as DashboardGroupsImport } from './routes/_dashboard/groups'
 import { Route as DashboardFriendsImport } from './routes/_dashboard/friends'
-import { Route as DashboardProfileIndexImport } from './routes/_dashboard/profile/index'
 import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
-import { Route as DashboardProfileProfileImport } from './routes/_dashboard/profile/$profile'
+import { Route as DashboardProfileMeImport } from './routes/_dashboard/profile/me'
 import { Route as DashboardGroupsGroupImport } from './routes/_dashboard/groups/$group'
 import { Route as DashboardFriendsFriendImport } from './routes/_dashboard/friends/$friend'
 import { Route as DashboardActivityActivityImport } from './routes/_dashboard/activity/$activity'
@@ -42,18 +41,13 @@ const DashboardFriendsRoute = DashboardFriendsImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardProfileIndexRoute = DashboardProfileIndexImport.update({
-  path: '/profile/',
-  getParentRoute: () => DashboardRoute,
-} as any)
-
 const DashboardActivityIndexRoute = DashboardActivityIndexImport.update({
   path: '/activity/',
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardProfileProfileRoute = DashboardProfileProfileImport.update({
-  path: '/profile/$profile',
+const DashboardProfileMeRoute = DashboardProfileMeImport.update({
+  path: '/profile/me',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -108,16 +102,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGroupsGroupImport
       parentRoute: typeof DashboardGroupsImport
     }
-    '/_dashboard/profile/$profile': {
-      preLoaderRoute: typeof DashboardProfileProfileImport
+    '/_dashboard/profile/me': {
+      preLoaderRoute: typeof DashboardProfileMeImport
       parentRoute: typeof DashboardImport
     }
     '/_dashboard/activity/': {
       preLoaderRoute: typeof DashboardActivityIndexImport
-      parentRoute: typeof DashboardImport
-    }
-    '/_dashboard/profile/': {
-      preLoaderRoute: typeof DashboardProfileIndexImport
       parentRoute: typeof DashboardImport
     }
   }
@@ -131,9 +121,8 @@ export const routeTree = rootRoute.addChildren([
     DashboardFriendsRoute.addChildren([DashboardFriendsFriendRoute]),
     DashboardGroupsRoute.addChildren([DashboardGroupsGroupRoute]),
     DashboardActivityActivityRoute,
-    DashboardProfileProfileRoute,
+    DashboardProfileMeRoute,
     DashboardActivityIndexRoute,
-    DashboardProfileIndexRoute,
   ]),
   AuthLoginRoute,
 ])

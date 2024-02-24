@@ -37,7 +37,7 @@ interface FormSubmissionProps<SubmitResponse, TFieldValues extends FieldValues, 
         conf: Omit<SubmissionConf, 'headers'>,
         event?: BaseSyntheticEvent
       ) => Record<string, string> | Promise<Record<string, string> | null> | null);
-  transformData?: (data: TFieldValues) => TransformedData | Promise<TransformedData>;
+  transformData?: (data: TFieldValues, formRef: UseFormReturn<TFieldValues>) => TransformedData | Promise<TransformedData>;
   action?: string;
   method?: Method;
   onSubmit?: (

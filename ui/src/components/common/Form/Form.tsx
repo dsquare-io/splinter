@@ -139,7 +139,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
             event?.stopPropagation();
 
             // transform form data data
-            const transformedData = await transformData(data);
+            const transformedData = await transformData(data, control);
             // if transformData function returns undefined just exit submission
             if (!transformedData) return undefined;
 

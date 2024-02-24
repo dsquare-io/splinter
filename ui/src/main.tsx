@@ -1,16 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import {setupIonicReact} from '@ionic/react';
-import '@ionic/react/css/core.css';
 import {QueryClientProvider} from '@tanstack/react-query';
 import {RouterProvider, createRouter} from '@tanstack/react-router';
 
 import './index.css';
 import {queryClient} from './queryClient';
 import {routeTree} from './routeTree.gen';
-
-setupIonicReact({mode: 'md'});
 
 const router = createRouter({
   context: {
