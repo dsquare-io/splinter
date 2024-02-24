@@ -19,11 +19,11 @@ export function GroupActivityTab({group_uid}: Props) {
   );
 
   return (
-    <div>
+    <div className="my-2">
       {monthlyActivity.map(([month, expenses]) => (
         <div key={month}>
-          <h3 className="pt-4 text-sm text-neutral-500">{format(new Date(month), 'MMM YYY')}</h3>
-          <div className="pt-1.6">
+          <h3 className="pt-4 pb-2 text-sm text-neutral-500 sticky top-[46px] bg-gray-50/70 backdrop-blur">{format(new Date(month), 'MMM YYY')}</h3>
+          <div>
             {expenses.map((expense) => (
               <div
                 className="flex items-center gap-x-4 py-3"

@@ -38,7 +38,7 @@ class ListFriendExpenseView(AbstractListExpenseView):
 class ListGroupExpenseView(AbstractListExpenseView):
     @cached_property
     def group(self):
-        return get_object_or_404(Group.objects.of(self.request.user), public_id=self.kwargs['group_id'])
+        return get_object_or_404(Group.objects.of(self.request.user), public_id=self.kwargs['group_uid'])
 
     def get_queryset(self):
         qs = super().get_queryset()

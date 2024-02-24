@@ -32,10 +32,10 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
             </p>
           )}
           {outstandingBalances?.slice(0, 3).map((e) => (
-            <Fragment key={e.friend.uid}>
+            <Fragment key={e.friend?.uid}>
               {+e.amount != 0 && +e.amount > 0 && (
                 <p>
-                  {e.friend.fullName} borrowed{' '}
+                  {e.friend?.fullName} borrowed{' '}
                   <Currency
                     currency={e.currency.uid}
                     value={parseFloat(e.amount)}
@@ -44,7 +44,7 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
               )}
               {+e.amount != 0 && +e.amount < 0 && (
                 <p>
-                  {e.friend.fullName} lent you{' '}
+                  {e.friend?.fullName} lent you{' '}
                   <Currency
                     currency={e.currency.uid}
                     value={parseFloat(e.amount)}

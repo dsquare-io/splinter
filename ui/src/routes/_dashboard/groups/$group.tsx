@@ -110,7 +110,7 @@ function RootComponent() {
       </div>
 
       <Tabs className="react-aria-Tabs px-4 py-3 sm:px-6 md:px-8">
-        <div className="border-b border-gray-200">
+        <div className="border-b border-gray-200 sticky top-0 bg-gray-50/70 backdrop-blur z-10">
           <TabList
             aria-label="Tabs"
             className="react-aria-TabList -mb-px flex space-x-2"
