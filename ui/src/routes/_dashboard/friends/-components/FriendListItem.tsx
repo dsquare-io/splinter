@@ -18,18 +18,34 @@ export default function FriendListItem({
       to="/friends/$friend"
       params={{friend: uid}}
       className={clx(
-        'relative flex gap-x-3 px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'relative block px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50 w-full',
         'border-y border-gray-200',
         '[&.active]:z-10 [&.active]:border-brand-200',
         outstandingBalances?.length == 0 ? 'item-center' : 'items-start'
       )}
     >
-      <Avatar
-        className="size-10"
-        fallback={fullName}
-      />
-      <div className="grow text-sm font-medium text-gray-800">
-        <div className="text-md py-1">{fullName}</div>
+      <div className="flex items-center gap-x-3">
+        <Avatar
+          className="size-9"
+          fallback={fullName}
+        />
+        <div className="text-md flex-1 py-1">{fullName}</div>
+        {+(aggregatedOutstandingBalance?.amount ?? '0') === 0 ? (
+          <div className="text-xs text-gray-400">Settled up</div>
+        ) : (
+          <div className="text-right text-sm">
+            <div className="text-xs text-gray-400">
+              {+(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
+            </div>
+            <Currency
+              currency="PKR"
+              value={aggregatedOutstandingBalance?.amount ?? 0}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="grow text-sm font-medium text-gray-800 pl-12 pt-1">
         <div className="mt-1.5 space-y-1 text-xs font-normal text-gray-400">
           {outstandingBalances?.slice(0, 3).map((e) => (
             <Fragment key={e.group?.uid ?? e.currency.uid}>
@@ -49,19 +65,6 @@ export default function FriendListItem({
           )}
         </div>
       </div>
-      {+(aggregatedOutstandingBalance?.amount ?? '0') === 0 ? (
-        <div className="text-xs text-gray-400">Settled up</div>
-      ) : (
-        <div className="absolute right-6 top-3 text-right text-sm">
-          <div className="text-xs text-gray-400">
-            {+(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
-          </div>
-          <Currency
-            currency="PKR"
-            value={aggregatedOutstandingBalance?.amount ?? 0}
-          />
-        </div>
-      )}
     </Link>
   );
 }

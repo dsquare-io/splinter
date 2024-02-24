@@ -1,12 +1,9 @@
 import clsx from 'clsx';
-import {TextField} from 'react-aria-components';
 
-import {AdjustmentsVerticalIcon, MagnifyingGlassIcon} from '@heroicons/react/24/outline';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import Currency from '@/components/Currency.tsx';
-import {Button, Input} from '@/components/common';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 import {ApiRoutes} from '../../api-types';
@@ -42,7 +39,7 @@ function GroupsLayout() {
             'xl:fixed xl:inset-y-0 xl:left-60 xl:w-96 xl:overflow-auto xl:border-e xl:border-gray-200'
         )}
       >
-        <div className="sticky top-0 z-10 bg-white px-6 pb-4 pt-6">
+        <div className="sticky top-0 z-10 bg-white px-6 py-6">
           <h2 className="text-lg font-medium text-gray-900">Groups</h2>
           <p className="text-sm text-gray-600">
             {!aggregatedOutstandingBalance?.['PKR'] ? (
@@ -57,33 +54,16 @@ function GroupsLayout() {
               </>
             )}
           </p>
-
-          <div className="mt-6 flex items-center gap-x-2">
-            <TextField
-              className="relative w-full"
-              aria-label="search"
-            >
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 flex items-center pl-3">
-                <MagnifyingGlassIcon className="size-5 text-gray-400" />
-              </div>
-              <Input
-                className="pl-10"
-                placeholder="Search..."
-                type="search"
-              />
-            </TextField>
-
-            <Button variant="outline">
-              <AdjustmentsVerticalIcon />
-            </Button>
-          </div>
         </div>
 
         <div>
           {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? '')).map(
             ([letter, groups]) => (
-              <div key={letter} className="relative -space-y-px">
-                <div className="sticky top-[150px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+              <div
+                key={letter}
+                className="relative -space-y-px"
+              >
+                <div className="sticky top-[96px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                   <h3 className="uppercase">{letter}</h3>
                 </div>
                 <div className="-space-y-px">
