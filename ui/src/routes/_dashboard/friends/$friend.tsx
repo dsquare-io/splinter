@@ -17,10 +17,10 @@ export const Route = createFileRoute('/_dashboard/friends/$friend')({
 });
 
 function RootComponent() {
-  const {friend: username} = Route.useParams();
+  const {friend: friend_uid} = Route.useParams();
 
-  const {data} = useApiQuery(ApiRoutes.FRIEND_DETAIL, {username});
-  const {data: friendExpenseList} = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, {username});
+  const {data} = useApiQuery(ApiRoutes.FRIEND_DETAIL, {friend_uid});
+  const {data: friendExpenseList} = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, {friend_uid});
 
   if (!data) return null;
 
@@ -104,7 +104,7 @@ function RootComponent() {
         </div>
       </div>
 
-      <div className="my-2">
+      <div className="my-3 px-4 sm:px-6 md:px-8">
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
             <h3 className="sticky top-[46px] bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">

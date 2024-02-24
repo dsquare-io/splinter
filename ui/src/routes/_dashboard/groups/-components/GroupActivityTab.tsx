@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function GroupActivityTab({group_uid}: Props) {
-  const {data} = useApiQuery(ApiRoutes.GROUP_EXPENSE_LIST, {group_id: group_uid});
+  const {data} = useApiQuery(ApiRoutes.GROUP_EXPENSE_LIST, {group_uid});
 
   if (!data) return null;
 

@@ -119,8 +119,8 @@ export interface Expense {
   /** Format: date-time */
   datetime: string;
   description: string;
-  paidBy?: SimpleUser;
-  createdBy?: SimpleUser;
+  /** Format: decimal */
+  amount: string;
   currency: SimpleCurrency;
   /**
    * Format: decimal
@@ -128,6 +128,8 @@ export interface Expense {
    */
   outstandingBalance?: string;
   expenses: readonly ExpenseRow[];
+  paidBy?: SimpleUser;
+  createdBy?: SimpleUser;
 }
 
 export interface ExpenseRow {
@@ -139,8 +141,12 @@ export interface ExpenseRow {
 
 export interface ExpenseShare {
   user: string;
+  /** @description The share of the user in the expense */
   share?: number;
-  /** Format: decimal */
+  /**
+   * Format: decimal
+   * @description The amount of the user in the expense
+   */
   amount: string;
 }
 
@@ -178,6 +184,7 @@ export interface FriendOutstandingBalance {
   amount: string;
   currency: SimpleCurrency;
   group: SimpleGroup;
+  friend: SimpleUser;
 }
 
 export interface Group {
@@ -185,24 +192,17 @@ export interface Group {
   urn: string;
   name: string;
   /** @description Top 5 Outstanding balances for current user */
-  outstandingBalances?: readonly GroupFriendOutstandingBalance[];
+  outstandingBalances?: readonly GroupOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */
   aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-}
-
-export interface GroupFriendOutstandingBalance {
-  /** Format: decimal */
-  amount: string;
-  currency: SimpleCurrency;
-  friend: SimpleUser;
 }
 
 export interface GroupOutstandingBalance {
   /** Format: decimal */
   amount: string;
   currency: SimpleCurrency;
-  friend: SimpleUser;
   user: SimpleUser;
+  friend: SimpleUser;
 }
 
 export interface MfaToken {
@@ -382,3 +382,12 @@ export interface UserDeviceInfo {
   configuredDevices?: Device[];
   authenticationMethods?: Device[];
 }
+
+export interface UserOutstandingBalance {
+  currency: SimpleCurrency;
+  /** Format: decimal */
+  amount: string;
+  paid: AggregatedOutstandingBalance;
+  borrowed: AggregatedOutstandingBalance;
+}
+
