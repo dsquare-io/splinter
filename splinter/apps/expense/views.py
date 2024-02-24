@@ -23,7 +23,7 @@ class AbstractListExpenseView(ListAPIView):
 class ListFriendExpenseView(AbstractListExpenseView):
     @cached_property
     def friendship(self):
-        friend = get_object_or_404(User.objects, username=self.kwargs['username'])
+        friend = get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
         try:
             return Friendship.objects.of(self.request.user, friend)
         except Friendship.DoesNotExist:
