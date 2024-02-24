@@ -7,7 +7,7 @@ import useAuth from '@/hooks/useAuth';
 
 import AuthLayout from './-layout';
 
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute('/auth/forget-pass')({
   component: RootComponent,
 });
 
@@ -16,7 +16,7 @@ function RootComponent() {
   const {setToken} = useAuth();
 
   return (
-    <AuthLayout title="Sign in to your account">
+    <AuthLayout title="We’ll help you reset your password.">
       <Form
         action={ApiRoutes.PASSWORD_LOGIN}
         method="POST"
@@ -30,25 +30,13 @@ function RootComponent() {
         <FormRootErrors />
 
         <TextFormField
-          name="username"
+          name="email"
           required
         >
-          <Label>Username</Label>
+          <Label>Email</Label>
           <Input
-            type="text"
-            placeholder="Enter your username"
-          />
-          <FieldError />
-        </TextFormField>
-
-        <TextFormField
-          name="password"
-          required
-        >
-          <Label>Password</Label>
-          <Input
-            type="password"
-            placeholder="Enter your password"
+            type="email"
+            placeholder="Enter your email"
           />
           <FieldError />
         </TextFormField>
@@ -58,7 +46,7 @@ function RootComponent() {
           slot="submit"
           type="submit"
         >
-          Login
+          Send verification email
         </Button>
       </Form>
     </AuthLayout>

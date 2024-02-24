@@ -18,7 +18,7 @@ function RootComponent() {
         <div>
           <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>
           <p className="mt-1.5 text-sm text-gray-500">
-            Let’s get started by filling in the information below to create your new project.
+            Manage your personal information.
           </p>
         </div>
         <Form
@@ -70,7 +70,7 @@ function RootComponent() {
         <div>
           <h1 className="text-lg font-medium leading-6 text-gray-900">Change Password</h1>
           <p className="mt-1.5 text-sm text-gray-500">
-            Let’s get started by filling in the information below to create your new project.
+            Set a different password for your account.
           </p>
         </div>
         <Form

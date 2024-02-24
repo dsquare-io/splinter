@@ -6,6 +6,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthLoginImport } from './routes/auth/login'
+import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
 import { Route as DashboardGroupsImport } from './routes/_dashboard/groups'
 import { Route as DashboardFriendsImport } from './routes/_dashboard/friends'
 import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
@@ -28,6 +29,11 @@ const IndexRoute = IndexImport.update({
 
 const AuthLoginRoute = AuthLoginImport.update({
   path: '/auth/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthForgetPassRoute = AuthForgetPassImport.update({
+  path: '/auth/forget-pass',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -86,6 +92,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGroupsImport
       parentRoute: typeof DashboardImport
     }
+    '/auth/forget-pass': {
+      preLoaderRoute: typeof AuthForgetPassImport
+      parentRoute: typeof rootRoute
+    }
     '/auth/login': {
       preLoaderRoute: typeof AuthLoginImport
       parentRoute: typeof rootRoute
@@ -124,5 +134,6 @@ export const routeTree = rootRoute.addChildren([
     DashboardProfileMeRoute,
     DashboardActivityIndexRoute,
   ]),
+  AuthForgetPassRoute,
   AuthLoginRoute,
 ])
