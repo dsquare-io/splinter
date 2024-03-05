@@ -1,0 +1,27 @@
+.react-aria-ModalOverlay {
+  @apply fixed inset-0 bg-gray-500/75 flex items-center justify-center w-screen z-50 animate-in;
+
+  &[data-entering] {
+    @apply animate-in fade-in;
+  }
+
+  &[data-exiting] {
+    @apply animate-out fade-out;
+  }
+}
+
+.react-aria-Modal {
+  @apply relative overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:p-6 animate-in max-h-screen;
+
+  &[data-exiting] {
+    @apply animate-out slide-out-to-bottom-4 sm:slide-out-to-bottom-0 sm:zoom-out-95;
+  }
+
+  &[data-entering] {
+    @apply animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 sm:zoom-in-95;
+  }
+}
+
+.react-aria-Dialog {
+  @apply focus:outline-none;
+}

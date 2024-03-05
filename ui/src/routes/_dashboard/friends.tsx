@@ -1,10 +1,13 @@
 import clsx from 'clsx';
+import {DialogTrigger} from 'react-aria-components';
 
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
+import {Button} from '@/components/common';
+import {AddFriendModal} from '@/components/modals/AddFriend.tsx';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 import FriendListItem from './friends/-components/FriendListItem.tsx';
@@ -40,44 +43,59 @@ function FriendsLayout() {
         )}
       >
         <div className="absolute inset-y-0 right-0 w-px bg-gray-100" />
-        <div className="sticky top-0 z-20 bg-white px-6 py-6">
-          <h2 className="text-lg font-medium text-gray-900">Friends</h2>
-          <p className="text-sm text-gray-600">
-            {!aggregatedOutstandingBalance?.['PKR'] ? (
-              'You are all settled up'
-            ) : (
-              <>
-                Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
-                <Currency
-                  currency={'PKR'}
-                  value={aggregatedOutstandingBalance?.['PKR']}
-                />
-              </>
-            )}
-          </p>
+        <div className="sticky top-0 z-40 flex items-center gap-x-2 bg-white py-6 pl-6 pr-3">
+          <div className="flex-1">
+            <h2 className="text-lg font-medium text-gray-900">Friends</h2>
+            <p className="text-sm text-gray-600">
+              {!aggregatedOutstandingBalance?.['PKR'] ? (
+                'You are all settled up'
+              ) : (
+                <>
+                  Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
+                  <Currency
+                    currency={'PKR'}
+                    value={aggregatedOutstandingBalance?.['PKR']}
+                  />
+                </>
+              )}
+            </p>
+          </div>
+
+          <div>
+            <DialogTrigger>
+              <Button
+                size="large"
+                className="whitespace-nowrap text-brand-600"
+                variant="plain"
+              >
+                Invite Friend
+              </Button>
+              <AddFriendModal />
+            </DialogTrigger>
+          </div>
         </div>
 
-        <div>
-          {Object.entries(
-            groupBy(data?.results ?? [], (friend) => friend.fullName?.[0]?.toLowerCase() ?? '')
-          ).map(([letter, friends]) => (
-            <div
-              key={letter}
-              className="relative -space-y-px"
-            >
-              <div className="sticky top-[96px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
-                <h3 className="uppercase">{letter}</h3>
+        <div className="-space-y-px">
+          {Object.entries(groupBy(data?.results ?? [], (friend) => friend.fullName?.[0]?.toLowerCase() ?? ''))
+            .sort((a, b) => (a[0] < b[0] ? -1 : +1))
+            .map(([letter, friends]) => (
+              <div
+                key={letter}
+                className="relative -space-y-px"
+              >
+                <div className="sticky top-[96px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+                  <h3 className="uppercase">{letter}</h3>
+                </div>
+                <div className="-space-y-px">
+                  {friends.map((friend) => (
+                    <FriendListItem
+                      key={friend.uid}
+                      {...friend}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="-space-y-px">
-                {friends.map((friend) => (
-                  <FriendListItem
-                    key={friend.uid}
-                    {...friend}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         <ScrollRestoration />

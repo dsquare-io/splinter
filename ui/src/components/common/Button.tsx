@@ -16,7 +16,7 @@ const button = tv({
     'data-[disabled]:opacity-50',
 
     // Icon
-    '  [&>[data-slot=icon]]:shrink-0 [&>[data-slot=icon]]:text-[--btn-icon] forced-colors:[--btn-icon:ButtonText] forced-colors:data-[hovered]:[--btn-icon:ButtonText]',
+    '  [&>[data-slot=icon]]:shrink-0 [where(&>[data-slot=icon])]:text-[--btn-icon] forced-colors:[--btn-icon:ButtonText] forced-colors:data-[hovered]:[--btn-icon:ButtonText]',
   ],
   variants: {
     size: {

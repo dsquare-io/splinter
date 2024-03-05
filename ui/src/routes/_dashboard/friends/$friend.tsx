@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import groupBy from 'just-group-by';
 import {Fragment} from 'react';
 
-import {BanknotesIcon, Cog8ToothIcon} from '@heroicons/react/16/solid';
+import {BanknotesIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 import {format} from 'date-fns';
@@ -92,15 +92,6 @@ function RootComponent() {
             <BanknotesIcon />
             Settle Up
           </Button>
-          <div className="flex-1" />
-          <Button
-            variant="outline"
-            className="bg-white"
-            size="small"
-          >
-            <Cog8ToothIcon />
-            Settings
-          </Button>
         </div>
       </div>
 
@@ -108,7 +99,7 @@ function RootComponent() {
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
             <h3 className="sticky top-[46px] bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
-              {format(new Date(month), 'MMM YYY')}
+              {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>
               {expenses.map((expense) => (
