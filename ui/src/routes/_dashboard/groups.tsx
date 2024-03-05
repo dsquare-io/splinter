@@ -74,6 +74,20 @@ function GroupsLayout() {
           </div>
         </div>
 
+        <div>
+            <DialogTrigger>
+              <Button
+                size="large"
+                className="whitespace-nowrap text-brand-600"
+                variant="plain"
+              >
+                Create Group
+              </Button>
+              <CreateGroupModal />
+            </DialogTrigger>
+          </div>
+        </div>
+
         <div className="-space-y-px">
           {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? ''))
             .sort((a, b) => (a[0] < b[0] ? -1 : +1))
