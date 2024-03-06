@@ -74,7 +74,7 @@ function GroupsLayout() {
           </div>
         </div>
 
-        <div>
+        <div className="-space-y-px">
           {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? ''))
             .sort((a, b) => (a[0] < b[0] ? -1 : +1))
             .map(([letter, groups]) => (
