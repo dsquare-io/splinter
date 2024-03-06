@@ -87,7 +87,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
               >
                 <div
                   className="contents"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => selectedFriends.length > 0 && e.stopPropagation()}
                 >
                   <TagGroup
                     selectionMode="none"
@@ -99,7 +99,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                     <TagList
                       items={selectedFriends.map((e) => ({id: e.uid, ...e}))}
                       className="react-aria-TagList contents"
-                      renderEmptyState={() => 'Select friends...'}
+                      renderEmptyState={() => <span className="cursor-default">Select friends...</span>}
                     >
                       {(item: Friend) => (
                         <Tag
