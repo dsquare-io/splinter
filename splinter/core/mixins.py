@@ -4,17 +4,23 @@ from rest_framework.mixins import ListModelMixin as DrfListModelMixin
 from rest_framework.mixins import RetrieveModelMixin as DrfRetrieveModelMixin
 from rest_framework.response import Response
 
+from splinter.core.serializers import ObjectSerializer
+
 
 class ListModelMixin(DrfListModelMixin):
     pass
 
 
 class CreateModelMixin:
+    create_response_serializer_class = ObjectSerializer
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        return Response(status=status.HTTP_201_CREATED)
+
+        data = self.create_response_serializer_class(instance=serializer.instance).data
+        return Response(data, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         serializer.save()

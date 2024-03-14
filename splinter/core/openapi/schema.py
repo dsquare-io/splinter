@@ -83,7 +83,10 @@ class AutoSchema(AutoSchemaBase):
         return isinstance(self.view, UpdateAPIView) and self.method in ('PUT', 'PATCH')
 
     def get_response_serializers(self):
-        if not self._is_create_operation() and not self._is_update_operation():
+        if self._is_create_operation():
+            return getattr(self.view, 'create_response_serializer_class', None)
+
+        if not self._is_update_operation():  # Update operations don't return a body
             return super().get_response_serializers()
 
     def _get_response_bodies(self, *args, **kwargs):

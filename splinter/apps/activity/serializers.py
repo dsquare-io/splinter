@@ -6,26 +6,7 @@ from splinter.apps.activity.models import Activity, Comment
 from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
-
-
-class TargetSerializer(serializers.Serializer):
-    uid = serializers.SerializerMethodField()
-    urn = serializers.CharField(read_only=True)
-
-    type = serializers.SerializerMethodField()
-    value = serializers.SerializerMethodField('get_obj_value')
-
-    @extend_schema_field(serializers.CharField(help_text='Unique identifier of the target object'))
-    def get_uid(self, obj) -> str:
-        return getattr(obj, obj.UID_FIELD)
-
-    @extend_schema_field(serializers.CharField(help_text='Type of the target object'))
-    def get_type(self, obj) -> str:
-        return type(obj).__name__
-
-    @extend_schema_field(serializers.CharField(help_text='String representation of the target object'))
-    def get_obj_value(self, obj) -> str:
-        return str(obj)
+from splinter.core.serializers import ObjectSerializer
 
 
 class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
@@ -35,7 +16,7 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
     user = SimpleUserSerializer(read_only=True)
     group = SimpleGroupSerializer(read_only=True)
 
-    target = TargetSerializer(read_only=True)
+    target = ObjectSerializer(read_only=True)
     template = serializers.SerializerMethodField()
 
     class Meta:
