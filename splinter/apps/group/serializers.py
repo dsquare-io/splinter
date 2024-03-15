@@ -6,7 +6,6 @@ from rest_framework import serializers
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
 from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerializer, OutstandingBalanceSerializer
 from splinter.apps.friend.fields import FriendSerializerField
-from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -92,19 +91,23 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
         )
 
 
-class BulkCreateGroupMembershipSerializer(serializers.Serializer):
-    group = GroupSerializerField()
-    members = serializers.ListField(child=FriendSerializerField())
+class SyncGroupMembershipSerializer(serializers.Serializer):
+    members = serializers.ListField(child=FriendSerializerField(include_self=True))
 
     @transaction.atomic()
     def create(self, validated_data):
-        memberships = []
-        group = validated_data['group']
+        group = self.context['group']
 
-        for member in validated_data['members']:
-            memberships.append(GroupMembership.objects.get_or_create(
-                group=group,
-                user=member,
-            )[0])
+        existing_members = set(group.members.values_list('pk', flat=True))
+        new_members = set(member.pk for member in validated_data['members'])
 
-        return memberships
+        to_add = new_members - existing_members
+        to_delete = existing_members - new_members
+
+        if to_add:
+            GroupMembership.objects.bulk_create([GroupMembership(group=group, user_id=user_id) for user_id in to_add])
+
+        if to_delete:
+            GroupMembership.objects.filter(group=group, user_id__in=to_delete).delete()
+
+        return group

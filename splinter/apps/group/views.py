@@ -1,12 +1,17 @@
+from functools import cached_property
+
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.group.serializers import (
-    BulkCreateGroupMembershipSerializer,
-    ExtendedGroupSerializer,
-    GroupSerializer,
+from splinter.apps.group.serializers import ExtendedGroupSerializer, GroupSerializer, SyncGroupMembershipSerializer
+from splinter.core.views import (
+    CreateAPIView,
+    DestroyAPIView,
+    GenericAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
 )
-from splinter.core.views import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
@@ -37,5 +42,19 @@ class DestroyGroupMembershipView(DestroyAPIView):
         return get_object_or_404(GroupMembership, group=group, user=member)
 
 
-class BulkCreateGroupMembershipView(CreateAPIView):
-    serializer_class = BulkCreateGroupMembershipSerializer
+class SyncGroupMembershipView(GenericAPIView):
+    serializer_class = SyncGroupMembershipSerializer
+
+    @cached_property
+    def group(self):
+        return get_object_or_404(Group.objects.of(self.request.user.id), public_id=self.kwargs['group_uid'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['group'] = self.group
+        return context
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
