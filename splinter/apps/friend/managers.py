@@ -1,15 +1,14 @@
 from typing import TYPE_CHECKING, Union
 
-from django.db.models import Exists, OuterRef, Q, QuerySet
+from django.db.models import Exists, Manager, OuterRef, Q, QuerySet
 
 from splinter.apps.user.models import User
-from splinter.db.soft_delete import SoftDeleteManager
 
 if TYPE_CHECKING:
     from splinter.apps.friend.models import Friendship
 
 
-class FriendshipManager(SoftDeleteManager):
+class FriendshipManager(Manager):
     def is_friend_with(self, user_a: User, user_b: User) -> bool:
         return self.filter(Q(user_a=user_a, user_b=user_b) | Q(user_a=user_b, user_b=user_a)).exists()
 

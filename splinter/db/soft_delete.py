@@ -1,9 +1,9 @@
 from django.db import models
-from django.db.models.manager import BaseManager, Manager
+from django.db.models.base import ModelBase
 from django.utils import timezone
 
 
-class SoftDeleteQuerySet(models.QuerySet):
+class SoftDeleteQuerySetMixin:
     def delete(self, force=False):
         if force:
             return super().delete()
@@ -11,15 +11,36 @@ class SoftDeleteQuerySet(models.QuerySet):
         return True, self.update(removed_at=timezone.now())
 
 
-class SoftDeleteManager(Manager, BaseManager.from_queryset(SoftDeleteQuerySet)):
+class SoftDeleteManagerMixin:
     def get_queryset(self):
         return super().get_queryset().filter(removed_at__isnull=True)
 
+    def deleted(self):
+        return super().get_queryset().filter(removed_at__isnull=False)
 
-class SoftDeleteModel(models.Model):
+
+class SoftDeleteModelBase(ModelBase):
+    def add_to_class(cls, name, value):
+        if name == 'objects':
+            attrs = {}
+            if value.auto_created:
+                attrs['auto_created'] = value.auto_created
+
+            manager_class = type('Manager', (SoftDeleteManagerMixin, type(value)), attrs)
+            manager_class._queryset_class = type(
+                'QuerySet',
+                (SoftDeleteQuerySetMixin, value._queryset_class),  # NOQA
+                {}
+            )
+
+            super().add_to_class(f'all_{name}', value)
+            value = manager_class()
+
+        super().add_to_class(name, value)
+
+
+class SoftDeleteModel(models.Model, metaclass=SoftDeleteModelBase):
     removed_at = models.DateTimeField(null=True, blank=True, db_index=True, editable=False)
-
-    objects = SoftDeleteManager()
 
     def delete(self, **kwargs):
         if kwargs.pop('force', False):
