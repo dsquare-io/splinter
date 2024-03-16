@@ -6,8 +6,8 @@ import re
 from django.conf import settings
 from django.contrib.auth.models import UserManager as AuthUserManager
 from django.db import models
-from django.db.models import ExpressionWrapper, F
-from django.db.models.functions import Now
+from django.db.models import Case, CharField, ExpressionWrapper, F, Value, When
+from django.db.models.functions import Concat, Now
 from django.utils import timezone
 
 from splinter.apps.user.postman import send_verification_email
@@ -18,6 +18,20 @@ DISALLOWED_USERNAME_CHARTS_RE = re.compile(r'[^A-Za-z0-9.]')
 
 
 class UserManager(AuthUserManager):
+    def get_queryset(self):
+        return super().get_queryset().annotate(
+            full_name=Case(
+                When(first_name='', last_name='', then=F('username')),
+                When(first_name='', then=F('last_name')),
+                When(
+                    last_name='',
+                    then=F('first_name'),
+                ),
+                default=Concat(F('first_name'), Value(' '), F('last_name')),
+                output_field=CharField()
+            )
+        )
+
     def suggest_username(self, email: str) -> str:
         username = email.split('@', 1)[0].lower()
         username = DISALLOWED_USERNAME_CHARTS_RE.sub('_', username).strip('_')

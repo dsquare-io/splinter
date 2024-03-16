@@ -34,7 +34,14 @@ class User(SoftDeleteModel, AuthAbstractUser):
 
     @property
     def full_name(self):
+        if hasattr(self, '_full_name'):
+            return self._full_name
+
         return self.get_full_name() or self.username
+
+    @full_name.setter
+    def full_name(self, value):
+        self._full_name = value
 
     def __str__(self):
         return f'{self.full_name} ({self.email})'
