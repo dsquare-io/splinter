@@ -1,7 +1,9 @@
 from functools import cached_property
 
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 
+from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.group.serializers import ExtendedGroupSerializer, GroupSerializer, SyncGroupMembershipSerializer
 from splinter.core.views import (
@@ -40,6 +42,12 @@ class DestroyGroupMembershipView(DestroyAPIView):
         group = get_object_or_404(Group.objects.of(self.request.user.id), public_id=self.kwargs['group_uid'])
         member = get_object_or_404(group.members.all(), username=self.kwargs['member_uid'])
         return get_object_or_404(GroupMembership, group=group, user=member)
+
+    def perform_destroy(self, instance: GroupMembership):
+        if OutstandingBalance.objects.get_user_balance_in_group(user=instance.user_id, group=instance.group_id):
+            raise ValidationError('Cannot remove user with outstanding balance from the group')
+
+        super().perform_destroy(instance)
 
 
 class SyncGroupMembershipView(GenericAPIView):
