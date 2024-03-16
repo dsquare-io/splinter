@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http.response import HttpResponseBase
 from rest_framework import status
 from rest_framework.exceptions import APIException
@@ -22,7 +23,13 @@ class APIView(DrfAPIView):
 
     def handle_exception(self, exc):
         if isinstance(exc, APIException):
-            return Response(exc.get_full_details(), status=exc.status_code)
+            full_detail = exc.get_full_details()
+            if isinstance(full_detail, list):
+                full_detail = {
+                    settings.REST_FRAMEWORK['NON_FIELD_ERRORS_KEY']: full_detail,
+                }
+
+            return Response(full_detail, status=exc.status_code)
 
         return super().handle_exception(exc)
 
