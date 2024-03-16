@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from splinter.apps.expense.managers import OutstandingBalanceManager
+from splinter.apps.expense.managers import ExpenseManager, OutstandingBalanceManager
 from splinter.db.public_model import PublicModel
 from splinter.db.soft_delete import SoftDeleteModel
 from splinter.db.state_aware import StateAwareModel
@@ -37,6 +37,8 @@ class Expense(AbstractExpenseModel):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = ExpenseManager()
 
     class Meta:
         db_table = 'expenses'
