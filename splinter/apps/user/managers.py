@@ -11,13 +11,14 @@ from django.db.models.functions import Concat, Now
 from django.utils import timezone
 
 from splinter.apps.user.postman import send_verification_email
+from splinter.db.soft_delete import SoftDeleteManagerMixin
 from splinter.utils.strings import generate_random_string
 
 DUPLICATE_UNDERSCORE_RE = re.compile(r'_+')
 DISALLOWED_USERNAME_CHARTS_RE = re.compile(r'[^A-Za-z0-9.]')
 
 
-class UserManager(AuthUserManager):
+class UserManager(SoftDeleteManagerMixin, AuthUserManager):
     def get_queryset(self):
         return super().get_queryset().annotate(
             full_name=Case(
