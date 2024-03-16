@@ -377,6 +377,11 @@ export interface User {
   isVerified?: boolean;
 }
 
+export interface UserCurrency {
+  /** @description ISO 4217 Currency Code */
+  currency: string;
+}
+
 export interface UserDeviceInfo {
   availableDevices?: AvailableDevice[];
   configuredDevices?: Device[];

@@ -1,32 +1,33 @@
-import { GroupSettingsModal } from '@/components/modals/GroupSettings.tsx';
 import clsx from 'clsx';
-import { Fragment } from 'react';
-import { DialogTrigger, Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
+import {Fragment} from 'react';
+import {DialogTrigger, Tab, TabList, TabPanel, Tabs} from 'react-aria-components';
 
-import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import {BanknotesIcon, Cog8ToothIcon, UserPlusIcon} from '@heroicons/react/16/solid';
+import {ChevronLeftIcon} from '@heroicons/react/24/solid';
+import {Link, createFileRoute} from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
+import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
-import { Avatar, Button } from '@/components/common';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
-import { GroupActivityTab } from '@/routes/_dashboard/groups/-components/GroupActivityTab.tsx';
-import { GroupBalancesTab } from '@/routes/_dashboard/groups/-components/GroupBalancesTab.tsx';
+import {Avatar, Button} from '@/components/common';
+import {GroupSettingsModal} from '@/components/modals/GroupSettings.tsx';
+import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
+import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
+import {queryClient} from '@/queryClient.ts';
+import {GroupActivityTab} from '@/routes/_dashboard/groups/-components/GroupActivityTab.tsx';
+import {GroupBalancesTab} from '@/routes/_dashboard/groups/-components/GroupBalancesTab.tsx';
 
 export const Route = createFileRoute('/_dashboard/groups/$group')({
-  loader: ({ params: { group: group_uid } }) =>
-    queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })),
+  loader: ({params: {group: group_uid}}) =>
+    queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.GROUP_DETAIL, {group_uid})),
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });
 
 function RootComponent() {
-  const { group: group_uid } = Route.useParams();
+  const {group: group_uid} = Route.useParams();
 
-  const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
-  const { data: profileData } = useApiQuery(ApiRoutes.PROFILE);
+  const {data} = useApiQuery(ApiRoutes.GROUP_DETAIL, {group_uid});
+  const {data: profileData} = useApiQuery(ApiRoutes.PROFILE);
   if (!data) return null;
 
   const myOutstandingBalances =
@@ -37,7 +38,7 @@ function RootComponent() {
       <div
         className={clsx(
           'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
-          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center',
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
         )}
       >
         <div
@@ -59,7 +60,7 @@ function RootComponent() {
           className="col-span-2 mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
           to="/groups"
         >
-          <ChevronLeftIcon className="size-3"/>
+          <ChevronLeftIcon className="size-3" />
           Groups
         </Link>
 
@@ -86,17 +87,22 @@ function RootComponent() {
         </div>
 
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
-          <Button size="small">
-            <BanknotesIcon/>
-            Settle Up
-          </Button>
-          <div className="flex-1"/>
+          <DialogTrigger>
+            <Button size="small">
+              <BanknotesIcon />
+              Settle Up
+            </Button>
+            <SettleUpModal group_uid={group_uid} />
+          </DialogTrigger>
+
+          <div className="flex-1" />
+
           <Button
             variant="outline"
             className="bg-white"
             size="small"
           >
-            <UserPlusIcon/>
+            <UserPlusIcon />
             Invite Member
           </Button>
           <DialogTrigger>
@@ -105,7 +111,7 @@ function RootComponent() {
               className="bg-white"
               size="small"
             >
-              <Cog8ToothIcon/>
+              <Cog8ToothIcon />
               Settings
             </Button>
             <GroupSettingsModal group_uid={group_uid} />
@@ -114,7 +120,7 @@ function RootComponent() {
       </div>
 
       <Tabs className="react-aria-Tabs px-4 py-3 sm:px-6 md:px-8">
-        <div className="border-b border-gray-200 sticky top-0 bg-gray-50/70 backdrop-blur z-10">
+        <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/70 backdrop-blur">
           <TabList
             aria-label="Tabs"
             className="react-aria-TabList -mb-px flex space-x-2"
@@ -124,10 +130,10 @@ function RootComponent() {
           </TabList>
         </div>
         <TabPanel id="activity">
-          <GroupActivityTab group_uid={group_uid}/>
+          <GroupActivityTab group_uid={group_uid} />
         </TabPanel>
         <TabPanel id="balance">
-          <GroupBalancesTab group_uid={group_uid}/>
+          <GroupBalancesTab group_uid={group_uid} />
         </TabPanel>
       </Tabs>
     </div>

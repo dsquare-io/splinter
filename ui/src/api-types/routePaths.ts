@@ -7,6 +7,7 @@ export const Paths = {
   COMMENT_LIST: '/api/activities/{activity_uid}/comments',
   CONFIRM_MFA_DEVICE: '/api/mfa/confirm/{device_type}',
   CURRENCY_LIST: '/api/currencies',
+  CURRENCY_PREFERENCE: '/api/user/currency',
   ENABLE_MFA_DEVICE: '/api/mfa/enable/{device_type}',
   FORGET_PASSWORD: '/api/user/forget',
   FRIEND_DETAIL: '/api/friends/{friend_uid}',

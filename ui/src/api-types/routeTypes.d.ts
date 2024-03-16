@@ -101,6 +101,12 @@ export interface paths {
     /** Verify Mfa Device */
     post: operations["VerifyMfaDevice"];
   };
+  "/api/user/currency": {
+    /** Retrieve Currency Preference */
+    get: operations["RetrieveCurrencyPreference"];
+    /** Update Currency Preference */
+    put: operations["UpdateCurrencyPreference"];
+  };
   "/api/user/forget": {
     /** Forget Password */
     post: operations["ForgetPassword"];
@@ -179,6 +185,7 @@ export interface components {
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
     Target: import('./components/schemas.d.ts').Target;
     User: import('./components/schemas.d.ts').User;
+    UserCurrency: import('./components/schemas.d.ts').UserCurrency;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
     UserOutstandingBalance: import('./components/schemas.d.ts').UserOutstandingBalance;
   };
@@ -1120,6 +1127,65 @@ export interface operations {
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Retrieve Currency Preference */
+  RetrieveCurrencyPreference: {
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').Currency;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Update Currency Preference */
+  UpdateCurrencyPreference: {
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').UserCurrency;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').UserCurrency;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
         };
       };
     };
