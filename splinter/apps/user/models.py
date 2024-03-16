@@ -13,6 +13,7 @@ from splinter.db.soft_delete import SoftDeleteModel
 
 class User(SoftDeleteModel, AuthAbstractUser):
     UID_FIELD = 'username'
+    SEARCH_FIELDS = ['full_name', 'username', 'email']
 
     if TYPE_CHECKING:
         urn: str

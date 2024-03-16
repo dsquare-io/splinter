@@ -3,10 +3,13 @@ from django.conf import settings
 from splinter.apps.friend.models import Friendship
 from splinter.apps.friend.serializers import CreateFriendshipSerializer, FriendSerializer
 from splinter.apps.user.shortcuts import invite_user
+from splinter.core.filters import TrigramSimilaritySearchBackend
 from splinter.core.views import CreateAPIView, ListAPIView, RetrieveAPIView
 
 
 class ListCreateFriendView(ListAPIView, CreateAPIView):
+    filter_backends = [TrigramSimilaritySearchBackend]
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateFriendshipSerializer
