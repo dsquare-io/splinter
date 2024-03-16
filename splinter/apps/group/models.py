@@ -6,7 +6,7 @@ from splinter.db.soft_delete import SoftDeleteModel
 
 
 class Group(SoftDeleteModel, PublicModel):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     members = models.ManyToManyField('user.User', through='group.GroupMembership', related_name='+')
 
     created_by = models.ForeignKey('user.User', on_delete=models.PROTECT, related_name='created_groups')
