@@ -1,6 +1,5 @@
 export const Paths = {
   ACTIVITY_LIST: '/api/activities',
-  BULK_GROUP_MEMBERSHIP: '/api/groups/members',
   CHALLENGE_MFA_DEVICE: '/api/mfa/challenge/{device_type}',
   CHANGE_PASSWORD: '/api/user/password',
   COMMENT_DETAIL: '/api/activities/{activity_uid}/comments/{comment_uid}',
@@ -16,7 +15,6 @@ export const Paths = {
   GROUP_DETAIL: '/api/groups/{group_uid}',
   GROUP_EXPENSE_LIST: '/api/groups/{group_uid}/expenses',
   GROUP_LIST: '/api/groups',
-  GROUP_MEMBERSHIP_DETAIL: '/api/groups/{group_uid}/members/{member_uid}',
   MFA_DEVICE_DETAIL: '/api/mfa/device/{device_type}:{id}',
   MFA_DEVICE_LIST: '/api/mfa/devices',
   MFA_STATIC_CODE_LIST: '/api/mfa/static',
@@ -24,6 +22,7 @@ export const Paths = {
   PROFILE: '/api/user/profile',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
   RESET_PASSWORD: '/api/user/reset',
+  SYNC_GROUP_MEMBERSHIP: '/api/groups/{group_uid}/members',
   USER_OUTSTANDING_BALANCE: '/api/user/outstanding-balance',
   VERIFY_EMAIL: '/api/user/verify-email',
   VERIFY_MFA_DEVICE: '/api/mfa/verify/{device_type}',

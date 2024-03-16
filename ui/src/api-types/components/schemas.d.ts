@@ -12,7 +12,7 @@ export interface Activity {
   group: SimpleGroup;
   template: string;
   description: string;
-  target: Target;
+  target: Object;
   /** Format: date-time */
   createdAt?: string;
 }
@@ -39,11 +39,6 @@ export interface AuthenticateUser {
 export interface AvailableDevice {
   type: string;
   name: string;
-}
-
-export interface BulkCreateGroupMembership {
-  group: string;
-  members: string[];
 }
 
 export interface ChallengeMfaDeviceResponse {
@@ -213,6 +208,15 @@ export interface NotFound {
   detail: string;
 }
 
+export interface Object {
+  /** @description Unique identifier of object */
+  uid: string | null;
+  /** @description Unique resource name of object */
+  urn: string | null;
+  /** @description String representation of object */
+  value: string;
+}
+
 export interface OutstandingBalance {
   /** Format: decimal */
   amount: string;
@@ -354,14 +358,8 @@ export interface SimpleUser {
   isActive?: boolean;
 }
 
-export interface Target {
-  /** @description Unique identifier of the target object */
-  uid: string;
-  urn: string;
-  /** @description Type of the target object */
-  type: string;
-  /** @description String representation of the target object */
-  value: string;
+export interface SyncGroupMembership {
+  members: string[];
 }
 
 export interface User {

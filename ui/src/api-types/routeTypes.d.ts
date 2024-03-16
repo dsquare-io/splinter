@@ -63,13 +63,9 @@ export interface paths {
     /** List Group Expense */
     get: operations["ListGroupExpense"];
   };
-  "/api/groups/{group_uid}/members/{member_uid}": {
-    /** Destroy Group Membership */
-    delete: operations["DestroyGroupMembership"];
-  };
-  "/api/groups/members": {
-    /** Create Bulk Group Membership */
-    post: operations["CreateBulkGroupMembership"];
+  "/api/groups/{group_uid}/members": {
+    /** Sync Group Membership */
+    post: operations["SyncGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -147,7 +143,6 @@ export interface components {
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
-    BulkCreateGroupMembership: import('./components/schemas.d.ts').BulkCreateGroupMembership;
     ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
     ChangePassword: import('./components/schemas.d.ts').ChangePassword;
     Comment: import('./components/schemas.d.ts').Comment;
@@ -170,6 +165,7 @@ export interface components {
     GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
+    Object: import('./components/schemas.d.ts').Object;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
@@ -183,7 +179,7 @@ export interface components {
     SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
-    Target: import('./components/schemas.d.ts').Target;
+    SyncGroupMembership: import('./components/schemas.d.ts').SyncGroupMembership;
     User: import('./components/schemas.d.ts').User;
     UserCurrency: import('./components/schemas.d.ts').UserCurrency;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
@@ -283,9 +279,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -416,6 +413,8 @@ export interface operations {
         limit?: number;
         /** @description The initial index from which to return the results. */
         offset?: number;
+        /** @description Search Query */
+        q?: string;
       };
     };
     responses: {
@@ -446,9 +445,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -582,9 +582,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -772,49 +773,23 @@ export interface operations {
       };
     };
   };
-  /** Destroy Group Membership */
-  DestroyGroupMembership: {
+  /** Sync Group Membership */
+  SyncGroupMembership: {
     parameters: {
       path: {
         group_uid: string;
-        member_uid: string;
       };
     };
-    responses: {
-      /** @description No response body */
-      204: {
-        content: never;
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      404: {
-        content: {
-          "application/json": import('./components/schemas').NotFound;
-        };
-      };
-    };
-  };
-  /** Create Bulk Group Membership */
-  CreateBulkGroupMembership: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').BulkCreateGroupMembership;
+        "application/json": import('./components/schemas').SyncGroupMembership;
       };
     };
     responses: {
-      /** @description No response body */
-      201: {
-        content: never;
+      200: {
+        content: {
+          "application/json": import('./components/schemas').SyncGroupMembership;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -836,6 +811,11 @@ export interface operations {
       403: {
         content: {
           "application/json": import('./components/schemas').Error;
+        };
+      };
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };

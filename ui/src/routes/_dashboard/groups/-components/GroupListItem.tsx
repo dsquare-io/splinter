@@ -41,11 +41,6 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
       </div>
       <div className="grow text-sm font-medium text-gray-800 pl-12 pt-1">
         <div className="mt-1.5 space-y-1 text-xs font-normal text-gray-400">
-          {+(aggregatedOutstandingBalance?.amount ?? 0) === 0 && (
-            <p>
-              <span className="font-medium text-brand-700">Settled up</span>
-            </p>
-          )}
           {outstandingBalances?.slice(0, 3).map((e) => (
             <Fragment key={e.friend?.uid}>
               {+e.amount != 0 && +e.amount > 0 && (
