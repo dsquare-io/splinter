@@ -98,7 +98,8 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
         self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
 
         self.assertDictEqual(
-            response.json(), {'members': [{
+            response.json(),
+            {'members': [{
                 'code': 'group_members_limit_error',
                 'message': f'Group can have at most 5 members'
             }]}
@@ -183,7 +184,8 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
         self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
 
         self.assertDictEqual(
-            response.json(), {'': [{
+            response.json(),
+            {'': [{
                 'message': 'Group can have at most 1 members',
                 'code': 'group_members_limit_error'
             }]}

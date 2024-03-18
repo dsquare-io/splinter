@@ -7,7 +7,7 @@ from splinter.db.soft_delete import SoftDeleteModel
 from splinter.db.state_aware import StateAwareModel
 
 
-class AbstractExpenseModel(StateAwareModel, SoftDeleteModel, PublicModel):
+class AbstractExpenseModel(StateAwareModel, PublicModel):
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
 
@@ -24,7 +24,7 @@ class AbstractExpenseModel(StateAwareModel, SoftDeleteModel, PublicModel):
         super().save(**kwargs)
 
 
-class Expense(AbstractExpenseModel):
+class Expense(SoftDeleteModel, AbstractExpenseModel):
     datetime = models.DateTimeField()
     description = models.CharField(max_length=255)
 

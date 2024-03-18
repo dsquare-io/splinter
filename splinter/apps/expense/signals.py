@@ -52,9 +52,20 @@ def handle_expense_split_post_delete(instance: ExpenseSplit, **kwargs):
         update_parent_expense_splits(expense.parent)
 
 
+@receiver(post_delete, sender=Expense)
+def handle_expense_post_delete(instance: Expense, **kwargs):
+    if instance.parent_id is None:
+        for expense_split in ExpenseSplit.objects.filter(expense=instance):
+            update_all_outstanding_balances(expense_split, -expense_split.amount)
+
+        update_expense_parties(instance)
+    else:
+        update_parent_expense_splits(instance.parent)
+
+
 def update_parent_expense_splits(parent: Expense) -> None:
     expenses_by_user = Counter()
-    for expense_split in ExpenseSplit.objects.filter(expense__parent=parent):
+    for expense_split in ExpenseSplit.objects.filter(expense__parent=parent, expense__removed_at__isnull=True):
         expenses_by_user[expense_split.user_id] += expense_split.amount
 
     current_expense_splits = {
