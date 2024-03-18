@@ -6,21 +6,38 @@ from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
-from splinter.apps.expense.serializers import ExpenseSerializer, UserOutstandingBalanceSerializer
+from splinter.apps.expense.serializers import (
+    ExpenseSerializer,
+    UpsertExpenseSerializer,
+    UserOutstandingBalanceSerializer,
+)
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
-from splinter.core.views import GenericAPIView, ListAPIView
+from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 
 
-class AbstractListExpenseView(ListAPIView):
-    serializer_class = ExpenseSerializer
+class CreateExpenseView(CreateAPIView):
+    serializer_class = UpsertExpenseSerializer
+
+
+class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
+    lookup_field = 'public_id'
+    lookup_url_kwarg = 'expense_uid'
+
+    def get_serializer_class(self):
+        if self.request.method == 'PUT':
+            return UpsertExpenseSerializer
+
+        return ExpenseSerializer
 
     def get_queryset(self):
-        return Expense.objects.order_by('-datetime').filter(parent__isnull=True)
+        return Expense.objects.of_user(self.request.user)
 
 
-class ListFriendExpenseView(AbstractListExpenseView):
+class ListFriendExpenseView(ListAPIView):
+    serializer_class = ExpenseSerializer
+
     @cached_property
     def friendship(self):
         friend = get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
@@ -30,19 +47,20 @@ class ListFriendExpenseView(AbstractListExpenseView):
             raise Http404
 
     def get_queryset(self):
-        qs = super().get_queryset()
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return qs.filter(Exists(party_qs) | Q(paid_by=self.request.user.id), group__isnull=True)
+        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.request.user.id), group__isnull=True) \
+            .order_by('-datetime')
 
 
-class ListGroupExpenseView(AbstractListExpenseView):
+class ListGroupExpenseView(ListAPIView):
+    serializer_class = ExpenseSerializer
+
     @cached_property
     def group(self):
         return get_object_or_404(Group.objects.of(self.request.user), public_id=self.kwargs['group_uid'])
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.filter(group=self.group)
+        return Expense.objects.order_by('-datetime').filter(parent__isnull=True, group=self.group)
 
 
 class RetrieveUserOutstandingBalanceView(GenericAPIView):
