@@ -96,7 +96,11 @@ class ExpenseTestCase(TestCase):
             inverse_expected_amount = -expected_amount if expected_amount else expected_amount
 
             self.assertEqual(
-                self.get_outstanding_balance(user=friend, friend=payer, currency=self.currency,
-                                             group=group), inverse_expected_amount,
+                self.get_outstanding_balance(
+                    user=friend,
+                    friend=payer,
+                    currency=self.currency,
+                    group=group,
+                ), inverse_expected_amount,
                 f'Friend {i} outstanding balance with Payer should be {inverse_expected_amount}'
             )
