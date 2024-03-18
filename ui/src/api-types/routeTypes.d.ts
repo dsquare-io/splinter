@@ -31,6 +31,16 @@ export interface paths {
     /** List Currency */
     get: operations["ListCurrency"];
   };
+  "/api/expenses": {
+    /** Create Expense */
+    post: operations["CreateExpense"];
+  };
+  "/api/expenses/{expense_uid}": {
+    /** Retrieve Expense */
+    get: operations["RetrieveExpense"];
+    /** Destroy Expense */
+    delete: operations["DestroyExpense"];
+  };
   "/api/friends": {
     /** List Friend */
     get: operations["ListFriend"];
@@ -56,6 +66,8 @@ export interface paths {
     get: operations["RetrieveGroup"];
     /** Update Group */
     put: operations["UpdateGroup"];
+    /** Destroy Group */
+    delete: operations["DestroyGroup"];
     /** Partial Update Group */
     patch: operations["PartialUpdateGroup"];
   };
@@ -66,6 +78,10 @@ export interface paths {
   "/api/groups/{group_uid}/members": {
     /** Sync Group Membership */
     post: operations["SyncGroupMembership"];
+  };
+  "/api/groups/{group_uid}/members/{member_uid}": {
+    /** Destroy Group Membership */
+    delete: operations["DestroyGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -180,6 +196,7 @@ export interface components {
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
     SyncGroupMembership: import('./components/schemas.d.ts').SyncGroupMembership;
+    UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
     User: import('./components/schemas.d.ts').User;
     UserCurrency: import('./components/schemas.d.ts').UserCurrency;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
@@ -259,6 +276,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -306,6 +324,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -338,6 +357,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -401,6 +421,108 @@ export interface operations {
       200: {
         content: {
           "application/json": import('./components/schemas').Currency[];
+        };
+      };
+    };
+  };
+  /** Create Expense */
+  CreateExpense: {
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').UpsertExpense;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Retrieve Expense */
+  RetrieveExpense: {
+    parameters: {
+      path: {
+        expense_uid: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').Expense;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Expense */
+  DestroyExpense: {
+    parameters: {
+      path: {
+        expense_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
         };
       };
     };
@@ -499,6 +621,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -537,6 +660,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -636,6 +760,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -682,6 +807,39 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Group */
+  DestroyGroup: {
+    parameters: {
+      path: {
+        group_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -728,6 +886,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -766,6 +925,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -813,6 +973,40 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Group Membership */
+  DestroyGroupMembership: {
+    parameters: {
+      path: {
+        group_uid: string;
+        member_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -855,6 +1049,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -902,6 +1097,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -934,6 +1130,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -1003,6 +1200,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -1104,6 +1302,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;

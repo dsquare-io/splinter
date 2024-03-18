@@ -1,7 +1,6 @@
 import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
 
-import {Paths} from '@/api-types/routePaths.ts';
-import { FieldError, Form, Input, Label, TextFormField } from '@/components/common';
+import {FieldError, Form, Input, Label, TextFormField} from '@/components/common';
 import {CloseDialog} from '@/components/modals/utils.tsx';
 
 export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
@@ -14,10 +13,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
             <CloseDialog />
           </div>
 
-          <Form
-            defaultValues={{group: group_uid, members: []}}
-            action={Paths.BULK_GROUP_MEMBERSHIP}
-          >
+          <Form defaultValues={{group: group_uid, members: []}}>
             <TextFormField
               required
               name="name"

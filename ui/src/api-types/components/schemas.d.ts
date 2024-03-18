@@ -362,6 +362,17 @@ export interface SyncGroupMembership {
   members: string[];
 }
 
+export interface UpsertExpense {
+  /** Format: date-time */
+  datetime: string;
+  description: string;
+  paidBy?: string;
+  group?: string;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
+  expenses: ExpenseRow[];
+}
+
 export interface User {
   uid: string;
   urn: string;

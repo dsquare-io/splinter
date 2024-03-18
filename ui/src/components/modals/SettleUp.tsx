@@ -56,7 +56,7 @@ export function SettleUpModal({group_uid, friend_uid}: SettleUpModalProps) {
 
       if (balance) {
         formControl.setValue('paymentDir', balance < 0 ? 'out' : 'in');
-        formControl.setValue('amount', balance * -1);
+        formControl.setValue('amount', Math.abs(balance));
       }
     }
   }, [friendData, friend_uid]);
@@ -99,10 +99,6 @@ export function SettleUpModal({group_uid, friend_uid}: SettleUpModalProps) {
                 className="flex rounded-md bg-gray-200 p-1 text-center"
                 orientation="horizontal"
                 aria-label="Payment direction"
-                onChange={(data) => {
-                  const currentAmount = Math.abs(formControl.getValues('amount'));
-                  formControl.setValue('amount', data === 'out' ? currentAmount : currentAmount * -1);
-                }}
               >
                 <Radio
                   className="w-full rounded px-3 py-2 text-sm font-medium text-gray-600 data-[selected]:bg-white data-[selected]:text-gray-900 data-[selected]:shadow-sm data-[focus-visible]:ring-2 data-[focus-visible]:ring-brand-500"
@@ -147,7 +143,7 @@ export function SettleUpModal({group_uid, friend_uid}: SettleUpModalProps) {
 
                     if (balance) {
                       formControl.setValue('paymentDir', balance > 0 ? 'out' : 'in');
-                      formControl.setValue('amount', balance);
+                      formControl.setValue('amount', Math.abs(balance));
                     }
                   }}
                 >
@@ -206,11 +202,12 @@ export function SettleUpModal({group_uid, friend_uid}: SettleUpModalProps) {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }}
-              onChange={(val) => {
+              onBlur={() => {
+                const val = formControl.getValues('amount');
+                const paymentDir = formControl.getValues('paymentDir');
                 if (val < 0) {
-                  formControl.setValue('paymentDir', 'in');
-                } else {
-                  formControl.setValue('paymentDir', 'out');
+                   formControl.setValue('paymentDir', paymentDir === 'in' ? 'out' : 'in');
+                   formControl.setValue('val', Math.abs(val));
                 }
               }}
             >
