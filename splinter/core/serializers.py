@@ -16,7 +16,10 @@ class ObjectSerializer(serializers.Serializer):
 
     @extend_schema_field(serializers.CharField(help_text='Unique resource name of object'))
     def get_urn(self, obj):
-        return getattr(obj, 'urn', None)
+        try:
+            return getattr(obj, 'urn')
+        except NotImplementedError:
+            pass
 
     @extend_schema_field(serializers.CharField(help_text='String representation of object'))
     def get_obj_value(self, obj) -> str:
