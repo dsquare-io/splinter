@@ -28,13 +28,19 @@ class ListCreateGroupView(ListAPIView, CreateAPIView):
         GroupMembership.objects.create(group=serializer.instance, user_id=self.request.user.id)
 
 
-class RetrieveUpdateGroupView(RetrieveAPIView, UpdateAPIView):
+class RetrieveUpdateDestroyGroupView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'group_uid'
     serializer_class = ExtendedGroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)
+
+    def perform_destroy(self, instance):
+        if OutstandingBalance.objects.filter(group=instance, amount__gt=0).exists():
+            raise ValidationError('Cannot delete group with outstanding balance')
+
+        super().perform_destroy(instance)
 
 
 class DestroyGroupMembershipView(DestroyAPIView):
