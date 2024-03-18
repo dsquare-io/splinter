@@ -32,6 +32,7 @@ class GroupMembership(models.Model):
     class Meta:
         db_table = 'group_memberships'
         unique_together = ('group', 'user')
+        ordering = ('created_at', )
 
     def __str__(self):
         return f'{self.user} in {self.group}'

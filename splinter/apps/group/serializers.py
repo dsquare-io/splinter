@@ -3,6 +3,7 @@ from typing import List
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from splinter.apps.expense.models import OutstandingBalance
@@ -73,7 +74,7 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
     )
 
     created_by = SimpleUserSerializer(read_only=True)
-    members = SimpleUserSerializer(many=True, read_only=True)
+    members = serializers.SerializerMethodField()
 
     class Meta(SimpleGroupSerializer.Meta):
         model = Group
@@ -94,6 +95,36 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
             OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs),
             AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
         )
+
+    @extend_schema_field(SimpleUserSerializer(many=True))
+    def get_members(self, group: Group):
+        # Members are ordered based on following rules:
+        # 1. Current user
+        # 2. Group creator
+        # 3. Friends
+        # 4. Other users
+
+        all_members = list(group.members.all())
+        friends_qs = Friendship.objects.get_user_friends(self.context['request'].user)
+        friends = set(friends_qs.filter(pk__in=[m.pk for m in all_members]).values_list('pk', flat=True))
+
+        def sort_key(user: 'User') -> int:
+            user_id = user.pk
+
+            if user_id == self.context['request'].user.pk:
+                return 0
+
+            if user_id == group.created_by_id:
+                return 1
+
+            if user_id in friends:
+                return 2
+
+            return 3
+
+        all_members.sort(key=sort_key)
+
+        return SimpleUserSerializer(all_members, many=True).data
 
 
 class SyncGroupMembershipSerializer(serializers.Serializer):

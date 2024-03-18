@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from tests.apps.expense.case import ExpenseTestCase
 from tests.apps.group.factories import GroupFactory
@@ -8,11 +9,14 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
+    group: Group
+
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.group = GroupFactory(created_by=cls.user)
+        cls.group = GroupFactory()
+        GroupMembership.objects.create(group=cls.group, user=cls.group.created_by)
         GroupMembership.objects.create(group=cls.group, user=cls.user)
 
     def test_retrieve(self):
@@ -39,26 +43,13 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
             },
         )
 
-        self.assertDictEqual(
-            response_json['createdBy'],
-            {
-                'uid': self.user.username,
-                'urn': self.user.urn,
-                'fullName': self.user.full_name,
-                'isActive': self.user.is_active
-            },
-        )
-
         self.assertEqual(len(response_json['members']), 1)
-        self.assertDictEqual(
-            response_json['members'][0],
-            {
-                'uid': self.user.username,
-                'urn': self.user.urn,
-                'fullName': self.user.full_name,
-                'isActive': self.user.is_active
-            },
-        )
+        self.assertIn({
+            'uid': self.user.username,
+            'urn': self.user.urn,
+            'fullName': self.user.full_name,
+            'isActive': self.user.is_active
+        }, response_json['members'])
 
     def test_update(self):
         response = self.client.patch(
@@ -72,6 +63,29 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
 
         self.group.refresh_from_db()
         self.assertEqual(self.group.name, 'new name')
+
+    def test_members_order(self):
+        non_friends = UserFactory.create_batch(2)
+        friends = UserFactory.create_batch(2)
+
+        for user in non_friends:
+            GroupMembership.objects.create(group=self.group, user=user)
+
+        for user in friends:
+            Friendship.objects.create(user_a=self.user, user_b=user)
+            GroupMembership.objects.create(group=self.group, user=user)
+
+        response = self.client.get(f'/api/groups/{self.group.public_id}')
+        self.assertEqual(response.status_code, 200)
+
+        group_members = response.json()['members']
+        self.assertEqual(len(group_members), 6)
+
+        self.assertEqual(group_members[0]['uid'], self.user.username)
+        self.assertEqual(group_members[1]['uid'], self.group.created_by.username)
+        self.assertSetEqual({member['uid'] for member in group_members[2:4]}, {user.username for user in friends})
+
+        self.assertSetEqual({member['uid'] for member in group_members[4:]}, {user.username for user in non_friends})
 
     def test_delete(self):
         response = self.client.delete(f'/api/groups/{self.group.public_id}')
