@@ -96,6 +96,7 @@ class AutoSchema(AutoSchemaBase):
 
         if uritemplate.variables(self.path):
             bodies['404'] = self._get_response_for_code(NotFoundSerializer, '404')
+            bodies['404']['description'] = 'Resource Not Found'
 
         if self.method in ('POST', 'PUT', 'PATCH'):
             bodies['400'] = {
