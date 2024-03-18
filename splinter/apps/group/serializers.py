@@ -5,10 +5,12 @@ from django.db import transaction
 from django.db.models import Q
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ErrorDetail
 
 from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
 from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerializer, OutstandingBalanceSerializer
+from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.user.fields import UserSerializerField
@@ -127,7 +129,34 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
         return SimpleUserSerializer(all_members, many=True).data
 
 
-class SyncGroupMembershipSerializer(serializers.Serializer):
+class CreateGroupMembershipSerializer(serializers.ModelSerializer):
+    default_error_messages = {
+        'max_members': 'Group can have at most {max_members} members',
+    }
+
+    user = FriendSerializerField()
+
+    class Meta:
+        model = GroupMembership
+        fields = ('user', )
+
+    def validate(self, attrs):
+        group = self.context['group']
+        total_members = group.members.count()
+
+        if (total_members + 1) > settings.GROUP_MAX_ALLOWED_MEMBERS:
+            raise serializers.ValidationError(
+                ErrorDetail(
+                    self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS),
+                    'group_members_limit_error'
+                )
+            )
+
+        attrs['group'] = group
+        return attrs
+
+
+class UpdateGroupMembershipSerializer(serializers.Serializer):
     default_error_messages = {
         'members': 'Members list cannot be empty',
         'max_members': 'Group can have at most {max_members} members',
@@ -143,7 +172,10 @@ class SyncGroupMembershipSerializer(serializers.Serializer):
 
         if len(members) > settings.GROUP_MAX_ALLOWED_MEMBERS:
             raise serializers.ValidationError(
-                self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS)
+                ErrorDetail(
+                    self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS),
+                    'group_members_limit_error'
+                )
             )
 
         return members

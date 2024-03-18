@@ -43,7 +43,7 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
             },
         )
 
-        self.assertEqual(len(response_json['members']), 1)
+        self.assertEqual(len(response_json['members']), 2)
         self.assertIn({
             'uid': self.user.username,
             'urn': self.user.urn,

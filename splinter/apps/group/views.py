@@ -5,7 +5,12 @@ from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.group.serializers import ExtendedGroupSerializer, GroupSerializer, SyncGroupMembershipSerializer
+from splinter.apps.group.serializers import (
+    CreateGroupMembershipSerializer,
+    ExtendedGroupSerializer,
+    GroupSerializer,
+    UpdateGroupMembershipSerializer,
+)
 from splinter.core.views import (
     CreateAPIView,
     DestroyAPIView,
@@ -56,8 +61,12 @@ class DestroyGroupMembershipView(DestroyAPIView):
         super().perform_destroy(instance)
 
 
-class SyncGroupMembershipView(GenericAPIView):
-    serializer_class = SyncGroupMembershipSerializer
+class CreateUpdateGroupMembershipView(CreateAPIView, GenericAPIView):
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateGroupMembershipSerializer
+
+        return UpdateGroupMembershipSerializer
 
     @cached_property
     def group(self):
@@ -68,7 +77,7 @@ class SyncGroupMembershipView(GenericAPIView):
         context['group'] = self.group
         return context
 
-    def post(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
