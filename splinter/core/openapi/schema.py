@@ -30,7 +30,7 @@ class NotFoundSerializer(serializers.Serializer):
 class AutoSchema(AutoSchemaBase):
     VERBS_BY_METHOD = {
         'GET': {'List', 'Retrieve'},
-        'POST': {'Create', 'BulkCreate'},
+        'POST': {'Create'},
         'PUT': {'Update'},
         'PATCH': {'PartialUpdate'},
         'DELETE': {'Destroy'},
