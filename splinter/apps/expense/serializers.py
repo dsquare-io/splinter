@@ -1,4 +1,4 @@
-import decimal
+from decimal import Decimal
 from typing import List
 
 from django.db import transaction
@@ -11,19 +11,15 @@ from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
+from splinter.apps.expense.utils import split_amount
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
-ZERO_DECIMAL = decimal.Decimal(0)
-NEGATIVE_ONE_DECIMAL = decimal.Decimal(-1)
-QUANTIZE_DECIMAL = decimal.Decimal('.01')
-
-
-def quantize(v: decimal.Decimal) -> decimal.Decimal:
-    return v.quantize(QUANTIZE_DECIMAL, rounding=decimal.ROUND_DOWN)
+ZERO_DECIMAL = Decimal(0)
+NEGATIVE_ONE_DECIMAL = Decimal(-1)
 
 
 class ExpenseShareSerializer(serializers.ModelSerializer):
@@ -226,28 +222,15 @@ class UpsertExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.Seria
                 )
             )
 
-            total_shares = sum(share['share'] for share in expense_spec['shares'])
-            each_share_amount = quantize(expense_spec['amount'] / total_shares)
-            spare_amount = expense_spec['amount']
-
-            for share_spec in sorted_shares[:-1]:
-                split = ExpenseSplit.objects.create(
+            all_shares = [share['share'] for share in sorted_shares]
+            for share_spec, share_amount in zip(sorted_shares, split_amount(expense_spec['amount'], all_shares)):
+                ExpenseSplit.objects.create(
                     expense=expense,
                     user=share_spec['user'],
-                    amount=quantize(each_share_amount * share_spec['share']),
+                    amount=share_amount,
                     share=share_spec['share'],
                     currency=validated_data['currency'],
                 )
-
-                spare_amount -= split.amount
-
-            ExpenseSplit.objects.create(
-                expense=expense,
-                user=sorted_shares[-1]['user'],
-                amount=spare_amount,
-                share=sorted_shares[-1]['share'],
-                currency=validated_data['currency'],
-            )
 
         return common_attrs['parent'] or expense
 
