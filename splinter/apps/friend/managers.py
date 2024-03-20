@@ -30,3 +30,20 @@ class FriendshipManager(Manager):
 
     def is_friend_with(self, user_a: User, user_b: User) -> bool:
         return self._of(user_a, user_b).exists()
+
+    def befriend(self, user: Union[int, User], other: Union[int, User], *others: Union[int, User]) -> None:
+        """
+        Befriend a user with other users. If the friendship already exists, it will be ignored.
+        """
+        user_id = user if isinstance(user, int) else user.pk
+
+        other_user_ids = {user if isinstance(user, int) else user.pk for user in others}
+        other_user_ids.add(other if isinstance(other, int) else other.pk)
+
+        friends = set(self.get_user_friends(user).filter(pk__in=other_user_ids).values_list('pk', flat=True))
+        to_create = [
+            self.model(user_a_id=user_id, user_b_id=other_id) for other_id in other_user_ids - friends
+        ]
+
+        if to_create:
+            self.bulk_create(to_create)
