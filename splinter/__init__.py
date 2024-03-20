@@ -9,3 +9,5 @@ try:
     import splinter.db.urn  # NOQA
 except ImportError:
     pass
+
+from splinter.celery_app import app as celery_app  # NOQA
