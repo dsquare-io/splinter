@@ -73,6 +73,10 @@ export interface CreateFriendship {
   name: string;
 }
 
+export interface CreateGroupMembership {
+  user: string;
+}
+
 export interface Currency {
   uid: string;
   urn: string;
@@ -358,7 +362,7 @@ export interface SimpleUser {
   isActive?: boolean;
 }
 
-export interface SyncGroupMembership {
+export interface UpdateGroupMembership {
   members: string[];
 }
 

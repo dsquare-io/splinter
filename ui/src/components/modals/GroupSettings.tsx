@@ -79,13 +79,13 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({close}) => (
             <>
-              <div className="mb-4">
+              <div className="mb-6">
                 <Heading slot="title">Group Settings</Heading>
-                <CloseDialog />
+                <CloseDialog/>
               </div>
 
               <Form
-                values={{name: group?.name}}
+                values={{ name: group?.name }}
                 method="PATCH"
                 action={urlWithArgs(Paths.GROUP_DETAIL, {group_uid})}
                 onSubmitSuccess={() =>

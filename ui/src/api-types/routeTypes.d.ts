@@ -76,8 +76,10 @@ export interface paths {
     get: operations["ListGroupExpense"];
   };
   "/api/groups/{group_uid}/members": {
-    /** Sync Group Membership */
-    post: operations["SyncGroupMembership"];
+    /** Update Group Membership */
+    put: operations["UpdateGroupMembership"];
+    /** Create Group Membership */
+    post: operations["CreateGroupMembership"];
   };
   "/api/groups/{group_uid}/members/{member_uid}": {
     /** Destroy Group Membership */
@@ -164,6 +166,7 @@ export interface components {
     Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
+    CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
@@ -195,7 +198,7 @@ export interface components {
     SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
-    SyncGroupMembership: import('./components/schemas.d.ts').SyncGroupMembership;
+    UpdateGroupMembership: import('./components/schemas.d.ts').UpdateGroupMembership;
     UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
     User: import('./components/schemas.d.ts').User;
     UserCurrency: import('./components/schemas.d.ts').UserCurrency;
@@ -933,8 +936,8 @@ export interface operations {
       };
     };
   };
-  /** Sync Group Membership */
-  SyncGroupMembership: {
+  /** Update Group Membership */
+  UpdateGroupMembership: {
     parameters: {
       path: {
         group_uid: string;
@@ -942,13 +945,61 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').SyncGroupMembership;
+        "application/json": import('./components/schemas').UpdateGroupMembership;
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').SyncGroupMembership;
+          "application/json": import('./components/schemas').UpdateGroupMembership;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Create Group Membership */
+  CreateGroupMembership: {
+    parameters: {
+      path: {
+        group_uid: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').CreateGroupMembership;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": import('./components/schemas').Object;
         };
       };
       /** @description Bad Request */

@@ -46,7 +46,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
     res: AxiosResponse<ApiResponse<typeof Paths.GROUP_LIST, 'post', 201>>
   ) {
     return axiosInstance
-      .post(urlWithArgs(Paths.SYNC_GROUP_MEMBERSHIP, {group_uid: res.data.uid!}), {
+      .put(urlWithArgs(Paths.GROUP_MEMBERSHIP, {group_uid: res.data.uid!}), {
         members: [...selectedFriends.map((f) => f.uid), profileData?.uid],
       })
       .then(() =>

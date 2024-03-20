@@ -10,6 +10,7 @@ import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
 import {GroupSettingsModal} from '@/components/modals/GroupSettings.tsx';
+import {InviteGroupMembersModal} from '@/components/modals/InviteGroupMembers.tsx';
 import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
@@ -97,14 +98,17 @@ function RootComponent() {
 
           <div className="flex-1" />
 
-          <Button
-            variant="outline"
-            className="bg-white"
-            size="small"
-          >
-            <UserPlusIcon />
-            Invite Member
-          </Button>
+          <DialogTrigger>
+            <Button
+              variant="outline"
+              className="bg-white"
+              size="small"
+            >
+              <UserPlusIcon />
+              Invite Member
+            </Button>
+            <InviteGroupMembersModal group_uid={group_uid} />
+          </DialogTrigger>
           <DialogTrigger>
             <Button
               variant="outline"
