@@ -1,7 +1,7 @@
 import logging
 import platform
 import socket
-from typing import Any, Dict, Union
+from typing import Any
 
 from django.conf import settings
 
@@ -28,20 +28,20 @@ class Statsd:
             except Exception:
                 pass
 
-    def gauge(self, name: str, value: Union[int, float], tags: Dict[str, Any] = None):
+    def gauge(self, name: str, value: int | float, tags: dict[str, Any] = None):
         self._send(f'{self.prefix}{name}:{value}|g', tags)
 
-    def increment(self, name: str, value: int, sampling_rate=1.0, tags: Dict[str, Any] = None):
+    def increment(self, name: str, value: int, sampling_rate=1.0, tags: dict[str, Any] = None):
         self._send(f'{self.prefix}{name}:{value}|c|@{sampling_rate}', tags)
 
-    def decrement(self, name: str, value: int, sampling_rate=1.0, tags: Dict[str, Any] = None):
+    def decrement(self, name: str, value: int, sampling_rate=1.0, tags: dict[str, Any] = None):
         self._send(f'{self.prefix}{name}:-{value}|c|@{sampling_rate}', tags)
 
-    def timestamp(self, name: str, value: Union[int, float], tags: Dict[str, Any] = None):
+    def timestamp(self, name: str, value: int | float, tags: dict[str, Any] = None):
         self._send(f'{self.prefix}{name}:{value}|ms', tags)
 
     @staticmethod
-    def format_tags(tags: Dict[str, Any]) -> str:
+    def format_tags(tags: dict[str, Any]) -> str:
         t = f'|#node:{platform.node()}'
         if tags:
             for key, value in tags.items():
@@ -49,7 +49,7 @@ class Statsd:
 
         return t
 
-    def _send(self, msg: str, tags: Dict[str, Any]):
+    def _send(self, msg: str, tags: dict[str, Any]):
         if not self.sock:
             return
 

@@ -36,20 +36,23 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
                 'currency': {
                     'uid': settings.CURRENCY_DEFAULT_USER_PREFERENCE,
                     'urn': f'urn:splinter:currency/{settings.CURRENCY_DEFAULT_USER_PREFERENCE}',
-                    'symbol': 'Rs'
+                    'symbol': 'Rs',
                 },
                 'amount': '0.00',
-                'balances': []
+                'balances': [],
             },
         )
 
         self.assertEqual(len(response_json['members']), 2)
-        self.assertIn({
-            'uid': self.user.username,
-            'urn': self.user.urn,
-            'fullName': self.user.full_name,
-            'isActive': self.user.is_active
-        }, response_json['members'])
+        self.assertIn(
+            {
+                'uid': self.user.username,
+                'urn': self.user.urn,
+                'fullName': self.user.full_name,
+                'isActive': self.user.is_active,
+            },
+            response_json['members'],
+        )
 
     def test_update(self):
         response = self.client.patch(
@@ -114,10 +117,7 @@ class GroupOutstandingBalancesTest(ExpenseTestCase, AuthenticatedAPITestCase):
         response = self.client.delete(f'/api/groups/{self.group.public_id}')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
-            response.json(), {'': [{
-                'code': 'invalid',
-                'message': 'Cannot delete group with outstanding balance'
-            }]}
+            response.json(), {'': [{'code': 'invalid', 'message': 'Cannot delete group with outstanding balance'}]}
         )
 
         self.assertTrue(Group.objects.filter(pk=self.group.pk).exists())

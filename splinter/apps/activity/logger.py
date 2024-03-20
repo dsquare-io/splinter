@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Dict, List
+from typing import TYPE_CHECKING, ClassVar
 
 from splinter.apps.activity.models import Activity, Comment
 
@@ -12,7 +12,7 @@ class ActivityType:
     verb: str
     template: '{actor} {verb} {action_object} on {target}'
 
-    __all__: ClassVar[Dict[str, 'ActivityType']] = {}
+    __all__: ClassVar[dict[str, 'ActivityType']] = {}
 
     @classmethod
     def register(cls, verb: str, template: str) -> 'ActivityType':
@@ -40,7 +40,7 @@ UpdatePaymentActivity = ActivityType.register(verb='update_payment', template='{
 DeletePaymentActivity = ActivityType.register(verb='delete_payment', template='{actor} deleted a payment to {target}')
 
 
-def _log(activity_type: 'ActivityType', user: 'User', audience: List['User'] = None, **kwargs) -> 'Activity':
+def _log(activity_type: 'ActivityType', user: 'User', audience: list['User'] = None, **kwargs) -> 'Activity':
     activity = Activity.objects.create(user=user, verb=activity_type.verb, **kwargs)
 
     audiences = {user}

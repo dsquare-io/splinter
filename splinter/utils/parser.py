@@ -1,14 +1,11 @@
-from typing import Optional
-
-
-def parse_int(value: str, default: Optional[int] = None) -> int:
+def parse_int(value: str, default: int | None = None) -> int:
     if value and value.isdigit():
         return int(value)
 
     return default
 
 
-def parse_float(value: str, default: Optional[float] = None) -> float:
+def parse_float(value: str, default: float | None = None) -> float:
     if value:
         try:
             return float(value)
@@ -18,7 +15,7 @@ def parse_float(value: str, default: Optional[float] = None) -> float:
     return default
 
 
-def parse_bool(value: str, default: Optional[bool] = None) -> bool:
+def parse_bool(value: str, default: bool | None = None) -> bool:
     if not value:
         return default
 

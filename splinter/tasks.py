@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from celery import shared_task
 from django.conf import settings
@@ -10,11 +10,11 @@ from splinter.utils.strings import convert_html_to_text
 
 def send_template_mail(
     subject: str,
-    recipients: Union[str, List[str]],
-    context: Dict[str, Any],
+    recipients: str | list[str],
+    context: dict[str, Any],
     template_name: str,
-    sender: Optional[str] = None,
-    fail_silently: bool = True
+    sender: str | None = None,
+    fail_silently: bool = True,
 ):
     context['subject'] = subject
     context['SITE_NAME'] = settings.SITE_NAME
@@ -33,11 +33,11 @@ def send_template_mail(
 @shared_task
 def send_mail(
     subject: str,
-    recipients: Union[str, List[str]],
-    body_html: Optional[str] = None,
-    body_text: Optional[str] = None,
-    sender: Optional[str] = None,
-    fail_silently: bool = True
+    recipients: str | list[str],
+    body_html: str | None = None,
+    body_text: str | None = None,
+    sender: str | None = None,
+    fail_silently: bool = True,
 ):
     if not body_html or not body_text:
         raise ValueError('Either `body_html`, `body_text` or both must be provided')

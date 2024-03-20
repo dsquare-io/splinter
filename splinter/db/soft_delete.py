@@ -36,11 +36,7 @@ class SoftDeleteModelBase(ModelBase):
                 value = type('Manager', (SoftDeleteManagerMixin, type(value)), attrs)()
 
             if not isinstance(value._queryset_class, SoftDeleteQuerySetMixin):
-                value._queryset_class = type(
-                    'QuerySet',
-                    (SoftDeleteQuerySetMixin, value._queryset_class),  # NOQA
-                    {}
-                )
+                value._queryset_class = type('QuerySet', (SoftDeleteQuerySetMixin, value._queryset_class), {})  # NOQA
 
         super().add_to_class(name, value)
 

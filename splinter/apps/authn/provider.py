@@ -1,6 +1,5 @@
 import datetime
 from functools import cached_property
-from typing import Type, TypeVar
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -12,8 +11,6 @@ from splinter.apps.authn.models import UserSecret
 from splinter.apps.authn.validator import ValidatedToken
 from splinter.apps.mfa import MFA_CONFIGURED, is_mfa_enabled_for_user
 from splinter.apps.user.models import User
-
-AccessTokenProviderType = TypeVar('AccessTokenProviderType', bound='AccessTokenProvider')
 
 
 class AccessTokenProvider:
@@ -68,7 +65,7 @@ class AccessTokenProvider:
         return info
 
     @classmethod
-    def for_user(cls: Type[AccessTokenProviderType], user: User, **kwargs) -> AccessTokenProviderType:
+    def for_user[T](cls: type[T], user: User, **kwargs) -> T:
         user_secret, _ = UserSecret.objects.get_or_create(user=user)
         return cls(
             subject=user,

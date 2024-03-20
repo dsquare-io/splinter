@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Optional, Type
+from typing import TYPE_CHECKING
 
 import jwt
 from rest_framework.exceptions import APIException, AuthenticationFailed, ValidationError
@@ -20,10 +20,10 @@ class ValidatedToken:
 
 
 class TokenValidator:
-    error_class: Type[APIException]
+    error_class: type[APIException]
 
     algorithm: str = 'ES256'
-    kind: Optional[str] = None
+    kind: str | None = None
 
     def translate_jwt_error(self, ex: jwt.PyJWTError) -> APIException:
         if isinstance(ex, jwt.ExpiredSignatureError):
@@ -86,10 +86,10 @@ class TokenValidator:
 
 class AccessTokenValidator(TokenValidator):
     algorithm = ACCESS_TOKEN_ALGORITHM
-    error_class: Type[APIException] = AuthenticationFailed
+    error_class: type[APIException] = AuthenticationFailed
 
 
 class RefreshTokenValidator(TokenValidator):
     kind = 'refresh'
     algorithm = REFRESH_TOKEN_ALGORITHM
-    error_class: Type[APIException] = ValidationError
+    error_class: type[APIException] = ValidationError

@@ -1,5 +1,3 @@
-from typing import Generic, Type, TypeVar, Union
-
 from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
@@ -7,9 +5,6 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-
-T = TypeVar('T')
-EncryptedValueType = TypeVar('EncryptedValueType', bound='AbstractEncryptedValue')
 
 
 def get_encryption_key(key_hash: str) -> bytes:
@@ -29,10 +24,10 @@ def get_encryption_key(key_hash: str) -> bytes:
         raise ValueError(f'Unknown encryption key hash "{key_hash}"')
 
 
-class AbstractEncryptedValue(Generic[T]):
+class AbstractEncryptedValue[T]:
     SEPARATOR = b'\0'
 
-    def __init__(self, value: Union[bytes, memoryview, str]) -> None:
+    def __init__(self, value: bytes | memoryview | str) -> None:
         if isinstance(value, memoryview):
             value = value.tobytes()
 
@@ -51,7 +46,7 @@ class AbstractEncryptedValue(Generic[T]):
         raise NotImplementedError()
 
     @classmethod
-    def encode(cls: Type[EncryptedValueType], data: T) -> EncryptedValueType:
+    def encode[U](cls: type[U], data: T) -> U:
         key_hash = settings.DEFAULT_ENCRYPTION_KEY_HASH
         encrypted_value = cls.encrypt(data, get_encryption_key(key_hash))
         return cls(bytes(bytearray.fromhex(key_hash)) + cls.SEPARATOR + encrypted_value)
@@ -77,12 +72,12 @@ class EncryptedEllipticCurvePrivateKey(AbstractEncryptedValue[ec.EllipticCurvePr
         return private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.TraditionalOpenSSL,
-            encryption_algorithm=serialization.BestAvailableEncryption(encryption_key)
+            encryption_algorithm=serialization.BestAvailableEncryption(encryption_key),
         )
 
 
 class AbstractEncryptedField(models.BinaryField):
-    encrypted_value_class: Type[EncryptedValueType]
+    encrypted_value_class: type[AbstractEncryptedValue]
 
     def __init__(self, **kwargs):
         kwargs.setdefault('editable', False)

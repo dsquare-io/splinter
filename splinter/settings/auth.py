@@ -18,7 +18,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ('splinter.apps.user.backend.AuthBackend', )
+AUTHENTICATION_BACKENDS = ('splinter.apps.user.backend.AuthBackend',)
 
 AUTHN_JTI_LENGTH = 8
 AUTHN_REFRESH_TOKEN_ENABLED = True

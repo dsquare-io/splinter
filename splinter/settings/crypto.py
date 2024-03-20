@@ -2,11 +2,10 @@ import base64
 import binascii
 import hashlib
 import os
-from typing import Dict
 
 from django.core.exceptions import ImproperlyConfigured
 
-ENCRYPTION_KEYS: Dict[str, bytes] = {}
+ENCRYPTION_KEYS: dict[str, bytes] = {}
 DEFAULT_ENCRYPTION_KEY_HASH = os.getenv('DEFAULT_ENCRYPTION_KEY_HASH')
 
 

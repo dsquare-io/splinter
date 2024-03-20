@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 from django.db import router
 from django.db.migrations.operations.base import Operation
@@ -35,7 +35,7 @@ class SeedModel(Operation):
         pass
 
     @staticmethod
-    def get_attributes(model_class: Model, values: Dict[str, Any]) -> Dict[str, Any]:
+    def get_attributes(model_class: Model, values: dict[str, Any]) -> dict[str, Any]:
         attribs = {}
         for name, value in values.items():
             if '__' in name:

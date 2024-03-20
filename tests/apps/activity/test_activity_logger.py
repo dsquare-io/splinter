@@ -1,5 +1,3 @@
-from typing import List
-
 from django.test import TestCase
 
 from splinter.apps.activity import logger as activity_logger
@@ -9,7 +7,7 @@ from tests.apps.activity.factories import ActivityFactory, CommentFactory
 
 
 class ActivityLoggerTestCase(TestCase):
-    def assertActivityAudience(self, activity: 'Activity', expected_audience: List[User]):
+    def assertActivityAudience(self, activity: 'Activity', expected_audience: list[User]):
         actual_audience = set(activity.audience.all())
         expected_audience = set(expected_audience)
 

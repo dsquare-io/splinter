@@ -11,18 +11,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-
     # External Applications
     'rest_framework',
     'drf_spectacular',
     'django_otp',
     'django_otp.plugins.otp_totp',
     'django_otp.plugins.otp_static',
-
     # Core Apps
     'splinter.core.health',
     'splinter.core.openapi',
-
     # Other Apps
     'splinter.apps.activity',
     'splinter.apps.authn',

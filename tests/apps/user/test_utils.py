@@ -24,9 +24,9 @@ class TimedeltaToStringTests(TestCase):
     def test_multiple(self):
         self.assertEqual(
             timedelta_to_string(timedelta(days=1, hours=1, minutes=1, seconds=1)),
-            '1 day, 1 hour, 1 minute and 1 second'
+            '1 day, 1 hour, 1 minute and 1 second',
         )
         self.assertEqual(
             timedelta_to_string(timedelta(days=2, hours=2, minutes=2, seconds=2)),
-            '2 days, 2 hours, 2 minutes and 2 seconds'
+            '2 days, 2 hours, 2 minutes and 2 seconds',
         )

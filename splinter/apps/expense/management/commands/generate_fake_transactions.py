@@ -1,5 +1,4 @@
 import random
-from typing import Tuple
 
 from django.core.management import BaseCommand
 from django.db import transaction
@@ -12,7 +11,7 @@ from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.user.models import User
 
 
-def create_equal_split_expense(amount: int, currency: Currency, participants: Tuple[User, ...], **kwargs) -> Expense:
+def create_equal_split_expense(amount: int, currency: Currency, participants: tuple[User, ...], **kwargs) -> Expense:
     participants = list(participants)
     random.shuffle(participants)
 
@@ -67,8 +66,7 @@ class Command(BaseCommand):
         user_4 = User.objects.create_user('user4', email='user4@dsquare.io', first_name='User', last_name='Four')
         user_5 = User.objects.create_user('user5', email='user5@dsquare.io', first_name='User', last_name='Five')
 
-        for user in (user_2, user_3, user_4, user_5):
-            Friendship.objects.create(user_a=user_1, user_b=user)
+        Friendship.objects.befriend(user_1, user_2, user_3, user_4, user_5)
 
         group_1 = Group.objects.create(name='Group One', created_by=user_1)
         group_2 = Group.objects.create(name='Group Two', created_by=user_2)
@@ -115,7 +113,7 @@ class Command(BaseCommand):
                 participants=participants,
                 group=group,
                 description='Food',
-                datetime=dt
+                datetime=dt,
             )
 
             for item, amount in (('Pizza', 100), ('Burger', 200), ('Fries', 300)):

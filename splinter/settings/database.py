@@ -10,7 +10,7 @@ DATABASES = {
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': os.getenv('POSTGRES_HOSTNAME', 'localhost'),
         'PORT': parse_int(os.getenv('POSTGRES_PORT'), 5432),
-        'CONN_MAX_AGE': 60 * 60  # 1 hour
+        'CONN_MAX_AGE': 60 * 60,  # 1 hour
     }
 }
 

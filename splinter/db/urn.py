@@ -1,7 +1,7 @@
 import inspect
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Optional, Protocol, Union
+from typing import Protocol
 
 from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist
@@ -20,9 +20,9 @@ class ResourceNameProtocol(Protocol):
 class ResourceName:
     app_label: str
     model_name: str
-    uid: Optional[str] = None
+    uid: str | None = None
 
-    def get_model(self) -> Union[ResourceNameProtocol, Model]:
+    def get_model(self) -> ResourceNameProtocol | Model:
         return apps.get_model(self.app_label, self.model_name)
 
     def __str__(self) -> str:
@@ -59,7 +59,7 @@ class ResourceName:
 
 
 @lru_cache(maxsize=None)
-def check_urn_support(model: Union[Model, ResourceNameProtocol]):
+def check_urn_support(model: Model | ResourceNameProtocol):
     model_name = f'{model._meta.app_label}.{model._meta.model_name}'.lower()
 
     if not hasattr(model, 'UID_FIELD'):
@@ -74,7 +74,7 @@ def check_urn_support(model: Union[Model, ResourceNameProtocol]):
 
 
 class ResourceNameDecorator:
-    def __get__(self, instance: Union[Model, ResourceNameProtocol], owner) -> Union[str, 'ResourceNameDecorator']:
+    def __get__(self, instance: Model | ResourceNameProtocol, owner) -> 'str | ResourceNameDecorator':
         check_urn_support(type(instance))
         if instance is None:
             return self
@@ -92,7 +92,7 @@ def add_resource_name(sender, **kwargs):
         setattr(sender, 'urn', ResourceNameDecorator())
 
 
-def get_instance(resource_name: str) -> Union[Model, ResourceNameProtocol]:
+def get_instance(resource_name: str) -> Model | ResourceNameProtocol:
     rn = ResourceName.parse(resource_name)
 
     model_class = apps.get_model(rn.app_label, rn.model_name)

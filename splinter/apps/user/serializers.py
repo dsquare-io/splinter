@@ -19,7 +19,7 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 class UserSerializer(SimpleUserSerializer):
     class Meta(SimpleUserSerializer.Meta):
         fields = SimpleUserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified')
-        read_only_fields = ('is_verified', )
+        read_only_fields = ('is_verified',)
 
 
 class EmailVerificationSerializer(serializers.Serializer):
@@ -84,7 +84,7 @@ class CreateUserSerializer(serializers.Serializer):
         names = attrs.pop('name').split(' ', 1)
         last_name = ''
         if len(names) == 1:
-            first_name, = names
+            (first_name,) = names
         else:
             first_name, last_name = names
 

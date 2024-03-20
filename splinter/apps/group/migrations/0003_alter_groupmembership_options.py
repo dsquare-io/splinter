@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='groupmembership',
-            options={'ordering': ('created_at', )},
+            options={'ordering': ('created_at',)},
         ),
     ]

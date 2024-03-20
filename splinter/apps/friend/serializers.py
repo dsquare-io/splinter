@@ -30,11 +30,13 @@ class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):
         fields = SimpleUserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
-        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
-            .filter(user_id=self.context['request'].user.id)
+        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances').filter(
+            user_id=self.context['request'].user.id
+        )
 
-        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
-            .filter(user_id=self.context['request'].user.id)
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance').filter(
+            user_id=self.context['request'].user.id
+        )
 
         return queryset.prefetch_related(
             OutstandingBalancePrefetch(

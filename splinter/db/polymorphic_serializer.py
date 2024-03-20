@@ -1,12 +1,10 @@
-from typing import Dict
-
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
 from rest_framework.fields import empty
 
 
 class PolymorphicSerializer(serializers.Field):
-    def __init__(self, serializer_mapping: Dict[type, serializers.Field]):
+    def __init__(self, serializer_mapping: dict[type, serializers.Field]):
         super().__init__()
         self.serializer_mapping = serializer_mapping
 

@@ -31,13 +31,13 @@ class Migration(migrations.Migration):
                     'created_by',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
                 (
                     'currency',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
-                    )
+                    ),
                 ),
                 (
                     'group',
@@ -46,14 +46,14 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='+',
-                        to='group.group'
-                    )
+                        to='group.group',
+                    ),
                 ),
                 (
                     'paid_by',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
                 (
                     'parent',
@@ -62,8 +62,8 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='children',
-                        to='expense.expense'
-                    )
+                        to='expense.expense',
+                    ),
                 ),
             ],
             options={
@@ -83,19 +83,19 @@ class Migration(migrations.Migration):
                     'currency',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
-                    )
+                    ),
                 ),
                 (
                     'expense',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='splits', to='expense.expense'
-                    )
+                    ),
                 ),
                 (
                     'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
             ],
             options={
@@ -115,15 +115,15 @@ class Migration(migrations.Migration):
                     'currency',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
-                    )
+                    ),
                 ),
                 (
                     'friend',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='outstanding_balances',
-                        to=settings.AUTH_USER_MODEL
-                    )
+                        to=settings.AUTH_USER_MODEL,
+                    ),
                 ),
                 (
                     'group',
@@ -132,14 +132,14 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='outstanding_balances',
-                        to='group.group'
-                    )
+                        to='group.group',
+                    ),
                 ),
                 (
                     'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
             ],
             options={
@@ -155,7 +155,7 @@ class Migration(migrations.Migration):
                 'indexes': [],
                 'constraints': [],
             },
-            bases=('expense.outstandingbalance', ),
+            bases=('expense.outstandingbalance',),
         ),
         migrations.CreateModel(
             name='ExpenseParty',
@@ -166,13 +166,13 @@ class Migration(migrations.Migration):
                     'expense',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='friendships', to='expense.expense'
-                    )
+                    ),
                 ),
                 (
                     'friendship',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='friend.friendship'
-                    )
+                    ),
                 ),
             ],
             options={

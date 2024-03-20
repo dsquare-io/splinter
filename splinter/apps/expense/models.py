@@ -102,7 +102,7 @@ class OutstandingBalance(SoftDeleteModel):
             # That will act as checkpoint for the next time we calculate outstanding balances
             self.removed_at = timezone.now()
             if update_fields:
-                update_fields = tuple(update_fields) + ('removed_at', )
+                update_fields = tuple(update_fields) + ('removed_at',)
 
         super().save(update_fields=update_fields, **kwargs)
 

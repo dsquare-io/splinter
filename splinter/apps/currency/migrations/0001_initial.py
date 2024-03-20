@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                     'code',
                     models.CharField(
                         help_text='ISO 3166-1 Alpha-2 Country Code', max_length=2, primary_key=True, serialize=False
-                    )
+                    ),
                 ),
                 ('name', models.CharField(max_length=128)),
                 ('flag', models.CharField(max_length=8)),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                     'code',
                     models.CharField(
                         max_length=3, primary_key=True, serialize=False, help_text='ISO 4217 Currency Code'
-                    )
+                    ),
                 ),
                 ('symbol', models.CharField(blank=True, max_length=3, null=True)),
                 ('is_active', models.BooleanField(default=True)),
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                     'country',
                     models.ForeignKey(
                         blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='currency.country'
-                    )
+                    ),
                 ),
             ],
             options={
@@ -72,13 +72,13 @@ class Migration(migrations.Migration):
                     'source',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
-                    )
+                    ),
                 ),
                 (
                     'target',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='currency.currency'
-                    )
+                    ),
                 ),
             ],
             options={
@@ -86,15 +86,21 @@ class Migration(migrations.Migration):
                 'unique_together': {('source', 'target', 'as_of')},
             },
         ),
-        SeedModel('currency.Country', {
-            'code': 'PK',
-            'name': 'Pakistan',
-            'flag': '🇵🇰'
-        }),
-        SeedModel('currency.Currency', {
-            'code': 'PKR',
-            'symbol': 'Rs',
-            'country__name': 'Pakistan',
-            'is_active': True
-        })
+        SeedModel(
+            'currency.Country',
+            {
+                'code': 'PK',
+                'name': 'Pakistan',
+                'flag': '🇵🇰',
+            },
+        ),
+        SeedModel(
+            'currency.Currency',
+            {
+                'code': 'PKR',
+                'symbol': 'Rs',
+                'country__name': 'Pakistan',
+                'is_active': True,
+            },
+        ),
     ]

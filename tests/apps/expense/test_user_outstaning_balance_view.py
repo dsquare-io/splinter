@@ -25,20 +25,25 @@ class RetrieveUserOutstandingBalanceViewTests(ExpenseTestCase, AuthenticatedAPIT
             {
                 'amount': '50.00',
                 'currency': self.serialize_currency(self.default_currency),
-                'balances': [{
-                    'amount': '50.00',
-                    'currency': self.serialize_currency(self.currency),
-                }]
+                'balances': [
+                    {
+                        'amount': '50.00',
+                        'currency': self.serialize_currency(self.currency),
+                    }
+                ],
             },
         )
 
         self.assertDictEqual(
-            response_json['borrowed'], {
+            response_json['borrowed'],
+            {
                 'amount': '-100.00',
                 'currency': self.serialize_currency(self.default_currency),
-                'balances': [{
-                    'amount': '-100.00',
-                    'currency': self.serialize_currency(self.currency),
-                }]
-            }
+                'balances': [
+                    {
+                        'amount': '-100.00',
+                        'currency': self.serialize_currency(self.currency),
+                    }
+                ],
+            },
         )

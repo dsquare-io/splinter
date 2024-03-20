@@ -16,7 +16,7 @@ class Friendship(SoftDeleteModel):
     class Meta:
         db_table = 'friendships'
         unique_together = ('user_a', 'user_b')
-        constraints = (models.CheckConstraint(check=~models.Q(user_a=models.F('user_b')), name='no_self_friendship'), )
+        constraints = (models.CheckConstraint(check=~models.Q(user_a=models.F('user_b')), name='no_self_friendship'),)
 
     def __str__(self):
         return f'{self.user_a} <-> {self.user_b}'

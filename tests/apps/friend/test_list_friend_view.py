@@ -38,13 +38,13 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
 
     @unittest.skipIf(
         settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql',
-        'TrigramSimilarity only supported by PostgreSQL'
+        'TrigramSimilarity only supported by PostgreSQL',
     )
     def test_search(self):
         users = [
             UserFactory(first_name='User', last_name='', username='u1'),
             UserFactory(first_name='User', last_name='One', username='u2'),
-            UserFactory(first_name='Someone', last_name='', username='user')
+            UserFactory(first_name='Someone', last_name='', username='user'),
         ]
 
         Friendship.objects.bulk_create(Friendship(user_a=self.user, user_b=user) for user in users)

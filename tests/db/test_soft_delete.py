@@ -5,7 +5,7 @@ from tests._app.models import SoftDeleteModelWithCustomManager, SoftDeleteModelW
 
 
 class SoftDeleteModelTests(TestCase):
-    available_apps = ('tests._app', )
+    available_apps = ('tests._app',)
 
     def test_soft_delete(self):
         objs = [SoftDeleteModelWithDefaultManager.objects.create() for _ in range(5)]

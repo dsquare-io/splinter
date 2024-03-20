@@ -1,6 +1,5 @@
 from collections import Counter
 from decimal import Decimal
-from typing import Type, TypeVar
 
 from django.db import transaction
 from django.db.models import Model
@@ -9,8 +8,6 @@ from django.dispatch import receiver
 
 from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit, OutstandingBalance
 from splinter.apps.friend.models import Friendship
-
-TModel = TypeVar('TModel', bound=Model)
 
 
 @receiver(pre_save, sender=ExpenseSplit)
@@ -69,8 +66,7 @@ def update_parent_expense_splits(parent: Expense) -> None:
         expenses_by_user[expense_split.user_id] += expense_split.amount
 
     current_expense_splits = {
-        expense_split.user_id: expense_split
-        for expense_split in ExpenseSplit.objects.filter(expense=parent)
+        expense_split.user_id: expense_split for expense_split in ExpenseSplit.objects.filter(expense=parent)
     }
 
     for user_id, amount in expenses_by_user.items():
@@ -80,7 +76,7 @@ def update_parent_expense_splits(parent: Expense) -> None:
                 continue
 
             expense_split.amount = amount
-            expense_split.save(update_fields=('amount', ))
+            expense_split.save(update_fields=('amount',))
         else:
             ExpenseSplit.objects.create(
                 expense=parent,
@@ -121,14 +117,14 @@ def update_expense_parties(expense: Expense) -> None:
     ExpenseParty.objects.filter(pk__in=existing_parties - current_parties).delete()
 
 
-def update_outstanding_balance(model_cls: Type[Model], amount_delta: Decimal, **kwargs) -> None:
+def update_outstanding_balance(model_cls: type[Model], amount_delta: Decimal, **kwargs) -> None:
     instance = model_cls.objects.select_for_update().filter(**kwargs).first()
 
     if instance is None:
         model_cls.objects.create(amount=amount_delta, **kwargs)
     else:
         instance.amount += Decimal(amount_delta)
-        instance.save(update_fields=('amount', ))
+        instance.save(update_fields=('amount',))
 
 
 def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: Decimal) -> None:

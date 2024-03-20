@@ -1,11 +1,10 @@
 import decimal
-from typing import Generator, List
+from collections.abc import Iterable
 
 
 def split_amount(
-    amount: decimal.Decimal, shares: List[int], min_share: decimal.Decimal = decimal.Decimal('.01')
-) -> Generator[decimal.Decimal, None, None]:
-
+    amount: decimal.Decimal, shares: list[int], min_share: decimal.Decimal = decimal.Decimal('.01')
+) -> Iterable[decimal.Decimal]:
     total_shares = sum(shares)
     each_share_amount = (amount / total_shares).quantize(min_share, rounding=decimal.ROUND_DOWN)
 

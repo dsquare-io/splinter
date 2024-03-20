@@ -1,12 +1,13 @@
-from typing import TYPE_CHECKING, Dict, List, Type, TypedDict
+from __future__ import annotations
+
+from typing import TypedDict
 
 from django.conf import settings
 from django_otp.models import Device
 from django_otp.plugins.otp_static.models import StaticDevice, StaticToken
 from django_otp.plugins.otp_totp.models import TOTPDevice
 
-if TYPE_CHECKING:
-    from splinter.apps.user.models import User
+from splinter.apps.user.models import User
 
 
 class AuthenticationMethod(TypedDict):
@@ -16,12 +17,12 @@ class AuthenticationMethod(TypedDict):
 
 
 class DeviceConfigurator:
-    device_cls: Type[Device] = None
+    device_cls: type[Device] = None
 
     device_type: str = None
     verbose_name: str = None
 
-    __all__: Dict[str, 'DeviceConfigurator'] = {}
+    __all__: dict[str, 'DeviceConfigurator'] = {}
 
     def configure(self, user: 'User', params=None) -> Device:
         device = self.device_cls.objects.devices_for_user(user).first()
@@ -33,11 +34,11 @@ class DeviceConfigurator:
     def create_device(self, user, params=None) -> Device:
         raise NotImplementedError()
 
-    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
+    def authentication_methods(self, device: Device) -> list[AuthenticationMethod]:
         raise NotImplementedError()
 
     @classmethod
-    def register(cls, configurator: Type['DeviceConfigurator']) -> Type['DeviceConfigurator']:
+    def register(cls, configurator: type['DeviceConfigurator']) -> type['DeviceConfigurator']:
         device_type = configurator.device_cls.__name__.replace('Device', '').lower()
         configurator.device_type = device_type
 
@@ -57,7 +58,7 @@ class TOTPDeviceConfigurator(DeviceConfigurator):
     def create_device(self, user, params=None):
         return self.device_cls.objects.create(user=user, name=self.verbose_name, confirmed=False)
 
-    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
+    def authentication_methods(self, device: Device) -> list[AuthenticationMethod]:
         return [{'id': device.id, 'type': self.device_type, 'name': self.verbose_name}]
 
 
@@ -68,10 +69,12 @@ class StaticDeviceConfigurator(DeviceConfigurator):
 
     @staticmethod
     def generate_tokens(device: Device):
-        StaticToken.objects.bulk_create([
-            StaticToken(device=device, token=StaticToken.random_token())
-            for _ in range(settings.MFA_BACKUP_CODES_COUNT)
-        ])
+        StaticToken.objects.bulk_create(
+            [
+                StaticToken(device=device, token=StaticToken.random_token())
+                for _ in range(settings.MFA_BACKUP_CODES_COUNT)
+            ]
+        )
 
     def create_device(self, user, params=None) -> Device:
         device, created = self.device_cls.objects.get_or_create(user=user, defaults={'name': self.verbose_name})
@@ -80,5 +83,5 @@ class StaticDeviceConfigurator(DeviceConfigurator):
 
         return device
 
-    def authentication_methods(self, device: Device) -> List[AuthenticationMethod]:
+    def authentication_methods(self, device: Device) -> list[AuthenticationMethod]:
         return [{'id': device.id, 'type': self.device_type, 'name': self.verbose_name}]

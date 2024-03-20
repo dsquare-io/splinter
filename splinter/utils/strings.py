@@ -3,7 +3,6 @@ import re
 import string
 from html.parser import HTMLParser
 from textwrap import wrap
-from typing import Optional
 
 WHITE_SPACE_RE = re.compile(r'\s+')
 FIRST_CAP_RE = re.compile('(.)([A-Z][a-z]+)')
@@ -87,7 +86,7 @@ class HTMLFilter(HTMLParser):
             self.paragraphs[-1] = f'{self.paragraphs[-1]} {self.current_tag_additional_data}'
 
 
-def convert_html_to_text(html: str, wrap_width: Optional[int] = None) -> str:
+def convert_html_to_text(html: str, wrap_width: int | None = None) -> str:
     instance = HTMLFilter()
     instance.feed(html)
 

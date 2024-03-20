@@ -32,26 +32,26 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='+',
-                        to='group.group'
-                    )
+                        to='group.group',
+                    ),
                 ),
                 (
                     'target_content_type',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to='contenttypes.contenttype'
-                    )
+                    ),
                 ),
                 (
                     'user',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
             ],
             options={
                 'verbose_name_plural': 'Activities',
                 'db_table': 'activities',
-                'ordering': ('-created_at', ),
+                'ordering': ('-created_at',),
             },
         ),
         migrations.CreateModel(
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                     'activity',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='activity.activity'
-                    )
+                    ),
                 ),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name_plural': 'Comments',
                 'db_table': 'comments',
-                'ordering': ('-created_at', ),
+                'ordering': ('-created_at',),
             },
         ),
     ]

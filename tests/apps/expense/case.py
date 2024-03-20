@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Dict, List, Optional
 
 from django.conf import settings
 from django.test import TestCase
@@ -13,6 +12,7 @@ from tests.apps.expense.factories import ExpenseFactory
 
 
 class ExpenseTestCase(TestCase):
+    currency: Currency
     available_apps = ('splinter.apps.currency', 'splinter.apps.expense', 'splinter.apps.group', 'splinter.apps.user')
 
     @classmethod
@@ -30,7 +30,7 @@ class ExpenseTestCase(TestCase):
         }
 
     @classmethod
-    def create_multi_row_expense(cls, amounts: List[int], participants: List[User]):
+    def create_multi_row_expense(cls, amounts: list[int], participants: list[User]):
         parent_expense = ExpenseFactory(
             amount=sum(amounts),
             paid_by=participants[0],
@@ -43,7 +43,7 @@ class ExpenseTestCase(TestCase):
         return parent_expense
 
     @classmethod
-    def create_equal_split_expense(cls, amount: int, participants: List[User], **kwargs):
+    def create_equal_split_expense(cls, amount: int, participants: list[User], **kwargs):
         expense = ExpenseFactory(
             amount=amount,
             currency=cls.currency,
@@ -71,12 +71,12 @@ class ExpenseTestCase(TestCase):
         return expense
 
     @staticmethod
-    def get_outstanding_balance(**filters) -> Optional[Decimal]:
+    def get_outstanding_balance(**filters) -> Decimal | None:
         instance = OutstandingBalance.objects.filter(**filters).first()
         if instance is not None:
             return instance.amount
 
-    def assertUserOutstandingBalance(self, amount_by_user: Dict[User, Optional[int]]) -> None:
+    def assertUserOutstandingBalance(self, amount_by_user: dict[User, int | None]) -> None:
         for i, (user, expected_amount) in enumerate(amount_by_user.items(), 1):
             self.assertEqual(
                 OutstandingBalance.objects.get_user_balance(user=user).get(self.currency.code, None),
@@ -85,12 +85,13 @@ class ExpenseTestCase(TestCase):
             )
 
     def assertFriendOutstandingBalance(
-        self, amount_by_friend: Dict[User, Optional[int]], payer: User, group: Optional[Group] = None
+        self, amount_by_friend: dict[User, int | None], payer: User, group: Group | None = None
     ) -> None:
         for i, (friend, expected_amount) in enumerate(amount_by_friend.items(), 1):
             self.assertEqual(
                 self.get_outstanding_balance(user=payer, friend=friend, currency=self.currency, group=group),
-                expected_amount, f'Payer outstanding balance with Friend {i} should be {expected_amount}'
+                expected_amount,
+                f'Payer outstanding balance with Friend {i} should be {expected_amount}',
             )
 
             inverse_expected_amount = -expected_amount if expected_amount else expected_amount
@@ -101,6 +102,7 @@ class ExpenseTestCase(TestCase):
                     friend=payer,
                     currency=self.currency,
                     group=group,
-                ), inverse_expected_amount,
-                f'Friend {i} outstanding balance with Payer should be {inverse_expected_amount}'
+                ),
+                inverse_expected_amount,
+                f'Friend {i} outstanding balance with Payer should be {inverse_expected_amount}',
             )

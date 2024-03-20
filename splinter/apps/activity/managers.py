@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import TYPE_CHECKING, Union
 
 from django.db.models import Exists, Manager, OuterRef
 
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class ActivityManager(Manager):
     use_in_migrations = False
 
-    def of(self, user: Union['User', int]):
+    def of(self, user: Union[int, 'User']):
         from splinter.apps.activity.models import ActivityAudience
 
         user_id = user if isinstance(user, int) else user.id

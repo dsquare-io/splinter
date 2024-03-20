@@ -9,10 +9,10 @@ REDIS_URL = os.getenv('REDIS_URL') or f'redis://{REDIS_HOST}:{REDIS_PORT}'
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'{REDIS_URL}?db=0'
+        'LOCATION': f'{REDIS_URL}?db=0',
     },
     'sessions': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': f'{REDIS_URL}?db=1'
+        'LOCATION': f'{REDIS_URL}?db=1',
     },
 }

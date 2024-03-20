@@ -1,5 +1,3 @@
-from typing import List
-
 from splinter.apps.friend.models import Friendship
 from splinter.apps.user.models import User
 from tests.apps.expense.case import ExpenseTestCase
@@ -8,7 +6,7 @@ from tests.case import AuthenticatedAPITestCase
 
 
 class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
-    participants: List[User]
+    participants: list[User]
 
     @classmethod
     def setUpTestData(cls):
@@ -46,14 +44,13 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
             'description': 'Single Row Expense',
             'paid_by': self.user.username,
             'currency': self.currency.code,
-            'expenses': [{
-                'amount': '100.00',
-                'description': 'Single Row Expense',
-                'shares': [{
-                    'user': user.username,
-                    'share': 1
-                } for user in self.participants]
-            }]
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Single Row Expense',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                }
+            ],
         }
 
         response = self.client.post('/api/expenses', payload, format='json')
@@ -64,19 +61,22 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200, response.json())
 
         self.assertSerializedExpense(
-            response.json(), {
+            response.json(),
+            {
                 'uid': expense_id,
                 'datetime': payload['datetime'],
                 'description': payload['description'],
                 'amount': '100.00',
                 'currency': self.currency,
-                'expenses': [{
-                    'amount': '100.00',
-                    'description': 'Single Row Expense',
-                    'share_amounts': ['33.33', '33.33', '33.34'],
-                }],
-                'paidBy': self.user.username
-            }
+                'expenses': [
+                    {
+                        'amount': '100.00',
+                        'description': 'Single Row Expense',
+                        'share_amounts': ['33.33', '33.33', '33.34'],
+                    }
+                ],
+                'paidBy': self.user.username,
+            },
         )
 
     def test_create_multi_row(self):
@@ -85,21 +85,20 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
             'description': 'Multi Row Expense',
             'paid_by': self.user.username,
             'currency': self.currency.code,
-            'expenses': [{
-                'amount': '100.00',
-                'description': 'Some Expense',
-                'shares': [{
-                    'user': user.username,
-                    'share': 1
-                } for user in self.participants]
-            }, {
-                'amount': '100.00',
-                'description': 'Another Expense',
-                'shares': [{
-                    'user': user.username,
-                    'share': (i % 3) + 1
-                } for i, user in enumerate(self.participants)]
-            }]
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Some Expense',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                },
+                {
+                    'amount': '100.00',
+                    'description': 'Another Expense',
+                    'shares': [
+                        {'user': user.username, 'share': (i % 3) + 1} for i, user in enumerate(self.participants)
+                    ],
+                },
+            ],
         }
 
         response = self.client.post('/api/expenses', payload, format='json')
@@ -110,21 +109,25 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200, response.json())
 
         self.assertSerializedExpense(
-            response.json(), {
+            response.json(),
+            {
                 'uid': expense_id,
                 'datetime': payload['datetime'],
                 'description': payload['description'],
                 'amount': '200.00',
                 'currency': self.currency,
-                'expenses': [{
-                    'amount': '100.00',
-                    'description': 'Some Expense',
-                    'share_amounts': ['33.33', '33.33', '33.34'],
-                }, {
-                    'amount': '100.00',
-                    'description': 'Another Expense',
-                    'share_amounts': ['16.66', '33.32', '50.02'],
-                }],
-                'paidBy': self.user.username
-            }
+                'expenses': [
+                    {
+                        'amount': '100.00',
+                        'description': 'Some Expense',
+                        'share_amounts': ['33.33', '33.33', '33.34'],
+                    },
+                    {
+                        'amount': '100.00',
+                        'description': 'Another Expense',
+                        'share_amounts': ['16.66', '33.32', '50.02'],
+                    },
+                ],
+                'paidBy': self.user.username,
+            },
         )

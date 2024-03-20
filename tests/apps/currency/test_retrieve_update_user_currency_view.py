@@ -14,7 +14,8 @@ class RetrieveUpdateCurrencyPreferenceViewTests(AuthenticatedAPITestCase):
 
         response_json = response.json()
         self.assertEqual(
-            response_json, {
+            response_json,
+            {
                 'uid': 'PKR',
                 'urn': 'urn:splinter:currency/PKR',
                 'symbol': 'Rs',
@@ -24,7 +25,7 @@ class RetrieveUpdateCurrencyPreferenceViewTests(AuthenticatedAPITestCase):
                     'name': 'Pakistan',
                     'flag': '🇵🇰',
                 },
-            }
+            },
         )
 
     def test_update_currency_preference(self):

@@ -48,8 +48,9 @@ class ListFriendExpenseView(ListAPIView):
 
     def get_queryset(self):
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.request.user.id), group__isnull=True) \
-            .order_by('-datetime')
+        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.request.user.id), group__isnull=True).order_by(
+            '-datetime'
+        )
 
 
 class ListGroupExpenseView(ListAPIView):
@@ -67,12 +68,16 @@ class RetrieveUserOutstandingBalanceView(GenericAPIView):
     serializer_class = UserOutstandingBalanceSerializer
 
     def get(self, *args, **kwargs):
-        qs = AggregatedOutstandingBalance.objects.annotate(
-            balance_type=Case(When(amount__gt=0, then=1), default=0, output_field=IntegerField()),
-        ).annotate(
-            total_amount=Window(expression=Sum('amount'), partition_by=('balance_type', 'currency')),
-            row_number=Window(expression=RowNumber(), partition_by=('balance_type', 'currency'))
-        ).filter(row_number=1, user=self.request.user)
+        qs = (
+            AggregatedOutstandingBalance.objects.annotate(
+                balance_type=Case(When(amount__gt=0, then=1), default=0, output_field=IntegerField()),
+            )
+            .annotate(
+                total_amount=Window(expression=Sum('amount'), partition_by=('balance_type', 'currency')),
+                row_number=Window(expression=RowNumber(), partition_by=('balance_type', 'currency')),
+            )
+            .filter(row_number=1, user=self.request.user)
+        )
 
         qs = self.get_serializer().prefetch_queryset(qs)
         return self.get_serializer(list(qs)).data

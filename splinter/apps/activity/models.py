@@ -38,7 +38,7 @@ class Activity(PublicModel):
     class Meta:
         db_table = 'activities'
         verbose_name_plural = 'Activities'
-        ordering = ('-created_at', )
+        ordering = ('-created_at',)
 
     def save(self, **kwargs):
         if len(self.description) > self.MAX_ALLOWED_DESCRIPTION_LENGTH and self.description[-3:] != '...':
@@ -69,7 +69,7 @@ class Comment(SoftDeleteModel, PublicModel):
     class Meta:
         db_table = 'comments'
         verbose_name_plural = 'Comments'
-        ordering = ('-created_at', )
+        ordering = ('-created_at',)
 
 
 @receiver(post_save, sender=Comment)

@@ -26,7 +26,7 @@ class CurrencySerializer(SimpleCurrencySerializer):
     country = CountrySerializer(read_only=True)
 
     class Meta(SimpleCurrencySerializer.Meta):
-        fields = SimpleCurrencySerializer.Meta.fields + ('country', )
+        fields = SimpleCurrencySerializer.Meta.fields + ('country',)
 
 
 class UserCurrencySerializer(serializers.ModelSerializer):
@@ -34,4 +34,4 @@ class UserCurrencySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserCurrency
-        fields = ('currency', )
+        fields = ('currency',)

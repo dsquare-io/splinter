@@ -1,5 +1,4 @@
 import datetime
-from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser as AuthAbstractUser
@@ -15,8 +14,7 @@ class User(SoftDeleteModel, AuthAbstractUser):
     UID_FIELD = 'username'
     SEARCH_FIELDS = ['full_name', 'username', 'email']
 
-    if TYPE_CHECKING:
-        urn: str
+    urn: str
 
     username_validator = ASCIIUsernameValidator()
     email = models.EmailField(unique=True, null=True, blank=True)

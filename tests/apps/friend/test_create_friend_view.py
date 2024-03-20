@@ -8,10 +8,7 @@ class CreateFriendViewTests(AuthenticatedAPITestCase):
     @patch('splinter.apps.user.shortcuts.send_invitation_email')
     def test_create_friend(self, send_invitation_email_mock: Mock):
         response = self.client.post(
-            '/api/friends', {
-                'email': 'someone@example.com',
-                'name': 'Someone Else'
-            }, format='json'
+            '/api/friends', {'email': 'someone@example.com', 'name': 'Someone Else'}, format='json'
         )
         self.assertEqual(response.status_code, 201)
 

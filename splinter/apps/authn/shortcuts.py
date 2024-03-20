@@ -10,6 +10,7 @@ if MFA_CONFIGURED:
 
     def generate_user_access_token(user: User, require_mfa: bool = True) -> dict:
         return MfaAccessTokenProvider.for_user(user, require_mfa=require_mfa).generate()
+
 else:
 
     def generate_user_access_token(user: User) -> dict:

@@ -23,8 +23,8 @@ from splinter.core.views import APIView, CreateAPIView, RetrieveAPIView, UpdateA
 
 
 class RetrieveUpdateProfileView(RetrieveAPIView, UpdateAPIView):
-    permission_classes = (IsAuthenticated, )
-    authentication_classes = (UserAccessTokenAuthentication, )
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (UserAccessTokenAuthentication,)
     serializer_class = UserSerializer
 
     def get_object(self):

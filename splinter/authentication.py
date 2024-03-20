@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING, Optional, Set, Tuple, Type
-
 from django.db.models import Model
 from django.http import HttpRequest
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
@@ -11,24 +9,23 @@ from splinter.db.urn import ResourceName
 
 
 class AccessTokenAuthenticationMeta(type):
-    object_models: Set[Type[Model]]
+    object_models: set[type[Model]]
 
-    def __or__(self, other: Type['AccessTokenAuthenticationMeta']) -> Type['AccessTokenAuthenticationMeta']:
+    def __or__(self, other: type['AccessTokenAuthenticationMeta']) -> type['AccessTokenAuthenticationMeta']:
         if not isinstance(other, AccessTokenAuthenticationMeta):
             raise NotImplementedError()
 
         object_models = self.object_models | other.object_models
-        auth = type('AccessTokenAuthentication', (BaseAccessTokenAuthentication, ), {'object_models': object_models})
+        auth = type('AccessTokenAuthentication', (BaseAccessTokenAuthentication,), {'object_models': object_models})
         return auth
 
 
 class BaseAccessTokenAuthentication(BaseAuthentication, metaclass=AccessTokenAuthenticationMeta):
     keyword = 'Bearer'
 
-    if TYPE_CHECKING:
-        object_models: Set[Type[Model]]
+    object_models: set[type[Model]]
 
-    def authenticate(self, request: HttpRequest) -> Optional[Tuple['User', None]]:
+    def authenticate(self, request: HttpRequest) -> tuple['User', None] | None:
         auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != self.keyword.lower().encode():
@@ -51,7 +48,7 @@ class BaseAccessTokenAuthentication(BaseAuthentication, metaclass=AccessTokenAut
 
         return self.authenticate_credentials(token)
 
-    def authenticate_credentials(self, access_token: str) -> Tuple['User', None]:
+    def authenticate_credentials(self, access_token: str) -> tuple['User', None]:
         token = AccessTokenValidator().validate(access_token)
         user = token.subject
 

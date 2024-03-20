@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import List
 
 from django.db import transaction
 from django.db.models import Prefetch
@@ -28,7 +27,7 @@ class ExpenseShareSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExpenseSplit
         fields = ('user', 'share', 'amount')
-        read_only_fields = ('amount', )
+        read_only_fields = ('amount',)
         extra_kwargs = {
             'share': {
                 'help_text': 'The share of the user in the expense',
@@ -75,14 +74,26 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
     class Meta:
         model = Expense
         fields = (
-            'uid', 'urn', 'datetime', 'description', 'amount', 'currency', 'outstanding_balance', 'expenses', 'paid_by',
-            'created_by'
+            'uid',
+            'urn',
+            'datetime',
+            'description',
+            'amount',
+            'currency',
+            'outstanding_balance',
+            'expenses',
+            'paid_by',
+            'created_by',
         )
 
     def prefetch_queryset(self, queryset=None):
-        queryset = super().prefetch_queryset(queryset).prefetch_related(
-            'splits__user',
-            Prefetch('splits', queryset=ExpenseSplit.objects.order_by('user_id'), to_attr='shares'),
+        queryset = (
+            super()
+            .prefetch_queryset(queryset)
+            .prefetch_related(
+                'splits__user',
+                Prefetch('splits', queryset=ExpenseSplit.objects.order_by('user_id'), to_attr='shares'),
+            )
         )
         return queryset.prefetch_related(
             'currency',
@@ -96,7 +107,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             max_digits=9,
             decimal_places=2,
             read_only=True,
-            help_text='The outstanding balance of current user in this expense document'
+            help_text='The outstanding balance of current user in this expense document',
         )
     )
     def get_outstanding_balance(self, expense: Expense):
@@ -257,13 +268,15 @@ class AggregatedOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, se
 
         return queryset.prefetch_related('currency')
 
-    def to_representation(self, instances: List['AggregatedOutstandingBalance']):
+    def to_representation(self, instances: list['AggregatedOutstandingBalance']):
         converted = simplify_outstanding_balances(self.context['request'].user, instances)
-        return super().to_representation({
-            'currency': converted.currency,
-            'amount': converted.amount,
-            'balances': instances,
-        })
+        return super().to_representation(
+            {
+                'currency': converted.currency,
+                'amount': converted.amount,
+                'balances': instances,
+            }
+        )
 
 
 class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
@@ -279,7 +292,7 @@ class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializ
 
         return queryset.prefetch_related('currency')
 
-    def to_representation(self, instances: List['AggregatedOutstandingBalance']):
+    def to_representation(self, instances: list['AggregatedOutstandingBalance']):
         paid = []
         borrowed = []
 
@@ -290,9 +303,11 @@ class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializ
                 borrowed.append(balance)
 
         converted = simplify_outstanding_balances(self.context['request'].user, instances)
-        return super().to_representation({
-            'paid': paid,
-            'borrowed': borrowed,
-            'currency': converted.currency,
-            'amount': converted.amount,
-        })
+        return super().to_representation(
+            {
+                'paid': paid,
+                'borrowed': borrowed,
+                'currency': converted.currency,
+                'amount': converted.amount,
+            }
+        )

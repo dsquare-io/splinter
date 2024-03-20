@@ -18,9 +18,7 @@ class ConversionRateAdmin(admin.ModelAdmin):
     list_display = ('source', 'target', 'rate')
 
     def get_queryset(self, request):
-        return super().get_queryset(request) \
-            .order_by('source', 'target', '-as_of') \
-            .distinct('source', 'target')
+        return super().get_queryset(request).order_by('source', 'target', '-as_of').distinct('source', 'target')
 
     def has_delete_permission(self, request, obj=None):
         return False

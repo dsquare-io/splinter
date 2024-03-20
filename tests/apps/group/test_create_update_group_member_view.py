@@ -99,10 +99,7 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
 
         self.assertDictEqual(
             response.json(),
-            {'members': [{
-                'code': 'group_members_limit_error',
-                'message': f'Group can have at most 5 members'
-            }]}
+            {'members': [{'code': 'group_members_limit_error', 'message': f'Group can have at most 5 members'}]},
         )
 
     def test_update__add_non_friend(self):
@@ -121,12 +118,12 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
         self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
 
         self.assertDictEqual(
-            response.json(), {
-                'members': [{
-                    'code': 'invalid',
-                    'message': f'Cannot add non-friend user ({non_friend.username}) to the group'
-                }]
-            }
+            response.json(),
+            {
+                'members': [
+                    {'code': 'invalid', 'message': f'Cannot add non-friend user ({non_friend.username}) to the group'}
+                ]
+            },
         )
 
     def test_create(self):
@@ -159,12 +156,12 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
         self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
 
         self.assertDictEqual(
-            response.json(), {
-                'user': [{
-                    'code': 'does_not_exist',
-                    'message': f'Friend with username={non_friend.username} does not exist.'
-                }]
-            }
+            response.json(),
+            {
+                'user': [
+                    {'code': 'does_not_exist', 'message': f'Friend with username={non_friend.username} does not exist.'}
+                ]
+            },
         )
 
     @override_settings(GROUP_MAX_ALLOWED_MEMBERS=1)
@@ -185,10 +182,7 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
 
         self.assertDictEqual(
             response.json(),
-            {'': [{
-                'message': 'Group can have at most 1 members',
-                'code': 'group_members_limit_error'
-            }]}
+            {'': [{'message': 'Group can have at most 1 members', 'code': 'group_members_limit_error'}]},
         )
 
 
@@ -220,12 +214,15 @@ class DeleteGroupMemberWithBalanceTest(ExpenseTestCase, AuthenticatedAPITestCase
         self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 2)
 
         self.assertDictEqual(
-            response.json(), {
-                'members': [{
-                    'code': 'invalid',
-                    'message': f'Cannot remove user ({self.group_members[1]}) with outstanding balance from the group'
-                }]
-            }
+            response.json(),
+            {
+                'members': [
+                    {
+                        'code': 'invalid',
+                        'message': f'Cannot remove user ({self.group_members[1]}) with outstanding balance from the group',
+                    }
+                ]
+            },
         )
 
     def test_update__delete_member_with_no_balance(self):

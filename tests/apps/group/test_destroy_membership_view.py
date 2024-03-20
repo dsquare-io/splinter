@@ -28,10 +28,7 @@ class DestroyGroupMembershipViewTest(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json(),
-            {'': [{
-                'code': 'invalid',
-                'message': 'Cannot remove user with outstanding balance from the group'
-            }]}
+            {'': [{'code': 'invalid', 'message': 'Cannot remove user with outstanding balance from the group'}]},
         )
 
         self.assertTrue(GroupMembership.objects.filter(group=self.group, user=self.user).exists())

@@ -7,9 +7,7 @@ if TYPE_CHECKING:
     from splinter.apps.currency.models import Currency
 
 
-def convert_currency(
-    value: Union[float, Decimal], source: Union[str, 'Currency'], target: Union[str, 'Currency']
-) -> Decimal:
+def convert_currency(value: float | Decimal, source: Union[str, 'Currency'], target: Union[str, 'Currency']) -> Decimal:
     conversion_rate = ConversionRate.objects.get_conversion_rate(source, target)
     if isinstance(value, float):
         value = Decimal(value)

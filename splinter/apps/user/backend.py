@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
@@ -12,7 +12,7 @@ class AuthBackend(ModelBackend):
     supports_anonymous_user = False
     supports_inactive_user = False
 
-    def authenticate(self, request: HttpRequest, **kwargs: Any) -> Optional[User]:
+    def authenticate(self, request: HttpRequest, **kwargs: Any) -> User | None:
         username = kwargs.get(User.USERNAME_FIELD)
         password = kwargs.get('password')
 

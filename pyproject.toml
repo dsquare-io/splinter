@@ -40,7 +40,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 dev = [
     "isort",
-    "yapf",
+    "black",
     "coverage",
     "parameterized",
     "factory_boy",
@@ -61,6 +61,10 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 line_length = 120
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
 
 [tool.semantic_release]
 version_variables = ['splinter/__init__.py:__version__']

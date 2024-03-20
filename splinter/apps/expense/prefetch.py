@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Literal
 
 from django.db import connection
 from django.db.models import F, FloatField, Prefetch, Sum, Window
@@ -9,17 +9,19 @@ from splinter.apps.expense.models import AggregatedOutstandingBalance, Outstandi
 if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
+type PartitionBy = Literal['friend', 'group']
+
 
 class OutstandingBalancePrefetch(Prefetch):
     queryset: 'QuerySet'
 
     def __init__(
         self,
-        partition_by: Literal['friend', 'group'],
-        limit: Optional[int] = None,
+        partition_by: PartitionBy,
+        limit: int | None = None,
         lookup: str = 'outstanding_balances',
         queryset: 'QuerySet' = None,
-        to_attr: Optional[str] = None,
+        to_attr: str | None = None,
     ):
         if queryset is None:
             queryset = OutstandingBalance.objects.all()
@@ -47,7 +49,7 @@ class OutstandingBalancePrefetch(Prefetch):
                     expression=RowNumber(),
                     partition_by=self.partition_by,
                     order_by=F('abs_amount').desc(),
-                )
+                ),
             )
 
             qs = qs.order_by(self.partition_by, f'-abs_amount').filter(row_number__lte=self.limit)
@@ -60,10 +62,10 @@ class AggregatedOutstandingBalancePrefetch(Prefetch):
 
     def __init__(
         self,
-        partition_by: Literal['friend', 'group'],
+        partition_by: PartitionBy,
         lookup: str = 'outstanding_balances',
         queryset: 'QuerySet' = None,
-        to_attr: Optional[str] = 'aggregated_outstanding_balance',
+        to_attr: str = 'aggregated_outstanding_balance',
     ):
         if queryset is None:
             queryset = AggregatedOutstandingBalance.objects.all()
@@ -77,7 +79,7 @@ class AggregatedOutstandingBalancePrefetch(Prefetch):
 
         qs = self.queryset.annotate(
             total_amount=Window(expression=Sum('amount'), partition_by=(self.partition_by, 'currency')),
-            row_number=Window(expression=RowNumber(), partition_by=(self.partition_by, 'currency'))
+            row_number=Window(expression=RowNumber(), partition_by=(self.partition_by, 'currency')),
         )
 
         qs = qs.filter(row_number=1)

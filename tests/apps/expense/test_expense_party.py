@@ -1,5 +1,3 @@
-from typing import List
-
 from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit
 from splinter.apps.user.models import User
 from tests.apps.expense.case import ExpenseTestCase
@@ -13,7 +11,7 @@ class ExpensePartyTests(ExpenseTestCase):
 
         cls.friends = UserFactory.create_batch(4)
 
-    def assertExpenseParties(self, expense: Expense, friends: List[User]):
+    def assertExpenseParties(self, expense: Expense, friends: list[User]):
         parties = list(ExpenseParty.objects.filter(expense=expense))
         self.assertEqual(len(parties), max(0, len(friends) - 1))  # -1 for paid_by
 

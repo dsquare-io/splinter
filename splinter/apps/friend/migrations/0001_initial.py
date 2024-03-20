@@ -25,13 +25,13 @@ class Migration(migrations.Migration):
                     'user_a',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
                 (
                     'user_b',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
-                    )
+                    ),
                 ),
             ],
             options={

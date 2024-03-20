@@ -1,5 +1,3 @@
-from typing import List
-
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Q
@@ -43,7 +41,7 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
     outstanding_balances = GroupOutstandingBalanceSerializer(
         many=True,
         read_only=True,
-        help_text=f'Top {settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT} Outstanding balances for current user'
+        help_text=f'Top {settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT} Outstanding balances for current user',
     )
     aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(
         read_only=True, help_text='Aggregated outstanding balance for the current user'
@@ -53,17 +51,25 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
         fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
-        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
-            .filter(user=self.context['request'].user)
+        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances').filter(
+            user=self.context['request'].user
+        )
 
-        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
-            .filter(user=self.context['request'].user)
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance').filter(
+            user=self.context['request'].user
+        )
 
-        return super().prefetch_queryset(queryset).prefetch_related(
-            OutstandingBalancePrefetch(
-                'group', queryset=outstanding_balance_qs, limit=settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT
-            ),
-            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
+        return (
+            super()
+            .prefetch_queryset(queryset)
+            .prefetch_related(
+                OutstandingBalancePrefetch(
+                    'group',
+                    queryset=outstanding_balance_qs,
+                    limit=settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT,
+                ),
+                AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
+            )
         )
 
 
@@ -81,21 +87,30 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
     class Meta(SimpleGroupSerializer.Meta):
         model = Group
         fields = SimpleGroupSerializer.Meta.fields + (
-            'outstanding_balances', 'aggregated_outstanding_balance', 'created_by', 'members'
+            'outstanding_balances',
+            'aggregated_outstanding_balance',
+            'created_by',
+            'members',
         )
 
     def prefetch_queryset(self, queryset=None):
         user_q = Q(user=self.context['request'].user)
 
-        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances') \
-            .filter(user_q | (Q(amount__gt=0) & ~user_q))
+        outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances').filter(
+            user_q | (Q(amount__gt=0) & ~user_q)
+        )
 
-        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance') \
-            .filter(user_q)
+        aggregated_outstanding_balance_qs = self.prefetch_nested_queryset('aggregated_outstanding_balance').filter(
+            user_q
+        )
 
-        return super().prefetch_queryset(queryset).prefetch_related(
-            OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs),
-            AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
+        return (
+            super()
+            .prefetch_queryset(queryset)
+            .prefetch_related(
+                OutstandingBalancePrefetch('group', queryset=outstanding_balance_qs),
+                AggregatedOutstandingBalancePrefetch('group', queryset=aggregated_outstanding_balance_qs),
+            )
         )
 
     @extend_schema_field(SimpleUserSerializer(many=True))
@@ -138,7 +153,7 @@ class CreateGroupMembershipSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupMembership
-        fields = ('user', )
+        fields = ('user',)
 
     def validate(self, attrs):
         group = self.context['group']
@@ -148,7 +163,7 @@ class CreateGroupMembershipSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 ErrorDetail(
                     self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS),
-                    'group_members_limit_error'
+                    'group_members_limit_error',
                 )
             )
 
@@ -166,7 +181,7 @@ class UpdateGroupMembershipSerializer(serializers.Serializer):
 
     members = serializers.ListField(child=UserSerializerField())
 
-    def validate_members(self, members: List['User']):
+    def validate_members(self, members: list['User']):
         if not members:
             raise serializers.ValidationError(self.error_messages['members'])
 
@@ -174,7 +189,7 @@ class UpdateGroupMembershipSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 ErrorDetail(
                     self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS),
-                    'group_members_limit_error'
+                    'group_members_limit_error',
                 )
             )
 
@@ -197,9 +212,9 @@ class UpdateGroupMembershipSerializer(serializers.Serializer):
         for user_id in to_delete:
             if OutstandingBalance.objects.get_user_balance_in_group(user_id, group):
                 username = User.objects.get(id=user_id).username
-                raise serializers.ValidationError({
-                    'members': self.error_messages['no_remove_with_balance'].format(user=username)
-                })
+                raise serializers.ValidationError(
+                    {'members': self.error_messages['no_remove_with_balance'].format(user=username)}
+                )
 
         return {
             'to_add': to_add,

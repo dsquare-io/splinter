@@ -1,9 +1,10 @@
 import datetime
 import decimal
-from typing import NamedTuple
+from dataclasses import dataclass
 
 
-class ConversionRate(NamedTuple):
+@dataclass(kw_only=True, frozen=True)
+class ConversionRate:
     source_currency: str
     target_currency: str
     rate: decimal.Decimal

@@ -1,6 +1,5 @@
 import re
 import uuid
-from typing import TYPE_CHECKING
 
 from django.db import IntegrityError, models, transaction
 
@@ -8,8 +7,7 @@ from django.db import IntegrityError, models, transaction
 class PublicModel(models.Model):
     UID_FIELD = 'public_id'
 
-    if TYPE_CHECKING:
-        urn: str
+    urn: str
 
     public_id = models.UUIDField(unique=True, editable=False)
 

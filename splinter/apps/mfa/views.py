@@ -20,7 +20,7 @@ from splinter.core.views import APIView, DestroyAPIView, GenericAPIView
 
 
 class MfaDeviceAPIView(APIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     mfa_device_confirmed = True
 
     @cached_property
@@ -37,7 +37,7 @@ class MfaDeviceAPIView(APIView):
         if device is None:
             raise ValidationError(
                 f'Device {self.configurator.verbose_name} is either not enabled or not confirmed for MFA',
-                code='mfa_device_invalid'
+                code='mfa_device_invalid',
             )
 
         return device
@@ -48,8 +48,7 @@ class MfaDeviceAPIView(APIView):
         configured_devices = []
 
         available_configurators = {
-            configurator.device_cls: configurator
-            for configurator in DeviceConfigurator.__all__.values()
+            configurator.device_cls: configurator for configurator in DeviceConfigurator.__all__.values()
         }
 
         for d in devices:
@@ -62,17 +61,17 @@ class MfaDeviceAPIView(APIView):
 
         available_configurators.pop(StaticDevice, None)
         return {
-            'available_devices': [{
-                'type': configurator.slug,
-                'name': configurator.verbose_name
-            } for configurator in available_configurators.values()],
+            'available_devices': [
+                {'type': configurator.slug, 'name': configurator.verbose_name}
+                for configurator in available_configurators.values()
+            ],
             'configured_devices': configured_devices,
-            'authentication_methods': authentication_methods
+            'authentication_methods': authentication_methods,
         }
 
 
 class ListMfaDeviceView(MfaDeviceAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     @extend_schema(responses={200: serializers.UserDeviceInfoSerializer})
     def get(self, request):

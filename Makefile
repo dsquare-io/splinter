@@ -1,9 +1,9 @@
 lint:
-	yapf . -rd
+	black . --check --quiet
 	isort . --check-only
 
 lint-fix:
-	yapf . -ri
+	black .
 	isort .
 
 test:

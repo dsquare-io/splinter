@@ -45,19 +45,14 @@ class SuggestUsernameTests(TestCase):
 class UserManagerTests(TestCase):
     available_apps = ['splinter.apps.user']
 
-    @parameterized.expand([
-        ({}, lambda u: f'{u.first_name} {u.last_name}'),
-        ({
-            'first_name': ''
-        }, lambda u: u.last_name),
-        ({
-            'last_name': ''
-        }, lambda u: u.first_name),
-        ({
-            'first_name': '',
-            'last_name': ''
-        }, lambda u: u.username),
-    ])
+    @parameterized.expand(
+        [
+            ({}, lambda u: f'{u.first_name} {u.last_name}'),
+            ({'first_name': ''}, lambda u: u.last_name),
+            ({'last_name': ''}, lambda u: u.first_name),
+            ({'first_name': '', 'last_name': ''}, lambda u: u.username),
+        ]
+    )
     def test_full_name(self, attrs, expected_full_name_callback):
         user_id = UserFactory(**attrs).pk
 

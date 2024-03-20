@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any, Dict
+from typing import Any
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -20,12 +20,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '[%(levelname)s] %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '[%(levelname)s] %(asctime)s - %(message)s'
-        },
+        'verbose': {'format': '[%(levelname)s] %(asctime)s %(module)s %(process)d %(thread)d %(message)s'},
+        'simple': {'format': '[%(levelname)s] %(asctime)s - %(message)s'},
     },
     'filters': {
         'require_debug_false': {
@@ -33,18 +29,14 @@ LOGGING = {
         },
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
-        }
+        },
     },
     'handlers': {
         'null': {
             'level': 'DEBUG',
             'class': 'logging.NullHandler',
         },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
+        'console': {'level': 'DEBUG', 'class': 'logging.StreamHandler', 'formatter': 'verbose'},
     },
     'loggers': {
         '': {
@@ -64,7 +56,6 @@ LOGGING = {
         'django.templates': {
             'level': 'WARNING',
         },
-
         # Silence SuspiciousOperation.DisallowedHost exception ('Invalid
         # HTTP_HOST' header messages). Set the handler to 'null' so we don't
         # get those annoying emails.
@@ -72,7 +63,7 @@ LOGGING = {
             'handlers': ['null'],
             'propagate': False,
         },
-    }
+    },
 }
 
 if LOG_SQL_QUERIES:
@@ -83,7 +74,7 @@ if LOG_SQL_QUERIES:
     }
 
 
-def sentry_traces_sampler(sampling_context: Dict[str, Any]) -> float:
+def sentry_traces_sampler(sampling_context: dict[str, Any]) -> float:
     wsgi_path = sampling_context.get('wsgi_environ', {}).get('PATH_INFO')
     if wsgi_path in ('/liveness', '/readiness'):
         return 0
@@ -100,5 +91,5 @@ if SENTRY_DSN:
             RedisIntegration(),
             LoggingIntegration(level=logging.ERROR),
         ],
-        traces_sampler=sentry_traces_sampler
+        traces_sampler=sentry_traces_sampler,
     )

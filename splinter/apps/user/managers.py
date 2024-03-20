@@ -20,16 +20,20 @@ DISALLOWED_USERNAME_CHARTS_RE = re.compile(r'[^A-Za-z0-9.]')
 
 class UserManager(SoftDeleteManagerMixin, AuthUserManager):
     def get_queryset(self):
-        return super().get_queryset().annotate(
-            full_name=Case(
-                When(first_name='', last_name='', then=F('username')),
-                When(first_name='', then=F('last_name')),
-                When(
-                    last_name='',
-                    then=F('first_name'),
-                ),
-                default=Concat(F('first_name'), Value(' '), F('last_name')),
-                output_field=CharField()
+        return (
+            super()
+            .get_queryset()
+            .annotate(
+                full_name=Case(
+                    When(first_name='', last_name='', then=F('username')),
+                    When(first_name='', then=F('last_name')),
+                    When(
+                        last_name='',
+                        then=F('first_name'),
+                    ),
+                    default=Concat(F('first_name'), Value(' '), F('last_name')),
+                    output_field=CharField(),
+                )
             )
         )
 
@@ -49,7 +53,7 @@ class UserManager(SoftDeleteManagerMixin, AuthUserManager):
                 suggested_suffix = 1
                 continue
 
-            suffix = existing_username[len(username) + 1:]
+            suffix = existing_username[len(username) + 1 :]
             if suffix.isdigit() and int(suffix) == suggested_suffix:
                 suggested_suffix += 1
 
@@ -71,7 +75,7 @@ class EmailVerificationManager(models.Manager):
         qs = self.annotate(
             expiration_date=ExpressionWrapper(
                 F('dispatched_at') + datetime.timedelta(days=settings.EMAIL_VERIFICATION_EXPIRE_DAYS),
-                output_field=models.DateTimeField()
+                output_field=models.DateTimeField(),
             )
         )
 

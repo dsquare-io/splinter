@@ -1,7 +1,6 @@
 import itertools
 import logging
 from functools import cached_property
-from typing import Optional, Set
 
 import uritemplate
 from django.conf import settings
@@ -38,7 +37,7 @@ class AutoSchema(AutoSchemaBase):
     ALL_VERBS = set(itertools.chain.from_iterable(VERBS_BY_METHOD.values()))
 
     @cached_property
-    def verbs_from_view(self) -> Set[str]:
+    def verbs_from_view(self) -> set[str]:
         view_class_name = type(self.view).__name__
 
         found_verbs = {verb for verb in self.ALL_VERBS if verb in view_class_name}
@@ -152,7 +151,7 @@ class AutoSchema(AutoSchemaBase):
     def get_operation_id(self) -> str:
         return f'{self.suggest_verb_from_view()}{self.resource_name}'
 
-    def get_summary(self) -> Optional[str]:
+    def get_summary(self) -> str | None:
         resource_name = self.resource_name
         operation_name = f'{self.suggest_verb_from_view()}{resource_name}'
         return pascal_to_title(operation_name)

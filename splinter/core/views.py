@@ -18,8 +18,8 @@ from splinter.core.permissions import IsVerified
 
 
 class APIView(DrfAPIView):
-    authentication_classes = (UserAccessTokenAuthentication, )
-    permission_classes = (IsVerified, )
+    authentication_classes = (UserAccessTokenAuthentication,)
+    permission_classes = (IsVerified,)
 
     def handle_exception(self, exc):
         if isinstance(exc, APIException):

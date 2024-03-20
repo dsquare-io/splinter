@@ -13,12 +13,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
     def test_create_expense(self):
         self.create_equal_split_expense(100, self.friends)
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 75,
-            self.friends[1]: -25,
-            self.friends[2]: -25,
-            self.friends[3]: -25,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 75,
+                self.friends[1]: -25,
+                self.friends[2]: -25,
+                self.friends[3]: -25,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -39,12 +41,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         expense_split.amount = 50
         expense_split.save()
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 100,
-            self.friends[1]: -50,
-            self.friends[2]: -25,
-            self.friends[3]: -25,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 100,
+                self.friends[1]: -50,
+                self.friends[2]: -25,
+                self.friends[3]: -25,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -59,12 +63,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         self.create_equal_split_expense(100, self.friends)
         ExpenseSplit.objects.get(user=self.friends[1]).delete()
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 50,
-            self.friends[1]: None,
-            self.friends[2]: -25,
-            self.friends[3]: -25,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 50,
+                self.friends[1]: None,
+                self.friends[2]: -25,
+                self.friends[3]: -25,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -79,12 +85,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         self.create_equal_split_expense(100, self.friends)
         self.create_equal_split_expense(200, self.friends)
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 225,
-            self.friends[1]: -75,
-            self.friends[2]: -75,
-            self.friends[3]: -75,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 225,
+                self.friends[1]: -75,
+                self.friends[2]: -75,
+                self.friends[3]: -75,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -100,13 +108,15 @@ class OutstandingBalanceTest(ExpenseTestCase):
         self.create_equal_split_expense(100, self.friends)
         self.create_equal_split_expense(200, [other_payer] + self.friends[1:])
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 75,
-            self.friends[1]: -75,
-            self.friends[2]: -75,
-            self.friends[3]: -75,
-            other_payer: 150,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 75,
+                self.friends[1]: -75,
+                self.friends[2]: -75,
+                self.friends[3]: -75,
+                other_payer: 150,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -132,12 +142,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         group = GroupFactory()
         self.create_equal_split_expense(300, self.friends, group=group)
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 225,
-            self.friends[1]: -75,
-            self.friends[2]: -75,
-            self.friends[3]: -75,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 225,
+                self.friends[1]: -75,
+                self.friends[2]: -75,
+                self.friends[3]: -75,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -163,12 +175,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         self.create_equal_split_expense(100, self.friends)
         self.create_equal_split_expense(200, self.friends, group=group)
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 225,
-            self.friends[1]: -75,
-            self.friends[2]: -75,
-            self.friends[3]: -75,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 225,
+                self.friends[1]: -75,
+                self.friends[2]: -75,
+                self.friends[3]: -75,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {
@@ -193,12 +207,14 @@ class OutstandingBalanceTest(ExpenseTestCase):
         self.create_equal_split_expense(100, self.friends)
         self.create_equal_split_expense(100, self.friends[1:2] + self.friends[:1] + self.friends[2:])
 
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 50,
-            self.friends[1]: 50,
-            self.friends[2]: -50,
-            self.friends[3]: -50,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 50,
+                self.friends[1]: 50,
+                self.friends[2]: -50,
+                self.friends[3]: -50,
+            }
+        )
 
         self.assertFriendOutstandingBalance(
             {

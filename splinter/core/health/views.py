@@ -6,7 +6,7 @@ from splinter.core.health.checks import DatabaseHealthCheck
 
 logger = logging.getLogger(__name__)
 
-HEALTH_CHECKS = (DatabaseHealthCheck, )
+HEALTH_CHECKS = (DatabaseHealthCheck,)
 
 
 def liveness(request):

@@ -9,10 +9,13 @@ class MultiRowExpenseTest(ExpenseTestCase):
         super().setUpTestData()
 
         cls.friends = UserFactory.create_batch(4)
-        cls.root_expense = cls.create_multi_row_expense([
-            100,
-            200,
-        ], cls.friends)
+        cls.root_expense = cls.create_multi_row_expense(
+            [
+                100,
+                200,
+            ],
+            cls.friends,
+        )
 
     def assertSplitByUser(self, amount: float):
         splits_by_user = {i.user: i for i in ExpenseSplit.objects.filter(expense=self.root_expense)}
@@ -34,9 +37,11 @@ class MultiRowExpenseTest(ExpenseTestCase):
         self.assertSplitByUser(50)
 
     def test_no_duplicate_outstanding_balance_update(self):
-        self.assertUserOutstandingBalance({
-            self.friends[0]: 225,
-            self.friends[1]: -75,
-            self.friends[2]: -75,
-            self.friends[3]: -75,
-        })
+        self.assertUserOutstandingBalance(
+            {
+                self.friends[0]: 225,
+                self.friends[1]: -75,
+                self.friends[2]: -75,
+                self.friends[3]: -75,
+            }
+        )

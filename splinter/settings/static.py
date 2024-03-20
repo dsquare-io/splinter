@@ -10,7 +10,7 @@ MEDIA_URL = '/media/'
 
 FILE_UPLOAD_HANDLERS = (
     'django.core.files.uploadhandler.MemoryFileUploadHandler',
-    'django.core.files.uploadhandler.TemporaryFileUploadHandler'
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
 )
 
 AWS_S3_USE_SSL = True
