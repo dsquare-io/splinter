@@ -1,6 +1,6 @@
-@import "tabs.css";
-@import "modal.css";
-@import "popover.css";
+@import 'tabs.css';
+@import 'modal.css';
+@import 'popover.css';
 
 @tailwind base;
 @tailwind components;
@@ -8,16 +8,16 @@
 
 /* Scale up hit targets on high resolution mobile devices. */
 @media (min-resolution: 200dpi) {
-    html {
-        font-size: 18px;
-    }
+  html {
+    font-size: 18px;
+  }
 
-    .text-sm {
-        /* ensure minimum font size of 16px */
-        font-size: 0.9rem;
-    }
+  .text-sm {
+    /* ensure minimum font size of 16px */
+    font-size: 0.9rem;
+  }
 }
 
 body {
-    font-family: 'Figtree', sans-serif;
+  font-family: 'Figtree', sans-serif;
 }

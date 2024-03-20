@@ -206,8 +206,8 @@ export function SettleUpModal({group_uid, friend_uid}: SettleUpModalProps) {
                 const val = formControl.getValues('amount');
                 const paymentDir = formControl.getValues('paymentDir');
                 if (val < 0) {
-                   formControl.setValue('paymentDir', paymentDir === 'in' ? 'out' : 'in');
-                   formControl.setValue('val', Math.abs(val));
+                  formControl.setValue('paymentDir', paymentDir === 'in' ? 'out' : 'in');
+                  formControl.setValue('val', Math.abs(val));
                 }
               }}
             >

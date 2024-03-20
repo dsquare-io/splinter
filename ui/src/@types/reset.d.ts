@@ -1,4 +1,4 @@
-import "@total-typescript/ts-reset";
+import '@total-typescript/ts-reset';
 
 export declare module 'react' {
   interface LabelHTMLAttributes<T> extends HTMLAttributes<T> {

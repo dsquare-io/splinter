@@ -1,6 +1,7 @@
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useContext } from 'react';
-import { OverlayTriggerStateContext } from 'react-aria-components';
+import {useContext} from 'react';
+import {OverlayTriggerStateContext} from 'react-aria-components';
+
+import {XMarkIcon} from '@heroicons/react/24/outline';
 
 export function CloseDialog() {
   const state = useContext(OverlayTriggerStateContext)!;

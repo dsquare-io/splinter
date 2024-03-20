@@ -408,4 +408,3 @@ export interface UserOutstandingBalance {
   paid: AggregatedOutstandingBalance;
   borrowed: AggregatedOutstandingBalance;
 }
-
