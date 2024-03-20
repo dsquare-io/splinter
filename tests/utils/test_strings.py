@@ -1,6 +1,15 @@
 from django.test import SimpleTestCase
 
-from splinter.utils.strings import camel_to_underscore, underscore_to_camel
+from splinter.utils.strings import camel_to_underscore, convert_html_to_text, underscore_to_camel
+
+TEST_HTML = """
+<p>This is a paragraph</p>
+
+<p>
+    This paragraph is <br>
+    multiline
+</p>
+"""
 
 
 class StringsTests(SimpleTestCase):
@@ -28,3 +37,14 @@ class StringsTests(SimpleTestCase):
         for input_, expected in params:
             with self.subTest(input_):
                 self.assertEqual(camel_to_underscore(input_), expected)
+
+    def test_convert_html_to_text(self):
+        self.assertEqual(
+            convert_html_to_text(TEST_HTML), 'This is a paragraph\n' '\n' 'This paragraph is\n' 'multiline'
+        )
+
+    def test_convert_html_to_text__wrap(self):
+        self.assertEqual(
+            convert_html_to_text(TEST_HTML, wrap_width=120),
+            'This is a paragraph\n' '\n' 'This paragraph is\n' 'multiline',
+        )

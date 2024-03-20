@@ -51,7 +51,7 @@ class HTMLFilter(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs):
         self.current_tag = tag.lower()
-        if self.current_tag == 'p':
+        if self.current_tag == 'p' and self.paragraphs and self.paragraphs[-1]:
             self.paragraphs.append('')
 
         if not self.ignore_data:
@@ -93,8 +93,12 @@ def convert_html_to_text(html: str, wrap_width: int | None = None) -> str:
     if wrap_width:
         paragraphs = []
         for para in instance.paragraphs:
-            paragraphs.extend(wrap(para, wrap_width))
+            lines = wrap(para, wrap_width)
+            if lines:
+                paragraphs.extend(lines)
+            else:
+                paragraphs.append('')
     else:
         paragraphs = instance.paragraphs
 
-    return '\n'.join(paragraphs)
+    return '\n'.join(paragraphs).strip()
