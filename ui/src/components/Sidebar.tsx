@@ -108,8 +108,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         </button>
 
         <Link
-          to="/profile/$profile"
-          params={{profile: 'me'}}
+          to="/profile/me"
           className={clsx(
             'flex items-center gap-x-2 rounded-md px-1.5 py-2.5 text-gray-600 transition-colors',
             'hover:bg-gray-100 hover:text-gray-800',

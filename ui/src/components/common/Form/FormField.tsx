@@ -1,7 +1,7 @@
 import {ReactNode} from 'react';
 import {
   CheckboxContext,
-  CheckboxGroupContext,
+  CheckboxGroupContext, ComboBoxContext,
   NumberFieldContext,
   Provider,
   RadioGroupContext,
@@ -181,6 +181,19 @@ export function FormField({
             value: value,
             onBlur,
             onChange,
+            isInvalid: invalid,
+            ref: (el) => el && ref(getFocusableRef(el)),
+            validationBehavior: 'aria',
+            name: props.name,
+            isRequired: !!required,
+          },
+        ],
+        [
+          ComboBoxContext,
+          {
+            selectedKey: value,
+            onBlur,
+            onSelectionChange: onChange,
             isInvalid: invalid,
             ref: (el) => el && ref(getFocusableRef(el)),
             validationBehavior: 'aria',

@@ -31,6 +31,16 @@ export interface paths {
     /** List Currency */
     get: operations["ListCurrency"];
   };
+  "/api/expenses": {
+    /** Create Expense */
+    post: operations["CreateExpense"];
+  };
+  "/api/expenses/{expense_uid}": {
+    /** Retrieve Expense */
+    get: operations["RetrieveExpense"];
+    /** Destroy Expense */
+    delete: operations["DestroyExpense"];
+  };
   "/api/friends": {
     /** List Friend */
     get: operations["ListFriend"];
@@ -56,6 +66,8 @@ export interface paths {
     get: operations["RetrieveGroup"];
     /** Update Group */
     put: operations["UpdateGroup"];
+    /** Destroy Group */
+    delete: operations["DestroyGroup"];
     /** Partial Update Group */
     patch: operations["PartialUpdateGroup"];
   };
@@ -63,13 +75,15 @@ export interface paths {
     /** List Group Expense */
     get: operations["ListGroupExpense"];
   };
+  "/api/groups/{group_uid}/members": {
+    /** Update Group Membership */
+    put: operations["UpdateGroupMembership"];
+    /** Create Group Membership */
+    post: operations["CreateGroupMembership"];
+  };
   "/api/groups/{group_uid}/members/{member_uid}": {
     /** Destroy Group Membership */
     delete: operations["DestroyGroupMembership"];
-  };
-  "/api/groups/members": {
-    /** Create Bulk Group Membership */
-    post: operations["CreateBulkGroupMembership"];
   };
   "/api/mfa/challenge/{device_type}": {
     /** Challenge Mfa Device */
@@ -100,6 +114,12 @@ export interface paths {
   "/api/mfa/verify/{device_type}": {
     /** Verify Mfa Device */
     post: operations["VerifyMfaDevice"];
+  };
+  "/api/user/currency": {
+    /** Retrieve Currency Preference */
+    get: operations["RetrieveCurrencyPreference"];
+    /** Update Currency Preference */
+    put: operations["UpdateCurrencyPreference"];
   };
   "/api/user/forget": {
     /** Forget Password */
@@ -141,12 +161,12 @@ export interface components {
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
-    BulkCreateGroupMembership: import('./components/schemas.d.ts').BulkCreateGroupMembership;
     ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
     ChangePassword: import('./components/schemas.d.ts').ChangePassword;
     Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
+    CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
@@ -164,6 +184,7 @@ export interface components {
     GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
+    Object: import('./components/schemas.d.ts').Object;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
@@ -177,8 +198,10 @@ export interface components {
     SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
-    Target: import('./components/schemas.d.ts').Target;
+    UpdateGroupMembership: import('./components/schemas.d.ts').UpdateGroupMembership;
+    UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
     User: import('./components/schemas.d.ts').User;
+    UserCurrency: import('./components/schemas.d.ts').UserCurrency;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
     UserOutstandingBalance: import('./components/schemas.d.ts').UserOutstandingBalance;
   };
@@ -256,6 +279,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -276,9 +300,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -302,6 +327,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -334,6 +360,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -401,6 +428,108 @@ export interface operations {
       };
     };
   };
+  /** Create Expense */
+  CreateExpense: {
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').UpsertExpense;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Retrieve Expense */
+  RetrieveExpense: {
+    parameters: {
+      path: {
+        expense_uid: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').Expense;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Expense */
+  DestroyExpense: {
+    parameters: {
+      path: {
+        expense_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
   /** List Friend */
   ListFriend: {
     parameters: {
@@ -409,6 +538,8 @@ export interface operations {
         limit?: number;
         /** @description The initial index from which to return the results. */
         offset?: number;
+        /** @description Search Query */
+        q?: string;
       };
     };
     responses: {
@@ -439,9 +570,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -492,6 +624,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -530,6 +663,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -575,9 +709,10 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
       201: {
-        content: never;
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
       };
       /** @description Bad Request */
       400: {
@@ -628,6 +763,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -674,6 +810,39 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Destroy Group */
+  DestroyGroup: {
+    parameters: {
+      path: {
+        group_uid: string;
+      };
+    };
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -720,6 +889,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -758,6 +928,103 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Update Group Membership */
+  UpdateGroupMembership: {
+    parameters: {
+      path: {
+        group_uid: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').UpdateGroupMembership;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').UpdateGroupMembership;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        content: {
+          "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Create Group Membership */
+  CreateGroupMembership: {
+    parameters: {
+      path: {
+        group_uid: string;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').CreateGroupMembership;
+      };
+    };
+    responses: {
+      201: {
+        content: {
+          "application/json": import('./components/schemas').Object;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -790,45 +1057,10 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
-        };
-      };
-    };
-  };
-  /** Create Bulk Group Membership */
-  CreateBulkGroupMembership: {
-    requestBody: {
-      content: {
-        "application/json": import('./components/schemas').BulkCreateGroupMembership;
-      };
-    };
-    responses: {
-      /** @description No response body */
-      201: {
-        content: never;
-      };
-      /** @description Bad Request */
-      400: {
-        content: {
-          "application/json": {
-            /** @description List of non-field errors */
-            ""?: string[];
-            [key: string]: string[] | undefined;
-          };
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        content: {
-          "application/json": import('./components/schemas').Error;
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        content: {
-          "application/json": import('./components/schemas').Error;
         };
       };
     };
@@ -868,6 +1100,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -915,6 +1148,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -947,6 +1181,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -1016,6 +1251,7 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
@@ -1117,9 +1353,69 @@ export interface operations {
           "application/json": import('./components/schemas').Error;
         };
       };
+      /** @description Resource Not Found */
       404: {
         content: {
           "application/json": import('./components/schemas').NotFound;
+        };
+      };
+    };
+  };
+  /** Retrieve Currency Preference */
+  RetrieveCurrencyPreference: {
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').Currency;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+    };
+  };
+  /** Update Currency Preference */
+  UpdateCurrencyPreference: {
+    requestBody: {
+      content: {
+        "application/json": import('./components/schemas').UserCurrency;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": import('./components/schemas').UserCurrency;
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        content: {
+          "application/json": {
+            /** @description List of non-field errors */
+            ""?: string[];
+            [key: string]: string[] | undefined;
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        content: {
+          "application/json": import('./components/schemas').Error;
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        content: {
+          "application/json": import('./components/schemas').Error;
         };
       };
     };

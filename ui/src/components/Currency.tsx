@@ -12,7 +12,7 @@ export default function Currency({value, currency, className, ...props}: Props) 
   const formatter = useNumberFormatter({
     style: 'currency',
     currency,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: 1,
     maximumFractionDigits: 2,
     signDisplay: 'never',
   });

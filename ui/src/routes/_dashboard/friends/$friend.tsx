@@ -1,16 +1,18 @@
+import { SettleUpModal } from '@/components/modals/SettleUp.tsx';
 import clsx from 'clsx';
-import groupBy from 'just-group-by';
 import {Fragment} from 'react';
 
-import {BanknotesIcon, Cog8ToothIcon} from '@heroicons/react/16/solid';
+import {BanknotesIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
 import {Link, createFileRoute} from '@tanstack/react-router';
 import {format} from 'date-fns';
+import groupBy from 'just-group-by';
 
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
+import { DialogTrigger } from 'react-aria-components';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
@@ -25,7 +27,10 @@ function RootComponent() {
   if (!data) return null;
 
   const monthlyActivity = Object.entries(
-    groupBy(friendExpenseList?.results ?? [], (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01')
+    groupBy(
+      friendExpenseList?.results ?? [],
+      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01'
+    )
   );
 
   return (
@@ -88,19 +93,13 @@ function RootComponent() {
         </div>
 
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
-          <Button size="small">
-            <BanknotesIcon />
-            Settle Up
-          </Button>
-          <div className="flex-1" />
-          <Button
-            variant="outline"
-            className="bg-white"
-            size="small"
-          >
-            <Cog8ToothIcon />
-            Settings
-          </Button>
+          <DialogTrigger>
+            <Button size="small">
+              <BanknotesIcon />
+              Settle Up
+            </Button>
+            <SettleUpModal friend_uid={friend_uid} />
+          </DialogTrigger>
         </div>
       </div>
 
@@ -108,7 +107,7 @@ function RootComponent() {
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
             <h3 className="sticky top-[46px] bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
-              {format(new Date(month), 'MMM YYY')}
+              {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>
               {expenses.map((expense) => (

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import {Fragment} from 'react';
-import {Tab, TabList, TabPanel, Tabs} from 'react-aria-components';
+import {DialogTrigger, Tab, TabList, TabPanel, Tabs} from 'react-aria-components';
 
 import {BanknotesIcon, Cog8ToothIcon, UserPlusIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
@@ -9,6 +9,9 @@ import {Link, createFileRoute} from '@tanstack/react-router';
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
+import {GroupSettingsModal} from '@/components/modals/GroupSettings.tsx';
+import {InviteGroupMembersModal} from '@/components/modals/InviteGroupMembers.tsx';
+import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
 import {GroupActivityTab} from '@/routes/_dashboard/groups/-components/GroupActivityTab.tsx';
@@ -85,32 +88,43 @@ function RootComponent() {
         </div>
 
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
-          <Button size="small">
-            <BanknotesIcon />
-            Settle Up
-          </Button>
+          <DialogTrigger>
+            <Button size="small">
+              <BanknotesIcon />
+              Settle Up
+            </Button>
+            <SettleUpModal group_uid={group_uid} />
+          </DialogTrigger>
+
           <div className="flex-1" />
-          <Button
-            variant="outline"
-            className="bg-white"
-            size="small"
-          >
-            <UserPlusIcon />
-            Invite Member
-          </Button>
-          <Button
-            variant="outline"
-            className="bg-white"
-            size="small"
-          >
-            <Cog8ToothIcon />
-            Settings
-          </Button>
+
+          <DialogTrigger>
+            <Button
+              variant="outline"
+              className="bg-white"
+              size="small"
+            >
+              <UserPlusIcon />
+              Invite Member
+            </Button>
+            <InviteGroupMembersModal group_uid={group_uid} />
+          </DialogTrigger>
+          <DialogTrigger>
+            <Button
+              variant="outline"
+              className="bg-white"
+              size="small"
+            >
+              <Cog8ToothIcon />
+              Settings
+            </Button>
+            <GroupSettingsModal group_uid={group_uid} />
+          </DialogTrigger>
         </div>
       </div>
 
       <Tabs className="react-aria-Tabs px-4 py-3 sm:px-6 md:px-8">
-        <div className="border-b border-gray-200 sticky top-0 bg-gray-50/70 backdrop-blur z-10">
+        <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/70 backdrop-blur">
           <TabList
             aria-label="Tabs"
             className="react-aria-TabList -mb-px flex space-x-2"

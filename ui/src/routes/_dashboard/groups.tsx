@@ -1,9 +1,12 @@
 import clsx from 'clsx';
+import {DialogTrigger} from 'react-aria-components';
 
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import Currency from '@/components/Currency.tsx';
+import {Button} from '@/components/common';
+import {CreateGroupModal} from '@/components/modals/CreateGroup';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 import {ApiRoutes} from '../../api-types';
@@ -39,26 +42,42 @@ function GroupsLayout() {
             'xl:fixed xl:inset-y-0 xl:left-60 xl:w-96 xl:overflow-auto xl:border-e xl:border-gray-200'
         )}
       >
-        <div className="sticky top-0 z-10 bg-white px-6 py-6">
-          <h2 className="text-lg font-medium text-gray-900">Groups</h2>
-          <p className="text-sm text-gray-600">
-            {!aggregatedOutstandingBalance?.['PKR'] ? (
-              'You are all settled up'
-            ) : (
-              <>
-                Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
-                <Currency
-                  currency={'PKR'}
-                  value={aggregatedOutstandingBalance?.['PKR']}
-                />
-              </>
-            )}
-          </p>
+        <div className="sticky top-0 z-40 flex items-center gap-x-2 bg-white py-6 pl-6 pr-3">
+          <div className="flex-1">
+            <h2 className="text-lg font-medium text-gray-900">Groups</h2>
+            <p className="text-sm text-gray-600">
+              {!aggregatedOutstandingBalance?.['PKR'] ? (
+                'You are all settled up'
+              ) : (
+                <>
+                  Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
+                  <Currency
+                    currency={'PKR'}
+                    value={aggregatedOutstandingBalance?.['PKR']}
+                  />
+                </>
+              )}
+            </p>
+          </div>
+
+          <div>
+            <DialogTrigger>
+              <Button
+                size="large"
+                className="whitespace-nowrap text-brand-600"
+                variant="plain"
+              >
+                Create Group
+              </Button>
+              <CreateGroupModal />
+            </DialogTrigger>
+          </div>
         </div>
 
-        <div>
-          {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? '')).map(
-            ([letter, groups]) => (
+        <div className="-space-y-px">
+          {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? ''))
+            .sort((a, b) => (a[0] < b[0] ? -1 : +1))
+            .map(([letter, groups]) => (
               <div
                 key={letter}
                 className="relative -space-y-px"
@@ -75,8 +94,7 @@ function GroupsLayout() {
                   ))}
                 </div>
               </div>
-            )
-          )}
+            ))}
         </div>
 
         <ScrollRestoration />

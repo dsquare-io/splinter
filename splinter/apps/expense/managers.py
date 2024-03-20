@@ -33,6 +33,10 @@ class OutstandingBalanceManager(Manager):
         user_id = user if isinstance(user, int) else user.pk
         return self._user_balance(user_id=user_id)
 
+    def get_group_balance(self, group: Union[int, 'Group']) -> Dict[str, Decimal]:
+        group_id = group if isinstance(group, int) else group.pk
+        return self._user_balance(group_id=group_id)
+
     def get_user_balance_in_group(self, user: Union[int, 'User'], group: Union[int, 'Group']) -> Dict[str, Decimal]:
         user_id = user if isinstance(user, int) else user.pk
         group_id = group if isinstance(group, int) else group.pk
