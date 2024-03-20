@@ -1,14 +1,14 @@
 .react-aria-Tabs {
-    .react-aria-Tab {
-        @apply focus:outline-none;
-        @apply whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium;
+  .react-aria-Tab {
+    @apply focus:outline-none;
+    @apply whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium;
 
-        &[data-selected="true"] {
-            @apply border-brand-500 text-brand-600;
-        }
-
-        &:not([data-selected="true"]) {
-            @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
-        }
+    &[data-selected='true'] {
+      @apply border-brand-500 text-brand-600;
     }
+
+    &:not([data-selected='true']) {
+      @apply border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700;
+    }
+  }
 }

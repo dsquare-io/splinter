@@ -13,10 +13,10 @@ export function AlertIcon({
     <div
       {...props}
       className={clsx(
-        '[&_[data-slot="icon"]]:size-6 mx-auto flex size-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 [grid-area:icon]',
-        type === 'danger' && '[&_[data-slot="icon"]]:text-red-600 bg-red-100',
-        type === 'warn' && '[&_[data-slot="icon"]]:text-yellow-700 bg-yellow-100',
-        type === 'info' && '[&_[data-slot="icon"]]:text-blue-600 bg-blue-100',
+        'mx-auto flex size-12 flex-shrink-0 items-center justify-center rounded-full [grid-area:icon] sm:mx-0 sm:h-10 sm:w-10 [&_[data-slot="icon"]]:size-6',
+        type === 'danger' && 'bg-red-100 [&_[data-slot="icon"]]:text-red-600',
+        type === 'warn' && 'bg-yellow-100 [&_[data-slot="icon"]]:text-yellow-700',
+        type === 'info' && 'bg-blue-100 [&_[data-slot="icon"]]:text-blue-600',
         className
       )}
     />
@@ -61,7 +61,7 @@ export function AlertActions(props: ComponentProps<'div'>) {
   return (
     <div
       {...props}
-      className={clsx('mt-5 flex sm:flex-row sm:justify-end flex-col-reverse sm:mt-4 gap-4', props.className)}
+      className={clsx('mt-5 flex flex-col-reverse gap-4 sm:mt-4 sm:flex-row sm:justify-end', props.className)}
     />
   );
 }

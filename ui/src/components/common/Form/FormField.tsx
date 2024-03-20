@@ -1,7 +1,8 @@
 import {ReactNode} from 'react';
 import {
   CheckboxContext,
-  CheckboxGroupContext, ComboBoxContext,
+  CheckboxGroupContext,
+  ComboBoxContext,
   NumberFieldContext,
   Provider,
   RadioGroupContext,

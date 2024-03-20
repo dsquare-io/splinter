@@ -2,7 +2,7 @@ import {ReactNode} from 'react';
 
 import Logo from '../../Logo.tsx';
 
-export default function AuthLayout({children, title}: {children?: ReactNode, title: string}) {
+export default function AuthLayout({children, title}: {children?: ReactNode; title: string}) {
   return (
     <>
       <div className="flex min-h-full flex-1 items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">

@@ -9,5 +9,3 @@ export type ApiResponse<
   StatusCode extends number = 200,
   ContentType extends string = 'application/json',
 > = paths[Path][Verb]['responses'][StatusCode]['content'][ContentType];
-
-

@@ -24,7 +24,7 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
           className="size-9 rounded-lg"
           fallback={name}
         />
-        <div className="text-md py-1 flex-1">{name}</div>
+        <div className="text-md flex-1 py-1">{name}</div>
         {+(aggregatedOutstandingBalance?.amount ?? 0) === 0 ? (
           <div className="text-xs text-gray-400">Settled up</div>
         ) : (
@@ -39,7 +39,7 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
           </div>
         )}
       </div>
-      <div className="grow text-sm font-medium text-gray-800 pl-12 pt-1">
+      <div className="grow pl-12 pt-1 text-sm font-medium text-gray-800">
         <div className="mt-1.5 space-y-1 text-xs font-normal text-gray-400">
           {outstandingBalances?.slice(0, 3).map((e) => (
             <Fragment key={e.friend?.uid}>
