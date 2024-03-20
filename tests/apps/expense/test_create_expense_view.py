@@ -12,11 +12,8 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.participants = [cls.user]
-        for _ in range(2):
-            user = UserFactory()
-            Friendship.objects.create(user_a=cls.user, user_b=user)
-            cls.participants.append(user)
+        cls.participants = [cls.user] + UserFactory.create_batch(2)
+        Friendship.objects.befriend(*cls.participants)
 
     def assertSerializedExpense(self, serialized_expense, expected_expense):
         self.assertEqual(serialized_expense['uid'], expected_expense['uid'])

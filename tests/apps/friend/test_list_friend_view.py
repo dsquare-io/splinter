@@ -3,23 +3,21 @@ import unittest
 from django.conf import settings
 
 from splinter.apps.friend.models import Friendship
+from splinter.apps.user.models import User
 from tests.apps.user.factories import UserFactory
 from tests.case import AuthenticatedAPITestCase
 
 
 class ListFriendViewTest(AuthenticatedAPITestCase):
+    friends: list[User]
     available_apps = ('splinter.apps.user', 'splinter.apps.friend')
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.friends = []
-
-        for i in range(5):
-            friend = UserFactory()
-            Friendship.objects.create(user_a=cls.user, user_b=friend)
-            cls.friends.append(friend)
+        cls.friends = UserFactory.create_batch(5)
+        Friendship.objects.befriend(cls.user, *cls.friends)
 
     def test_list_friends(self):
         response = self.client.get('/api/friends')

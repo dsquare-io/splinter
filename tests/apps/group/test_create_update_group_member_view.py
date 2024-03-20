@@ -20,10 +20,10 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
 
     def test_update__add(self):
         new_members = [self.user.username]
-        for _ in range(5):
-            user = UserFactory()
-            Friendship.objects.create(user_a=self.user, user_b=user)
-            new_members.append(user.username)
+
+        friends = UserFactory.create_batch(5)
+        Friendship.objects.befriend(self.user, *friends)
+        new_members.extend(user.username for user in friends)
 
         response = self.client.put(
             f'/api/groups/{self.group.public_id}/members',
@@ -52,18 +52,15 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
 
     def test_update(self):
         existing_members = [self.user.username]
-        for _ in range(5):
-            user = UserFactory()
-            Friendship.objects.create(user_a=self.user, user_b=user)
+
+        users = UserFactory.create_batch(10)
+        Friendship.objects.befriend(self.user, *users)
+
+        for user in users[:5]:
             GroupMembership.objects.create(group=self.group, user=user)
             existing_members.append(user.username)
 
-        new_members = []
-        for _ in range(5):
-            user = UserFactory()
-            Friendship.objects.create(user_a=self.user, user_b=user)
-            new_members.append(user.username)
-
+        new_members = [user.username for user in users[5:]]
         response = self.client.put(
             f'/api/groups/{self.group.public_id}/members',
             {

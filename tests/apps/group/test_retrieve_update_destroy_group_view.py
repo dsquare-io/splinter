@@ -70,13 +70,11 @@ class RetrieveUpdateGroupViewTest(AuthenticatedAPITestCase):
     def test_members_order(self):
         non_friends = UserFactory.create_batch(2)
         friends = UserFactory.create_batch(2)
+        Friendship.objects.befriend(self.user, *friends)
 
-        for user in non_friends:
-            GroupMembership.objects.create(group=self.group, user=user)
-
-        for user in friends:
-            Friendship.objects.create(user_a=self.user, user_b=user)
-            GroupMembership.objects.create(group=self.group, user=user)
+        GroupMembership.objects.bulk_create(
+            [GroupMembership(group=self.group, user=user) for user in friends + non_friends]
+        )
 
         response = self.client.get(f'/api/groups/{self.group.public_id}')
         self.assertEqual(response.status_code, 200)
