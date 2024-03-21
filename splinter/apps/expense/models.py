@@ -26,7 +26,7 @@ class AbstractExpenseModel(StateAwareModel, PublicModel):
 
 class Expense(SoftDeleteModel, AbstractExpenseModel):
     datetime = models.DateTimeField()
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=64)
 
     # If group is null, it's a personal expense
     group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
@@ -34,6 +34,8 @@ class Expense(SoftDeleteModel, AbstractExpenseModel):
 
     paid_by = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
     created_by = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+
+    is_payment = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

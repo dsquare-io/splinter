@@ -9,6 +9,7 @@ from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, 
 from splinter.apps.expense.serializers import (
     ExpenseSerializer,
     UpsertExpenseSerializer,
+    UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
 )
 from splinter.apps.friend.models import Friendship
@@ -19,6 +20,10 @@ from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, L
 
 class CreateExpenseView(CreateAPIView):
     serializer_class = UpsertExpenseSerializer
+
+
+class CreatePaymentView(CreateAPIView):
+    serializer_class = UpsertPaymentSerializer
 
 
 class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):

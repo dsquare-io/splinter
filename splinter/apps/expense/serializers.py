@@ -11,6 +11,7 @@ from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.expense.utils import split_amount
+from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.user.fields import UserSerializerField
@@ -41,7 +42,7 @@ class ExpenseShareSerializer(serializers.ModelSerializer):
 
 class ExpenseRowSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
-    description = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=64)
     shares = ExpenseShareSerializer(many=True)
 
     def validate(self, attrs):
@@ -132,9 +133,9 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
         return ExpenseRowSerializer(children, many=True).data
 
 
-class UpsertExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
+class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
-    description = serializers.CharField(max_length=255)
+    description = serializers.CharField(max_length=64)
 
     paid_by = UserSerializerField(required=False)
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
@@ -244,6 +245,73 @@ class UpsertExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.Seria
                 )
 
         return common_attrs['parent'] or expense
+
+
+class UpsertPaymentSerializer(serializers.Serializer):
+    sender = FriendSerializerField(include_self=True)
+    receiver = FriendSerializerField(include_self=True)
+
+    datetime = serializers.DateTimeField()
+    description = serializers.CharField(max_length=64, default='Payment')
+    group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
+
+    currency = CurrencySerializerField()
+    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
+
+    def validate(self, attrs):
+        errors: dict = {}
+
+        if attrs['sender'] == attrs['receiver']:
+            errors[''] = [ErrorDetail('Sender and receiver cannot be same', 'same_sender_receiver')]
+
+        if attrs.get('group'):
+            known_members = set(
+                attrs['group']
+                .members.filter(pk__in=[attrs['sender'].pk, attrs['receiver'].pk])
+                .values_list('pk', flat=True)
+            )
+
+            if attrs['sender'].pk not in known_members:
+                errors['sender'] = [ErrorDetail('Sender must be a member of the group', 'disallowed_sender')]
+
+            if attrs['receiver'].pk not in known_members:
+                errors['receiver'] = [ErrorDetail('Receiver must be a member of the group', 'disallowed_receiver')]
+
+        current_user_id = self.context['request'].user.pk
+        if not current_user_id == attrs['sender'].pk and not current_user_id == attrs['receiver'].pk:
+            errors.setdefault('', []).append(
+                ErrorDetail('Current user must be either sender or receiver', 'no_current_user_involvement')
+            )
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return attrs
+
+    @transaction.atomic()
+    def create(self, validated_data):
+        sender = validated_data['sender']
+        receiver = validated_data['receiver']
+
+        expense = Expense.objects.create(
+            is_payment=True,
+            datetime=validated_data['datetime'],
+            description=validated_data['description'],
+            group=validated_data.get('group'),
+            currency=validated_data['currency'],
+            amount=validated_data['amount'],
+            paid_by=receiver,
+            created_by=self.context['request'].user,
+        )
+        ExpenseSplit.objects.create(
+            expense=expense,
+            user=sender,
+            amount=validated_data['amount'],
+            share=1,
+            currency=validated_data['currency'],
+        )
+
+        return expense
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
