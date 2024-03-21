@@ -39,7 +39,7 @@ def send_mail(
     sender: str | None = None,
     fail_silently: bool = True,
 ):
-    if not body_html or not body_text:
+    if not body_html and not body_text:
         raise ValueError('Either `body_html`, `body_text` or both must be provided')
 
     if not body_text:
