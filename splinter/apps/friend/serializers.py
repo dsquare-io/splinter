@@ -52,8 +52,22 @@ class CreateFriendshipSerializer(CreateUserSerializer):
     def validate_email(self, email: str):
         return User.objects.normalize_email(email)
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+
+        user = User.objects.filter(email__iexact=attrs['email']).first()
+        if user is not None:
+            if user == self.context['request'].user:
+                raise serializers.ValidationError({'email': 'You cannot add yourself as a friend'})
+
+            if Friendship.objects.is_friend_with(self.context['request'].user, user):
+                raise serializers.ValidationError({'email': f'You are already friends with {user.email}'})
+
+        attrs['user'] = user
+        return attrs
+
     def create(self, validated_data):
-        user = User.objects.filter(email__iexact=validated_data['email']).first()
+        user = validated_data.pop('user', None)
         if user is None:
             user = super().create(validated_data)
 
