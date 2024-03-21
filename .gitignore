@@ -56,3 +56,4 @@ env.bak/
 venv.bak/
 
 pnpm-lock.yaml
+docker-compose.override.yml
