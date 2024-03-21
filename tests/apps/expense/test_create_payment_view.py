@@ -119,7 +119,14 @@ class CreatePaymentViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(
             response.json(),
-            {'receiver': [{'code': 'does_not_exist', 'message': 'Friend with username=user-2 does not exist.'}]},
+            {
+                'receiver': [
+                    {
+                        'code': 'does_not_exist',
+                        'message': f'Friend with username={self.non_friend.username} does not exist.',
+                    }
+                ]
+            },
         )
 
     def test_payment(self):
