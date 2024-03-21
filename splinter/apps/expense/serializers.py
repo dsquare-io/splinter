@@ -22,11 +22,29 @@ ZERO_DECIMAL = Decimal(0)
 NEGATIVE_ONE_DECIMAL = Decimal(-1)
 
 
-class ExpenseShareSerializer(serializers.ModelSerializer):
+class ExpenseShareListSerializer(serializers.ListSerializer):
+    def validate(self, shares):
+        seen_users = set()
+        errors: dict = {}
+
+        for i, share in enumerate(shares):
+            if share['user'] in seen_users:
+                errors.setdefault(i, {})['user'] = [ErrorDetail('Duplicate user in shares', 'duplicate_user')]
+
+            seen_users.add(share['user'])
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return shares
+
+
+class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     user = UserSerializerField()
 
     class Meta:
         model = ExpenseSplit
+        list_serializer_class = ExpenseShareListSerializer
         fields = ('user', 'share', 'amount')
         read_only_fields = ('amount',)
         extra_kwargs = {
@@ -39,29 +57,17 @@ class ExpenseShareSerializer(serializers.ModelSerializer):
             },
         }
 
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset(queryset).prefetch_related('user').order_by('user_id')
 
-class ExpenseRowSerializer(serializers.Serializer):
+
+class ChildExpenseSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
     description = serializers.CharField(max_length=64)
-    shares = ExpenseShareSerializer(many=True)
-
-    def validate(self, attrs):
-        seen_users = set()
-        shares_errors: dict = {}
-
-        for i, share in enumerate(attrs['shares']):
-            if share['user'] in seen_users:
-                shares_errors.setdefault(i, {})['user'] = [ErrorDetail('Duplicate user in shares', 'duplicate_user')]
-
-            seen_users.add(share['user'])
-
-        if shares_errors:
-            raise serializers.ValidationError({'shares': shares_errors})
-
-        return attrs
+    shares = ExpenseShareSerializer(many=True, allow_empty=False)
 
 
-class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
+class ExpenseSerializer(serializers.ModelSerializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
 
@@ -124,13 +130,13 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
         user_share = NEGATIVE_ONE_DECIMAL * user_share
         return user_share
 
-    @extend_schema_field(ExpenseRowSerializer(many=True))
+    @extend_schema_field(ChildExpenseSerializer(many=True))
     def get_expenses(self, expense: Expense):
         children = list(expense.children.all())
         if not children:
             children = [expense]
 
-        return ExpenseRowSerializer(children, many=True).data
+        return ChildExpenseSerializer(children, many=True).data
 
 
 class UpsertExpenseSerializer(serializers.Serializer):
@@ -141,7 +147,7 @@ class UpsertExpenseSerializer(serializers.Serializer):
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()
-    expenses = ExpenseRowSerializer(many=True)
+    expenses = ChildExpenseSerializer(many=True, allow_empty=False)
 
     def validate_paid_by(self, value):
         if value:
@@ -187,9 +193,7 @@ class UpsertExpenseSerializer(serializers.Serializer):
                 errors.setdefault('expenses', {}).setdefault(i, {})['shares'] = shares_errors
 
         # Validate Expense
-        if len(attrs['expenses']) == 0:
-            errors['expenses'] = ErrorDetail('At least one expense is required', 'required')
-        elif len(attrs['expenses']) == 1 and attrs['description'] != attrs['expenses'][0]['description']:
+        if len(attrs['expenses']) == 1 and attrs['description'] != attrs['expenses'][0]['description']:
             errors.setdefault('expenses', {}).setdefault(0, {})['description'] = ErrorDetail(
                 'Description must be same as the expense', 'description_mismatch'
             )

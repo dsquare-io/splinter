@@ -76,6 +76,59 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
             },
         )
 
+    def test_create_duplicate_share_holders(self):
+        payload = {
+            'datetime': '2024-03-16T08:23:00Z',
+            'description': 'Single Row Expense',
+            'paid_by': self.user.username,
+            'currency': self.currency.code,
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Single Row Expense',
+                    'shares': [
+                        {'user': self.participants[0].username, 'share': 1},
+                        {'user': self.participants[0].username, 'share': 1},
+                    ],
+                }
+            ],
+        }
+
+        response = self.client.post('/api/expenses', payload, format='json')
+        self.assertEqual(response.status_code, 400, response.json())
+
+        self.assertDictEqual(
+            response.json(),
+            {
+                'expenses': [
+                    {'shares': {'1': {'user': [{'message': 'Duplicate user in shares', 'code': 'duplicate_user'}]}}}
+                ]
+            },
+        )
+
+    def test_create_empty_shares(self):
+        payload = {
+            'datetime': '2024-03-16T08:23:00Z',
+            'description': 'Single Row Expense',
+            'paid_by': self.user.username,
+            'currency': self.currency.code,
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Single Row Expense',
+                    'shares': [],
+                }
+            ],
+        }
+
+        response = self.client.post('/api/expenses', payload, format='json')
+        self.assertEqual(response.status_code, 400, response.json())
+
+        self.assertDictEqual(
+            response.json(),
+            {'expenses': [{'shares': {'': [{'message': 'This list may not be empty.', 'code': 'empty'}]}}]},
+        )
+
     def test_create_multi_row(self):
         payload = {
             'datetime': '2024-03-16T08:23:00Z',
