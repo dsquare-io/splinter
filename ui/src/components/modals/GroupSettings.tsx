@@ -1,8 +1,8 @@
-import { useNavigate } from '@tanstack/react-router';
 import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
 
 import {ArrowRightStartOnRectangleIcon, TrashIcon, XMarkIcon} from '@heroicons/react/24/outline';
 import {useQuery} from '@tanstack/react-query';
+import {useNavigate} from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import {urlWithArgs} from '@/api-types';
@@ -81,11 +81,11 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
             <>
               <div className="mb-6">
                 <Heading slot="title">Group Settings</Heading>
-                <CloseDialog/>
+                <CloseDialog />
               </div>
 
               <Form
-                values={{ name: group?.name }}
+                values={{name: group?.name}}
                 method="PATCH"
                 action={urlWithArgs(Paths.GROUP_DETAIL, {group_uid})}
                 onSubmitSuccess={() =>

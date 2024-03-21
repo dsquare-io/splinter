@@ -1,7 +1,7 @@
 import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
 
 import {Paths} from '@/api-types/routePaths.ts';
-import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
 import {CloseDialog} from '@/components/modals/utils.tsx';
 import {apiQueryOptions} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';

@@ -39,7 +39,7 @@ export default function BottomNav() {
       </Link>
 
       <Link
-        to="/profile"
+        to="/profile/me"
         className="-mt-px flex max-w-40 grow flex-col items-center border-t-2 border-transparent px-3 py-2.5 text-gray-400 [&.active]:border-brand-600 [&.active]:text-brand-600"
       >
         <div className="brand mb-1 flex size-6 items-center justify-center rounded-full border border-gray-200 bg-gray-50">

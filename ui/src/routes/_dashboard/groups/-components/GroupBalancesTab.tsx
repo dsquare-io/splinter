@@ -36,7 +36,7 @@ export function GroupBalancesTab({group_uid}: Props) {
             <div className="flex-1 text-left">{balances[0]!.user.fullName}</div>
             <ChevronDownIcon className="h-4 w-4 shrink-0 text-gray-600 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
           </Accordion.Trigger>
-          <Accordion.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
+          <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="py-3 pl-4">
               {balances.map((e) => (
                 <div

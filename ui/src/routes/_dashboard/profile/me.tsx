@@ -17,9 +17,7 @@ function RootComponent() {
       <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>
-          <p className="mt-1.5 text-sm text-gray-500">
-            Manage your personal information.
-          </p>
+          <p className="mt-1.5 text-sm text-gray-500">Manage your personal information.</p>
         </div>
         <Form
           values={profile}
@@ -69,9 +67,7 @@ function RootComponent() {
       <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
           <h1 className="text-lg font-medium leading-6 text-gray-900">Change Password</h1>
-          <p className="mt-1.5 text-sm text-gray-500">
-            Set a different password for your account.
-          </p>
+          <p className="mt-1.5 text-sm text-gray-500">Set a different password for your account.</p>
         </div>
         <Form
           action={Paths.CHANGE_PASSWORD}

@@ -1,6 +1,6 @@
-import { SettleUpModal } from '@/components/modals/SettleUp.tsx';
 import clsx from 'clsx';
 import {Fragment} from 'react';
+import {DialogTrigger} from 'react-aria-components';
 
 import {BanknotesIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
@@ -11,8 +11,8 @@ import groupBy from 'just-group-by';
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
+import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
-import { DialogTrigger } from 'react-aria-components';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
