@@ -39,16 +39,19 @@ class ListFriendExpenseView(ListAPIView):
     serializer_class = ExpenseSerializer
 
     @cached_property
+    def friend(self):
+        return get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
+
+    @cached_property
     def friendship(self):
-        friend = get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
         try:
-            return Friendship.objects.of(self.request.user, friend)
+            return Friendship.objects.of(self.request.user, self.friend)
         except Friendship.DoesNotExist:
             raise Http404
 
     def get_queryset(self):
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.request.user.id), group__isnull=True).order_by(
+        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.friend), group__isnull=True).order_by(
             '-datetime'
         )
 
