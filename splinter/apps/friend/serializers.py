@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
 from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerializer, OutstandingBalanceSerializer
 from splinter.apps.friend.models import Friendship
@@ -55,5 +57,5 @@ class CreateFriendshipSerializer(CreateUserSerializer):
         if user is None:
             user = super().create(validated_data)
 
-        Friendship.objects.create(user_a_id=self.context['request'].user.id, user_b=user)
+        Friendship.objects.create(user1=self.context['request'].user, user2=user)
         return user

@@ -28,7 +28,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
         user1 = UserFactory()
         user2 = UserFactory()
 
-        Friendship.objects.create(user_a=user1, user_b=user2)
+        Friendship.objects.create(user1=user1, user2=user2)
 
         response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
@@ -45,7 +45,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
             UserFactory(first_name='Someone', last_name='', username='user'),
         ]
 
-        Friendship.objects.bulk_create(Friendship(user_a=self.user, user_b=user) for user in users)
+        Friendship.objects.bulk_create(Friendship(user1=self.user, user2=user) for user in users)
 
         response = self.client.get('/api/friends?q=user')
         self.assertEqual(response.status_code, 200)

@@ -80,7 +80,7 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
         new_members = [self.user.username]
 
         users = UserFactory.create_batch(settings.GROUP_MAX_ALLOWED_MEMBERS)
-        Friendship.objects.bulk_create([Friendship(user_a=self.user, user_b=user) for user in users])
+        Friendship.objects.bulk_create([Friendship(user1=self.user, user2=user) for user in users])
         new_members.extend(user.username for user in users)
 
         response = self.client.put(
@@ -125,7 +125,7 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
 
     def test_create(self):
         friend = UserFactory()
-        Friendship.objects.create(user_a=self.user, user_b=friend)
+        Friendship.objects.create(user1=self.user, user2=friend)
 
         response = self.client.post(
             f'/api/groups/{self.group.public_id}/members',
@@ -164,7 +164,7 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
     @override_settings(GROUP_MAX_ALLOWED_MEMBERS=1)
     def test_create__max_limit(self):
         friend = UserFactory()
-        Friendship.objects.create(user_a=self.user, user_b=friend)
+        Friendship.objects.create(user1=self.user, user2=friend)
 
         response = self.client.post(
             f'/api/groups/{self.group.public_id}/members',

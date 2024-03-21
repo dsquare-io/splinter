@@ -17,7 +17,7 @@ class ExpenseManager(Manager):
         from splinter.apps.expense.models import ExpenseParty
 
         party_qs = ExpenseParty.objects.filter(
-            Q(friendship__user_a_id=user_id) | Q(friendship__user_b_id=user_id), expense=OuterRef('pk')
+            Q(friendship__user1_id=user_id) | Q(friendship__user2_id=user_id), expense=OuterRef('pk')
         )
         group_qs = GroupMembership.objects.filter(group=OuterRef('group_id'), user_id=user_id)
 

@@ -18,8 +18,8 @@ class ExpensePartyTests(ExpenseTestCase):
         friend_ids = set(i.id for i in friends)
 
         for party in parties:
-            self.assertEqual(party.friendship.user_a_id, party.expense.paid_by_id)
-            self.assertIn(party.friendship.user_b_id, friend_ids)
+            self.assertEqual(party.friendship.user1_id, party.expense.paid_by_id)
+            self.assertIn(party.friendship.user2_id, friend_ids)
 
     def test_single_row_expense_party(self):
         expense = self.create_equal_split_expense(100, self.friends)

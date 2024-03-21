@@ -105,7 +105,7 @@ def update_expense_parties(expense: Expense) -> None:
         try:
             friendship = Friendship.objects.of(expense.paid_by_id, user_id)
         except Friendship.DoesNotExist:
-            friendship = Friendship.objects.create(user_a_id=expense.paid_by_id, user_b_id=user_id)
+            friendship = Friendship.objects.create(user1_id=expense.paid_by_id, user2_id=user_id)
 
         current_parties.add(friendship.id)
         if friendship.id not in existing_parties:
