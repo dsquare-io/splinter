@@ -9,14 +9,13 @@ from tests.apps.user.factories import UserFactory
 from tests.case import AuthenticatedAPITestCase
 
 
-class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
+class UpdateGroupMemberViewTest(ExpenseTestCase, AuthenticatedAPITestCase):
     group: 'Group'
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.group = GroupFactory(created_by=cls.user)
-        GroupMembership.objects.create(group=cls.group, user=cls.user)
 
     def test_update__add(self):
         new_members = [self.user.username]
@@ -123,86 +122,19 @@ class CreateUpdateGroupMemberViewTest(AuthenticatedAPITestCase):
             },
         )
 
-    def test_create(self):
-        friend = UserFactory()
-        Friendship.objects.create(user1=self.user, user2=friend)
+    def test_update__delete_member_with_balance(self):
+        membership = GroupMembershipFactory(group=self.group)
 
-        response = self.client.post(
-            f'/api/groups/{self.group.public_id}/members',
-            {
-                'user': friend.username,
-            },
-            format='json',
-        )
-
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 2)
-
-    def test_create__non_friend(self):
-        non_friend = UserFactory()
-
-        response = self.client.post(
-            f'/api/groups/{self.group.public_id}/members',
-            {
-                'user': non_friend.username,
-            },
-            format='json',
-        )
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
-
-        self.assertDictEqual(
-            response.json(),
-            {
-                'user': [
-                    {'code': 'does_not_exist', 'message': f'Friend with username={non_friend.username} does not exist.'}
-                ]
-            },
-        )
-
-    @override_settings(GROUP_MAX_ALLOWED_MEMBERS=1)
-    def test_create__max_limit(self):
-        friend = UserFactory()
-        Friendship.objects.create(user1=self.user, user2=friend)
-
-        response = self.client.post(
-            f'/api/groups/{self.group.public_id}/members',
-            {
-                'user': friend.username,
-            },
-            format='json',
-        )
-
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(GroupMembership.objects.filter(group=self.group).count(), 1)
-
-        self.assertDictEqual(
-            response.json(),
-            {'': [{'message': 'Group can have at most 1 members', 'code': 'group_members_limit_error'}]},
-        )
-
-
-class DeleteGroupMemberWithBalanceTest(ExpenseTestCase, AuthenticatedAPITestCase):
-    @classmethod
-    def setUpTestData(cls):
-        super().setUpTestData()
-        cls.group = GroupFactory(created_by=cls.user)
-        GroupMembership.objects.create(group=cls.group, user=cls.user)
-
-        membership = GroupMembershipFactory(group=cls.group)
-
-        cls.create_equal_split_expense(100, [cls.user, membership.user], group=cls.group)
-        cls.group_members = [
-            cls.user.username,
+        self.create_equal_split_expense(100, [self.user, membership.user], group=self.group)
+        group_members = [
+            self.user.username,
             membership.user.username,
         ]
 
-    def test_update__delete_member_with_balance(self):
         response = self.client.put(
             f'/api/groups/{self.group.public_id}/members',
             {
-                'members': self.group_members[:1],
+                'members': group_members[:1],
             },
             format='json',
         )
@@ -216,7 +148,7 @@ class DeleteGroupMemberWithBalanceTest(ExpenseTestCase, AuthenticatedAPITestCase
                 'members': [
                     {
                         'code': 'invalid',
-                        'message': f'Cannot remove user ({self.group_members[1]}) with outstanding balance from the group',
+                        'message': f'Cannot remove user ({group_members[1]}) with outstanding balance from the group',
                     }
                 ]
             },
@@ -224,11 +156,18 @@ class DeleteGroupMemberWithBalanceTest(ExpenseTestCase, AuthenticatedAPITestCase
 
     def test_update__delete_member_with_no_balance(self):
         GroupMembershipFactory(group=self.group)
+        membership = GroupMembershipFactory(group=self.group)
+
+        self.create_equal_split_expense(100, [self.user, membership.user], group=self.group)
+        group_members = [
+            self.user.username,
+            membership.user.username,
+        ]
 
         response = self.client.put(
             f'/api/groups/{self.group.public_id}/members',
             {
-                'members': self.group_members,
+                'members': group_members,
             },
             format='json',
         )

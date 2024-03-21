@@ -11,6 +11,12 @@ class GroupFactory(DjangoModelFactory):
     name = factory.Sequence(lambda n: f'Group {n}')
     created_by = factory.SubFactory('tests.apps.user.factories.UserFactory')
 
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        group = super()._create(model_class, *args, **kwargs)
+        GroupMembershipFactory(group=group, user=group.created_by)
+        return group
+
 
 class GroupMembershipFactory(DjangoModelFactory):
     class Meta:
