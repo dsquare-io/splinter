@@ -241,7 +241,6 @@ class UpsertExpenseSerializer(serializers.Serializer):
                     user=share_spec['user'],
                     amount=share_amount,
                     share=share_spec['share'],
-                    currency=validated_data['currency'],
                 )
 
         return common_attrs['parent'] or expense
@@ -307,8 +306,6 @@ class UpsertPaymentSerializer(serializers.Serializer):
             expense=expense,
             user=sender,
             amount=validated_data['amount'],
-            share=1,
-            currency=validated_data['currency'],
         )
 
         return expense

@@ -30,14 +30,12 @@ def create_equal_split_expense(amount: int, currency: Currency, participants: tu
             expense=expense,
             user=user,
             amount=share_amount,
-            currency=currency,
         )
 
     ExpenseSplit.objects.create(
         expense=expense,
         user=participants[0],
         amount=amount - (share_amount * (len(participants) - 1)),
-        currency=currency,
     )
 
     return expense

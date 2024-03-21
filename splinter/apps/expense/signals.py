@@ -78,12 +78,7 @@ def update_parent_expense_splits(parent: Expense) -> None:
             expense_split.amount = amount
             expense_split.save(update_fields=('amount',))
         else:
-            ExpenseSplit.objects.create(
-                expense=parent,
-                user_id=user_id,
-                amount=amount,
-                currency_id=parent.currency_id,
-            )
+            ExpenseSplit.objects.create(expense=parent, user_id=user_id, amount=amount)
 
     for user_id in set(current_expense_splits.keys()) - set(expenses_by_user.keys()):
         current_expense_splits[user_id].delete()
@@ -129,9 +124,9 @@ def update_outstanding_balance(model_cls: type[Model], amount_delta: Decimal, **
 
 def update_all_outstanding_balances(expense_split: ExpenseSplit, amount_delta: Decimal) -> None:
     payee_id = expense_split.user_id
-    currency_id = expense_split.currency_id
 
     expense = expense_split.expense
+    currency_id = expense.currency_id
     payer_id = expense.paid_by_id
     group_id = expense.group_id
 

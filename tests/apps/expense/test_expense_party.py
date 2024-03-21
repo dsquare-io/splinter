@@ -27,9 +27,7 @@ class ExpensePartyTests(ExpenseTestCase):
 
         with self.subTest('add'):
             new_friend = UserFactory()
-            expense_split = ExpenseSplit.objects.create(
-                expense=expense, user=new_friend, amount=1, currency=self.currency
-            )
+            expense_split = ExpenseSplit.objects.create(expense=expense, user=new_friend, amount=1)
             self.assertExpenseParties(expense, self.friends + [new_friend])
 
         with self.subTest('delete'):

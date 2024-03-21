@@ -7,26 +7,12 @@ from splinter.db.soft_delete import SoftDeleteModel
 from splinter.db.state_aware import StateAwareModel
 
 
-class AbstractExpenseModel(StateAwareModel, PublicModel):
-    amount = models.DecimalField(max_digits=9, decimal_places=2)
-    currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
-
-    class Meta:
-        abstract = True
-
-    def save(self, **kwargs):
-        if self.amount == 0:
-            raise ValueError('Amount cannot be zero')
-
-        if self.pk and 'currency_id' in self.get_dirty_fields():
-            raise ValueError('Currency cannot be changed')
-
-        super().save(**kwargs)
-
-
-class Expense(SoftDeleteModel, AbstractExpenseModel):
+class Expense(SoftDeleteModel, StateAwareModel, PublicModel):
     datetime = models.DateTimeField()
     description = models.CharField(max_length=64)
+
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
 
     # If group is null, it's a personal expense
     group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
@@ -48,10 +34,21 @@ class Expense(SoftDeleteModel, AbstractExpenseModel):
     def __str__(self):
         return self.description
 
+    def save(self, **kwargs):
+        if self.amount == 0:
+            raise ValueError('Amount cannot be zero')
 
-class ExpenseSplit(AbstractExpenseModel):
+        if self.pk and 'currency_id' in self.get_dirty_fields():
+            raise ValueError('Currency cannot be changed')
+
+        super().save(**kwargs)
+
+
+class ExpenseSplit(StateAwareModel, PublicModel):
     expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='splits')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
     share = models.PositiveSmallIntegerField(default=1)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,6 +60,12 @@ class ExpenseSplit(AbstractExpenseModel):
 
     def __str__(self):
         return f'{self.user} - {self.amount}'
+
+    def save(self, **kwargs):
+        if self.amount == 0:
+            raise ValueError('Amount cannot be zero')
+
+        super().save(**kwargs)
 
 
 class ExpenseParty(models.Model):

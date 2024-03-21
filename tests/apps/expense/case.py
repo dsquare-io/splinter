@@ -58,14 +58,12 @@ class ExpenseTestCase(TestCase):
                 expense=expense,
                 user=user,
                 amount=share_amount,
-                currency=cls.currency,
             )
 
         ExpenseSplit.objects.create(
             expense=expense,
             user=participants[0],
             amount=amount - (share_amount * (len(participants) - 1)),
-            currency=cls.currency,
         )
 
         return expense
