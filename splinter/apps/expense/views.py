@@ -7,7 +7,9 @@ from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
 from splinter.apps.expense.serializers import (
+    ExpenseOrPaymentSerializer,
     ExpenseSerializer,
+    PaymentSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
@@ -37,11 +39,25 @@ class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
         return ExpenseSerializer
 
     def get_queryset(self):
-        return Expense.objects.of_user(self.request.user)
+        return Expense.objects.of_user(self.request.user).filter(is_payment=False)
+
+
+class RetrieveDestroyPaymentView(RetrieveAPIView, DestroyAPIView):
+    lookup_field = 'public_id'
+    lookup_url_kwarg = 'payment_uid'
+
+    def get_serializer_class(self):
+        if self.request.method == 'PUT':
+            return UpsertPaymentSerializer
+
+        return PaymentSerializer
+
+    def get_queryset(self):
+        return Expense.objects.of_user(self.request.user).filter(is_payment=True)
 
 
 class ListFriendExpenseView(ListAPIView):
-    serializer_class = ExpenseSerializer
+    serializer_class = ExpenseOrPaymentSerializer
 
     @cached_property
     def friend(self):
@@ -62,7 +78,7 @@ class ListFriendExpenseView(ListAPIView):
 
 
 class ListGroupExpenseView(ListAPIView):
-    serializer_class = ExpenseSerializer
+    serializer_class = ExpenseOrPaymentSerializer
 
     @cached_property
     def group(self):

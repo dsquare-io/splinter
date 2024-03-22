@@ -4,7 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from splinter.apps.currency.models import Currency
-from splinter.apps.expense.models import ExpenseSplit, OutstandingBalance
+from splinter.apps.expense.models import Expense, ExpenseSplit, OutstandingBalance
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
 from tests.apps.currency.factories import CurrencyFactory
@@ -30,7 +30,25 @@ class ExpenseTestCase(TestCase):
         }
 
     @classmethod
-    def create_multi_row_expense(cls, amounts: list[int], participants: list[User]):
+    def create_payment(cls, amount: int, sender: User, receiver: User, **kwargs) -> Expense:
+        expense = ExpenseFactory(
+            amount=amount,
+            currency=cls.currency,
+            paid_by=receiver,
+            is_payment=True,
+            **kwargs,
+        )
+
+        ExpenseSplit.objects.create(
+            expense=expense,
+            user=sender,
+            amount=amount,
+        )
+
+        return expense
+
+    @classmethod
+    def create_multi_row_expense(cls, amounts: list[int], participants: list[User]) -> Expense:
         parent_expense = ExpenseFactory(
             amount=sum(amounts),
             paid_by=participants[0],
@@ -43,7 +61,7 @@ class ExpenseTestCase(TestCase):
         return parent_expense
 
     @classmethod
-    def create_equal_split_expense(cls, amount: int, participants: list[User], **kwargs):
+    def create_equal_split_expense(cls, amount: int, participants: list[User], **kwargs) -> Expense:
         expense = ExpenseFactory(
             amount=amount,
             currency=cls.currency,

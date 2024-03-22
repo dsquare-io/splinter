@@ -17,6 +17,7 @@ from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
+from splinter.core.serializers import PolymorphicSerializer
 
 ZERO_DECIMAL = Decimal(0)
 NEGATIVE_ONE_DECIMAL = Decimal(-1)
@@ -48,10 +49,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
         fields = ('user', 'share', 'amount')
         read_only_fields = ('amount',)
         extra_kwargs = {
-            'share': {
-                'help_text': 'The share of the user in the expense',
-                'min_value': 1,
-            },
+            'share': {'help_text': 'The share of the user in the expense', 'min_value': 1, 'default': 1},
             'amount': {
                 'help_text': 'The amount of the user in the expense',
             },
@@ -67,7 +65,7 @@ class ChildExpenseSerializer(serializers.Serializer):
     shares = ExpenseShareSerializer(many=True, allow_empty=False)
 
 
-class ExpenseSerializer(serializers.ModelSerializer):
+class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
 
@@ -94,12 +92,13 @@ class ExpenseSerializer(serializers.ModelSerializer):
         )
 
     def prefetch_queryset(self, queryset=None):
+        splits_qs = ExpenseShareSerializer().prefetch_queryset()
+
         queryset = (
             super()
             .prefetch_queryset(queryset)
             .prefetch_related(
-                'splits__user',
-                Prefetch('splits', queryset=ExpenseSplit.objects.order_by('user_id'), to_attr='shares'),
+                Prefetch('splits', queryset=splits_qs, to_attr='shares'),
             )
         )
         return queryset.prefetch_related(
@@ -139,11 +138,46 @@ class ExpenseSerializer(serializers.ModelSerializer):
         return ChildExpenseSerializer(children, many=True).data
 
 
+class PaymentSerializer(serializers.ModelSerializer):
+    uid = serializers.UUIDField(source='public_id', read_only=True)
+    urn = serializers.CharField(read_only=True)
+
+    created_by = SimpleUserSerializer(read_only=True)
+    currency = SimpleCurrencySerializer()
+
+    sender = serializers.SerializerMethodField()
+    receiver = SimpleUserSerializer(source='paid_by', read_only=True)
+
+    class Meta:
+        model = Expense
+        fields = ('uid', 'urn', 'datetime', 'description', 'amount', 'currency', 'created_by', 'sender', 'receiver')
+
+    @extend_schema_field(SimpleUserSerializer())
+    def get_sender(self, expense: Expense):
+        splits = expense.splits.all()
+        sender = splits[0].user
+
+        return SimpleUserSerializer(sender).data
+
+
+class ExpenseOrPaymentSerializer(PrefetchQuerysetSerializerMixin, PolymorphicSerializer):
+    serializer_mapping = {
+        'expense': ExpenseSerializer,
+        'payment': PaymentSerializer,
+    }
+
+    def get_discriminator(self, instance: Expense) -> str:
+        return 'payment' if instance.is_payment else 'expense'
+
+    def prefetch_queryset(self, queryset=None):
+        return ExpenseSerializer().prefetch_queryset(queryset=queryset)
+
+
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64)
 
-    paid_by = UserSerializerField(required=False)
+    paid_by = UserSerializerField(required=False, default='CurrentUser')
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()
