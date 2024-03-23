@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import {ComponentProps} from 'react';
+import {DialogTrigger} from 'react-aria-components';
 
 import {
   ArrowLeftStartOnRectangleIcon, // ArrowTrendingUpIcon,
@@ -11,6 +12,7 @@ import {Link, useNavigate} from '@tanstack/react-router';
 
 import {setHeaders} from '@/axios.ts';
 import {Avatar, Button} from '@/components/common';
+import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
 import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';
@@ -53,10 +55,13 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         <div className="font-medium text-gray-800">Splinter</div>
       </Link>
 
-      <Button className="justify-start gap-x-3.5 px-3">
-        <PlusIcon />
-        <div>Add Expense</div>
-      </Button>
+      <DialogTrigger>
+        <Button className="justify-start gap-x-3.5 px-3">
+          <PlusIcon />
+          <div>Add Expense</div>
+        </Button>
+        <AddExpense />
+      </DialogTrigger>
 
       <div className="grow space-y-1">
         <Link

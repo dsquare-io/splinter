@@ -1,3 +1,6 @@
+import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
+import {Button, DialogTrigger} from 'react-aria-components';
+
 import {ArrowTrendingUpIcon, PlusIcon, UserIcon, UsersIcon} from '@heroicons/react/24/outline';
 import {Link} from '@tanstack/react-router';
 
@@ -21,13 +24,16 @@ export default function BottomNav() {
       </Link>
 
       <div className="relative px-2">
-        <button className="-mt-2.5 flex size-12 items-center justify-center rounded-full bg-brand-600">
-          <PlusIcon
-            className="size-5 text-white"
-            strokeWidth={2}
-          />
-          <span className="absolute -inset-x-2.5 inset-y-0 z-10" />
-        </button>
+        <DialogTrigger>
+          <Button className="-mt-2.5 flex size-12 items-center justify-center rounded-full bg-brand-600">
+            <PlusIcon
+              className="size-5 text-white"
+              strokeWidth={2}
+            />
+            <span className="absolute -inset-x-2.5 inset-y-0 z-10" />
+          </Button>
+          <AddExpense />
+        </DialogTrigger>
       </div>
 
       <Link
