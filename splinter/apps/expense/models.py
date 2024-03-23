@@ -30,6 +30,7 @@ class Expense(SoftDeleteModel, StateAwareModel, PublicModel):
 
     class Meta:
         db_table = 'expenses'
+        ordering = ('-datetime',)
 
     def __str__(self):
         return self.description
@@ -57,6 +58,7 @@ class ExpenseSplit(StateAwareModel, PublicModel):
     class Meta:
         db_table = 'expense_splits'
         unique_together = ('expense', 'user')
+        ordering = ('share', 'user')
 
     def __str__(self):
         return f'{self.user} - {self.amount}'

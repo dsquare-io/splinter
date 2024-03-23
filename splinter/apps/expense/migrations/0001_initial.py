@@ -64,9 +64,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                'db_table': 'expenses',
-            },
+            options={'db_table': 'expenses', 'ordering': ('-datetime',)},
         ),
         migrations.CreateModel(
             name='ExpenseSplit',
@@ -99,6 +97,7 @@ class Migration(migrations.Migration):
             options={
                 'db_table': 'expense_splits',
                 'unique_together': {('expense', 'user')},
+                'ordering': ('share', 'user'),
             },
         ),
         migrations.CreateModel(

@@ -56,7 +56,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
         }
 
     def prefetch_queryset(self, queryset=None):
-        return super().prefetch_queryset(queryset).prefetch_related('user').order_by('user_id')
+        return super().prefetch_queryset(queryset).prefetch_related('user')
 
 
 class ChildExpenseSerializer(serializers.Serializer):
