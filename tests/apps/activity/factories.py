@@ -1,7 +1,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from splinter.apps.activity.logger import ActivityType
+from splinter.apps.activity.activities import ActivityType
 from splinter.apps.activity.models import Activity, Comment
 from tests.apps.group.factories import GroupFactory
 from tests.apps.user.factories import UserFactory

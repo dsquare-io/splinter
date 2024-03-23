@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 from splinter.apps.activity.managers import ActivityManager
 from splinter.db.public_model import PublicModel
@@ -70,11 +68,3 @@ class Comment(SoftDeleteModel, PublicModel):
         db_table = 'comments'
         verbose_name_plural = 'Comments'
         ordering = ('-created_at',)
-
-
-@receiver(post_save, sender=Comment)
-def handle_comment_save(instance: Comment, created: bool, **kwargs):
-    from splinter.apps.activity.logger import log_comment_activity
-
-    if created:
-        log_comment_activity(instance)

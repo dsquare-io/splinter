@@ -1,7 +1,7 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from splinter.apps.activity.logger import ActivityType
+from splinter.apps.activity.activities import ActivityType
 from splinter.apps.activity.models import Activity, Comment
 from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.serializers import SimpleUserSerializer

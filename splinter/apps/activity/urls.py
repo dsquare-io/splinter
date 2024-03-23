@@ -1,5 +1,6 @@
 from django.urls import path
 
+import splinter.apps.activity.activities  # NOQA: Init signals
 from splinter.apps.activity import views
 
 urlpatterns = [
