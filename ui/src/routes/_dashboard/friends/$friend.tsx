@@ -38,7 +38,7 @@ function RootComponent() {
       <div
         className={clsx(
           'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
-          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center',
         )}
       >
         <div
@@ -56,13 +56,15 @@ function RootComponent() {
           </div>
         </div>
 
-        <Link
-          className="col-span-2 mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
-          to="/groups"
-        >
-          <ChevronLeftIcon className="size-3" />
-          Groups
-        </Link>
+        <div className="col-span-2">
+          <Link
+            className="mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium text-brand-700 xl:hidden"
+            to="/friends"
+          >
+            <ChevronLeftIcon className="size-3"/>
+            Friends
+          </Link>
+        </div>
 
         <Avatar
           className="size-16 bg-white"
@@ -95,10 +97,10 @@ function RootComponent() {
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
           <DialogTrigger>
             <Button size="small">
-              <BanknotesIcon />
+              <BanknotesIcon/>
               Settle Up
             </Button>
-            <SettleUpModal friend_uid={friend_uid} />
+            <SettleUpModal friend_uid={friend_uid}/>
           </DialogTrigger>
         </div>
       </div>
