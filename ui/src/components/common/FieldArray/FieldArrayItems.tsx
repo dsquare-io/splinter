@@ -43,10 +43,7 @@ export function FieldArrayItems({renderEmptyState, children, ...props}: Props) {
             {
               slots: {
                 remove: {
-                  onPress: () => {
-                    console.log('hereee');
-                    remove(renderProps.index);
-                  },
+                  onPress: () => remove(renderProps.index),
                 },
               },
             },
