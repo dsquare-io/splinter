@@ -15,6 +15,7 @@ export default function ExpenseItems() {
     <div className="mt-4 flex-1 py-4">
       <FieldArray
         name="expenses"
+        initialItemsCount={1}
         className="grid grid-cols-[2fr_minmax(106px,1fr)_auto] grid-rows-[auto] gap-y-4 gap-x-3"
       >
         {({append}) => (
@@ -25,6 +26,7 @@ export default function ExpenseItems() {
                   <TextFormField
                     name={`expenses.${index}.description`}
                     aria-label="expense item"
+                    autoFocus
                   >
                     <Input placeholder="Expense Item" />
                   </TextFormField>
