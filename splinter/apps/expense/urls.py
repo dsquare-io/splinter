@@ -1,6 +1,6 @@
 from django.urls import path
 
-import splinter.apps.expense.signals  # NOQA: Init the signals
+import splinter.apps.expense.orchestrator  # NOQA: Init Orchestrator
 from splinter.apps.expense import views
 
 urlpatterns = [

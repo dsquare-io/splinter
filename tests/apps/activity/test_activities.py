@@ -1,5 +1,5 @@
-from splinter.apps.activity.models import Activity
 from splinter.apps.activity.activities import CommentActivity
+from splinter.apps.activity.models import Activity
 from tests.apps.activity.case import ActivityTestCase
 from tests.apps.activity.factories import ActivityFactory, CommentFactory
 
