@@ -2,6 +2,8 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
+from splinter.db.models import UniqueUUIDField
+
 
 class Migration(migrations.Migration):
 
@@ -19,7 +21,7 @@ class Migration(migrations.Migration):
             name='Expense',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('public_id', models.UUIDField(editable=False, unique=True)),
+                ('public_id', UniqueUUIDField(editable=False)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('datetime', models.DateTimeField()),
                 ('description', models.CharField(max_length=255)),
@@ -70,7 +72,7 @@ class Migration(migrations.Migration):
             name='ExpenseSplit',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('public_id', models.UUIDField(editable=False, unique=True)),
+                ('public_id', UniqueUUIDField(editable=False)),
                 ('amount', models.DecimalField(decimal_places=2, max_digits=9)),
                 ('share', models.PositiveSmallIntegerField(default=1)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

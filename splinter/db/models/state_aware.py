@@ -86,8 +86,6 @@ class StateAwareModel(models.Model):
 
     def get_dirty_fields(self):
         if self._state.adding:
-            # If the object has not yet been saved in the database, all fields are considered dirty
-            # for consistency (see https://github.com/romgar/django-dirtyfields/issues/65 for more details)
             pk_specified = self.pk is not None
             return {k: {'current': v} for k, v in self.as_dict(include_primary_key=pk_specified).items()}
 

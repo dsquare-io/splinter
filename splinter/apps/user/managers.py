@@ -11,7 +11,7 @@ from django.db.models.functions import Concat, Now
 from django.utils import timezone
 
 from splinter.apps.user.postman import send_verification_email
-from splinter.db.soft_delete import SoftDeleteManagerMixin
+from splinter.db.models.soft_delete import SoftDeleteManagerMixin
 from splinter.utils.strings import generate_random_string
 
 DUPLICATE_UNDERSCORE_RE = re.compile(r'_+')

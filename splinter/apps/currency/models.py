@@ -5,9 +5,10 @@ from django.db.models.functions import Lower
 from django.utils import timezone
 
 from splinter.apps.currency.managers import ConversionRateManager, UserCurrencyManager
+from splinter.db.models import TimestampedModel
 
 
-class Country(models.Model):
+class Country(TimestampedModel):
     UID_FIELD = 'code'
 
     if TYPE_CHECKING:
@@ -26,7 +27,7 @@ class Country(models.Model):
         return self.name
 
 
-class Currency(models.Model):
+class Currency(TimestampedModel):
     UID_FIELD = 'code'
 
     if TYPE_CHECKING:
@@ -38,26 +39,21 @@ class Currency(models.Model):
 
     country = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         db_table = 'currencies'
         verbose_name_plural = 'Currencies'
+        constraints = (models.UniqueConstraint(Lower('code'), name='currency_code_unique_constraint'),)
 
     def __str__(self):
         return self.code
 
 
-class ConversionRate(models.Model):
+class ConversionRate(TimestampedModel):
     source = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='+')
     target = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='+')
 
     as_of = models.DateTimeField(editable=False)
     rate = models.DecimalField(max_digits=9, decimal_places=4)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     objects = ConversionRateManager()
 
@@ -72,12 +68,9 @@ class ConversionRate(models.Model):
         super().save(**kwargs)
 
 
-class UserCurrency(models.Model):
+class UserCurrency(TimestampedModel):
     user = models.OneToOneField('user.User', on_delete=models.CASCADE, primary_key=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     objects = UserCurrencyManager()
 

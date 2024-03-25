@@ -1,17 +1,14 @@
 from django.db import models
 
 from splinter.apps.group.managers import GroupManager
-from splinter.db.public_model import PublicModel
-from splinter.db.soft_delete import SoftDeleteModel
+from splinter.db.models import PublicModel, SoftDeleteModel, TimestampedModel
 
 
-class Group(SoftDeleteModel, PublicModel):
+class Group(TimestampedModel, SoftDeleteModel, PublicModel):
     name = models.CharField(max_length=255)
     members = models.ManyToManyField('user.User', through='group.GroupMembership', related_name='+')
 
     created_by = models.ForeignKey('user.User', on_delete=models.PROTECT, related_name='created_groups')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     objects = GroupManager()
 

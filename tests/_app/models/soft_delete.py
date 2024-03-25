@@ -1,6 +1,6 @@
 from django.db.models import Manager, QuerySet
 
-from splinter.db.soft_delete import SoftDeleteModel
+from splinter.db.models import SoftDeleteModel
 
 
 class SoftDeleteModelWithDefaultManager(SoftDeleteModel):

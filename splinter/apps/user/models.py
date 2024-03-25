@@ -7,10 +7,10 @@ from django.db import models
 from django.utils import timezone
 
 from splinter.apps.user.managers import EmailVerificationManager, UserManager
-from splinter.db.soft_delete import SoftDeleteModel
+from splinter.db.models import SoftDeleteModel, TimestampedModel
 
 
-class User(SoftDeleteModel, AuthAbstractUser):
+class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
     UID_FIELD = 'username'
     SEARCH_FIELDS = ['full_name', 'username', 'email']
 
@@ -20,9 +20,6 @@ class User(SoftDeleteModel, AuthAbstractUser):
     email = models.EmailField(unique=True, null=True, blank=True)
 
     is_verified = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     date_joined = None
 

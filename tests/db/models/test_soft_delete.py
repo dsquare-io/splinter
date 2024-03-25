@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from splinter.db.soft_delete import SoftDeleteManagerMixin
+from splinter.db.models.soft_delete import SoftDeleteManagerMixin
 from tests._app.models import SoftDeleteModelWithCustomManager, SoftDeleteModelWithDefaultManager
 
 

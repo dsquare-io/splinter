@@ -2,7 +2,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import splinter.db.encrypted_field
+from splinter.db.models import EncryptedCharField, EncryptedEllipticCurvePrivateKeyField
 
 
 class Migration(migrations.Migration):
@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             name='UserSecret',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('jti', splinter.db.encrypted_field.EncryptedCharField()),
-                ('private_key', splinter.db.encrypted_field.EncryptedEllipticCurvePrivateKeyField()),
+                ('jti', EncryptedCharField()),
+                ('private_key', EncryptedEllipticCurvePrivateKeyField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 (

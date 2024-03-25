@@ -1,15 +1,18 @@
 import re
 import uuid
 
-from django.db import IntegrityError, models, transaction
+from django.db import IntegrityError, transaction
+from django.db.models import Model
+
+from splinter.db.models.fields import UniqueUUIDField
 
 
-class PublicModel(models.Model):
+class PublicModel(Model):
     UID_FIELD = 'public_id'
 
     urn: str
 
-    public_id = models.UUIDField(unique=True, editable=False)
+    public_id = UniqueUUIDField(editable=False)
 
     class Meta:
         abstract = True

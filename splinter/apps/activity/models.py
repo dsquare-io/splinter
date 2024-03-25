@@ -5,8 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from splinter.apps.activity.managers import ActivityManager
-from splinter.db.public_model import PublicModel
-from splinter.db.soft_delete import SoftDeleteModel
+from splinter.db.models import PublicModel, SoftDeleteModel
 from splinter.utils.django import PrimaryKeyField
 
 if TYPE_CHECKING:

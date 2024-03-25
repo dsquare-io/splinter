@@ -2,6 +2,8 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
+from splinter.db.models import UniqueUUIDField
+
 
 class Migration(migrations.Migration):
 
@@ -17,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('removed_at', models.DateTimeField(blank=True, db_index=True, editable=False, null=True)),
-                ('public_id', models.UUIDField(editable=False, unique=True)),
+                ('public_id', UniqueUUIDField(editable=False)),
                 ('name', models.CharField(max_length=255, unique=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),

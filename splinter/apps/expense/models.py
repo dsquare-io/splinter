@@ -2,12 +2,10 @@ from django.db import models
 from django.utils import timezone
 
 from splinter.apps.expense.managers import ExpenseManager, OutstandingBalanceManager
-from splinter.db.public_model import PublicModel
-from splinter.db.soft_delete import SoftDeleteModel
-from splinter.db.state_aware import StateAwareModel
+from splinter.db.models import PublicModel, SoftDeleteModel, StateAwareModel, TimestampedModel
 
 
-class Expense(SoftDeleteModel, StateAwareModel, PublicModel):
+class Expense(TimestampedModel, SoftDeleteModel, StateAwareModel, PublicModel):
     datetime = models.DateTimeField()
     description = models.CharField(max_length=64)
 
@@ -22,9 +20,6 @@ class Expense(SoftDeleteModel, StateAwareModel, PublicModel):
     created_by = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
 
     is_payment = models.BooleanField(default=False)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     objects = ExpenseManager()
 
@@ -45,15 +40,12 @@ class Expense(SoftDeleteModel, StateAwareModel, PublicModel):
         super().save(**kwargs)
 
 
-class ExpenseSplit(StateAwareModel, PublicModel):
+class ExpenseSplit(TimestampedModel, StateAwareModel, PublicModel):
     expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='splits')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
 
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     share = models.PositiveSmallIntegerField(default=1)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'expense_splits'
@@ -84,7 +76,7 @@ class ExpenseParty(models.Model):
         return f'{self.expense} - {self.friendship}'
 
 
-class OutstandingBalance(SoftDeleteModel):
+class OutstandingBalance(TimestampedModel, SoftDeleteModel):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
     group = models.ForeignKey(
         'group.Group', on_delete=models.CASCADE, related_name='outstanding_balances', null=True, blank=True
@@ -93,9 +85,6 @@ class OutstandingBalance(SoftDeleteModel):
 
     currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
     amount = models.DecimalField(max_digits=9, decimal_places=2)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     objects = OutstandingBalanceManager()
 
