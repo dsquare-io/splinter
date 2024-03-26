@@ -57,13 +57,15 @@ function RootComponent() {
           </div>
         </div>
 
-        <Link
-          className="col-span-2 mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
-          to="/groups"
-        >
-          <ChevronLeftIcon className="size-3" />
-          Groups
-        </Link>
+        <div className="col-span-2">
+          <Link
+            className="mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium text-brand-700 xl:hidden"
+            to="/groups"
+          >
+            <ChevronLeftIcon className="size-3" />
+            Groups
+          </Link>
+        </div>
 
         <Avatar
           className="size-16 rounded-lg bg-white"

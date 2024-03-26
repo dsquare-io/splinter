@@ -28,6 +28,7 @@
     "concurrently": "^8.2.2",
     "date-fns": "^3.3.1",
     "just-group-by": "^2.2.0",
+    "just-throttle": "^4.2.0",
     "openapi-typescript": "^6.7.4",
     "react": "^18.2.0",
     "react-aria-components": "^1.1.1",
@@ -39,6 +40,7 @@
     "tailwind-variants": "^0.1.20"
   },
   "devDependencies": {
+    "@react-types/shared": "^3.22.1",
     "@tanstack/router-vite-plugin": "^1.19.0",
     "@total-typescript/ts-reset": "^0.5.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
