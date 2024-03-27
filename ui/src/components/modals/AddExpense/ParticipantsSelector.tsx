@@ -1,4 +1,4 @@
-import { useReducer, useRef, useState } from 'react';
+import {useEffect, useReducer, useRef, useState} from 'react';
 import {
   Button as BaseButton,
   Collection,
@@ -17,6 +17,7 @@ import {
 } from 'react-aria-components';
 
 import {ChevronDownIcon, XMarkIcon} from '@heroicons/react/24/outline';
+import {useParams} from '@tanstack/react-router';
 
 import {Friend, Group} from '@/api-types/components/schemas';
 import {Paths} from '@/api-types/routePaths.ts';
@@ -40,19 +41,15 @@ type participantsAction =
     };
 
 function participantsReducer(state: Participant[], action: participantsAction): Participant[] {
+  console.log(action);
   if (action.type === 'remove') {
     return state.filter((p) => p.urn !== action.urn);
-  }
-
-  // toggle selected item;
-  if (state.some((p) => p.urn === action.data.urn)) {
-    return state.filter((p) => p.urn !== action.data.urn);
   }
 
   if (action.type === 'select_group') {
     return [{...action.data, type: 'group', id: action.data.urn}] satisfies Participant[];
   }
-  if (action.type === 'select_friend' && state[0].type === 'group') {
+  if (action.type === 'select_friend' && state[0]?.type === 'group') {
     return [
       {
         ...action.data,
@@ -77,13 +74,17 @@ function participantsReducer(state: Participant[], action: participantsAction): 
 }
 
 export default function ParticipantsSelector() {
+  const params = useParams({strict: false});
+
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const {data: groups} = useApiQuery(Paths.GROUP_LIST);
+  const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
+
   const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
   const [fieldState, setFieldState] = useState({
     selectedKey: null,
     inputValue: '',
   });
-
-  const triggerRef = useRef<HTMLDivElement>(null);
 
   const onInputChange = (value: string) => {
     setFieldState((prevState) => ({
@@ -92,18 +93,30 @@ export default function ParticipantsSelector() {
     }));
   };
 
-  const {data: groups} = useApiQuery(Paths.GROUP_LIST);
-  const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
+  useEffect(() => {
+    const friend = friends?.results?.find((f) => f.uid === (params as {friend: string}).friend);
+    const group = groups?.results?.find((g) => g.uid === (params as {group: string}).group);
 
-  const comboboxItems = [
-    {name: 'Groups', children: groups?.results ?? []},
-    {name: 'Friends', children: friends?.results ?? []},
-  ] as const;
+    if (friend) {
+      dispatch({type: 'select_friend', data: friend});
+    } else if (group) {
+      dispatch({type: 'select_group', data: group});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!groups?.results || !friends?.results) return;
 
+  const comboboxItems = [
+    {name: 'Groups', children: groups.results},
+    {name: 'Friends', children: friends.results},
+  ] as const;
+
   return (
-    <div ref={triggerRef} className="-mx-4 border-b border-t border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6">
+    <div
+      ref={triggerRef}
+      className="-mx-4 border-b border-t border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
+    >
       <ComboBox
         className="flex flex-wrap items-center gap-x-2 gap-y-1"
         aria-label="participants"
@@ -174,7 +187,11 @@ export default function ParticipantsSelector() {
           </BaseButton>
         </div>
 
-        <Popover crossOffset={16} triggerRef={triggerRef} className="react-aria-Popover w-[min(464px,100vw)] overflow-y-auto">
+        <Popover
+          crossOffset={16}
+          triggerRef={triggerRef}
+          className="react-aria-Popover w-[min(464px,100vw)] overflow-y-auto"
+        >
           <ListBox className="react-aria-ListBox -mx-3 -my-4">
             {(section: (typeof comboboxItems)[number]) => (
               <Section id={section.name}>
