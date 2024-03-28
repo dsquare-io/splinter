@@ -15,6 +15,7 @@ import {
   TagGroup,
   TagList,
 } from 'react-aria-components';
+import {useFormContext} from 'react-hook-form';
 
 import {ChevronDownIcon, XMarkIcon} from '@heroicons/react/24/outline';
 import {useParams} from '@tanstack/react-router';
@@ -24,13 +25,7 @@ import {Paths} from '@/api-types/routePaths.ts';
 import {Avatar} from '@/components/common';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
-interface Participant {
-  id: string;
-  uid: string;
-  urn: string;
-  name: string;
-  type: 'group' | 'friend';
-}
+import {type Participant} from './useExpenseParticipants';
 
 type participantsAction =
   | {type: 'select_group'; data: Group}
@@ -41,7 +36,6 @@ type participantsAction =
     };
 
 function participantsReducer(state: Participant[], action: participantsAction): Participant[] {
-  console.log(action);
   if (action.type === 'remove') {
     return state.filter((p) => p.urn !== action.urn);
   }
@@ -75,12 +69,17 @@ function participantsReducer(state: Participant[], action: participantsAction): 
 
 export default function ParticipantsSelector() {
   const params = useParams({strict: false});
+  const {setValue} = useFormContext();
 
   const triggerRef = useRef<HTMLDivElement>(null);
   const {data: groups} = useApiQuery(Paths.GROUP_LIST);
   const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
 
   const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
+  useEffect(() => {
+    setValue('del:participants', selectedParticipants);
+  }, [setValue, selectedParticipants]);
+
   const [fieldState, setFieldState] = useState({
     selectedKey: null,
     inputValue: '',

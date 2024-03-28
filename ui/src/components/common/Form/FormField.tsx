@@ -12,6 +12,7 @@ import {
 } from 'react-aria-components';
 import {type RegisterOptions, type UseControllerProps, useController} from 'react-hook-form';
 
+import {useScopedFieldName} from '@/components/common';
 import {FieldErrorContext} from '@/components/common/Form/FieldError';
 import {messagifyValidationRules} from '@/components/common/Form/validations';
 
@@ -82,12 +83,15 @@ export function FormField({
   required,
   pattern,
   deps,
+  name,
   ...props
 }: FieldProps) {
+  const scopedName = useScopedFieldName(name);
   const {
     field: {value, onBlur, onChange, ref},
     fieldState: {invalid, error},
   } = useController({
+    name: scopedName,
     ...props,
     rules: {
       deps,
@@ -114,7 +118,7 @@ export function FormField({
             ref,
             isInvalid: invalid,
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
@@ -126,7 +130,7 @@ export function FormField({
             ref: (el) => el && ref(getFocusableRef(el)),
             isInvalid: invalid,
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
@@ -139,7 +143,7 @@ export function FormField({
             ref: (el) => el && ref(getFocusableRef(el)),
             isInvalid: invalid,
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
@@ -159,7 +163,7 @@ export function FormField({
             onBlur,
             onChange,
             ref,
-            name: props.name,
+            name: scopedName,
             // todo: handle isRequired
           },
         ],
@@ -172,7 +176,7 @@ export function FormField({
             isInvalid: invalid,
             ref: (el) => el && ref(getFocusableRef(el)),
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
@@ -185,7 +189,7 @@ export function FormField({
             isInvalid: invalid,
             ref: (el) => el && ref(getFocusableRef(el)),
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
@@ -198,7 +202,7 @@ export function FormField({
             isInvalid: invalid,
             ref: (el) => el && ref(getFocusableRef(el)),
             validationBehavior: 'aria',
-            name: props.name,
+            name: scopedName,
             isRequired: !!required,
           },
         ],
