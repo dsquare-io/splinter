@@ -229,10 +229,10 @@ function RootComponent() {
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    className="flex items-center gap-x-3 rounded px-2 py-2.5 text-red-700 hover:bg-red-50 focus:outline-none"
+                                                    className="flex items-center gap-x-3 rounded px-2 py-2.5 text-gray-700 hover:bg-gray-100 focus:outline-none"
                                                     onClick={() => deleteComment(comment.uid)}
                                                 >
-                                                    <TrashIcon className="size-4 text-red-600"/>
+                                                    <TrashIcon className="size-4 text-gray-600"/>
                                                 </button>
                                             </div>
                                         ))}
