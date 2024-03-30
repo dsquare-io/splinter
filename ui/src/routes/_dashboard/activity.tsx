@@ -13,16 +13,6 @@ export const Route = createFileRoute('/_dashboard/activity')({
 });
 
 function ActivityLayout() {
-    const formatDate = (dateString: string) => {
-        const [month, year] = dateString.split('/');
-
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const monthName = months[parseInt(month, 10) - 1];
-
-        return `${monthName} ${year}`;
-    }
-
-
     const matchRoute = useMatchRoute();
     const isRootLayout = matchRoute({to: '/activity'});
 
@@ -101,6 +91,14 @@ function ActivityLayout() {
             }
         ]
     };
+    const formatDate = (dateString: string) => {
+        const [month, year] = dateString.split('/');
+
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const monthName = months[parseInt(month, 10) - 1];
+
+        return `${monthName} ${year}`;
+    }
 
     return (
         <>
@@ -118,7 +116,6 @@ function ActivityLayout() {
                     <div className="flex-1">
                         <h2 className="text-lg font-medium text-gray-900">Activity</h2>
                     </div>
-
                     <div>
                         <DialogTrigger>
                             <Button
@@ -131,7 +128,6 @@ function ActivityLayout() {
                         </DialogTrigger>
                     </div>
                 </div>
-
                 <div className="-space-y-px">
                     {Object.entries(groupBy(data?.results ?? [], (activity) => {
                             const dateObj = new Date(activity.createdAt ?? '');
@@ -159,7 +155,6 @@ function ActivityLayout() {
                             </div>
                         ))}
                 </div>
-
                 <ScrollRestoration/>
             </div>
             <div className="xl:ms-96">
