@@ -20,7 +20,6 @@ function RootComponent() {
     const {activity: activity_uid} = Route.useParams();
     const confirm = useConfirmation();
 
-
     // const {data} = useApiQuery(ApiRoutes.ACTIVITY_LIST);
     // const currentActivity = data?.results.find((activity) => activity.uid === activity_uid);
     // if (!currentActivity) return null;
@@ -48,7 +47,6 @@ function RootComponent() {
         },
         "createdAt": "2024-03-23T18:00:00Z"
     }
-
     const commentsData = {
         "count":
             123,  // Number of comments retrieved (replace with actual count)
@@ -107,8 +105,7 @@ function RootComponent() {
         });
     }
 
-
-    const formatDate = (dateString: string) => {
+    function formatDate(dateString: string) {
         const [month, year] = dateString.split('/');
 
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -143,7 +140,6 @@ function RootComponent() {
         }
         return formattedDate.split('at')[1];
     }
-
 
     return (
         <div className="h-screen flex flex-col justify-between">
