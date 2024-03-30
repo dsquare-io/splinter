@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
 import {
-  ArrowLeftStartOnRectangleIcon, // ArrowTrendingUpIcon,
+  ArrowLeftStartOnRectangleIcon, ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
@@ -81,17 +81,17 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           <UserIcon className="size-5" />
           <div className="text-sm font-medium">Friends</div>
         </Link>
-        {/*<Link*/}
-        {/*  to="/activity"*/}
-        {/*  className={clsx(*/}
-        {/*    'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',*/}
-        {/*    'hover:bg-gray-100 hover:text-gray-800',*/}
-        {/*    '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'*/}
-        {/*  )}*/}
-        {/*>*/}
-        {/*  <ArrowTrendingUpIcon className="size-5" />*/}
-        {/*  <div className="text-sm font-medium">Activity</div>*/}
-        {/*</Link>*/}
+        <Link
+          to="/activity"
+          className={clsx(
+            'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
+            'hover:bg-gray-100 hover:text-gray-800',
+            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
+          )}
+        >
+          <ArrowTrendingUpIcon className="size-5" />
+          <div className="text-sm font-medium">Activity</div>
+        </Link>
       </div>
 
       <div className="space-y-1">

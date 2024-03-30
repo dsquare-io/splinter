@@ -93,6 +93,17 @@ const button = tv({
         '[--btn-icon:theme(colors.red.500)] data-[hovered]:[--btn-icon:theme(colors.red.600)]',
       ],
     },
+    {
+      color: 'danger',
+      variant: 'plain',
+      class: [
+        // Base
+        'data-[hovered]:bg-red-50 data-[pressed]:bg-red-100',
+
+        // Icon
+        '[--btn-icon:theme(colors.red.500)] data-[hovered]:[--btn-icon:theme(colors.red.600)]',
+      ],
+    },
   ],
   defaultVariants: {
     variant: 'solid',
