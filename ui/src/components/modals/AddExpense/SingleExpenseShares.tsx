@@ -7,7 +7,7 @@ import {FormField} from '@/components/common/Form/FormField.tsx';
 
 import {useExpenseParticipants} from './useExpenseParticipants';
 
-export function ExpenseShares() {
+export function SingleExpenseShares() {
   const participants = useExpenseParticipants();
 
   return (

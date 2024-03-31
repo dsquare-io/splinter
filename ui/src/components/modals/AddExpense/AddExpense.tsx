@@ -4,10 +4,12 @@ import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/20/solid';
 
 import {Button, Form} from '@/components/common';
-import ExpenseItems from '@/components/modals/AddExpense/ExpenseInputList.tsx';
-import {ExpenseShares} from '@/components/modals/AddExpense/ExpenseShares.tsx';
-import ParticipantsSelector from '@/components/modals/AddExpense/ParticipantsSelector.tsx';
-import {CloseDialog} from '@/components/modals/utils.tsx';
+import {CloseDialog} from '@/components/modals/utils';
+
+import ExpenseItems from './ExpenseInputList';
+import ExpensesShares from './ExpensesShares';
+import ParticipantsSelector from './ParticipantsSelector';
+import {SingleExpenseShares} from './SingleExpenseShares';
 
 export default function AddExpense() {
   const [step, setStep] = useState(0);
@@ -28,15 +30,11 @@ export default function AddExpense() {
               </div>
             )}
 
-            {step === 1 && (
-              <div className="grow">
-                <ExpenseShares />
-              </div>
-            )}
+            {step === 1 && <ExpensesShares />}
 
             {step === 2 && (
               <div className="grow">
-                <ExpenseShares />
+                <SingleExpenseShares />
               </div>
             )}
 

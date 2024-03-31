@@ -34,6 +34,7 @@ export default function ExpenseItems() {
                   <NumberFormField
                     className="relative"
                     name={`expenses.${index}.amount`}
+                    defaultValue={null}
                     aria-label="expense item"
                   >
                     <span className="pointer-events-none absolute inset-0 left-3 z-10 flex items-center text-sm text-gray-500">
