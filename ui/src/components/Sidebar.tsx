@@ -2,7 +2,8 @@ import clsx from 'clsx';
 import {ComponentProps} from 'react';
 
 import {
-  ArrowLeftStartOnRectangleIcon, ArrowTrendingUpIcon,
+  ArrowLeftStartOnRectangleIcon,
+  ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
