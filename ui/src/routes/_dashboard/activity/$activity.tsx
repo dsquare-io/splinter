@@ -38,7 +38,7 @@ function RootComponent() {
       urn: 'urn:group:1',
       name: 'Apartment Buddies',
     },
-    template: 'DINNER',
+    template: 'Dinner',
     description: 'Dinner at Pizza Palace',
     target: {
       uid: 'target-1',

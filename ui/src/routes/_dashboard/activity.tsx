@@ -33,7 +33,7 @@ function ActivityLayout() {
           urn: 'urn:group:1',
           name: 'Apartment Buddies',
         },
-        template: 'DINNER',
+        template: 'Dinner',
         description: 'Dinner at Pizza Palace',
         target: {
           uid: 'target-1',
@@ -57,7 +57,7 @@ function ActivityLayout() {
           name: 'Weekend Getaway',
           members: ['user-1', 'user-2', 'user-3'],
         },
-        template: 'GROCERIES',
+        template: 'Groceries',
         description: 'Shared groceries for the trip',
         target: {
           uid: 'target-2',
@@ -80,7 +80,7 @@ function ActivityLayout() {
           urn: 'urn:group:1',
           name: 'Apartment Buddies',
         },
-        template: 'UTILITIES',
+        template: 'Utilities',
         description: 'Electricity bill for March',
         target: {
           uid: 'target-3',
