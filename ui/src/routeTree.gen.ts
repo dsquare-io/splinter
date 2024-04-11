@@ -17,7 +17,7 @@ import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
 import { Route as DashboardGroupsImport } from './routes/_dashboard/groups'
 import { Route as DashboardFriendsImport } from './routes/_dashboard/friends'
-import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
+import { Route as DashboardActivityImport } from './routes/_dashboard/activity'
 import { Route as DashboardProfileMeImport } from './routes/_dashboard/profile/me'
 import { Route as DashboardGroupsGroupImport } from './routes/_dashboard/groups/$group'
 import { Route as DashboardFriendsFriendImport } from './routes/_dashboard/friends/$friend'
@@ -55,8 +55,8 @@ const DashboardFriendsRoute = DashboardFriendsImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
-const DashboardActivityIndexRoute = DashboardActivityIndexImport.update({
-  path: '/activity/',
+const DashboardActivityRoute = DashboardActivityImport.update({
+  path: '/activity',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -76,8 +76,8 @@ const DashboardFriendsFriendRoute = DashboardFriendsFriendImport.update({
 } as any)
 
 const DashboardActivityActivityRoute = DashboardActivityActivityImport.update({
-  path: '/activity/$activity',
-  getParentRoute: () => DashboardRoute,
+  path: '/$activity',
+  getParentRoute: () => DashboardActivityRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -91,6 +91,10 @@ declare module '@tanstack/react-router' {
     '/_dashboard': {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
+    }
+    '/_dashboard/activity': {
+      preLoaderRoute: typeof DashboardActivityImport
+      parentRoute: typeof DashboardImport
     }
     '/_dashboard/friends': {
       preLoaderRoute: typeof DashboardFriendsImport
@@ -110,7 +114,7 @@ declare module '@tanstack/react-router' {
     }
     '/_dashboard/activity/$activity': {
       preLoaderRoute: typeof DashboardActivityActivityImport
-      parentRoute: typeof DashboardImport
+      parentRoute: typeof DashboardActivityImport
     }
     '/_dashboard/friends/$friend': {
       preLoaderRoute: typeof DashboardFriendsFriendImport
@@ -124,10 +128,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProfileMeImport
       parentRoute: typeof DashboardImport
     }
-    '/_dashboard/activity/': {
-      preLoaderRoute: typeof DashboardActivityIndexImport
-      parentRoute: typeof DashboardImport
-    }
   }
 }
 
@@ -136,11 +136,10 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
   DashboardRoute.addChildren([
+    DashboardActivityRoute.addChildren([DashboardActivityActivityRoute]),
     DashboardFriendsRoute.addChildren([DashboardFriendsFriendRoute]),
     DashboardGroupsRoute.addChildren([DashboardGroupsGroupRoute]),
-    DashboardActivityActivityRoute,
     DashboardProfileMeRoute,
-    DashboardActivityIndexRoute,
   ]),
   AuthForgetPassRoute,
   AuthLoginRoute,

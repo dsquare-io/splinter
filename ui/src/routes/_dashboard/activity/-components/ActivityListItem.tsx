@@ -1,63 +1,70 @@
+import clx from 'clsx';
+
 import {Link} from '@tanstack/react-router';
 
+import {Activity} from '@/api-types/components/schemas';
+import Currency from '@/components/Currency.tsx';
 import {Avatar} from '@/components/common';
 
-interface ActivityItemProps {
-  id: number;
-  verb: string;
-  subject: string;
-  object: string;
-  balance: number;
-  currency: string;
-}
+export default function ActivityListItem({user, uid, template, target, createdAt}: Activity) {
+  function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    const now = new Date();
 
-export default function ActivityListItem({id, verb, subject, object, balance, currency}: ActivityItemProps) {
+    // @ts-ignore
+    const daysDiff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    let formattedDate;
+    if (daysDiff === 0) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      formattedDate = `Today at ${hours}:${minutes} PM`;
+    } else if (daysDiff === -1) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      formattedDate = `Yesterday at ${hours}:${minutes} PM`;
+    } else {
+      const options: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      };
+      formattedDate = date.toLocaleDateString('en-US', options);
+    }
+
+    return formattedDate;
+  }
+
   return (
     <Link
       to="/activity/$activity"
-      params={{activity: id.toString()}}
-      className="flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-blue-50"
+      params={{activity: uid}}
+      className={clx(
+        'relative block w-full px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'border-y border-gray-200',
+        '[&.active]:z-10 [&.active]:border-brand-200',
+        target.value?.length == 0 ? 'item-center' : 'items-start'
+      )}
     >
-      <Avatar
-        className="size-12 rounded-lg"
-        fallback="AF"
-      />
-      <div className="grow text-sm  text-gray-800">
-        {verb === 'updated' && (
-          <p>
-            "{subject}" {verb} {object}
-          </p>
-        )}
-        {verb === 'setting' && (
-          <p>
-            "{subject}" was {object}
-          </p>
-        )}
-        {verb === 'paid' && (
-          <p>
-            "{subject}" paid {object}
-          </p>
-        )}
-        {balance > 0 ? (
-          <p className="mt-1 font-normal text-gray-500">
-            {' '}
-            You Recieved{' '}
-            <span className="font-medium text-green-700">
-              {currency} {balance}
-            </span>
-          </p>
-        ) : (
-          <p className="mt-1 font-normal text-gray-500">
-            {' '}
-            You borrowed{' '}
-            <span className="font-medium text-rose-700">
-              {' '}
-              {currency}
-              {balance}
-            </span>
-          </p>
-        )}
-        <p className="mt-1 text-xs font-normal text-gray-400">Yesterday, 22:30</p>
+      <div className="flex items-center gap-x-3">
+        <Avatar
+          className="size-9"
+          fallback={user.fullName}
+        />
+        <div>
+          <div className="text-md">{template}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-md text-gray-400">
+              {+(target.value ?? '0') > 0 ? 'You lent' : 'You borrowed'}
+            </div>
+            <Currency
+              currency="PKR"
+              value={target?.value ?? 0}
+            />
+          </div>
+          <span className="text-xs text-gray-400">{formatDate(createdAt ?? '')}</span>
+        </div>
       </div>
     </Link>
   );
