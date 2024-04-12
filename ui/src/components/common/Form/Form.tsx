@@ -10,6 +10,7 @@ import {useContextProps} from '@/components/common/use-context-props.ts';
 
 import {FormContext} from './context';
 import type {FormProps, Method} from './types';
+import {applyTransformers} from './transformers.ts';
 
 function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValues, TransformedData = any>(
   {...props}: FormProps<SubmitResponse, TFieldValues, TransformedData>,
@@ -139,7 +140,8 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
             event?.stopPropagation();
 
             // transform form data data
-            const transformedData = await transformData(data, control);
+            const processedData = applyTransformers(data)
+            const transformedData = await transformData(processedData, control);
             // if transformData function returns undefined just exit submission
             if (!transformedData) return undefined;
 
