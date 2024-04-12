@@ -77,7 +77,12 @@ export default function ParticipantsSelector() {
 
   const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
   useEffect(() => {
-    setValue('del:participants', selectedParticipants);
+    setValue('participants:del', selectedParticipants);
+    if (selectedParticipants[0]?.type === 'group') {
+      setValue('group', selectedParticipants[0].uid);
+    } else {
+      setValue('group', undefined);
+    }
   }, [setValue, selectedParticipants]);
 
   const [fieldState, setFieldState] = useState({

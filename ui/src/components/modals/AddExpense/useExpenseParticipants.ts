@@ -16,8 +16,8 @@ export interface Participant {
 
 export function useExpenseParticipants() {
   const {watch, getValues} = useFormContext();
-  const partipants = getValues('del:participants') as Participant[];
-  watch('del:participants');
+  const partipants = getValues('participants:del') as Participant[];
+  watch('participants:del');
 
   const results = useQueries({
     queries: partipants?.map((partipant) => {

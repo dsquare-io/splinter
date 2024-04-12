@@ -4,7 +4,7 @@ import {TextField} from 'react-aria-components';
 import {XMarkIcon} from '@heroicons/react/24/outline';
 import throttle from 'just-throttle';
 
-import {Button, Input, NumberFormField, TextFormField} from '@/components/common';
+import {Button, Input, Label, NumberFormField, TextFormField} from '@/components/common';
 import {FieldArray} from '@/components/common/FieldArray/FieldArray.tsx';
 import {FieldArrayItems} from '@/components/common/FieldArray/FieldArrayItems.tsx';
 
@@ -12,7 +12,8 @@ export default function ExpenseItems() {
   const [inpValue, setInptValue] = useState('');
 
   return (
-    <div className="mt-4 flex-1 py-4">
+    <div className="flex-1">
+      <Label>Expense Items</Label>
       <FieldArray
         name="expenses"
         initialItemsCount={1}

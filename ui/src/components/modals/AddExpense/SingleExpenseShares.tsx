@@ -26,7 +26,7 @@ export function SingleExpenseShares() {
           className="col-span-3 grid grid-cols-subgrid items-center gap-x-3 px-4 py-1.5 sm:px-6"
         >
           <div>
-            <FormField name={`del:shares.${user.uid}.show`}>
+            <FormField name={`shares:del.${user.uid}.show`}>
               <Checkbox
                 shape="circle"
                 className="gap-x-3 py-2"
@@ -39,14 +39,14 @@ export function SingleExpenseShares() {
             </FormField>
           </div>
 
-          <WatchState name={`del:shares.${user.uid}.show`}>
+          <WatchState name={`shares:del.${user.uid}.show`}>
             {(show) =>
               show && (
                 <NumberFormField
                   className="relative"
                   aria-label="share"
                   defaultValue={1}
-                  name={`dict_to_list:shares.${user.uid}`}
+                  name={`shares:to_dict__user__share.${user.uid}`}
                 >
                   <Button
                     className="absolute inset-y-0 left-2 z-10 text-neutral-600 hover:text-neutral-700"
