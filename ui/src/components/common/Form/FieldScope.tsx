@@ -5,10 +5,10 @@ const FieldScopeContext = createContext<string>('');
 /**
  * returns scoped name of a field given the name of field.
  */
-export function useScopedFieldName<T extends string | undefined>(name?: T): T {
+export function useScopedFieldName(name?: string): string {
   const baseName = useContext(FieldScopeContext) ?? '';
 
-  return (name ? [baseName, name].filter(Boolean).join('.') : name) as T;
+  return [baseName, name].filter(Boolean).join('.');
 }
 
 /**
