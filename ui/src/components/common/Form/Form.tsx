@@ -1,5 +1,5 @@
 import {ForwardedRef, forwardRef, useId} from 'react';
-import {ButtonContext} from 'react-aria-components';
+import {ButtonContext, ButtonProps} from 'react-aria-components';
 import {type FieldValues, FormProvider, useForm} from 'react-hook-form';
 
 import {axiosInstance} from '@/axios';
@@ -9,8 +9,9 @@ import {forwardRefType} from '@/components/common/types.ts';
 import {useContextProps} from '@/components/common/use-context-props.ts';
 
 import {FormContext} from './context';
-import type {FormProps, Method} from './types';
 import {applyTransformers} from './transformers.ts';
+import type {FormProps, Method} from './types';
+
 
 function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValues, TransformedData = any>(
   {...props}: FormProps<SubmitResponse, TFieldValues, TransformedData>,
@@ -25,7 +26,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
 
   [props, ref] = useContextProps(props, ref, FormContext);
 
-  // useContext always merge event handlers
+  // useContextProps always merge event handlers
   // but in case of onSubmit we need to override
   // base handler if a direct prop is provided
   if (formSubmitHandler) {
@@ -70,7 +71,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
   } = props;
 
   // todo: handle defaultValues with loading state
-  // todo: throw error if control is changes from value to false
+  // todo: throw error if control changes
   // todo: add support for disableButtonsIfNotDirty
 
   const internalControl = useForm({
@@ -121,7 +122,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
                     control.formState.isLoading ||
                     control.formState.isSubmitting ||
                     control.formState.isValidating,
-                } as any,
+                } as ButtonProps,
               },
             },
           ],
@@ -140,7 +141,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
             event?.stopPropagation();
 
             // transform form data data
-            const processedData = applyTransformers(data)
+            const processedData = applyTransformers(data);
             const transformedData = await transformData(processedData, control);
             // if transformData function returns undefined just exit submission
             if (!transformedData) return undefined;

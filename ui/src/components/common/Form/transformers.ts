@@ -11,7 +11,7 @@ interface ParsedKey {
 }
 
 /**
- * Transformers are special if added to the field names will transform the form data before submission.
+ * Transformers are special keywords if added to the field names will transform the form data before submission.
  *
  * examples:
  *  field with name `participants:del` will be omitted before submission.

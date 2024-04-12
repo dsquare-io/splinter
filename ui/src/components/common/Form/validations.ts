@@ -2,6 +2,7 @@ import type {Message, RegisterOptions, ValidationRule, ValidationValueMessage} f
 
 export const patternsMap = {
   email: {
+    // doesn't comply with RFC2822 email address format
     value: /^([^\s@#])+@(([^\s@.#])+\.)+([^\s.]{2,})+$/i,
     message: 'Invalid email address',
   },

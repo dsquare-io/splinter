@@ -11,9 +11,6 @@ interface Props {
 
 export function WatchState({name, children, showIf, hideIfNull = false}: Props): ReactElement | null {
   const scopedName = useScopedFieldName(name);
-
-  // TODO: review this type error
-  // @ts-ignore
   const state = useWatch({name: scopedName});
 
   if (hideIfNull && [null, undefined].includes(state as any)) {

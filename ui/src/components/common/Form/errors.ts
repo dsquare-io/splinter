@@ -16,7 +16,16 @@ const API_ERROR_MESSAGE = {
   STATUS_CODE_UNKNOWN: 'Oops, Something Went Wrong!',
 };
 
+/**
+ * Parses django rest framework errors and transforms them into hook-form's FieldErrors type.
+ *
+ * possible improvement: exactly out the non drf specific error handling like network error
+ * or some code level unhandled exception.
+ */
 export function drfToFieldErrors(error: unknown) {
+  /**
+   * parses drf error object to hook-form's FieldErrors type
+   */
   function handleObject(err: DrfErrors) {
     const formErrors: FieldErrors = {};
 
@@ -54,7 +63,7 @@ export function drfToFieldErrors(error: unknown) {
   }
 
   if (!isAxiosError(error)) {
-    // not an axios error means something in code wet wrong.
+    // not an axios error means something in code went wrong.
     return {
       root: {
         type: 'internal',
@@ -70,6 +79,8 @@ export function drfToFieldErrors(error: unknown) {
   }
 
   if (error.response) {
+    // got a response but without any data.
+    // so use status code to display the error message.
     let errorText = 'Something went wrong please try again';
 
     if (error.response.status === 400) {
