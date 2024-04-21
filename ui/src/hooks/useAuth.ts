@@ -5,10 +5,11 @@ import {useLocalStorage} from '@mantine/hooks';
 import {ApiRoutes} from '@/api-types';
 import {axiosInstance, setHeaders} from '@/axios.ts';
 
+
 export enum AuthStatus {
-  LOGGED_OUT = 1,
-  VALIDATING = 2,
-  LOGGED_IN = 4,
+  LOGGED_OUT = 'logged_out',
+  VALIDATING = 'validating',
+  LOGGED_IN = 'logged_in',
 }
 
 let profileRequest: Promise<any> | undefined;
@@ -62,6 +63,7 @@ export default function useAuth() {
     status,
     token: {accessToken, refreshToken},
     setToken: ({access, refresh} = {access: '', refresh: ''}) => {
+      console.log({access, refresh});
       if (access) {
         setToken(access);
       } else {

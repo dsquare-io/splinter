@@ -130,7 +130,6 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                   <div className="relative">
                     <Input
                       placeholder="Search your friends..."
-                      onKeyDown={() => {}}
                     />
                     <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                       <ChevronUpDownIcon

@@ -1,6 +1,7 @@
 @import 'tabs.css';
 @import 'modal.css';
 @import 'popover.css';
+@import 'listbox.css';
 
 @tailwind base;
 @tailwind components;
