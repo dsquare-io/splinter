@@ -7,9 +7,10 @@ interface Props extends Omit<ComponentProps<'span'>, 'children'> {
   currency: string;
   value: number | string;
   noColor?: boolean;
+  noTabularNums?: boolean;
 }
 
-export default function Currency({value, currency, className, noColor, ...props}: Props) {
+export default function Currency({value, currency, className, noColor, noTabularNums = false, ...props}: Props) {
   const formatter = useNumberFormatter({
     style: 'currency',
     currency,
@@ -22,7 +23,7 @@ export default function Currency({value, currency, className, noColor, ...props}
     <span
       {...props}
       className={twMerge(
-        'tabular-nums',
+        !noTabularNums && 'tabular-nums',
         className,
         !noColor && (+value < 0 ? 'text-red-600' : 'text-green-700')
       )}

@@ -17,9 +17,9 @@ import {FieldErrorContext} from '@/components/common/Form/FieldError';
 import {messagifyValidationRules} from '@/components/common/Form/validations';
 
 const focusableInputElments = [
-  'input:not([disabled]):not([type=hidden])',
   'select:not([disabled])',
   'textarea:not([disabled])',
+  'input:not([disabled]):not([type=hidden])',
 ];
 
 const FOCUSABLE_INPUT_ELEMENT_SELECTOR = focusableInputElments.join(':not([hidden]),');

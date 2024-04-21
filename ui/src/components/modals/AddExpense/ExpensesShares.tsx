@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import {useEffect} from 'react';
 import {
   Button as ButtonBase,
   ListBox,
@@ -14,10 +15,14 @@ import {XMarkIcon} from '@heroicons/react/24/outline';
 
 import {ExpenseRow} from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
-import {Avatar} from '@/components/common';
+import {Avatar, FieldScope, useScopedFieldName} from '@/components/common';
 import {useExpenseParticipants} from '@/components/modals/AddExpense/useExpenseParticipants.ts';
 
-export default function ExpensesShares() {
+interface Props {
+  onExpenseDetail?: (baseName: string) => void;
+}
+
+export default function ExpensesShares({onExpenseDetail}: Props) {
   const {getValues, setValue} = useFormContext();
 
   const expenses: (ExpenseRow & {id: string})[] = (getValues('expenses') ?? []).map(
@@ -36,13 +41,12 @@ export default function ExpensesShares() {
         })
       );
 
-
       const participants = items.filter((item) => item.name.startsWith('urn:splinter:user'));
       for (const participant of participants) {
         const participantId = participant.name.split('/').at(-1);
-        const shareKey = `${e.target.key}.shares.${participantId}`;
+        const shareKey = `${e.target.key}.shares:to_dict__user__share.${participantId}`;
         const participantShare = getValues(shareKey) ?? 0;
-        setValue(shareKey, participantShare + 1);
+        setValue(shareKey, participantShare + 1, {shouldDirty: true});
       }
     },
   });
@@ -59,19 +63,31 @@ export default function ExpensesShares() {
         {(expense) => (
           <ListBoxItem
             textValue={expense.description}
-            className="mx-4 rounded border border-neutral-200 bg-white px-3.5 py-3 focus:outline-none data-[drop-target]:bg-brand-100 data-[drop-target]:outline data-[drop-target]:outline-offset-[-1px] data-[drop-target]:outline-brand-400"
+            className={clsx(
+              'mx-4 rounded border border-neutral-200 bg-white focus:outline-none',
+              'cursor-pointer hover:border-brand-400 hover:bg-brand-50',
+              'data-[drop-target]:bg-brand-100 data-[drop-target]:outline data-[drop-target]:outline-offset-[-1px] data-[drop-target]:outline-brand-400'
+            )}
           >
-            <div className="flex items-center justify-between">
-              <div>{expense.description}</div>
-              <Currency
-                noColor
-                value={expense.amount}
-                className="text-neutral-600"
-                currency="PKR"
-              />
-            </div>
-            <div className="mt-4">
-              <ExpenseItemShares expenseItem={expense} />
+            <div
+              className="px-3.5 py-3"
+              onClick={() => onExpenseDetail?.(expense.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div>{expense.description}</div>
+                <Currency
+                  noColor
+                  noTabularNums
+                  value={expense.amount}
+                  className="text-neutral-600"
+                  currency="PKR"
+                />
+              </div>
+              <div className="mt-4">
+                <FieldScope name={`${expense.id}.shares:to_dict__user__share`}>
+                  <ExpenseItemShares />
+                </FieldScope>
+              </div>
             </div>
           </ListBoxItem>
         )}
@@ -82,58 +98,90 @@ export default function ExpensesShares() {
   );
 }
 
-function ExpenseItemShares({expenseItem}: {expenseItem: ExpenseRow & {id: string}}) {
+function ExpenseItemShares() {
   const participants = useExpenseParticipants();
-  const {watch, unregister} = useFormContext();
+  const {watch, formState, getFieldState, register, clearErrors, unregister} = useFormContext();
 
-  const shares = watch(`${expenseItem.id}.shares`);
+  const sharesFieldName = useScopedFieldName();
+
+  const shares = watch(sharesFieldName);
   const shareParticipants = participants
     .map((participant) => {
       if (!shares?.[participant.uid]) {
         return undefined;
       }
 
-      return {share: shares[participant.uid], participant};
+      return {share: shares[participant.uid] as number, participant};
     })
     .filter(Boolean);
+
+  useEffect(() => {
+    if (!shares) {
+      register(sharesFieldName, {
+        validate: (val) => {
+          if (!val || Object.keys(sharesFieldName).length === 0) {
+            console.log({val});
+            return "Shares can't be empty";
+          }
+
+          return undefined;
+        },
+      });
+    }
+
+    return () => clearErrors(sharesFieldName);
+  }, [register, sharesFieldName]);
+
+  const {invalid, error} = getFieldState(sharesFieldName, formState);
+
+  if (invalid && shareParticipants.length === 0) {
+    return <div className="py-[3px] text-sm text-red-600">{error?.message}</div>;
+  }
 
   if (shareParticipants.length === 0) {
     return <div className="py-[3px] text-sm italic text-neutral-500">Drop participant here</div>;
   }
 
   return (
-    <TagGroup
-      selectionMode="none"
-      aria-label="expense item shares"
-      onRemove={(keys) => {
-        Array.from(keys).forEach((uid) => unregister(`${expenseItem.id}.shares.${uid}`, {keepValue: false}));
-      }}
+    <div
+      className="inline-flex flex-wrap items-center gap-2"
+      onClick={(e) => e.stopPropagation()}
     >
-      <TagList
-        items={shareParticipants}
-        className="react-aria-TagList flex flex-wrap items-center gap-2"
+      <TagGroup
+        selectionMode="none"
+        aria-label="expense item shares"
+        className="contents"
+        onRemove={(keys) => {
+          Array.from(keys).forEach((uid) => unregister(`${sharesFieldName}.${uid}`, {keepValue: false}));
+        }}
       >
-        {(shareParticipant) => (
-          <Tag
-            id={shareParticipant.participant.uid}
-            textValue={shareParticipant.participant.fullName}
-            className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
-          >
-            <Avatar
-              className="size-6 rounded-none bg-neutral-50"
-              fallback={shareParticipant.participant.fullName}
-            />
-            {shareParticipant.participant.fullName}
-            <ButtonBase
-              className="-ml-2 px-2 py-1 text-gray-500 focus:outline-none"
-              slot="remove"
+        <TagList
+          items={shareParticipants}
+          className="react-aria-TagList contents"
+        >
+          {(shareParticipant) => (
+            <Tag
+              id={shareParticipant.participant.uid}
+              textValue={shareParticipant.participant.fullName}
+              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 bg-white text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
             >
-              <XMarkIcon className="size-4" />
-            </ButtonBase>
-          </Tag>
-        )}
-      </TagList>
-    </TagGroup>
+              <Avatar
+                className="size-6 rounded-none bg-neutral-50"
+                fallback={shareParticipant.participant.fullName}
+              />
+              {shareParticipant.participant.fullName}
+              {shareParticipant.share > 1 && ` (${shareParticipant.share})`}
+              <ButtonBase
+                className="-ml-2 px-2 py-1 text-gray-500 focus:outline-none"
+                slot="remove"
+              >
+                <XMarkIcon className="size-4" />
+              </ButtonBase>
+            </Tag>
+          )}
+        </TagList>
+      </TagGroup>
+    </div>
   );
 }
 
