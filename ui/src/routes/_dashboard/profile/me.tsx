@@ -1,7 +1,8 @@
+import {ChangeEvent} from "react";
 import {createFileRoute} from '@tanstack/react-router';
 
 import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
+import {Avatar, Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
 
@@ -11,6 +12,11 @@ export const Route = createFileRoute('/_dashboard/profile/me')({
 
 function RootComponent() {
   const {data: profile} = useApiQuery(Paths.PROFILE);
+
+  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
+  };
 
   return (
     <div className="mx-auto max-w-screen-lg divide-y divide-neutral-200">
@@ -29,35 +35,51 @@ function RootComponent() {
           <FormRootErrors />
 
           <div className="space-y-6">
+            <div className="col-span-full flex items-center gap-x-8">
+                <Avatar
+                    className="size-24 rounded-full"
+                    fallback="AF"
+                />
+              <div>
+                <Label
+                    htmlFor="avatar"
+                    className="rounded-md bg-brand-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-800 w-fit"
+                >
+                  Change Avatar
+                  <input type="file" name="avatar" id="avatar" hidden onChange={handleAvatarChange} />
+                </Label>
+                <p className="mt-2 text-xs leading-5 text-gray-400">JPG, GIF or PNG. 1MB max.</p>
+              </div>
+            </div>g
             <TextFormField
-              name="firstName"
-              required
+                name="firstName"
+                required
             >
               <Label>First Name</Label>
               <Input
-                type="text"
-                placeholder="Your first name"
+                  type="text"
+                  placeholder="Your first name"
               />
-              <FieldError />
+              <FieldError/>
             </TextFormField>
 
             <TextFormField
-              name="lastName"
-              required
+                name="lastName"
+                required
             >
               <Label>Last Name</Label>
               <Input
-                type="text"
-                placeholder="Your last name"
+                  type="text"
+                  placeholder="Your last name"
               />
-              <FieldError />
+              <FieldError/>
             </TextFormField>
           </div>
 
           <Button
-            className="mt-8"
-            slot="submit"
-            type="submit"
+              className="mt-8"
+              slot="submit"
+              type="submit"
           >
             Update Profile
           </Button>
@@ -70,20 +92,20 @@ function RootComponent() {
           <p className="mt-1.5 text-sm text-gray-500">Set a different password for your account.</p>
         </div>
         <Form
-          action={Paths.CHANGE_PASSWORD}
-          transformData={(
-            {
-              oldPassword,
-              password,
-              password2,
-            }: {
-              oldPassword: string;
-              password: string;
-              password2: string;
-            },
-            formRef
-          ) => {
-            if (password !== password2) {
+            action={Paths.CHANGE_PASSWORD}
+            transformData={(
+                {
+                  oldPassword,
+                  password,
+                  password2,
+                }: {
+                  oldPassword: string;
+                  password: string;
+                  password2: string;
+                },
+                formRef
+            ) => {
+              if (password !== password2) {
               formRef.setError('password2', {
                 message: 'Password Mismatch',
               });
