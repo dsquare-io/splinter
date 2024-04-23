@@ -82,7 +82,7 @@ function GroupsLayout() {
                 key={letter}
                 className="relative -space-y-px"
               >
-                <div className="sticky top-[96px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+                <div className="sticky top-[96px] lg:top-[114px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                   <h3 className="uppercase">{letter}</h3>
                 </div>
                 <div className="-space-y-px">
