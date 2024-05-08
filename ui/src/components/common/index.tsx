@@ -5,3 +5,4 @@ export * from './Form';
 export * from './Field';
 export * from './FormFields';
 export * from './Checkbox';
+export * from './IconButton';
