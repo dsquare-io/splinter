@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import {RefAttributes} from 'react';
 import {
   type FieldErrorProps,
@@ -10,12 +11,11 @@ import {
   composeRenderProps,
 } from 'react-aria-components';
 
+import {AnimatePresence, motion} from 'framer-motion';
 import {twMerge} from 'tailwind-merge';
 import {tv} from 'tailwind-variants';
 
 import {FieldError as RACFieldError} from '@/components/common/Form/FieldError.tsx';
-
-import {composeTailwindRenderProps} from './utils';
 
 export function Label(props: LabelProps) {
   return (
@@ -36,12 +36,30 @@ export function Description(props: TextProps) {
   );
 }
 
-export function FieldError(props: FieldErrorProps) {
+export function FieldError({className, ...props}: FieldErrorProps) {
   return (
     <RACFieldError
       {...props}
-      className={composeTailwindRenderProps(props.className, 'mt-1.5 block text-xs text-red-600')}
-    />
+      className="contents"
+    >
+      {(validationError, renderProps) => (
+        <AnimatePresence>
+          {validationError && (
+            <motion.div
+              initial={{opacity: 0, height: 0, marginTop: 0}}
+              animate={{opacity: 1, height: 'auto', marginTop: 4}}
+              exit={{opacity: 0, height: 0, marginTop: 0}}
+              className={clsx(
+                typeof className === 'function' ? className(renderProps) : className,
+                'mt-1.5 block text-xs text-red-600'
+              )}
+            >
+              {validationError}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      )}
+    </RACFieldError>
   );
 }
 

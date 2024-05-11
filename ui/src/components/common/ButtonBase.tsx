@@ -8,7 +8,7 @@ export const buttonBaseStyles = tv({
   variants: {
     variant: {
       plain: [
-        'bg-white text-[--plain-text] border-transparent',
+        'bg-transparent text-[--plain-text] border-transparent',
         'data-[hovered]:text-[--plain-text-hover] data-[hovered]:bg-[--plain]',
         'data-[focused]:text-[--plain-text-hover] data-[focused]:bg-[--plain]',
         'disabled:text-gray-400 disabled:bg-transparent',
@@ -43,7 +43,7 @@ export const buttonBaseStyles = tv({
       ],
       danger: [
         '[--solid:theme(colors.red.600)] [--solid-hover:theme(colors.red.700)]',
-        '[--plain:theme(colors.red.50)] [--plain-hover:theme(colors.red.100)]',
+        '[--plain:theme(colors.red.600/5%)] [--plain-hover:theme(colors.red.600/15%)]',
         '[--plain-text:theme(colors.red.700)] [--plain-text-hover:theme(colors.red.800)]',
         '[--outline:theme(colors.red.300)]',
         '[--ring:theme(colors.red.400)]',
@@ -61,6 +61,13 @@ export const buttonBaseStyles = tv({
         '[--plain-text:theme(colors.yellow.700)] [--plain-text-hover:theme(colors.yellow.800)]',
         '[--outline:theme(colors.yellow.300)]',
         '[--ring:theme(colors.yellow.400)]',
+      ],
+      success: [
+        '[--solid:theme(colors.green.500)] [--solid-hover:theme(colors.green.600)]',
+        '[--plain:theme(colors.green.50)] [--plain-hover:theme(colors.green.100)]',
+        '[--plain-text:theme(colors.green.700)] [--plain-text-hover:theme(colors.green.800)]',
+        '[--outline:theme(colors.green.300)]',
+        '[--ring:theme(colors.green.400)]',
       ],
     },
   },
