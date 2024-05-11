@@ -88,7 +88,7 @@ export function ConfirmationProvider({children}: React.PropsWithChildren<any>) {
           </AlertContent>
           <AlertActions>
             <Button
-              variant="outline"
+              variant="outlined"
               isDisabled={loading}
               onPress={handleCancel}
             >

@@ -102,7 +102,7 @@ function RootComponent() {
 
           <DialogTrigger>
             <Button
-              variant="outline"
+              variant="outlined"
               className="bg-white"
               size="small"
             >
@@ -113,7 +113,7 @@ function RootComponent() {
           </DialogTrigger>
           <DialogTrigger>
             <Button
-              variant="outline"
+              variant="outlined"
               className="bg-white"
               size="small"
             >

@@ -74,7 +74,7 @@ export default function AddExpense() {
                     <div className="-mx-4 mt-4 flex justify-between px-4 pt-2 sm:-mx-6 sm:px-6">
                       <Button
                         slot={null}
-                        variant="outline"
+                        variant="outlined"
                         onPress={() => setCurrentStep('entry')}
                       >
                         <ChevronLeftIcon className="size-4" />
@@ -93,7 +93,7 @@ export default function AddExpense() {
                     <div className="-mx-4 mt-4 flex justify-between px-4 pt-2 sm:-mx-6 sm:px-6">
                       <Button
                         slot={null}
-                        variant="outline"
+                        variant="outlined"
                         onPress={() => setCurrentStep('entry')}
                       >
                         <ChevronLeftIcon className="size-4" />

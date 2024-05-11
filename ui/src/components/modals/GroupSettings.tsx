@@ -106,7 +106,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
                     <Button
                       className="rounded-l-none"
                       type="submit"
-                      variant="outline"
+                      variant="outlined"
                     >
                       Update
                     </Button>
