@@ -37,12 +37,12 @@ function GroupsLayout() {
         className={clsx(
           'bg-white',
           !isRootLayout &&
-            'fixed inset-y-0 left-60 hidden w-96 overflow-auto border-e border-gray-200 xl:block',
+            'fixed overflow-auto h-full inset-y-0 left-60 hidden w-96 border-l border-gray-200 xl:flex xl:flex-col',
           isRootLayout &&
-            'xl:fixed xl:inset-y-0 xl:left-60 xl:w-96 xl:overflow-auto xl:border-e xl:border-gray-200'
+            'xl:flex overflow-auto xl:inset-y-0 xl:left-60 xl:w-96 xl:border-e xl:border-gray-200  flex-col h-full'
         )}
       >
-        <div className="sticky top-0 z-40 flex items-center gap-x-2 bg-white py-6 pl-6 pr-3">
+        <div className="z-40 flex items-center gap-x-2 bg-white py-6 pl-6 pr-3">
           <div className="flex-1">
             <h2 className="text-lg font-medium text-gray-900">Groups</h2>
             <p className="text-sm text-gray-600">
@@ -73,16 +73,15 @@ function GroupsLayout() {
             </DialogTrigger>
           </div>
         </div>
-
-        <div className="-space-y-px">
+        <div className="-space-y-px flex flex-col  overflow-y-auto h-full">
           {Object.entries(groupBy(data?.results ?? [], (group) => group.name?.[0]?.toLowerCase() ?? ''))
             .sort((a, b) => (a[0] < b[0] ? -1 : +1))
             .map(([letter, groups]) => (
               <div
                 key={letter}
-                className="relative -space-y-px"
+                className="-space-y-px"
               >
-                <div className="sticky top-[96px] lg:top-[114px] z-20 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+                <div className="sticky z-20 top-0 border-b border-t border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                   <h3 className="uppercase">{letter}</h3>
                 </div>
                 <div className="-space-y-px">
@@ -96,7 +95,6 @@ function GroupsLayout() {
               </div>
             ))}
         </div>
-
         <ScrollRestoration />
       </div>
       <div className="xl:ms-96">
