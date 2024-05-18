@@ -60,6 +60,8 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
 
 
 class ChildExpenseSerializer(serializers.Serializer):
+    uid = serializers.UUIDField(source='public_id', read_only=True)
+    urn = serializers.CharField(read_only=True)
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
     description = serializers.CharField(max_length=64)
     shares = ExpenseShareSerializer(many=True, allow_empty=False)

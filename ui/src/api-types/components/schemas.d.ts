@@ -50,6 +50,16 @@ export interface ChangePassword {
   password: string;
 }
 
+export interface ChildExpense {
+  /** Format: uuid */
+  uid: string;
+  urn: string;
+  /** Format: decimal */
+  amount: string;
+  description: string;
+  shares: ExpenseShare[];
+}
+
 export interface Comment {
   /** Format: uuid */
   uid: string;
@@ -126,21 +136,19 @@ export interface Expense {
    * @description The outstanding balance of current user in this expense document
    */
   outstandingBalance?: string;
-  expenses: readonly ExpenseRow[];
+  expenses: readonly ChildExpense[];
   paidBy?: SimpleUser;
   createdBy?: SimpleUser;
 }
 
-export interface ExpenseRow {
-  /** Format: decimal */
-  amount: string;
-  description: string;
-  shares: ExpenseShare[];
-}
+export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 
 export interface ExpenseShare {
   user: string;
-  /** @description The share of the user in the expense */
+  /**
+   * @description The share of the user in the expense
+   * @default 1
+   */
   share?: number;
   /**
    * Format: decimal
@@ -148,6 +156,10 @@ export interface ExpenseShare {
    */
   amount: string;
 }
+
+export type ExpenseTyped = {
+  type: string;
+} | Expense;
 
 export interface ExtendedGroup {
   uid: string;
@@ -259,7 +271,7 @@ export interface PaginatedCommentList {
   results?: Comment[];
 }
 
-export interface PaginatedExpenseList {
+export interface PaginatedExpenseOrPaymentList {
   /** @example 123 */
   count?: number;
   /**
@@ -272,7 +284,7 @@ export interface PaginatedExpenseList {
    * @example http://api.example.org/accounts/?offset=200&limit=100
    */
   previous?: string | null;
-  results?: Expense[];
+  results?: ExpenseOrPayment[];
 }
 
 export interface PaginatedFriendList {
@@ -332,6 +344,25 @@ export interface PatchedUser {
   isVerified?: boolean;
 }
 
+export interface Payment {
+  /** Format: uuid */
+  uid: string;
+  urn: string;
+  /** Format: date-time */
+  datetime: string;
+  description: string;
+  /** Format: decimal */
+  amount: string;
+  currency: SimpleCurrency;
+  createdBy?: SimpleUser;
+  sender: SimpleUser;
+  receiver: SimpleUser;
+}
+
+export type PaymentTyped = {
+  type: string;
+} | Payment;
+
 export interface RefreshAccessToken {
   refreshToken?: string;
 }
@@ -370,11 +401,26 @@ export interface UpsertExpense {
   /** Format: date-time */
   datetime: string;
   description: string;
+  /** @default CurrentUser */
   paidBy?: string;
   group?: string;
   /** @description ISO 4217 Currency Code */
   currency: string;
-  expenses: ExpenseRow[];
+  expenses: ChildExpense[];
+}
+
+export interface UpsertPayment {
+  sender: string;
+  receiver: string;
+  /** Format: date-time */
+  datetime: string;
+  /** @default Payment */
+  description?: string;
+  group?: string;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
+  /** Format: decimal */
+  amount: string;
 }
 
 export interface User {
@@ -408,3 +454,4 @@ export interface UserOutstandingBalance {
   paid: AggregatedOutstandingBalance;
   borrowed: AggregatedOutstandingBalance;
 }
+

@@ -23,6 +23,8 @@ export const Paths = {
   MFA_DEVICE_LIST: '/api/mfa/devices',
   MFA_STATIC_CODE_LIST: '/api/mfa/static',
   PASSWORD_LOGIN: '/api/authn/password',
+  PAYMENT: '/api/payments',
+  PAYMENT_DETAIL: '/api/payments/{payment_uid}',
   PROFILE: '/api/user/profile',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
   RESET_PASSWORD: '/api/user/reset',

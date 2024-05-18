@@ -1,7 +1,8 @@
-@import 'tabs.css';
+@import 'collapsible.css';
+@import 'listbox.css';
 @import 'modal.css';
 @import 'popover.css';
-@import 'listbox.css';
+@import 'tabs.css';
 
 @tailwind base;
 @tailwind components;
