@@ -4,7 +4,7 @@ import {ChevronRightIcon} from '@heroicons/react/16/solid';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {format} from 'date-fns';
 
-import {ChildExpense, Expense} from '../api-types/components/schemas';
+import {ChildExpense, Expense} from '@/api-types/components/schemas';
 import Currency from './Currency.tsx';
 
 interface ExpenseListItemProps {

@@ -108,7 +108,7 @@ function RootComponent() {
       <div className="my-3 px-4 sm:px-6 md:px-8">
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
-            <h3 className="sticky top-[46px] bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
+            <h3 className="sticky top-0 bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
               {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>
