@@ -4,7 +4,7 @@ import {DialogTrigger} from 'react-aria-components';
 
 import {BanknotesIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
-import {Link, createFileRoute} from '@tanstack/react-router';
+import {createFileRoute, Link} from '@tanstack/react-router';
 import {format} from 'date-fns';
 import groupBy from 'just-group-by';
 
@@ -29,8 +29,8 @@ function RootComponent() {
   const monthlyActivity = Object.entries(
     groupBy(
       friendExpenseList?.results ?? [],
-      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01'
-    )
+      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01',
+    ),
   );
 
   return (
@@ -61,7 +61,7 @@ function RootComponent() {
             className="mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium text-brand-700 xl:hidden"
             to="/friends"
           >
-            <ChevronLeftIcon className="size-3"/>
+            <ChevronLeftIcon className="size-3" />
             Friends
           </Link>
         </div>
@@ -97,10 +97,10 @@ function RootComponent() {
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
           <DialogTrigger>
             <Button size="small">
-              <BanknotesIcon/>
+              <BanknotesIcon />
               Settle Up
             </Button>
-            <SettleUpModal friend_uid={friend_uid}/>
+            <SettleUpModal friend_uid={friend_uid} />
           </DialogTrigger>
         </div>
       </div>
@@ -142,7 +142,7 @@ function RootComponent() {
                           {parseFloat(expense.outstandingBalance ?? '0') > 0 ? 'You lent' : 'You borrowed'}
                         </div>
                         <Currency
-                          currency="PKR"
+                          currency={expense.}
                           value={expense.outstandingBalance ?? '0'}
                         />
                       </div>

@@ -8,7 +8,7 @@ import {Project, ts} from 'ts-morph';
 const OAPI_SCHEMA_URL = 'http://localhost:8000/api/schema';
 const ROUTE_TYPES_FILE = './src/api-types/routeTypes.d.ts';
 const SCHEMA_TYPES_FILE = './src/api-types/components/schemas.d.ts';
-
+const builtinNames = ['Object'];
 
 /////////////////
 // Ensure directories
@@ -21,14 +21,12 @@ if (!fs.existsSync('./src/api-types/components')) {
   fs.mkdirSync('./src/api-types/components');
 }
 
-
 /////////////////
 // Fetch schema
 
 console.log('Fetching schema...');
 const commonRouteTypes = await openapiTS(OAPI_SCHEMA_URL);
 fs.writeFileSync(ROUTE_TYPES_FILE, commonRouteTypes);
-
 
 ////////////////
 // Transform schema
@@ -47,30 +45,40 @@ const SchemasProperties = componentsInterface.getTypeNode().getProperties();
 
 for (const property of SchemasProperties) {
   const structure = property.getStructure();
+  const name = builtinNames.includes(structure.name) ? structure.name + '_' : structure.name;
 
-  property.set({
-    type: (w) => w.write(`import("./components/schemas.d.ts").${structure.name}`)
-  });
-
-  if (ts.isTypeLiteralNode(property.getTypeNode().compilerNode)) {
+  if (property.getTypeNode().isKind(ts.SyntaxKind.TypeLiteral)) {
     const _interface = schemasFile.addInterface({
-      name: structure.name,
+      name: name,
       docs: structure.docs,
       isExported: true,
     });
 
     for (const prop of property.getTypeNode().getProperties()) {
-      _interface.addMember(prop.getFullText().trim());
+      _interface.addMember(
+        prop
+          .getFullText()
+          .trim()
+          .replaceAll(/components\["schemas"]\["(\w+)"]/g, (_, name) => {
+            return builtinNames.includes(name) ? name + '_' : name;
+          })
+      );
     }
   } else {
     schemasFile.addTypeAlias({
-      name: structure.name,
+      name: name,
       isExported: true,
-      type: structure.type,
+      type: structure.type.replaceAll(/components\["schemas"]\["(\w+)"]/g, (_, name) => {
+        return builtinNames.includes(name) ? name + '_' : name;
+      }),
     });
   }
+
+  property.set({
+    type: (w) => w.write(`import("./components/schemas.d.ts").${name}`),
+  });
 }
 
 schemasFile.formatText({});
 schemasFile.save().then();
-routeTypesFile.save().then()
+routeTypesFile.save().then();

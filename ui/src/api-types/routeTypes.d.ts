@@ -196,7 +196,7 @@ export interface components {
     GroupOutstandingBalance: import("./components/schemas.d.ts").GroupOutstandingBalance;
     MfaToken: import("./components/schemas.d.ts").MfaToken;
     NotFound: import("./components/schemas.d.ts").NotFound;
-    Object: import("./components/schemas.d.ts").Object;
+    Object: import("./components/schemas.d.ts").Object_;
     OutstandingBalance: import("./components/schemas.d.ts").OutstandingBalance;
     PaginatedActivityList: import("./components/schemas.d.ts").PaginatedActivityList;
     PaginatedCommentList: import("./components/schemas.d.ts").PaginatedCommentList;

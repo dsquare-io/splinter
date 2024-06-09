@@ -33,7 +33,7 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
               {parseFloat(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
             </div>
             <Currency
-              currency="PKR"
+              currency={aggregatedOutstandingBalance?.currency.uid ?? ''}
               value={aggregatedOutstandingBalance?.amount ?? '0'}
             />
           </div>

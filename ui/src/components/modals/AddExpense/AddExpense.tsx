@@ -11,10 +11,12 @@ import {CloseDialog} from '@/components/modals/utils';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
 import {SingleExpenseShares} from './SingleExpenseShares';
+import {useApiQuery} from '../../../hooks/useApiQuery.ts';
 
 export default function AddExpense() {
   const [currentStep, setCurrentStep] = useState('entry');
   const form = useForm();
+  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
   return (
     <ModalOverlay isDismissable>
@@ -48,7 +50,7 @@ export default function AddExpense() {
                 />
                 <HiddenField
                   name="currency"
-                  value="PKR"
+                  value={preferredCurrency?.uid}
                 />
                 <HiddenField
                   name="datetime:now"

@@ -13,10 +13,12 @@ import {useFormContext} from 'react-hook-form';
 
 import {XMarkIcon} from '@heroicons/react/24/outline';
 
-import {ExpenseRow} from '@/api-types/components/schemas';
+import type {ChildExpense} from '@/api-types/components/schemas';
+import {Paths} from '@/api-types/routePaths.ts';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, FieldScope, useScopedFieldName} from '@/components/common';
 import {useExpenseParticipants} from '@/components/modals/AddExpense/useExpenseParticipants.ts';
+import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 interface Props {
   onExpenseDetail?: (baseName: string) => void;
@@ -24,9 +26,10 @@ interface Props {
 
 export default function ExpensesShares({onExpenseDetail}: Props) {
   const {getValues, setValue} = useFormContext();
+  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
-  const expenses: (ExpenseRow & {id: string})[] = (getValues('expenses') ?? []).map(
-    (e: ExpenseRow, i: number) => ({
+  const expenses: (ChildExpense & {id: string})[] = (getValues('expenses') ?? []).map(
+    (e: ChildExpense, i: number) => ({
       ...e,
       id: `expenses.${i}`,
     })
@@ -50,6 +53,8 @@ export default function ExpensesShares({onExpenseDetail}: Props) {
       }
     },
   });
+
+  if (!preferredCurrency) return;
 
   return (
     <div className="flex min-h-full grow flex-col gap-y-4">
@@ -80,7 +85,7 @@ export default function ExpensesShares({onExpenseDetail}: Props) {
                   noTabularNums
                   value={expense.amount}
                   className="text-neutral-600"
-                  currency="PKR"
+                  currency={preferredCurrency.uid}
                 />
               </div>
               <div className="mt-4">

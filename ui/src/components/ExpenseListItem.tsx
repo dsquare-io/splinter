@@ -29,7 +29,7 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
         )}
       </div>
 
-      <OutstandingBalance outstandingBalance={expense.outstandingBalance} />
+      <OutstandingBalance outstandingBalance={expense.outstandingBalance} currency={expense.currency.uid} />
     </div>
   );
 
@@ -83,7 +83,7 @@ function SubExpenseTrigger({expense}: {expense: Expense}) {
   );
 }
 
-function OutstandingBalance({outstandingBalance}: {outstandingBalance?: string | number}) {
+function OutstandingBalance({outstandingBalance, currency}: {outstandingBalance?: string | number, currency: string}) {
   return (
     <div>
       {+(outstandingBalance ?? 0) === 0 ? (
@@ -94,7 +94,7 @@ function OutstandingBalance({outstandingBalance}: {outstandingBalance?: string |
             {parseFloat(outstandingBalance?.toString() ?? '0') > 0 ? 'You lent' : 'You borrowed'}
           </div>
           <Currency
-            currency="PKR"
+            currency={currency}
             value={outstandingBalance ?? '0'}
           />
         </div>

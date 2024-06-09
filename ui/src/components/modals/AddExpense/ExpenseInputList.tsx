@@ -7,9 +7,13 @@ import throttle from 'just-throttle';
 import {Button, Input, Label, NumberFormField, TextFormField} from '@/components/common';
 import {FieldArray} from '@/components/common/FieldArray/FieldArray.tsx';
 import {FieldArrayItems} from '@/components/common/FieldArray/FieldArrayItems.tsx';
+import {useApiQuery} from '../../../hooks/useApiQuery.ts';
+import {Paths} from '../../../api-types/routePaths.ts';
 
 export default function ExpenseItems() {
   const [inpValue, setInptValue] = useState('');
+  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  if (!preferredCurrency) return null;
 
   return (
     <div className="flex-1">
@@ -39,7 +43,7 @@ export default function ExpenseItems() {
                     aria-label="expense item"
                   >
                     <span className="pointer-events-none absolute inset-0 left-3 z-10 flex items-center text-sm text-gray-500">
-                      PKR
+                      {preferredCurrency.uid}
                     </span>
                     <Input
                       className="pl-12 text-right"
