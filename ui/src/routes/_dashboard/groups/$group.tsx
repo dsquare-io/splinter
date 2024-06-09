@@ -129,7 +129,7 @@ function RootComponent() {
         <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/70 backdrop-blur">
           <TabList
             aria-label="Tabs"
-            className="react-aria-TabList -mb-px flex space-x-2"
+            className="react-aria-TabList cursor-default -mb-px flex space-x-2"
           >
             <Tab id="activity">Activity</Tab>
             <Tab id="balance">Balances</Tab>
