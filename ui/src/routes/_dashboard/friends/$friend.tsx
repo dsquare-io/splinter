@@ -4,15 +4,16 @@ import {DialogTrigger} from 'react-aria-components';
 
 import {BanknotesIcon} from '@heroicons/react/16/solid';
 import {ChevronLeftIcon} from '@heroicons/react/24/solid';
-import {createFileRoute, Link} from '@tanstack/react-router';
+import {Link, createFileRoute} from '@tanstack/react-router';
 import {format} from 'date-fns';
 import groupBy from 'just-group-by';
 
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
-import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
+
+import {AddPaymentModal} from '../../../components/modals/AddPayment.tsx';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
@@ -29,8 +30,8 @@ function RootComponent() {
   const monthlyActivity = Object.entries(
     groupBy(
       friendExpenseList?.results ?? [],
-      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01',
-    ),
+      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01'
+    )
   );
 
   return (
@@ -38,7 +39,7 @@ function RootComponent() {
       <div
         className={clsx(
           'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
-          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center',
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
         )}
       >
         <div
@@ -100,7 +101,7 @@ function RootComponent() {
               <BanknotesIcon />
               Settle Up
             </Button>
-            <SettleUpModal friend_uid={friend_uid} />
+            <AddPaymentModal friend_uid={friend_uid} />
           </DialogTrigger>
         </div>
       </div>
@@ -124,30 +125,41 @@ function RootComponent() {
                     </p>
                   </div>
 
-                  <div className="flex-1">
-                    <p className="text-gray-900">
-                      {expense.expenses.length === 1
-                        ? expense.expenses[0].description
-                        : `${expense.expenses.length} Items`}
-                    </p>
-                    <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
-                  </div>
-
-                  <div>
-                    {+(expense.outstandingBalance ?? 0) === 0 ? (
-                      <div className="text-xs text-gray-400">Not involved</div>
-                    ) : (
-                      <div className="-mt-1 text-right text-sm">
-                        <div className="text-xs text-gray-400">
-                          {parseFloat(expense.outstandingBalance ?? '0') > 0 ? 'You lent' : 'You borrowed'}
-                        </div>
-                        <Currency
-                          currency={expense.}
-                          value={expense.outstandingBalance ?? '0'}
-                        />
+                  {expense.type === 'expense' ? (
+                    <>
+                      <div className="flex-1">
+                        <p className="text-gray-900">
+                          {expense.expenses.length === 1
+                            ? expense.expenses[0].description
+                            : `${expense.expenses.length} Items`}
+                        </p>
+                        <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
                       </div>
-                    )}
-                  </div>
+
+                      <div>
+                        {+(expense.outstandingBalance ?? 0) === 0 ? (
+                          <div className="text-xs text-gray-400">Not involved</div>
+                        ) : (
+                          <div className="-mt-1 text-right text-sm">
+                            <div className="text-xs text-gray-400">
+                              {parseFloat(expense.outstandingBalance ?? '0') > 0
+                                ? 'You lent'
+                                : 'You borrowed'}
+                            </div>
+                            <Currency
+                              currency="PKR"
+                              value={expense.outstandingBalance ?? '0'}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-gray-900">
+                      {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid}{' '}
+                      {expense.amount}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

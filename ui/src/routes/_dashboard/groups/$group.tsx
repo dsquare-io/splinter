@@ -11,7 +11,7 @@ import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
 import {GroupSettingsModal} from '@/components/modals/GroupSettings.tsx';
 import {InviteGroupMembersModal} from '@/components/modals/InviteGroupMembers.tsx';
-import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
+import {AddPaymentModal} from '../../../components/modals/AddPayment.tsx';
 import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
 import {GroupActivityTab} from '@/routes/_dashboard/groups/-components/GroupActivityTab.tsx';
@@ -95,7 +95,7 @@ function RootComponent() {
               <BanknotesIcon />
               Settle Up
             </Button>
-            <SettleUpModal group_uid={group_uid} />
+            <AddPaymentModal group_uid={group_uid} />
           </DialogTrigger>
 
           <div className="flex-1" />

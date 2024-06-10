@@ -4,32 +4,41 @@ import {ChevronRightIcon} from '@heroicons/react/16/solid';
 import * as Collapsible from '@radix-ui/react-collapsible';
 import {format} from 'date-fns';
 
-import {ChildExpense, Expense} from '@/api-types/components/schemas';
-import Currency from './Currency.tsx';
+import {ChildExpense, Expense, ExpenseOrPayment} from '@/api-types/components/schemas';
+import Currency from '@/components/Currency.tsx';
 
 interface ExpenseListItemProps {
-  expense: Expense;
+  expense: ExpenseOrPayment;
 }
 
 export default function ExpenseListItem({expense}: ExpenseListItemProps) {
-  const hasSubExpense = expense.expenses.length > 1;
+  const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1 ;
 
   const children = (
     <div className="flex items-center gap-x-4 py-3">
       <MonthDay datetime={expense.datetime} />
 
-      <div className="flex-1">
-        {hasSubExpense ? (
-          <SubExpenseTrigger expense={expense} />
-        ) : (
-          <>
-            <p className="text-gray-900">{expense.expenses[0].description}</p>
-            <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
-          </>
-        )}
-      </div>
+      {expense.type === 'expense' ? (
+        <>
+          <div className="flex-1">
+            {hasSubExpense ? (
+              <SubExpenseTrigger expense={expense} />
+            ) : (
+              <>
+                <p className="text-gray-900">{expense.expenses[0].description}</p>
+                <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
+              </>
+            )}
+          </div>
 
-      <OutstandingBalance outstandingBalance={expense.outstandingBalance} currency={expense.currency.uid} />
+          <OutstandingBalance outstandingBalance={expense.outstandingBalance} currency={expense.currency.uid} />
+        </>
+      ): (
+        <div className="text-gray-900">
+          {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid} {expense.amount}
+        </div>
+      )}
+
     </div>
   );
 
