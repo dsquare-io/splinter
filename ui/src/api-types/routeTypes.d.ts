@@ -188,6 +188,8 @@ export interface components {
     ExpenseOrPayment: import("./components/schemas.d.ts").ExpenseOrPayment;
     ExpenseShare: import("./components/schemas.d.ts").ExpenseShare;
     ExpenseTyped: import("./components/schemas.d.ts").ExpenseTyped;
+    /** @enum {string} */
+    ExpenseTypedTypeEnum: import("./components/schemas.d.ts").ExpenseTypedTypeEnum;
     ExtendedGroup: import("./components/schemas.d.ts").ExtendedGroup;
     ForgetPassword: import("./components/schemas.d.ts").ForgetPassword;
     Friend: import("./components/schemas.d.ts").Friend;
@@ -207,6 +209,8 @@ export interface components {
     PatchedUser: import("./components/schemas.d.ts").PatchedUser;
     Payment: import("./components/schemas.d.ts").Payment;
     PaymentTyped: import("./components/schemas.d.ts").PaymentTyped;
+    /** @enum {string} */
+    PaymentTypedTypeEnum: import("./components/schemas.d.ts").PaymentTypedTypeEnum;
     RefreshAccessToken: import("./components/schemas.d.ts").RefreshAccessToken;
     ResetPassword: import("./components/schemas.d.ts").ResetPassword;
     SimpleCurrency: import("./components/schemas.d.ts").SimpleCurrency;

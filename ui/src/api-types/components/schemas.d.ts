@@ -158,8 +158,9 @@ export interface ExpenseShare {
 }
 
 export type ExpenseTyped = {
-    type: string;
+    type: ExpenseTypedTypeEnum;
 } & Expense;
+export type ExpenseTypedTypeEnum = "expense";
 
 export interface ExtendedGroup {
     uid: string;
@@ -360,8 +361,9 @@ export interface Payment {
 }
 
 export type PaymentTyped = {
-    type: string;
+    type: PaymentTypedTypeEnum;
 } & Payment;
+export type PaymentTypedTypeEnum = "payment";
 
 export interface RefreshAccessToken {
     refreshToken?: string;
