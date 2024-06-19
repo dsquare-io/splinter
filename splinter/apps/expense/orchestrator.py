@@ -1,6 +1,6 @@
-import contextlib
 import threading
 from collections import Counter, defaultdict
+from contextlib import ContextDecorator
 from decimal import Decimal
 
 from django.db import transaction
@@ -56,7 +56,7 @@ class OutstandingBalanceCollector:
             OutstandingBalance.objects.bulk_create(to_create)
 
 
-class ExpenseEventOrchestrator:
+class ExpenseEventOrchestrator(ContextDecorator):
     def __init__(self):
         self._root_expense: Expense | None = None
         self._update_expense_splits = False
@@ -191,6 +191,10 @@ class ExpenseEventOrchestrator:
             ExpenseSplit.objects.bulk_create(to_create)
 
     def __enter__(self):
+        if hasattr(_local, 'orchestrator'):
+            raise ValueError('Expense event orchestrator is already active')
+
+        setattr(_local, 'orchestrator', self)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -206,16 +210,17 @@ class ExpenseEventOrchestrator:
 
             self._outstanding_balance.apply()
 
+        delattr(_local, 'orchestrator')
+
 
 _local = threading.local()
 
 
-@contextlib.contextmanager
-def expense_event_orchestrator():
-    orchestrator = ExpenseEventOrchestrator()
-    setattr(_local, 'orchestrator', orchestrator)
-    yield orchestrator
-    delattr(_local, 'orchestrator')
+def expense_event_orchestrator(f: callable = None):
+    if f is None:
+        return ExpenseEventOrchestrator()
+
+    return ExpenseEventOrchestrator()(f)
 
 
 @receiver(pre_save, sender=ExpenseSplit)

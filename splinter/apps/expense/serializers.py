@@ -9,8 +9,8 @@ from rest_framework.exceptions import ErrorDetail
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
+from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
-from splinter.apps.expense.utils import split_amount
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
@@ -62,7 +62,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
 class ChildExpenseSerializer(serializers.Serializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
-    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
+    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
     description = serializers.CharField(max_length=64)
     shares = ExpenseShareSerializer(many=True, allow_empty=False)
 
@@ -248,49 +248,7 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        expense = None
-        common_attrs = {
-            'parent': None,
-            'datetime': validated_data['datetime'],
-            'currency': validated_data['currency'],
-            'paid_by': validated_data['paid_by'],
-            'created_by': self.context['request'].user,
-        }
-
-        if len(validated_data['expenses']) > 1:
-            common_attrs['parent'] = Expense.objects.create(
-                description=validated_data['description'],
-                amount=sum(expense['amount'] for expense in validated_data['expenses']),
-                group=validated_data.get('group'),
-                **common_attrs,
-            )
-        else:
-            common_attrs['group'] = validated_data.get('group')
-
-        for expense_spec in validated_data['expenses']:
-            expense = Expense.objects.create(
-                description=expense_spec['description'],
-                amount=expense_spec['amount'],
-                **common_attrs,
-            )
-
-            sorted_shares = list(
-                sorted(
-                    expense_spec['shares'],
-                    key=lambda share: (share['share'], share['user'].username),
-                )
-            )
-
-            all_shares = [share['share'] for share in sorted_shares]
-            for share_spec, share_amount in zip(sorted_shares, split_amount(expense_spec['amount'], all_shares)):
-                ExpenseSplit.objects.create(
-                    expense=expense,
-                    user=share_spec['user'],
-                    amount=share_amount,
-                    share=share_spec['share'],
-                )
-
-        return common_attrs['parent'] or expense
+        return CreateExpenseOperation(self.context['request'].user).execute(validated_data)
 
 
 class UpsertPaymentSerializer(serializers.Serializer):
@@ -302,7 +260,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()
-    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=1)
+    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
 
     def validate(self, attrs):
         errors: dict = {}
@@ -336,26 +294,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        sender = validated_data['sender']
-        receiver = validated_data['receiver']
-
-        expense = Expense.objects.create(
-            is_payment=True,
-            datetime=validated_data['datetime'],
-            description=validated_data['description'],
-            group=validated_data.get('group'),
-            currency=validated_data['currency'],
-            amount=validated_data['amount'],
-            paid_by=receiver,
-            created_by=self.context['request'].user,
-        )
-        ExpenseSplit.objects.create(
-            expense=expense,
-            user=sender,
-            amount=validated_data['amount'],
-        )
-
-        return expense
+        return CreatePaymentOperation(self.context['request'].user).execute(validated_data)
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
