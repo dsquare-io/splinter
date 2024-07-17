@@ -38,6 +38,7 @@ import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
 interface SettleUpModalProps {
   group_uid?: string;
   friend_uid?: string;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {

@@ -22,6 +22,8 @@ import { Route as DashboardProfileMeImport } from './routes/_dashboard/profile/m
 import { Route as DashboardGroupsGroupImport } from './routes/_dashboard/groups/$group'
 import { Route as DashboardFriendsFriendImport } from './routes/_dashboard/friends/$friend'
 import { Route as DashboardActivityActivityImport } from './routes/_dashboard/activity/$activity'
+import { Route as DashboardGroupsGroupIndexImport } from './routes/_dashboard/groups/$group/index'
+import { Route as DashboardGroupsGroupExpenseImport } from './routes/_dashboard/groups/$group/$expense'
 
 // Create/Update Routes
 
@@ -80,6 +82,17 @@ const DashboardActivityActivityRoute = DashboardActivityActivityImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const DashboardGroupsGroupIndexRoute = DashboardGroupsGroupIndexImport.update({
+  path: '/',
+  getParentRoute: () => DashboardGroupsGroupRoute,
+} as any)
+
+const DashboardGroupsGroupExpenseRoute =
+  DashboardGroupsGroupExpenseImport.update({
+    path: '/$expense',
+    getParentRoute: () => DashboardGroupsGroupRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -128,6 +141,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardActivityIndexImport
       parentRoute: typeof DashboardImport
     }
+    '/_dashboard/groups/$group/$expense': {
+      preLoaderRoute: typeof DashboardGroupsGroupExpenseImport
+      parentRoute: typeof DashboardGroupsGroupImport
+    }
+    '/_dashboard/groups/$group/': {
+      preLoaderRoute: typeof DashboardGroupsGroupIndexImport
+      parentRoute: typeof DashboardGroupsGroupImport
+    }
   }
 }
 
@@ -137,7 +158,12 @@ export const routeTree = rootRoute.addChildren([
   IndexRoute,
   DashboardRoute.addChildren([
     DashboardFriendsRoute.addChildren([DashboardFriendsFriendRoute]),
-    DashboardGroupsRoute.addChildren([DashboardGroupsGroupRoute]),
+    DashboardGroupsRoute.addChildren([
+      DashboardGroupsGroupRoute.addChildren([
+        DashboardGroupsGroupExpenseRoute,
+        DashboardGroupsGroupIndexRoute,
+      ]),
+    ]),
     DashboardActivityActivityRoute,
     DashboardProfileMeRoute,
     DashboardActivityIndexRoute,

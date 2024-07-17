@@ -56,7 +56,7 @@ export type FormProps<
   TransformedData,
 > = FormSubmissionProps<SubmitResponse, TFieldValues, TransformedData> &
   SlotProps &
-  ComponentProps<'form'> &
+  Omit<ComponentProps<'form'>, keyof FormSubmissionProps<SubmitResponse, TFieldValues, TransformedData>> &
   UseFormProps<TFieldValues> & {
     control?: UseFormReturn<TFieldValues>;
   };

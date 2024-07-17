@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import {ChevronRightIcon} from '@heroicons/react/16/solid';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import {Link, useParams} from '@tanstack/react-router';
 import {format} from 'date-fns';
 
 import {ChildExpense, Expense, ExpenseOrPayment} from '@/api-types/components/schemas';
@@ -12,10 +13,17 @@ interface ExpenseListItemProps {
 }
 
 export default function ExpenseListItem({expense}: ExpenseListItemProps) {
-  const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1 ;
+  const params = useParams({from: '/_dashboard/groups/$group'});
+
+  const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1;
 
   const children = (
-    <div className="flex items-center gap-x-4 py-3">
+    <Link
+      to="/groups/$group/$expense"
+      params={{group: params.group, expense: expense.uid}}
+      replace
+      className="flex items-center gap-x-4 py-3"
+    >
       <MonthDay datetime={expense.datetime} />
 
       {expense.type === 'expense' ? (
@@ -31,15 +39,17 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
             )}
           </div>
 
-          <OutstandingBalance outstandingBalance={expense.outstandingBalance} currency={expense.currency.uid} />
+          <OutstandingBalance
+            outstandingBalance={expense.outstandingBalance}
+            currency={expense.currency.uid}
+          />
         </>
-      ): (
+      ) : (
         <div className="text-gray-900">
           {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid} {expense.amount}
         </div>
       )}
-
-    </div>
+    </Link>
   );
 
   if (!hasSubExpense) {
@@ -92,7 +102,13 @@ function SubExpenseTrigger({expense}: {expense: Expense}) {
   );
 }
 
-function OutstandingBalance({outstandingBalance, currency}: {outstandingBalance?: string | number, currency: string}) {
+function OutstandingBalance({
+  outstandingBalance,
+  currency,
+}: {
+  outstandingBalance?: string | number;
+  currency: string;
+}) {
   return (
     <div>
       {+(outstandingBalance ?? 0) === 0 ? (
