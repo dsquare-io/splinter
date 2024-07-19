@@ -1,12 +1,11 @@
 import clsx from 'clsx';
 
-import {ChevronRightIcon} from '@heroicons/react/16/solid';
-import * as Collapsible from '@radix-ui/react-collapsible';
 import {Link, useParams} from '@tanstack/react-router';
 import {format} from 'date-fns';
 
-import {ChildExpense, Expense, ExpenseOrPayment} from '@/api-types/components/schemas';
+import {ChildExpense, ExpenseOrPayment} from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
+
 
 interface ExpenseListItemProps {
   expense: ExpenseOrPayment;
@@ -16,8 +15,14 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
   const params = useParams({from: '/_dashboard/groups/$group'});
 
   const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1;
+  const description =
+    expense.description !== '.'
+      ? expense.description
+      : hasSubExpense
+        ? `${expense.expenses.length} Expense Items`
+        : expense.type === 'expense' && expense.expenses[0].description;
 
-  const children = (
+  return (
     <Link
       to="/groups/$group/$expense"
       params={{group: params.group, expense: expense.uid}}
@@ -29,14 +34,8 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
       {expense.type === 'expense' ? (
         <>
           <div className="flex-1">
-            {hasSubExpense ? (
-              <SubExpenseTrigger expense={expense} />
-            ) : (
-              <>
-                <p className="text-gray-900">{expense.expenses[0].description}</p>
-                <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
-              </>
-            )}
+            <p className={clsx(hasSubExpense ? 'italic text-gray-900' : 'text-gray-900')}>{description}</p>
+            <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
           </div>
 
           <OutstandingBalance
@@ -50,25 +49,6 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
         </div>
       )}
     </Link>
-  );
-
-  if (!hasSubExpense) {
-    return children;
-  }
-
-  return (
-    <Collapsible.Root>
-      {children}
-
-      <Collapsible.Content className="radix-CollapsibleContent">
-        {expense.expenses.map((subExpense) => (
-          <SubExpenseRow
-            key={subExpense.uid}
-            expense={subExpense}
-          />
-        ))}
-      </Collapsible.Content>
-    </Collapsible.Root>
   );
 }
 
@@ -85,20 +65,6 @@ function SubExpenseRow({expense}: {expense: ChildExpense}) {
         <div className="text-sm text-gray-500">{expense.shares.length} People Involved</div>
       </div>
     </div>
-  );
-}
-
-function SubExpenseTrigger({expense}: {expense: Expense}) {
-  return (
-    <Collapsible.Trigger className="-my-1 flex gap-x-2 rounded border border-transparent py-1 pl-1 pr-2 hover:border-gray-200 [&[data-state='open']>svg]:rotate-90">
-      <ChevronRightIcon className="mt-0.5 h-5 w-5 transition-transform" />
-      <div>
-        <div className={clsx('text-left italic text-gray-900')}>{expense.expenses.length} Expenses</div>
-        <div className="text-sm text-gray-500">
-          {expense.paidBy?.fullName} paid · {expense.expenses[0].shares.length} People Involved
-        </div>
-      </div>
-    </Collapsible.Trigger>
   );
 }
 

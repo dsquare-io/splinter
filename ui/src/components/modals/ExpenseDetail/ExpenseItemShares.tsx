@@ -12,6 +12,7 @@ export default function ExpenseItemShares({
 }) {
   return expenseItem.shares.map((shareItem) => (
     <UserShare
+      key={shareItem.user}
       shareItem={shareItem}
       currency={currency}
     />
