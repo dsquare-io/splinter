@@ -3,7 +3,7 @@ import groupBy from 'just-group-by';
 
 import {ApiRoutes} from '@/api-types';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
-import ExpenseListItem from '../../../../components/ExpenseListItem.tsx';
+import ExpenseListItem from './ExpenseListItem.tsx';
 
 interface Props {
   group_uid: string;

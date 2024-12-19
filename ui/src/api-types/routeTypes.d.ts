@@ -165,60 +165,64 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    AccessToken: import('./components/schemas.d.ts').AccessToken;
-    Activity: import('./components/schemas.d.ts').Activity;
-    AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
-    AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
-    AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
-    AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
-    ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
-    ChangePassword: import('./components/schemas.d.ts').ChangePassword;
-    ChildExpense: import('./components/schemas.d.ts').ChildExpense;
-    Comment: import('./components/schemas.d.ts').Comment;
-    Country: import('./components/schemas.d.ts').Country;
-    CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
-    CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
-    Currency: import('./components/schemas.d.ts').Currency;
-    Device: import('./components/schemas.d.ts').Device;
-    EmailVerification: import('./components/schemas.d.ts').EmailVerification;
-    EnableMfaDeviceRequest: import('./components/schemas.d.ts').EnableMfaDeviceRequest;
-    EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
-    Error: import('./components/schemas.d.ts').Error;
-    Expense: import('./components/schemas.d.ts').Expense;
-    ExpenseOrPayment: import('./components/schemas.d.ts').ExpenseOrPayment;
-    ExpenseShare: import('./components/schemas.d.ts').ExpenseShare;
-    ExpenseTyped: import('./components/schemas.d.ts').ExpenseTyped & import('./components/schemas.d.ts').ExpenseTyped;
-    ExtendedGroup: import('./components/schemas.d.ts').ExtendedGroup;
-    ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
-    Friend: import('./components/schemas.d.ts').Friend;
-    FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
-    Group: import('./components/schemas.d.ts').Group;
-    GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
-    MfaToken: import('./components/schemas.d.ts').MfaToken;
-    NotFound: import('./components/schemas.d.ts').NotFound;
-    Object: import('./components/schemas.d.ts').Object;
-    OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
-    PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
-    PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
-    PaginatedExpenseOrPaymentList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentList;
-    PaginatedFriendList: import('./components/schemas.d.ts').PaginatedFriendList;
-    PaginatedGroupList: import('./components/schemas.d.ts').PaginatedGroupList;
-    PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
-    PatchedUser: import('./components/schemas.d.ts').PatchedUser;
-    Payment: import('./components/schemas.d.ts').Payment;
-    PaymentTyped: import('./components/schemas.d.ts').PaymentTyped & import('./components/schemas.d.ts').PaymentTyped;
-    RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
-    ResetPassword: import('./components/schemas.d.ts').ResetPassword;
-    SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
-    SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
-    SimpleUser: import('./components/schemas.d.ts').SimpleUser;
-    UpdateGroupMembership: import('./components/schemas.d.ts').UpdateGroupMembership;
-    UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
-    UpsertPayment: import('./components/schemas.d.ts').UpsertPayment;
-    User: import('./components/schemas.d.ts').User;
-    UserCurrency: import('./components/schemas.d.ts').UserCurrency;
-    UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
-    UserOutstandingBalance: import('./components/schemas.d.ts').UserOutstandingBalance;
+    AccessToken: import("./components/schemas.d.ts").AccessToken;
+    Activity: import("./components/schemas.d.ts").Activity;
+    AggregatedOutstandingBalance: import("./components/schemas.d.ts").AggregatedOutstandingBalance;
+    AuthTokenData: import("./components/schemas.d.ts").AuthTokenData;
+    AuthenticateUser: import("./components/schemas.d.ts").AuthenticateUser;
+    AvailableDevice: import("./components/schemas.d.ts").AvailableDevice;
+    ChallengeMfaDeviceResponse: import("./components/schemas.d.ts").ChallengeMfaDeviceResponse;
+    ChangePassword: import("./components/schemas.d.ts").ChangePassword;
+    ChildExpense: import("./components/schemas.d.ts").ChildExpense;
+    Comment: import("./components/schemas.d.ts").Comment;
+    Country: import("./components/schemas.d.ts").Country;
+    CreateFriendship: import("./components/schemas.d.ts").CreateFriendship;
+    CreateGroupMembership: import("./components/schemas.d.ts").CreateGroupMembership;
+    Currency: import("./components/schemas.d.ts").Currency;
+    Device: import("./components/schemas.d.ts").Device;
+    EmailVerification: import("./components/schemas.d.ts").EmailVerification;
+    EnableMfaDeviceRequest: import("./components/schemas.d.ts").EnableMfaDeviceRequest;
+    EnableMfaDeviceResponse: import("./components/schemas.d.ts").EnableMfaDeviceResponse;
+    Error: import("./components/schemas.d.ts").Error;
+    Expense: import("./components/schemas.d.ts").Expense;
+    ExpenseOrPayment: import("./components/schemas.d.ts").ExpenseOrPayment;
+    ExpenseShare: import("./components/schemas.d.ts").ExpenseShare;
+    ExpenseTyped: import("./components/schemas.d.ts").ExpenseTyped;
+    /** @enum {string} */
+    ExpenseTypedTypeEnum: import("./components/schemas.d.ts").ExpenseTypedTypeEnum;
+    ExtendedGroup: import("./components/schemas.d.ts").ExtendedGroup;
+    ForgetPassword: import("./components/schemas.d.ts").ForgetPassword;
+    Friend: import("./components/schemas.d.ts").Friend;
+    FriendOutstandingBalance: import("./components/schemas.d.ts").FriendOutstandingBalance;
+    Group: import("./components/schemas.d.ts").Group;
+    GroupOutstandingBalance: import("./components/schemas.d.ts").GroupOutstandingBalance;
+    MfaToken: import("./components/schemas.d.ts").MfaToken;
+    NotFound: import("./components/schemas.d.ts").NotFound;
+    Object: import("./components/schemas.d.ts").Object_;
+    OutstandingBalance: import("./components/schemas.d.ts").OutstandingBalance;
+    PaginatedActivityList: import("./components/schemas.d.ts").PaginatedActivityList;
+    PaginatedCommentList: import("./components/schemas.d.ts").PaginatedCommentList;
+    PaginatedExpenseOrPaymentList: import("./components/schemas.d.ts").PaginatedExpenseOrPaymentList;
+    PaginatedFriendList: import("./components/schemas.d.ts").PaginatedFriendList;
+    PaginatedGroupList: import("./components/schemas.d.ts").PaginatedGroupList;
+    PatchedExtendedGroup: import("./components/schemas.d.ts").PatchedExtendedGroup;
+    PatchedUser: import("./components/schemas.d.ts").PatchedUser;
+    Payment: import("./components/schemas.d.ts").Payment;
+    PaymentTyped: import("./components/schemas.d.ts").PaymentTyped;
+    /** @enum {string} */
+    PaymentTypedTypeEnum: import("./components/schemas.d.ts").PaymentTypedTypeEnum;
+    RefreshAccessToken: import("./components/schemas.d.ts").RefreshAccessToken;
+    ResetPassword: import("./components/schemas.d.ts").ResetPassword;
+    SimpleCurrency: import("./components/schemas.d.ts").SimpleCurrency;
+    SimpleGroup: import("./components/schemas.d.ts").SimpleGroup;
+    SimpleUser: import("./components/schemas.d.ts").SimpleUser;
+    UpdateGroupMembership: import("./components/schemas.d.ts").UpdateGroupMembership;
+    UpsertExpense: import("./components/schemas.d.ts").UpsertExpense;
+    UpsertPayment: import("./components/schemas.d.ts").UpsertPayment;
+    User: import("./components/schemas.d.ts").User;
+    UserCurrency: import("./components/schemas.d.ts").UserCurrency;
+    UserDeviceInfo: import("./components/schemas.d.ts").UserDeviceInfo;
+    UserOutstandingBalance: import("./components/schemas.d.ts").UserOutstandingBalance;
   };
   responses: never;
   parameters: never;
@@ -246,19 +250,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedActivityList;
+          "application/json": components["schemas"]["PaginatedActivityList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -279,25 +283,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedCommentList;
+          "application/json": components["schemas"]["PaginatedCommentList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -311,13 +315,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').Comment;
+        "application/json": components["schemas"]["Comment"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -333,19 +337,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -366,19 +370,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -387,13 +391,13 @@ export interface operations {
   PasswordLogin: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').AuthenticateUser;
+        "application/json": components["schemas"]["AuthenticateUser"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').AuthTokenData;
+          "application/json": components["schemas"]["AuthTokenData"];
         };
       };
       /** @description Bad Request */
@@ -412,13 +416,13 @@ export interface operations {
   RefreshAccessToken: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').RefreshAccessToken;
+        "application/json": components["schemas"]["RefreshAccessToken"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').AccessToken;
+          "application/json": components["schemas"]["AccessToken"];
         };
       };
       /** @description Bad Request */
@@ -438,7 +442,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').Currency[];
+          "application/json": components["schemas"]["Currency"][];
         };
       };
     };
@@ -447,13 +451,13 @@ export interface operations {
   CreateExpense: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').UpsertExpense;
+        "application/json": components["schemas"]["UpsertExpense"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -469,13 +473,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -490,25 +494,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').Expense;
+          "application/json": components["schemas"]["Expense"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -528,19 +532,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -560,19 +564,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedFriendList;
+          "application/json": components["schemas"]["PaginatedFriendList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -581,13 +585,13 @@ export interface operations {
   CreateFriend: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').CreateFriendship;
+        "application/json": components["schemas"]["CreateFriendship"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -603,13 +607,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -624,25 +628,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').Friend;
+          "application/json": components["schemas"]["Friend"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -663,25 +667,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedExpenseOrPaymentList;
+          "application/json": components["schemas"]["PaginatedExpenseOrPaymentList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -699,19 +703,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedGroupList;
+          "application/json": components["schemas"]["PaginatedGroupList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -720,13 +724,13 @@ export interface operations {
   CreateGroup: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').Group;
+        "application/json": components["schemas"]["Group"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -742,13 +746,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -763,25 +767,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').ExtendedGroup;
+          "application/json": components["schemas"]["ExtendedGroup"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -795,7 +799,7 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').ExtendedGroup;
+        "application/json": components["schemas"]["ExtendedGroup"];
       };
     };
     responses: {
@@ -816,19 +820,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -848,19 +852,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -874,7 +878,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": import('./components/schemas').PatchedExtendedGroup;
+        "application/json": components["schemas"]["PatchedExtendedGroup"];
       };
     };
     responses: {
@@ -895,19 +899,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -928,25 +932,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').PaginatedExpenseOrPaymentList;
+          "application/json": components["schemas"]["PaginatedExpenseOrPaymentList"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -960,13 +964,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').UpdateGroupMembership;
+        "application/json": components["schemas"]["UpdateGroupMembership"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').UpdateGroupMembership;
+          "application/json": components["schemas"]["UpdateGroupMembership"];
         };
       };
       /** @description Bad Request */
@@ -982,19 +986,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1008,13 +1012,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').CreateGroupMembership;
+        "application/json": components["schemas"]["CreateGroupMembership"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -1030,19 +1034,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1063,19 +1067,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1090,7 +1094,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').ChallengeMfaDeviceResponse;
+          "application/json": components["schemas"]["ChallengeMfaDeviceResponse"];
         };
       };
       /** @description Bad Request */
@@ -1106,19 +1110,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1132,13 +1136,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').MfaToken;
+        "application/json": components["schemas"]["MfaToken"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').MfaToken;
+          "application/json": components["schemas"]["MfaToken"];
         };
       };
       /** @description Bad Request */
@@ -1154,19 +1158,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1187,19 +1191,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1209,19 +1213,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').UserDeviceInfo;
+          "application/json": components["schemas"]["UserDeviceInfo"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1235,13 +1239,13 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "application/json": import('./components/schemas').EnableMfaDeviceRequest;
+        "application/json": components["schemas"]["EnableMfaDeviceRequest"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').EnableMfaDeviceResponse;
+          "application/json": components["schemas"]["EnableMfaDeviceResponse"];
         };
       };
       /** @description Bad Request */
@@ -1257,19 +1261,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1285,13 +1289,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1317,13 +1321,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1337,13 +1341,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').MfaToken;
+        "application/json": components["schemas"]["MfaToken"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').AuthTokenData;
+          "application/json": components["schemas"]["AuthTokenData"];
         };
       };
       /** @description Bad Request */
@@ -1359,19 +1363,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1380,13 +1384,13 @@ export interface operations {
   CreatePayment: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').UpsertPayment;
+        "application/json": components["schemas"]["UpsertPayment"];
       };
     };
     responses: {
       201: {
         content: {
-          "application/json": import('./components/schemas').Object;
+          "application/json": components["schemas"]["Object"];
         };
       };
       /** @description Bad Request */
@@ -1402,13 +1406,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1423,25 +1427,25 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').Payment;
+          "application/json": components["schemas"]["Payment"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1461,19 +1465,19 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Resource Not Found */
       404: {
         content: {
-          "application/json": import('./components/schemas').NotFound;
+          "application/json": components["schemas"]["NotFound"];
         };
       };
     };
@@ -1483,19 +1487,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').Currency;
+          "application/json": components["schemas"]["Currency"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1504,13 +1508,13 @@ export interface operations {
   UpdateCurrencyPreference: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').UserCurrency;
+        "application/json": components["schemas"]["UserCurrency"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').UserCurrency;
+          "application/json": components["schemas"]["UserCurrency"];
         };
       };
       /** @description Bad Request */
@@ -1526,13 +1530,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1541,13 +1545,13 @@ export interface operations {
   ForgetPassword: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').ForgetPassword;
+        "application/json": components["schemas"]["ForgetPassword"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').ForgetPassword;
+          "application/json": components["schemas"]["ForgetPassword"];
         };
       };
       /** @description Bad Request */
@@ -1563,13 +1567,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1579,19 +1583,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').UserOutstandingBalance;
+          "application/json": components["schemas"]["UserOutstandingBalance"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1600,13 +1604,13 @@ export interface operations {
   ChangePassword: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').ChangePassword;
+        "application/json": components["schemas"]["ChangePassword"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').ChangePassword;
+          "application/json": components["schemas"]["ChangePassword"];
         };
       };
       /** @description Bad Request */
@@ -1622,13 +1626,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1638,19 +1642,19 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').User;
+          "application/json": components["schemas"]["User"];
         };
       };
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1659,7 +1663,7 @@ export interface operations {
   UpdateProfile: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').User;
+        "application/json": components["schemas"]["User"];
       };
     };
     responses: {
@@ -1680,13 +1684,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1695,7 +1699,7 @@ export interface operations {
   PartialUpdateProfile: {
     requestBody?: {
       content: {
-        "application/json": import('./components/schemas').PatchedUser;
+        "application/json": components["schemas"]["PatchedUser"];
       };
     };
     responses: {
@@ -1716,13 +1720,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1731,13 +1735,13 @@ export interface operations {
   ResetPassword: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').ResetPassword;
+        "application/json": components["schemas"]["ResetPassword"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').AuthTokenData;
+          "application/json": components["schemas"]["AuthTokenData"];
         };
       };
       /** @description Bad Request */
@@ -1753,13 +1757,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };
@@ -1768,13 +1772,13 @@ export interface operations {
   VerifyEmail: {
     requestBody: {
       content: {
-        "application/json": import('./components/schemas').EmailVerification;
+        "application/json": components["schemas"]["EmailVerification"];
       };
     };
     responses: {
       200: {
         content: {
-          "application/json": import('./components/schemas').EmailVerification;
+          "application/json": components["schemas"]["EmailVerification"];
         };
       };
       /** @description Bad Request */
@@ -1790,13 +1794,13 @@ export interface operations {
       /** @description Unauthorized */
       401: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
       /** @description Request Forbidden */
       403: {
         content: {
-          "application/json": import('./components/schemas').Error;
+          "application/json": components["schemas"]["Error"];
         };
       };
     };

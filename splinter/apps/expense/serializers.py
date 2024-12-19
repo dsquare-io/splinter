@@ -103,11 +103,18 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
                 Prefetch('splits', queryset=splits_qs, to_attr='shares'),
             )
         )
+        child_queryset = (
+            super()
+            .prefetch_queryset()
+            .prefetch_related(
+                Prefetch('splits', queryset=splits_qs, to_attr='shares'),
+            )
+        )
         return queryset.prefetch_related(
             'currency',
             'paid_by',
             'created_by',
-            Prefetch('children', queryset=queryset),
+            Prefetch('children', queryset=child_queryset),
         )
 
     @extend_schema_field(

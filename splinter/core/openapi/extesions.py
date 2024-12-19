@@ -2,7 +2,9 @@ from drf_spectacular.contrib.rest_polymorphic import (
     PolymorphicSerializerExtension as PolymorphicSerializerExtensionBase,
 )
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
-from drf_spectacular.plumbing import ResolvedComponent, is_patched_serializer
+from drf_spectacular.plumbing import ResolvedComponent, is_patched_serializer, build_object_type, build_basic_type
+from drf_spectacular.settings import spectacular_settings
+from drf_spectacular.types import OpenApiTypes
 
 from splinter.core.serializers import PolymorphicSerializer
 
@@ -23,6 +25,35 @@ class UserAccessTokenAuthenticationScheme(OpenApiAuthenticationExtension):
 class PolymorphicSerializerExtension(PolymorphicSerializerExtensionBase):
     target_class = f'{PolymorphicSerializer.__module__}.{PolymorphicSerializer.__name__}'
 
+    def build_typed_component(self, auto_schema, component, resource_type_field_name, patched, discriminator=None):
+        if spectacular_settings.COMPONENT_SPLIT_REQUEST and component.name.endswith('Request'):
+            typed_component_name = component.name[:-len('Request')] + 'TypedRequest'
+        else:
+            typed_component_name = f'{component.name}Typed'
+
+        resource_type_schema = build_object_type(
+            properties={resource_type_field_name: {
+                **build_basic_type(OpenApiTypes.STR),
+                # adds support for typescript discriminated union
+                "enum": [discriminator]
+            }},
+            required=None if patched else [resource_type_field_name]
+        )
+        # if sub-serializer has an empty schema, only expose the resource_type field part
+        if component.schema:
+            schema = {'allOf': [resource_type_schema, component.ref]}
+        else:
+            schema = resource_type_schema
+
+        component_typed = ResolvedComponent(
+            name=typed_component_name,
+            type=ResolvedComponent.SCHEMA,
+            object=component.object,
+            schema=schema,
+        )
+        auto_schema.registry.register_on_missing(component_typed)
+        return component_typed
+
     def map_serializer(self, auto_schema, direction):
         sub_components = {}
         serializer: PolymorphicSerializer = self.target
@@ -42,7 +73,9 @@ class PolymorphicSerializerExtension(PolymorphicSerializerExtensionBase):
                 component=component,
                 resource_type_field_name=serializer.discriminator_field,
                 patched=is_patched_serializer(sub_serializer, direction),
+                discriminator=discriminator,
             )
+            print(typed_component)
             sub_components[discriminator] = typed_component.ref
 
         return {

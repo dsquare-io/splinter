@@ -1,9 +1,12 @@
 import {createFileRoute} from '@tanstack/react-router';
 
 import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-import {queryClient} from '@/queryClient.ts';
+import {Avatar} from '@/components/common';
+import {useApiQuery} from '@/hooks/useApiQuery.ts';
+
+import ChangePassword from './-change-password.tsx';
+import PersonalInfo from './-personal-info.tsx';
+import Preferences from './-preferences.tsx';
 
 export const Route = createFileRoute('/_dashboard/profile/me')({
   component: RootComponent,
@@ -13,141 +16,63 @@ function RootComponent() {
   const {data: profile} = useApiQuery(Paths.PROFILE);
 
   return (
-    <div className="mx-auto max-w-screen-lg divide-y divide-neutral-200">
-      <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
-        <div>
-          <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>
-          <p className="mt-1.5 text-sm text-gray-500">Manage your personal information.</p>
-        </div>
-        <Form
-          values={profile}
-          action={Paths.PROFILE}
-          onSubmitSuccess={() => queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE))}
-          method="PUT"
-          className="md:col-span-2"
+    <div>
+      <div className="relative border-b border-gray-900/5 px-4 pb-6 pt-16 sm:px-6 md:px-8">
+        <div
+          className="absolute inset-0 -z-10 overflow-hidden"
+          aria-hidden="true"
         >
-          <FormRootErrors />
+          <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
+            <div
+              className="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#267360] to-[#9089FC]"
+              style={{
+                clipPath:
+                  'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
+              }}
+            />
+          </div>
+        </div>
 
-          <div className="space-y-6">
-            <TextFormField
-              name="firstName"
-              required
-            >
-              <Label>First Name</Label>
-              <Input
-                type="text"
-                placeholder="Your first name"
-              />
-              <FieldError />
-            </TextFormField>
+        <div className="mx-auto flex max-w-screen-lg items-center gap-x-5 px-4 sm:px-6 lg:px-8">
+          <Avatar
+            className="size-16 bg-white"
+            fallback={profile?.fullName}
+          />
+          <div>
+            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{profile?.fullName}</div>
+            <div className="text-sm font-medium text-gray-600">{profile?.email}</div>
+          </div>
+        </div>
+      </div>
 
-            <TextFormField
-              name="lastName"
-              required
-            >
-              <Label>Last Name</Label>
-              <Input
-                type="text"
-                placeholder="Your last name"
-              />
-              <FieldError />
-            </TextFormField>
+      <div className="@container mx-auto max-w-screen-lg divide-y divide-neutral-200">
+        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+          <div>
+            <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>
+            <p className="mt-1.5 text-sm text-gray-500">Manage your personal information.</p>
           </div>
 
-          <Button
-            className="mt-8"
-            slot="submit"
-            type="submit"
-          >
-            Update Profile
-          </Button>
-        </Form>
-      </section>
+          <PersonalInfo />
+        </section>
 
-      <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 md:grid-cols-3 lg:px-8">
-        <div>
-          <h1 className="text-lg font-medium leading-6 text-gray-900">Change Password</h1>
-          <p className="mt-1.5 text-sm text-gray-500">Set a different password for your account.</p>
-        </div>
-        <Form
-          action={Paths.CHANGE_PASSWORD}
-          transformData={(
-            {
-              oldPassword,
-              password,
-              password2,
-            }: {
-              oldPassword: string;
-              password: string;
-              password2: string;
-            },
-            formRef
-          ) => {
-            if (password !== password2) {
-              formRef.setError('password2', {
-                message: 'Password Mismatch',
-              });
-              return undefined;
-            }
-            return {oldPassword, password};
-          }}
-          onSubmitSuccess={(_, formRef) => {
-            formRef.reset();
-          }}
-          className="md:col-span-2"
-        >
-          <FormRootErrors />
-
-          <div className="space-y-6">
-            <TextFormField
-              name="oldPassword"
-              required
-            >
-              <Label>Old Password</Label>
-              <Input
-                type="password"
-                placeholder="You old password"
-                autoComplete="current-password"
-              />
-              <FieldError />
-            </TextFormField>
-
-            <TextFormField
-              name="password"
-              required
-            >
-              <Label>Password</Label>
-              <Input
-                type="password"
-                placeholder="Your new password"
-                autoComplete="new-password"
-              />
-              <FieldError />
-            </TextFormField>
-
-            <TextFormField
-              name="password2"
-              required
-            >
-              <Label>Password again</Label>
-              <Input
-                type="password"
-                placeholder="Your new password again"
-                autoComplete="new-password"
-              />
-              <FieldError />
-            </TextFormField>
+        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+          <div>
+            <h1 className="text-lg font-medium leading-6 text-gray-900">Your Preferences</h1>
+            <p className="mt-1.5 text-sm text-gray-500">Customize your experience</p>
           </div>
 
-          <Button
-            className="mt-8"
-            slot="submit"
-            type="submit"
-          >
-            Change Password
-          </Button>
-        </Form>
-      </section>
+          <Preferences />
+        </section>
+
+        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+          <div>
+            <h1 className="text-lg font-medium leading-6 text-gray-900">Change Password</h1>
+            <p className="mt-1.5 text-sm text-gray-500">Set a different password for your account.</p>
+          </div>
+
+          <ChangePassword />
+        </section>
+      </div>
     </div>
   );
 }

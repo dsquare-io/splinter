@@ -6,10 +6,13 @@ import {CloseDialog} from '@/components/modals/utils.tsx';
 import {apiQueryOptions} from '@/hooks/useApiQuery.ts';
 import {queryClient} from '@/queryClient.ts';
 
-export function AddFriendModal() {
+export function AddFriendModal({onOpenChange}: {onOpenChange?: (open: boolean) => void}) {
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
+      <Modal
+        onOpenChange={onOpenChange}
+        className="react-aria-Modal max-h-[580px] sm:max-w-lg"
+      >
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({close}) => (
             <>

@@ -1,5 +1,17 @@
 import fs from 'node:fs';
 import openapiTS from 'openapi-typescript';
+import {Project, ts} from 'ts-morph';
+
+/////////////
+// Constants
+
+const OAPI_SCHEMA_URL = 'http://localhost:8000/api/schema';
+const ROUTE_TYPES_FILE = './src/api-types/routeTypes.d.ts';
+const SCHEMA_TYPES_FILE = './src/api-types/components/schemas.d.ts';
+const builtinNames = ['Object'];
+
+/////////////////
+// Ensure directories
 
 if (!fs.existsSync('./src/api-types')) {
   fs.mkdirSync('./src/api-types');
@@ -9,53 +21,64 @@ if (!fs.existsSync('./src/api-types/components')) {
   fs.mkdirSync('./src/api-types/components');
 }
 
-const schemas = new Map();
-
-function resolveComponentSchemaPath(schema, useImport = false) {
-  const match = schema.match(/components\[["'](\w+)["']\]\[["'](\w+)["']\]/);
-
-  if (match) {
-    if (match[1] === 'schemas') {
-      return useImport ? `import('./components/schemas').${match[2]}` : match[2];
-    }
-  }
-
-  return schema;
-}
-
-function splitSchemaPostTransform(schema, options) {
-  if (options.path.includes('/components/schemas') && options.ctx.indentLv === 2) {
-    if (schema.startsWith('import')) return undefined;
-
-    const name = options.path.split('/').at(-1);
-
-    schema = resolveComponentSchemaPath(schema);
-    schema = schema.replaceAll(/^\s{4}/gm, '');
-
-    const existingSchemas = schemas.get(name) ?? [];
-    if (!existingSchemas.includes(schema)) {
-      existingSchemas.push(schema);
-    }
-    schemas.set(name, existingSchemas);
-
-    return `import('./components/schemas.d.ts').${name}`;
-  }
-  return resolveComponentSchemaPath(schema, !options.path.includes('#/components/schemas'));
-}
+/////////////////
+// Fetch schema
 
 console.log('Fetching schema...');
-const commonRouteTypes = await openapiTS('http://localhost:8000/api/schema', {
-  postTransform: splitSchemaPostTransform,
+const commonRouteTypes = await openapiTS(OAPI_SCHEMA_URL);
+fs.writeFileSync(ROUTE_TYPES_FILE, commonRouteTypes);
+
+////////////////
+// Transform schema
+
+const project = new Project();
+
+const routeTypesFile = project.addSourceFileAtPath(ROUTE_TYPES_FILE);
+const schemasFile = project.createSourceFile(SCHEMA_TYPES_FILE, '', {
+  overwrite: true,
 });
-fs.writeFileSync('./src/api-types/routeTypes.d.ts', commonRouteTypes);
 
-const routeSchemaTypes = Array.from(schemas.entries())
-  .map(([name, schemaUnions]) => {
-    const isInterface = schemaUnions.length === 1 && schemaUnions[0].match(/^\s*\{/);
-    return isInterface
-      ? `export interface ${name} ${schemaUnions[0]}\n`
-      : `export type ${name} = ${schemaUnions.join(' | ')};\n`;
-  })
-  .join('\n');
+const componentsInterface = routeTypesFile.getInterface('components').getProperty('schemas');
 
-fs.writeFileSync('./src/api-types/components/schemas.d.ts', `${routeSchemaTypes}\n`);
+/** @type {import('ts-morph').PropertySignature[]} */
+const SchemasProperties = componentsInterface.getTypeNode().getProperties();
+
+for (const property of SchemasProperties) {
+  const structure = property.getStructure();
+  const name = builtinNames.includes(structure.name) ? structure.name + '_' : structure.name;
+
+  if (property.getTypeNode().isKind(ts.SyntaxKind.TypeLiteral)) {
+    const _interface = schemasFile.addInterface({
+      name: name,
+      docs: structure.docs,
+      isExported: true,
+    });
+
+    for (const prop of property.getTypeNode().getProperties()) {
+      _interface.addMember(
+        prop
+          .getFullText()
+          .trim()
+          .replaceAll(/components\["schemas"]\["(\w+)"]/g, (_, name) => {
+            return builtinNames.includes(name) ? name + '_' : name;
+          })
+      );
+    }
+  } else {
+    schemasFile.addTypeAlias({
+      name: name,
+      isExported: true,
+      type: structure.type.replaceAll(/components\["schemas"]\["(\w+)"]/g, (_, name) => {
+        return builtinNames.includes(name) ? name + '_' : name;
+      }),
+    });
+  }
+
+  property.set({
+    type: (w) => w.write(`import("./components/schemas.d.ts").${name}`),
+  });
+}
+
+schemasFile.formatText({});
+schemasFile.save().then();
+routeTypesFile.save().then();

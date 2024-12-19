@@ -11,8 +11,9 @@ import groupBy from 'just-group-by';
 import {ApiRoutes} from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {Avatar, Button} from '@/components/common';
-import {SettleUpModal} from '@/components/modals/SettleUp.tsx';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
+
+import {AddPaymentModal} from '../../../components/modals/AddPayment.tsx';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
@@ -38,7 +39,7 @@ function RootComponent() {
       <div
         className={clsx(
           'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
-          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center',
+          (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
         )}
       >
         <div
@@ -61,7 +62,7 @@ function RootComponent() {
             className="mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium text-brand-700 xl:hidden"
             to="/friends"
           >
-            <ChevronLeftIcon className="size-3"/>
+            <ChevronLeftIcon className="size-3" />
             Friends
           </Link>
         </div>
@@ -97,10 +98,10 @@ function RootComponent() {
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
           <DialogTrigger>
             <Button size="small">
-              <BanknotesIcon/>
+              <BanknotesIcon />
               Settle Up
             </Button>
-            <SettleUpModal friend_uid={friend_uid}/>
+            <AddPaymentModal friend_uid={friend_uid} />
           </DialogTrigger>
         </div>
       </div>
@@ -108,7 +109,7 @@ function RootComponent() {
       <div className="my-3 px-4 sm:px-6 md:px-8">
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
-            <h3 className="sticky top-[46px] bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
+            <h3 className="sticky top-0 bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
               {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>
@@ -124,30 +125,41 @@ function RootComponent() {
                     </p>
                   </div>
 
-                  <div className="flex-1">
-                    <p className="text-gray-900">
-                      {expense.expenses.length === 1
-                        ? expense.expenses[0].description
-                        : `${expense.expenses.length} Items`}
-                    </p>
-                    <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
-                  </div>
-
-                  <div>
-                    {+(expense.outstandingBalance ?? 0) === 0 ? (
-                      <div className="text-xs text-gray-400">Not involved</div>
-                    ) : (
-                      <div className="-mt-1 text-right text-sm">
-                        <div className="text-xs text-gray-400">
-                          {parseFloat(expense.outstandingBalance ?? '0') > 0 ? 'You lent' : 'You borrowed'}
-                        </div>
-                        <Currency
-                          currency="PKR"
-                          value={expense.outstandingBalance ?? '0'}
-                        />
+                  {expense.type === 'expense' ? (
+                    <>
+                      <div className="flex-1">
+                        <p className="text-gray-900">
+                          {expense.expenses.length === 1
+                            ? expense.expenses[0].description
+                            : `${expense.expenses.length} Items`}
+                        </p>
+                        <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
                       </div>
-                    )}
-                  </div>
+
+                      <div>
+                        {+(expense.outstandingBalance ?? 0) === 0 ? (
+                          <div className="text-xs text-gray-400">Not involved</div>
+                        ) : (
+                          <div className="-mt-1 text-right text-sm">
+                            <div className="text-xs text-gray-400">
+                              {parseFloat(expense.outstandingBalance ?? '0') > 0
+                                ? 'You lent'
+                                : 'You borrowed'}
+                            </div>
+                            <Currency
+                              currency="PKR"
+                              value={expense.outstandingBalance ?? '0'}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-gray-900">
+                      {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid}{' '}
+                      {expense.amount}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

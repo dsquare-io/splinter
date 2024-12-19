@@ -11,6 +11,7 @@ import {AddFriendModal} from '@/components/modals/AddFriend.tsx';
 import {useApiQuery} from '@/hooks/useApiQuery.ts';
 
 import FriendListItem from './friends/-components/FriendListItem.tsx';
+import {Paths} from '../../api-types/routePaths.ts';
 
 export const Route = createFileRoute('/_dashboard/friends')({
   component: FriendsLayout,
@@ -19,8 +20,10 @@ export const Route = createFileRoute('/_dashboard/friends')({
 function FriendsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({to: '/friends'});
-
+  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
   const {data} = useApiQuery(ApiRoutes.FRIEND_LIST);
+
+  if (!preferredCurrency) return null;
 
   const aggregatedOutstandingBalance = data?.results?.reduce(
     (acc, friend) => {
@@ -47,14 +50,14 @@ function FriendsLayout() {
           <div className="flex-1">
             <h2 className="text-lg font-medium text-gray-900">Friends</h2>
             <p className="text-sm text-gray-600">
-              {!aggregatedOutstandingBalance?.['PKR'] ? (
+              {!aggregatedOutstandingBalance?.[preferredCurrency.uid] ? (
                 'You are all settled up'
               ) : (
                 <>
-                  Overall, {+aggregatedOutstandingBalance?.['PKR'] > 0 ? 'you lent ' : 'you borrowed '}
+                  Overall, {+aggregatedOutstandingBalance?.[preferredCurrency.uid] > 0 ? 'you lent ' : 'you borrowed '}
                   <Currency
-                    currency={'PKR'}
-                    value={aggregatedOutstandingBalance?.['PKR']}
+                    currency={preferredCurrency.uid}
+                    value={aggregatedOutstandingBalance?.[preferredCurrency.uid]}
                   />
                 </>
               )}

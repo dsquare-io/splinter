@@ -11,7 +11,7 @@
 }
 
 .react-aria-Modal {
-  @apply relative max-h-screen overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl animate-in sm:my-8 sm:w-full sm:p-6;
+  @apply relative max-h-screen overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl sm:my-8 sm:w-full sm:p-6;
 
   &[data-exiting] {
     @apply animate-out slide-out-to-bottom-4 sm:zoom-out-95 sm:slide-out-to-bottom-0;
@@ -19,6 +19,18 @@
 
   &[data-entering] {
     @apply animate-in slide-in-from-bottom-4 sm:zoom-in-95 sm:slide-in-from-bottom-0;
+  }
+}
+
+.react-aria-Drawer {
+  @apply fixed max-w-lg h-screen overflow-auto bg-white w-full px-4 pb-4 pt-5 text-left right-0 shadow-xl sm:p-6;
+
+  &[data-exiting] {
+    @apply animate-out slide-out-to-right-8 fade-out-85;
+  }
+
+  &[data-entering] {
+    @apply animate-in slide-in-from-right-8 fade-in-85;
   }
 }
 

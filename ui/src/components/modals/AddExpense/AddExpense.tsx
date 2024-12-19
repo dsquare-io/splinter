@@ -8,17 +8,22 @@ import {Paths} from '@/api-types/routePaths.ts';
 import {Button, FieldScope, Form, HiddenField} from '@/components/common';
 import {CloseDialog} from '@/components/modals/utils';
 
+import {useApiQuery} from '../../../hooks/useApiQuery.ts';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
 import {SingleExpenseShares} from './SingleExpenseShares';
 
-export default function AddExpense() {
+export default function AddExpense({onOpenChange}: {onOpenChange?: (open: boolean) => void}) {
   const [currentStep, setCurrentStep] = useState('entry');
   const form = useForm();
+  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal flex min-h-[420px] flex-col overflow-auto sm:max-w-lg">
+      <Modal
+        onOpenChange={onOpenChange}
+        className="react-aria-Modal flex min-h-[420px] flex-col overflow-auto sm:max-w-lg"
+      >
         <Dialog className="react-aria-Dialog flex h-full grow flex-col">
           {({close}) => (
             <>
@@ -48,7 +53,7 @@ export default function AddExpense() {
                 />
                 <HiddenField
                   name="currency"
-                  value="PKR"
+                  value={preferredCurrency?.uid}
                 />
                 <HiddenField
                   name="datetime:now"
@@ -112,7 +117,11 @@ export default function AddExpense() {
                       <SingleExpenseShares />
                     </div>
                     <div className="-mx-4 mt-4 flex justify-end px-4 pt-2 sm:-mx-6 sm:px-6">
-                      <Button slot={null} type="button" onPress={() => setCurrentStep('expense-shares')}>
+                      <Button
+                        slot={null}
+                        type="button"
+                        onPress={() => setCurrentStep('expense-shares')}
+                      >
                         Done
                       </Button>
                     </div>
