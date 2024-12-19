@@ -12,40 +12,12 @@ import {
 } from 'react-aria-components';
 import {type RegisterOptions, type UseControllerProps, useController} from 'react-hook-form';
 
-import {useScopedFieldName} from '@/components/common';
-import {FieldErrorContext} from '@/components/common/Form/FieldError';
-import {messagifyValidationRules} from '@/components/common/Form/validations';
+import {FieldErrorContext} from './FieldError';
+import {useScopedFieldName} from './FieldScope';
+import {getFocusableRef} from './utils';
+import {messagifyValidationRules} from './validations';
 
-const focusableInputElments = [
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  'input:not([disabled]):not([type=hidden])',
-];
-
-const FOCUSABLE_INPUT_ELEMENT_SELECTOR = focusableInputElments.join(':not([hidden]),');
-
-function getFocusableRef(rootNode: HTMLElement) {
-  const walker = document.createTreeWalker(rootNode, NodeFilter.SHOW_ELEMENT, {
-    acceptNode: (node) => {
-      if ((node as HTMLElement).tagName === 'label' && (node as HTMLLabelElement).htmlFor) {
-        return NodeFilter.FILTER_ACCEPT;
-      }
-
-      if ((node as Element).matches(FOCUSABLE_INPUT_ELEMENT_SELECTOR)) {
-        return NodeFilter.FILTER_ACCEPT;
-      }
-
-      return NodeFilter.FILTER_SKIP;
-    },
-  });
-
-  if (walker.nextNode()) {
-    return walker.currentNode as HTMLElement;
-  }
-  return rootNode;
-}
-
-type FieldProps = {
+export type FieldProps = {
   children?: ReactNode;
   required?: RegisterOptions['required'];
   deps?: RegisterOptions['deps'];

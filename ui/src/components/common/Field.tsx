@@ -15,7 +15,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 import {twMerge} from 'tailwind-merge';
 import {tv} from 'tailwind-variants';
 
-import {FieldError as RACFieldError} from '@/components/common/Form/FieldError.tsx';
+import {FieldError as RACFieldError} from '@/components/common/Form/FieldError';
 
 export function Label(props: LabelProps) {
   return (
@@ -50,7 +50,9 @@ export function FieldError({className, ...props}: FieldErrorProps) {
               animate={{opacity: 1, height: 'auto', marginTop: 4}}
               exit={{opacity: 0, height: 0, marginTop: 0}}
               className={clsx(
-                typeof className === 'function' ? className(renderProps) : className,
+                typeof className === 'function'
+                  ? className({...renderProps, defaultClassName: ''})
+                  : className,
                 'mt-1.5 block text-xs text-red-600'
               )}
             >

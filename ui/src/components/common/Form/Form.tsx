@@ -1,5 +1,5 @@
 import {ForwardedRef, forwardRef, useId} from 'react';
-import {ButtonContext, ButtonProps} from 'react-aria-components';
+import {ButtonContext} from 'react-aria-components';
 import {type FieldValues, FormProvider, useForm} from 'react-hook-form';
 
 import {axiosInstance} from '@/axios';
@@ -118,11 +118,11 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
                     control.formState.isLoading ||
                     control.formState.isSubmitting ||
                     control.formState.isValidating,
-                  'data-loading':
+                  isPending:
                     control.formState.isLoading ||
                     control.formState.isSubmitting ||
                     control.formState.isValidating,
-                } as ButtonProps,
+                },
               },
             },
           ],
