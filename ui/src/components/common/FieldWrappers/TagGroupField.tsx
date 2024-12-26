@@ -46,8 +46,6 @@ export function TagGroupField({
     },
   });
 
-  console.log(error);
-
   return (
     <Provider
       values={[
