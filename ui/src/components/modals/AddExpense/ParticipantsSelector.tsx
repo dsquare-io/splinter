@@ -8,12 +8,9 @@ import {
   Label,
   ListBox,
   ListBoxItem,
+  ListBoxSection,
   Popover,
   Button as RACButton,
-  Section,
-  Tag,
-  TagGroup,
-  TagList,
 } from 'react-aria-components';
 import {useFormContext} from 'react-hook-form';
 
@@ -145,38 +142,56 @@ export default function ParticipantsSelector() {
         }}
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
-        <TagGroup
-          selectionMode="none"
-          aria-label="Participants"
-          className="react-aria-TagGroup contents"
-          onRemove={(keys) => {
-            keys.forEach((key) => dispatch({type: 'remove', urn: key.toString()}));
-          }}
-        >
-          <TagList
-            items={selectedParticipants}
-            className="react-aria-TagList contents"
-          >
-            {(item) => (
-              <Tag
-                textValue={item.name}
-                className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
-              >
-                <Avatar
-                  className="size-6 rounded-none bg-neutral-50"
-                  fallback={item.name}
-                />
-                {item.name}
-                <RACButton
-                  className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-none"
-                  slot="remove"
-                >
-                  <XMarkIcon className="size-4" />
-                </RACButton>
-              </Tag>
-            )}
-          </TagList>
-        </TagGroup>
+        {selectedParticipants.map((item) => (
+          <div className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
+            <Avatar
+              className="size-6 rounded-none bg-neutral-50"
+              fallback={item.name}
+            />
+            {item.name}
+            <RACButton
+              className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-none"
+              onPress={() => {
+                dispatch({type: 'remove', urn: item.urn});
+              }}
+            >
+              <XMarkIcon className="size-4" />
+            </RACButton>
+          </div>
+        ))}
+        {/* todo: fix tag group is throwing fix it later. */}
+        {/*<TagGroup*/}
+        {/*  selectionMode="none"*/}
+        {/*  aria-label="Participants"*/}
+        {/*  className="react-aria-TagGroup contents"*/}
+        {/*  onRemove={(keys) => {*/}
+        {/*    keys.forEach((key) => dispatch({type: 'remove', urn: key.toString()}));*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <TagList*/}
+        {/*    // items={selectedParticipants}*/}
+        {/*    className="react-aria-TagList contents"*/}
+        {/*  >*/}
+        {/*    {selectedParticipants.map((item) => (*/}
+        {/*      <Tag*/}
+        {/*        textValue={item.name}*/}
+        {/*        className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"*/}
+        {/*      >*/}
+        {/*        <Avatar*/}
+        {/*          className="size-6 rounded-none bg-neutral-50"*/}
+        {/*          fallback={item.name}*/}
+        {/*        />*/}
+        {/*        {item.name}*/}
+        {/*        <RACButton*/}
+        {/*          className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-none"*/}
+        {/*          slot="remove"*/}
+        {/*        >*/}
+        {/*          <XMarkIcon className="size-4" />*/}
+        {/*        </RACButton>*/}
+        {/*      </Tag>*/}
+        {/*    ))}*/}
+        {/*  </TagList>*/}
+        {/*</TagGroup>*/}
         <div className="-my-1 flex min-w-[100px] grow items-center">
           <Input
             placeholder="Search friends or groups..."
@@ -198,7 +213,7 @@ export default function ParticipantsSelector() {
         >
           <ListBox className="react-aria-ListBox -mx-3 -my-4">
             {(section: (typeof comboboxItems)[number]) => (
-              <Section id={section.name}>
+              <ListBoxSection id={section.name}>
                 <Header>{section.name}</Header>
                 <Collection items={section.children as (Friend | Group)[]}>
                   {(item) => (
@@ -214,7 +229,7 @@ export default function ParticipantsSelector() {
                     </ListBoxItem>
                   )}
                 </Collection>
-              </Section>
+              </ListBoxSection>
             )}
           </ListBox>
         </Popover>
