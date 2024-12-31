@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/', include('splinter.apps.group.urls')),
     path('api/', include('splinter.apps.mfa.urls')),
     path('api/', include('splinter.apps.user.urls')),
+    path('api/media/', include('splinter.apps.media.urls')),
 ]
 
 handler404 = APIErrorView.as_view(status=404)

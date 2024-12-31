@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'splinter.apps.group',
     'splinter.apps.mfa',
     'splinter.apps.user',
+    'splinter.apps.media'
 ]
 
 MFA_BACKUP_CODES_COUNT = 10
