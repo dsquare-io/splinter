@@ -9,6 +9,7 @@ urlpatterns = [
     path('user/forget', views.ForgetPasswordView.as_view()),
     path('user/reset', views.ResetPasswordView.as_view()),
     path('user/verify-email', views.VerifyEmailView.as_view()),
+    path('user/profile-picture', views.UpdateUserProfilePictureView.as_view()),
 ]
 
 if settings.SIGNUP_ENABLED:

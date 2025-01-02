@@ -2,6 +2,7 @@ from functools import cached_property
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 
 from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.group.models import Group, GroupMembership
@@ -81,3 +82,29 @@ class CreateUpdateGroupMembershipView(CreateAPIView, GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+class UpdateGroupProfilePictureView(UpdateAPIView):
+    parser_classes = (MultiPartParser,)
+    
+    def get_object(self):
+        return get_object_or_404(
+            Group.objects.of(self.request.user),
+            public_id=self.kwargs['group_uid']
+        )
+        
+    def put(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            raise ValidationError('No file provided')
+            
+        file = request.FILES['file']
+        content_type = ContentType.objects.get_for_model(self.get_object())
+        
+        media = Media.objects.create(
+            file=file,
+            content_type=content_type,
+            object_id=self.get_object().id,
+            uploaded_by=request.user
+        )
+        
+        self.get_object().update_profile_picture(media)
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -8,9 +8,10 @@ from django.utils import timezone
 
 from splinter.apps.user.managers import EmailVerificationManager, UserManager
 from splinter.db.models import SoftDeleteModel, TimestampedModel
+from splinter.core.mixins import ProfilePictureMixin
 
 
-class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
+class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser, ProfilePictureMixin):
     UID_FIELD = 'username'
     SEARCH_FIELDS = ['full_name', 'username', 'email']
 
@@ -20,6 +21,14 @@ class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
     email = models.EmailField(unique=True, null=True, blank=True)
 
     is_verified = models.BooleanField(default=False)
+
+    profile_picture = models.OneToOneField(
+        'media.Media',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='user_profile'
+    )
 
     date_joined = None
 

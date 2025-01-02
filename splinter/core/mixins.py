@@ -53,3 +53,15 @@ class DestroyModelMixin(DrfDestroyModelMixin):
             return None
 
         return super().get_serializer(*args, **kwargs)
+
+class ProfilePictureMixin:
+    def update_profile_picture(self, media_file):
+        """Update profile picture and handle old picture cleanup"""
+        if self.profile_picture:
+            old_picture = self.profile_picture
+            self.profile_picture = None
+            self.save()
+            old_picture.delete()
+        
+        self.profile_picture = media_file
+        self.save()

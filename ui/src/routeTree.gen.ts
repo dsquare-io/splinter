@@ -11,7 +11,6 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TestImport } from './routes/test'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthLoginImport } from './routes/auth/login'
@@ -27,12 +26,6 @@ import { Route as DashboardGroupsGroupIndexImport } from './routes/_dashboard/gr
 import { Route as DashboardGroupsGroupExpenseImport } from './routes/_dashboard/groups/$group/$expense'
 
 // Create/Update Routes
-
-const TestRoute = TestImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const DashboardRoute = DashboardImport.update({
   id: '/_dashboard',
@@ -128,13 +121,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestImport
       parentRoute: typeof rootRoute
     }
     '/_dashboard/friends': {
@@ -278,7 +264,6 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/friends': typeof DashboardFriendsRouteWithChildren
   '/groups': typeof DashboardGroupsRouteWithChildren
   '/auth/forget-pass': typeof AuthForgetPassRoute
@@ -295,7 +280,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/friends': typeof DashboardFriendsRouteWithChildren
   '/groups': typeof DashboardGroupsRouteWithChildren
   '/auth/forget-pass': typeof AuthForgetPassRoute
@@ -312,7 +296,6 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/_dashboard/friends': typeof DashboardFriendsRouteWithChildren
   '/_dashboard/groups': typeof DashboardGroupsRouteWithChildren
   '/auth/forget-pass': typeof AuthForgetPassRoute
@@ -331,7 +314,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
-    | '/test'
     | '/friends'
     | '/groups'
     | '/auth/forget-pass'
@@ -347,7 +329,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
-    | '/test'
     | '/friends'
     | '/groups'
     | '/auth/forget-pass'
@@ -362,7 +343,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_dashboard'
-    | '/test'
     | '/_dashboard/friends'
     | '/_dashboard/groups'
     | '/auth/forget-pass'
@@ -380,7 +360,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
-  TestRoute: typeof TestRoute
   AuthForgetPassRoute: typeof AuthForgetPassRoute
   AuthLoginRoute: typeof AuthLoginRoute
 }
@@ -388,7 +367,6 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
-  TestRoute: TestRoute,
   AuthForgetPassRoute: AuthForgetPassRoute,
   AuthLoginRoute: AuthLoginRoute,
 }
@@ -405,7 +383,6 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_dashboard",
-        "/test",
         "/auth/forget-pass",
         "/auth/login"
       ]
@@ -422,9 +399,6 @@ export const routeTree = rootRoute
         "/_dashboard/profile/me",
         "/_dashboard/activity/"
       ]
-    },
-    "/test": {
-      "filePath": "test.tsx"
     },
     "/_dashboard/friends": {
       "filePath": "_dashboard/friends.tsx",

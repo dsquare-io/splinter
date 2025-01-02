@@ -29,3 +29,7 @@ TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 SITE_NAME = 'Splinter'
 
 WITHIN_TEST_SUITE = parse_bool(os.getenv('WITHIN_TEST_SUITE'), False)
+
+# Media upload settings
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5MB
+ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif']

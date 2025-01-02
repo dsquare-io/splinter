@@ -13,8 +13,16 @@ from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.models import User
+from splinter.apps.media.models import Media
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
+
+
+class GroupProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ('uid', 'url')
+        read_only_fields = ('uid', 'url')
 
 
 class SimpleGroupSerializer(serializers.ModelSerializer):
@@ -38,6 +46,8 @@ class GroupOutstandingBalanceSerializer(OutstandingBalanceSerializer):
 
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
+    profile_picture = GroupProfilePictureSerializer(read_only=True)
+
     outstanding_balances = GroupOutstandingBalanceSerializer(
         many=True,
         read_only=True,
@@ -48,7 +58,7 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
     )
 
     class Meta(SimpleGroupSerializer.Meta):
-        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
+        fields = SimpleGroupSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance', 'profile_picture')
 
     def prefetch_queryset(self, queryset=None):
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances').filter(
