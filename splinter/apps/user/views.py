@@ -4,6 +4,8 @@ from django.utils.http import base36_to_int, int_to_base36
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.contenttypes.models import ContentType
+from rest_framework.parsers import MultiPartParser
 
 from splinter.apps.authn.serializers import AuthTokenDataSerializer
 from splinter.apps.authn.shortcuts import rotate_user_access_token
@@ -114,3 +116,26 @@ class ResetPasswordView(APIView):
         user.save()
 
         return rotate_user_access_token(user)
+
+class UpdateUserProfilePictureView(UpdateAPIView):
+    parser_classes = (MultiPartParser,)
+    
+    def get_object(self):
+        return self.request.user
+        
+    def put(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            raise ValidationError('No file provided')
+            
+        file = request.FILES['file']
+        content_type = ContentType.objects.get_for_model(self.get_object())
+        
+        media = Media.objects.create(
+            file=file,
+            content_type=content_type,
+            object_id=self.get_object().id,
+            uploaded_by=request.user
+        )
+        
+        self.get_object().update_profile_picture(media)
+        return Response(status=status.HTTP_204_NO_CONTENT)

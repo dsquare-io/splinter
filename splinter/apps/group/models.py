@@ -2,11 +2,20 @@ from django.db import models
 
 from splinter.apps.group.managers import GroupManager
 from splinter.db.models import PublicModel, SoftDeleteModel, TimestampedModel
+from splinter.core.mixins import ProfilePictureMixin
 
 
-class Group(TimestampedModel, SoftDeleteModel, PublicModel):
+class Group(TimestampedModel, SoftDeleteModel, PublicModel, ProfilePictureMixin):
     name = models.CharField(max_length=255)
     members = models.ManyToManyField('user.User', through='group.GroupMembership', related_name='+')
+
+    profile_picture = models.OneToOneField(
+        'media.Media',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='group_profile'
+    )
 
     created_by = models.ForeignKey('user.User', on_delete=models.PROTECT, related_name='created_groups')
 

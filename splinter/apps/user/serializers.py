@@ -2,6 +2,14 @@ from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 
 from splinter.apps.user.models import User
+from splinter.apps.media.models import Media
+
+
+class UserProfilePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Media
+        fields = ('uid', 'url')
+        read_only_fields = ('uid', 'url')
 
 
 class SimpleUserSerializer(serializers.ModelSerializer):
@@ -17,8 +25,10 @@ class SimpleUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(SimpleUserSerializer):
+    profile_picture = UserProfilePictureSerializer(read_only=True)
+
     class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified')
+        fields = SimpleUserSerializer.Meta.fields + ('first_name', 'last_name', 'email', 'is_verified', 'profile_picture')
         read_only_fields = ('is_verified',)
 
 
