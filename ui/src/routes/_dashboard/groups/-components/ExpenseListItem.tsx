@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import {Link, useParams} from '@tanstack/react-router';
 import {format} from 'date-fns';
 
-import {ChildExpense, ExpenseOrPayment} from '@/api-types/components/schemas';
+import {ExpenseOrPayment} from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
 
 
@@ -49,22 +49,6 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
         </div>
       )}
     </Link>
-  );
-}
-
-function SubExpenseRow({expense}: {expense: ChildExpense}) {
-  return (
-    <div className="group relative flex items-center gap-x-4 py-2">
-      {/* vertical line */}
-      <div className="absolute left-2 top-0 h-full w-px bg-gray-300 group-last:h-1/2" />
-      {/* horizontal line */}
-      <div className="absolute left-2 top-1/2 h-px w-3.5 bg-gray-300" />
-
-      <div className="ml-9 flex-1 pl-0.5">
-        <p className="text-gray-900">{expense.description}</p>
-        <div className="text-sm text-gray-500">{expense.shares.length} People Involved</div>
-      </div>
-    </div>
   );
 }
 
