@@ -11,11 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TestImport } from './routes/test'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
+import { Route as AuthAcceptImport } from './routes/auth/accept'
 import { Route as DashboardGroupsImport } from './routes/_dashboard/groups'
 import { Route as DashboardFriendsImport } from './routes/_dashboard/friends'
 import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
@@ -27,12 +27,6 @@ import { Route as DashboardGroupsGroupIndexImport } from './routes/_dashboard/gr
 import { Route as DashboardGroupsGroupExpenseImport } from './routes/_dashboard/groups/$group/$expense'
 
 // Create/Update Routes
-
-const TestRoute = TestImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const DashboardRoute = DashboardImport.update({
   id: '/_dashboard',
@@ -54,6 +48,12 @@ const AuthLoginRoute = AuthLoginImport.update({
 const AuthForgetPassRoute = AuthForgetPassImport.update({
   id: '/auth/forget-pass',
   path: '/auth/forget-pass',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthAcceptRoute = AuthAcceptImport.update({
+  id: '/auth/accept',
+  path: '/auth/accept',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -130,13 +130,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImport
       parentRoute: typeof rootRoute
     }
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestImport
-      parentRoute: typeof rootRoute
-    }
     '/_dashboard/friends': {
       id: '/_dashboard/friends'
       path: '/friends'
@@ -150,6 +143,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/groups'
       preLoaderRoute: typeof DashboardGroupsImport
       parentRoute: typeof DashboardImport
+    }
+    '/auth/accept': {
+      id: '/auth/accept'
+      path: '/auth/accept'
+      fullPath: '/auth/accept'
+      preLoaderRoute: typeof AuthAcceptImport
+      parentRoute: typeof rootRoute
     }
     '/auth/forget-pass': {
       id: '/auth/forget-pass'
@@ -278,9 +278,9 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/friends': typeof DashboardFriendsRouteWithChildren
   '/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
@@ -295,9 +295,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/friends': typeof DashboardFriendsRouteWithChildren
   '/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
@@ -312,9 +312,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
-  '/test': typeof TestRoute
   '/_dashboard/friends': typeof DashboardFriendsRouteWithChildren
   '/_dashboard/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
@@ -331,9 +331,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
-    | '/test'
     | '/friends'
     | '/groups'
+    | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
     | '/activity/$activity'
@@ -347,9 +347,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
-    | '/test'
     | '/friends'
     | '/groups'
+    | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
     | '/activity/$activity'
@@ -362,9 +362,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_dashboard'
-    | '/test'
     | '/_dashboard/friends'
     | '/_dashboard/groups'
+    | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
     | '/_dashboard/activity/$activity'
@@ -380,7 +380,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
-  TestRoute: typeof TestRoute
+  AuthAcceptRoute: typeof AuthAcceptRoute
   AuthForgetPassRoute: typeof AuthForgetPassRoute
   AuthLoginRoute: typeof AuthLoginRoute
 }
@@ -388,7 +388,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
-  TestRoute: TestRoute,
+  AuthAcceptRoute: AuthAcceptRoute,
   AuthForgetPassRoute: AuthForgetPassRoute,
   AuthLoginRoute: AuthLoginRoute,
 }
@@ -405,7 +405,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_dashboard",
-        "/test",
+        "/auth/accept",
         "/auth/forget-pass",
         "/auth/login"
       ]
@@ -423,9 +423,6 @@ export const routeTree = rootRoute
         "/_dashboard/activity/"
       ]
     },
-    "/test": {
-      "filePath": "test.tsx"
-    },
     "/_dashboard/friends": {
       "filePath": "_dashboard/friends.tsx",
       "parent": "/_dashboard",
@@ -439,6 +436,9 @@ export const routeTree = rootRoute
       "children": [
         "/_dashboard/groups/$group"
       ]
+    },
+    "/auth/accept": {
+      "filePath": "auth/accept.tsx"
     },
     "/auth/forget-pass": {
       "filePath": "auth/forget-pass.tsx"
