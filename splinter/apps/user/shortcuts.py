@@ -12,5 +12,5 @@ def invite_user(user: User, invited_by: User):
     uid = int_to_base36(user.id)
     recovery_token = default_token_generator.make_token(user)
 
-    accept_invitation_url = f'{settings.PUBLIC_URL}/accept?uid={uid}&token={recovery_token}'
+    accept_invitation_url = f'{settings.PUBLIC_URL}/auth/accept?uid={uid}&token={recovery_token}'
     send_invitation_email(user, accept_invitation_url, invited_by=invited_by)
