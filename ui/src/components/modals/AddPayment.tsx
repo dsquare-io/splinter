@@ -180,7 +180,10 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
                     <ComboBox
                       menuTrigger="focus"
                       onSelectionChange={(key) => {
-                        const balance = +(balanceByUsers[key]?.[0]?.amount ?? 0);
+                        let balance = 0;
+                        if (key) {
+                          balance = +(balanceByUsers[key]?.[0]?.amount ?? 0);
+                        }
 
                         if (balance) {
                           formControl.setValue('paymentDir', balance > 0 ? 'out' : 'in');

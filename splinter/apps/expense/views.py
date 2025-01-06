@@ -6,6 +6,7 @@ from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
+from splinter.apps.expense.operations import DeleteExpenseOperation, DeletePaymentOperation
 from splinter.apps.expense.serializers import (
     ExpenseOrPaymentSerializer,
     ExpenseSerializer,
@@ -41,6 +42,9 @@ class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
     def get_queryset(self):
         return Expense.objects.of_user(self.request.user).filter(is_payment=False)
 
+    def perform_destroy(self, instance):
+        DeleteExpenseOperation(self.request.user).execute(instance)
+
 
 class RetrieveDestroyPaymentView(RetrieveAPIView, DestroyAPIView):
     lookup_field = 'public_id'
@@ -54,6 +58,9 @@ class RetrieveDestroyPaymentView(RetrieveAPIView, DestroyAPIView):
 
     def get_queryset(self):
         return Expense.objects.of_user(self.request.user).filter(is_payment=True)
+
+    def perform_destroy(self, instance):
+        DeletePaymentOperation(self.request.user).execute(instance)
 
 
 class ListFriendExpenseView(ListAPIView):
