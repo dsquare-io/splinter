@@ -25,6 +25,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 
 
 def configure_static(settings):
+    settings['UI_ROOT'] = os.path.join(settings['BASE_DIR'], 'ui')
     settings['STATIC_ROOT'] = os.path.join(settings['BASE_DIR'], 'static')
     settings['MEDIA_ROOT'] = os.path.join(settings['BASE_DIR'], 'media')
 
