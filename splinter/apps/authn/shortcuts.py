@@ -13,7 +13,7 @@ if MFA_CONFIGURED:
 
 else:
 
-    def generate_user_access_token(user: User) -> dict:
+    def generate_user_access_token(user: User, **kwargs) -> dict:
         return AccessTokenProvider.for_user(user).generate()
 
 

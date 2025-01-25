@@ -41,7 +41,7 @@ function RootComponent() {
             refresh: res.data.refreshToken,
           });
           setHeaders(res.data.accessToken);
-          return navigate({to: '/friends'});
+          return navigate({to: '/auth/setup'});
         }}
         transformData={(data, form) => {
           if (data['password'] !== data['password2']) {

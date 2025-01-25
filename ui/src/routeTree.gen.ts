@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthSetupImport } from './routes/auth/setup'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
 import { Route as AuthAcceptImport } from './routes/auth/accept'
@@ -36,6 +37,12 @@ const DashboardRoute = DashboardImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthSetupRoute = AuthSetupImport.update({
+  id: '/auth/setup',
+  path: '/auth/setup',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -165,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginImport
       parentRoute: typeof rootRoute
     }
+    '/auth/setup': {
+      id: '/auth/setup'
+      path: '/auth/setup'
+      fullPath: '/auth/setup'
+      preLoaderRoute: typeof AuthSetupImport
+      parentRoute: typeof rootRoute
+    }
     '/_dashboard/activity/$activity': {
       id: '/_dashboard/activity/$activity'
       path: '/activity/$activity'
@@ -283,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -300,6 +315,7 @@ export interface FileRoutesByTo {
   '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/profile/me': typeof DashboardProfileMeRoute
@@ -317,6 +333,7 @@ export interface FileRoutesById {
   '/auth/accept': typeof AuthAcceptRoute
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
   '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
   '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
   '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -336,6 +353,7 @@ export interface FileRouteTypes {
     | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
+    | '/auth/setup'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/groups/$group'
@@ -352,6 +370,7 @@ export interface FileRouteTypes {
     | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
+    | '/auth/setup'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/profile/me'
@@ -367,6 +386,7 @@ export interface FileRouteTypes {
     | '/auth/accept'
     | '/auth/forget-pass'
     | '/auth/login'
+    | '/auth/setup'
     | '/_dashboard/activity/$activity'
     | '/_dashboard/friends/$friend'
     | '/_dashboard/groups/$group'
@@ -383,6 +403,7 @@ export interface RootRouteChildren {
   AuthAcceptRoute: typeof AuthAcceptRoute
   AuthForgetPassRoute: typeof AuthForgetPassRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthSetupRoute: typeof AuthSetupRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -391,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthAcceptRoute: AuthAcceptRoute,
   AuthForgetPassRoute: AuthForgetPassRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthSetupRoute: AuthSetupRoute,
 }
 
 export const routeTree = rootRoute
@@ -407,7 +429,8 @@ export const routeTree = rootRoute
         "/_dashboard",
         "/auth/accept",
         "/auth/forget-pass",
-        "/auth/login"
+        "/auth/login",
+        "/auth/setup"
       ]
     },
     "/": {
@@ -445,6 +468,9 @@ export const routeTree = rootRoute
     },
     "/auth/login": {
       "filePath": "auth/login.tsx"
+    },
+    "/auth/setup": {
+      "filePath": "auth/setup.tsx"
     },
     "/_dashboard/activity/$activity": {
       "filePath": "_dashboard/activity/$activity.tsx",
