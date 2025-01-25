@@ -10,7 +10,7 @@ export function CloseDialog() {
     <button
       onClick={() => state.close()}
       aria-label="Close Dialog"
-      className="focus:ring-ring absolute right-4 top-4 sm:right-6 sm:top-6 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+      className="focus:ring-ring absolute right-4 top-4 sm:right-6 sm:top-6 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-offset-2"
     >
       <XMarkIcon className="size-5" />
     </button>

@@ -1,6 +1,6 @@
 .react-aria-Tabs {
   .react-aria-Tab {
-    @apply focus:outline-none;
+    @apply focus:outline-hidden;
     @apply whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium;
 
     &[data-selected='true'] {

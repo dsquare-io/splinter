@@ -13,7 +13,7 @@ export default function GroupListItem({uid, name, outstandingBalances, aggregate
       to="/groups/$group"
       params={{group: uid!}}
       className={clx(
-        'relative block px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'relative block px-6 py-4 hover:bg-gray-100 data-status:bg-brand-50',
         'border-y border-gray-200',
         '[&.active]:z-10 [&.active]:border-brand-200',
         outstandingBalances?.length == 0 ? 'item-center' : 'items-start'

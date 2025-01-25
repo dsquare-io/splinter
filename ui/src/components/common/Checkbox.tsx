@@ -7,12 +7,12 @@ import {VariantProps, tv} from 'tailwind-variants';
 
 export const checkboxStyles = tv({
   base: [
-    'flex-shrink-0 inline-flex items-center justify-center border-[1.5px] ',
+    'shrink-0 inline-flex items-center justify-center border-[1.5px] ',
     'transition-colors duration-100 ease',
   ].join(' '),
   variants: {
     isFocused: {
-      true: 'ring ring-brand-400/30 [[data-focused]_&]:border-brand-500',
+      true: 'ring-3 ring-brand-400/30 in-data-focused:border-brand-500',
     },
     state: {
       disabled: 'border-neutral-300 peer-checked:bg-neutral-300 peer-checked:border-neutral-300',
@@ -24,7 +24,7 @@ export const checkboxStyles = tv({
     },
     shape: {
       circle: 'rounded-full',
-      square: 'rounded',
+      square: 'rounded-sm',
     },
   },
   defaultVariants: {
@@ -62,14 +62,14 @@ export function Checkbox(props: CheckboxProps) {
                 strokeWidth={3}
                 strokeDasharray="15"
                 strokeDashoffset="15"
-                className="ease-out-cubic h-3 w-3 text-white transition-all duration-0 [[data-indeterminate]_&]:duration-150 [[data-indeterminate]_&]:[stroke-dashoffset:0]"
+                className="ease-out-cubic h-3 w-3 text-white transition-all duration-0 in-data-indeterminate:duration-150 in-data-indeterminate:[stroke-dashoffset:0]"
               />
             ) : (
               <CheckIcon
                 strokeWidth={3}
                 strokeDasharray="25"
                 strokeDashoffset="25"
-                className="ease-out-cubic h-3 w-3 text-white transition-all duration-0 [[data-selected]_&]:duration-150 [[data-selected]_&]:[stroke-dashoffset:0]"
+                className="ease-out-cubic h-3 w-3 text-white transition-all duration-0 in-data-selected:duration-150 in-data-selected:[stroke-dashoffset:0]"
               />
             )}
           </div>

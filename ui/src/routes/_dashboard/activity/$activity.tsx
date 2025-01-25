@@ -95,7 +95,7 @@ function RootComponent() {
                   type="text"
                   name="comment"
                   id="comment"
-                  className="block w-full rounded-md bg-white/60 py-1.5 pl-4 pr-10 ring-1 ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md bg-white/60 py-1.5 pl-4 pr-10 ring-1 ring-gray-300 placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
                   placeholder="Add a comment"
                 />
               </div>

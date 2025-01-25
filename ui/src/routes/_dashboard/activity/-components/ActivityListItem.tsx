@@ -16,7 +16,7 @@ export default function ActivityListItem({id, verb, subject, object, balance, cu
     <Link
       to="/activity/$activity"
       params={{activity: id.toString()}}
-      className="flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-[status]:bg-blue-50"
+      className="flex gap-x-3 px-6 py-3 hover:bg-neutral-100 data-status:bg-blue-50"
     >
       <Avatar
         className="size-12 rounded-lg"

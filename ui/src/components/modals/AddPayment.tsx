@@ -142,13 +142,13 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
                     aria-label="Payment direction"
                   >
                     <Radio
-                      className="w-full rounded px-3 py-2 text-sm font-medium text-gray-600 data-[selected]:bg-white data-[selected]:text-gray-900 data-[selected]:shadow-sm data-[focus-visible]:ring-2 data-[focus-visible]:ring-brand-500"
+                      className="w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs data-focus-visible:ring-2 data-focus-visible:ring-brand-500"
                       value="out"
                     >
                       I'm Paying
                     </Radio>
                     <Radio
-                      className="w-full rounded px-3 py-2 text-sm font-medium text-gray-600 data-[selected]:bg-white data-[selected]:text-gray-900 data-[selected]:shadow-sm data-[focus-visible]:ring-2 data-[focus-visible]:ring-brand-500"
+                      className="w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs data-focus-visible:ring-2 data-focus-visible:ring-brand-500"
                       value="in"
                     >
                       I'm Getting Paid
@@ -198,20 +198,20 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
                       </WatchState>
                       <div className="relative">
                         <Input placeholder="Type to search..." />
-                        <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                        <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
                           <ChevronUpDownIcon
                             className="h-5 w-5 text-gray-400"
                             aria-hidden="true"
                           />
                         </BaseButton>
                       </div>
-                      <Popover className="react-aria-Popover w-[--trigger-width]">
+                      <Popover className="react-aria-Popover w-(--trigger-width)">
                         <ListBox className="-mx-4 -my-2 text-sm text-gray-900">
                           {groupData?.members
                             ?.filter((e) => e.uid !== profileData?.uid)
                             .map((memeber) => (
                               <ListBoxItem
-                                className="flex items-center gap-x-3 px-4 py-2 data-[focused]:bg-gray-100"
+                                className="flex items-center gap-x-3 px-4 py-2 data-focused:bg-gray-100"
                                 key={memeber.uid}
                                 textValue={memeber.fullName}
                                 id={memeber.uid}

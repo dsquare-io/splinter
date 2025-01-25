@@ -21,7 +21,7 @@ export default function PersonalInfo() {
       <FormRootErrors />
 
       <div className="space-y-6">
-        <div className="@lg:space-y-0 @lg:flex @lg:space-x-3 items-center space-y-6 [&>*]:w-full">
+        <div className="@lg:space-y-0 @lg:flex @lg:space-x-3 items-center space-y-6 *:w-full">
           <TextFormField
             name="firstName"
             required

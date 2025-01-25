@@ -96,7 +96,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                   <div
                     ref={triggerRef}
                     onClick={() => setOpen((o) => !o)}
-                    className="relative flex w-full min-w-0 flex-1 items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-[8px] text-left text-sm text-gray-500 outline outline-0 transition-colors duration-75 hover:border-gray-400 focus:outline-none"
+                    className="relative flex w-full min-w-0 flex-1 items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-[8px] text-left text-sm text-gray-500 outline outline-0 transition-colors duration-75 hover:border-gray-400 focus:outline-hidden"
                   >
                     <div
                       className="contents"
@@ -117,7 +117,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                           {(item: Friend) => (
                             <Tag
                               textValue={item.fullName}
-                              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
+                              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
                             >
                               <Avatar
                                 className="size-6 rounded-none bg-neutral-50"
@@ -125,7 +125,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                               />
                               {item.fullName}
                               <ButtonBase
-                                className="-ml-2 px-2 py-1 text-gray-500 focus:outline-none"
+                                className="-ml-2 px-2 py-1 text-gray-500 focus:outline-hidden"
                                 slot="remove"
                               >
                                 <XMarkIcon className="size-4" />
@@ -138,7 +138,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
 
                     <button
                       type="button"
-                      className="focus:outline-none"
+                      className="focus:outline-hidden"
                     >
                       <ChevronDownIcon className="size-4 text-gray-500" />
                     </button>
@@ -149,7 +149,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                     triggerRef={triggerRef}
                     className="react-aria-Popover p-0"
                   >
-                    <Dialog className="h-full focus:outline-none">
+                    <Dialog className="h-full focus:outline-hidden">
                       <Command>
                         <CommandInput placeholder="Search Friends..." />
                         <CommandEmpty>No Friends found</CommandEmpty>

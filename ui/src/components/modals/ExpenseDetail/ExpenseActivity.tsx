@@ -49,7 +49,7 @@ export default function ExpenseActivity() {
           <div className="relative flex-auto">
             <TextField
               name="comment"
-              className="overflow-hidden rounded-lg border border-gray-300 pb-12 shadow-sm focus-within:border-brand-500 focus-within:ring focus-within:ring-brand-400/30"
+              className="overflow-hidden rounded-lg border border-gray-300 pb-12 shadow-xs focus-within:border-brand-500 focus-within:ring-3 focus-within:ring-brand-400/30"
             >
               <Label className="sr-only">Add your comment</Label>
               <TextArea
@@ -57,7 +57,7 @@ export default function ExpenseActivity() {
                 name="comment"
                 rows={2}
                 placeholder="Add your comment..."
-                className="block w-full resize-none border-0 bg-transparent px-3 py-1.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-0 sm:text-sm sm:leading-6"
+                className="block w-full resize-none border-0 bg-transparent px-3 py-1.5 text-gray-900 placeholder:text-gray-400 focus:outline-hidden focus:ring-0 sm:text-sm sm:leading-6"
               />
             </TextField>
 

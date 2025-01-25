@@ -1,12 +1,60 @@
-@import 'collapsible.css';
-@import 'listbox.css';
-@import 'modal.css';
-@import 'popover.css';
-@import 'tabs.css';
+@import './collapsible.css' layer(base);
+@import './listbox.css' layer(base);
+@import './modal.css' layer(base);
+@import './popover.css' layer(base);
+@import './tabs.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+
+@theme {
+  --color-brand-50: #f3faf8;
+  --color-brand-100: #d5f2e7;
+  --color-brand-200: #ace3d0;
+  --color-brand-300: #7aceb4;
+  --color-brand-400: #4eb396;
+  --color-brand-500: #35977d;
+  --color-brand-600: #267360;
+  --color-brand-700: #246153;
+  --color-brand-800: #204f45;
+  --color-brand-900: #1f423a;
+  --color-brand-950: #0d2622;
+
+  --color-gray-50: oklch(0.985 0 0);
+  --color-gray-100: oklch(0.97 0 0);
+  --color-gray-200: oklch(0.922 0 0);
+  --color-gray-300: oklch(0.87 0 0);
+  --color-gray-400: oklch(0.708 0 0);
+  --color-gray-500: oklch(0.556 0 0);
+  --color-gray-600: oklch(0.439 0 0);
+  --color-gray-700: oklch(0.371 0 0);
+  --color-gray-800: oklch(0.269 0 0);
+  --color-gray-900: oklch(0.205 0 0);
+  --color-gray-950: oklch(0.145 0 0);
+
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
 
 /* Scale up hit targets on high resolution mobile devices. */
 @media (min-resolution: 200dpi) {

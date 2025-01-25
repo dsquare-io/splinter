@@ -28,7 +28,7 @@ export default function Preferences() {
           <Label>Currency</Label>
           <div className="relative">
             <Input placeholder="Select your currency..." />
-            <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+            <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
               <ChevronUpDownIcon
                 className="h-5 w-5 text-gray-400"
                 aria-hidden="true"
@@ -37,7 +37,7 @@ export default function Preferences() {
           </div>
           <FieldError />
 
-          <Popover className="react-aria-Popover w-[--trigger-width]">
+          <Popover className="react-aria-Popover w-(--trigger-width)">
             <ListBox className="-mx-4 -my-2 text-sm text-gray-900">
               {(currency: Currency) => (
                 <ListBoxItem

@@ -18,7 +18,7 @@ export default function FriendListItem({
       to="/friends/$friend"
       params={{friend: uid}}
       className={clx(
-        'relative block w-full px-6 py-4 hover:bg-gray-100 data-[status]:bg-brand-50',
+        'relative block w-full px-6 py-4 hover:bg-gray-100 data-status:bg-brand-50',
         'border-y border-gray-200',
         '[&.active]:z-10 [&.active]:border-brand-200',
         outstandingBalances?.length == 0 ? 'item-center' : 'items-start'

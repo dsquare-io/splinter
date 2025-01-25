@@ -47,7 +47,7 @@ export function Alert({
       role={role}
       {...restProps}
     >
-      <div className="flex flex-grow items-start gap-x-3 [&>svg]:flex-shrink-0">
+      <div className="flex grow items-start gap-x-3 [&>svg]:shrink-0">
         {iconElement}
         <div>
           {title && <div>{title}</div>}

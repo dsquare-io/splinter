@@ -13,10 +13,10 @@ export function AlertIcon({
     <div
       {...props}
       className={clsx(
-        'mx-auto flex size-12 flex-shrink-0 items-center justify-center rounded-full [grid-area:icon] sm:mx-0 sm:h-10 sm:w-10 [&_[data-slot="icon"]]:size-6',
-        type === 'danger' && 'bg-red-100 [&_[data-slot="icon"]]:text-red-600',
-        type === 'warn' && 'bg-yellow-100 [&_[data-slot="icon"]]:text-yellow-700',
-        type === 'info' && 'bg-blue-100 [&_[data-slot="icon"]]:text-blue-600',
+        'mx-auto flex size-12 shrink-0 items-center justify-center rounded-full [grid-area:icon] sm:mx-0 sm:h-10 sm:w-10 **:data-[slot="icon"]:size-6',
+        type === 'danger' && 'bg-red-100 **:data-[slot="icon"]:text-red-600',
+        type === 'warn' && 'bg-yellow-100 **:data-[slot="icon"]:text-yellow-700',
+        type === 'info' && 'bg-blue-100 **:data-[slot="icon"]:text-blue-600',
         className
       )}
     />

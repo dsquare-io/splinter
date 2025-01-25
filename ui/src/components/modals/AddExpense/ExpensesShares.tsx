@@ -62,16 +62,16 @@ export default function ExpensesShares({onExpenseDetail}: Props) {
         items={expenses}
         aria-label="expense items"
         selectionMode="none"
-        className="-mx-4 flex min-h-full grow flex-col gap-y-4 overflow-y-auto py-px focus:outline-none"
+        className="-mx-4 flex min-h-full grow flex-col gap-y-4 overflow-y-auto py-px focus:outline-hidden"
         dragAndDropHooks={dragAndDropHooks}
       >
         {(expense) => (
           <ListBoxItem
             textValue={expense.description}
             className={clsx(
-              'mx-4 rounded border border-neutral-200 bg-white focus:outline-none',
+              'mx-4 rounded-sm border border-neutral-200 bg-white focus:outline-hidden',
               'cursor-pointer hover:border-brand-400 hover:bg-brand-50',
-              'data-[drop-target]:bg-brand-100 data-[drop-target]:outline data-[drop-target]:outline-offset-[-1px] data-[drop-target]:outline-brand-400'
+              'data-drop-target:bg-brand-100 data-drop-target:outline data-drop-target:outline-offset-[-1px] data-drop-target:outline-brand-400'
             )}
           >
             <div
@@ -168,7 +168,7 @@ function ExpenseItemShares() {
             <Tag
               id={shareParticipant.participant.uid}
               textValue={shareParticipant.participant.fullName}
-              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 bg-white text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
+              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 bg-white text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
             >
               <Avatar
                 className="size-6 rounded-none bg-neutral-50"
@@ -177,7 +177,7 @@ function ExpenseItemShares() {
               {shareParticipant.participant.fullName}
               {shareParticipant.share > 1 && ` (${shareParticipant.share})`}
               <ButtonBase
-                className="-ml-2 px-2 py-1 text-gray-500 focus:outline-none"
+                className="-ml-2 px-2 py-1 text-gray-500 focus:outline-hidden"
                 slot="remove"
               >
                 <XMarkIcon className="size-4" />
@@ -195,11 +195,11 @@ function DraggableParticipants() {
 
   const {dragAndDropHooks} = useDragAndDrop({
     renderDragPreview: (items) => (
-      <div className="flex w-40 items-center justify-between gap-x-2 rounded bg-brand-600 px-2 py-1 text-sm text-white">
+      <div className="flex w-40 items-center justify-between gap-x-2 rounded-sm bg-brand-600 px-2 py-1 text-sm text-white">
         <span className="truncate">
           {participants.find((p) => p.urn === items[0]['text/plain'])?.fullName}
         </span>
-        <span className="inline-flex size-5 items-center justify-center rounded bg-white/20 text-xs font-medium">
+        <span className="inline-flex size-5 items-center justify-center rounded-sm bg-white/20 text-xs font-medium">
           {items.length}
         </span>
       </div>
@@ -225,17 +225,17 @@ function DraggableParticipants() {
           id={user.urn}
           textValue={user.fullName}
           className={clsx(
-            'group flex shrink-0 cursor-default select-none items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 pr-2 text-sm text-neutral-700 hover:bg-gray-100 focus:outline-none',
-            'data-[focus-visible]:border-brand-500 data-[focused]:bg-neutral-100',
-            'data-[selected]:border-brand-300 data-[selected]:bg-brand-100',
-            'data-[focus-visible]:ring data-[focus-visible]:ring-brand-400/30'
+            'group flex shrink-0 cursor-default select-none items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 pr-2 text-sm text-neutral-700 hover:bg-gray-100 focus:outline-hidden',
+            'data-focus-visible:border-brand-500 data-focused:bg-neutral-100',
+            'data-selected:border-brand-300 data-selected:bg-brand-100',
+            'data-focus-visible:ring-3 data-focus-visible:ring-brand-400/30'
           )}
         >
           <Avatar
             className={clsx(
               'size-6 rounded-none bg-neutral-50 group-hover:bg-neutral-100',
-              'group-data-[focused]:bg-neutral-100 group-data-[focused]:ring-neutral-300',
-              'group-data-[selected]:bg-brand-100 group-data-[selected]:ring-brand-300'
+              'group-data-focused:bg-neutral-100 group-data-focused:ring-neutral-300',
+              'group-data-selected:bg-brand-100 group-data-selected:ring-brand-300'
             )}
             fallback={user.fullName}
           />

@@ -110,7 +110,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                       {(item) => (
                         <Tag
                           textValue={item.fullName}
-                          className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
+                          className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
                         >
                           <Avatar
                             className="size-6 rounded-none bg-neutral-50"
@@ -118,7 +118,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                           />
                           {item.fullName}
                           <ButtonBase
-                            className="-ml-2 px-2 py-1 text-gray-500 focus:outline-none"
+                            className="-ml-2 px-2 py-1 text-gray-500 focus:outline-hidden"
                             slot="remove"
                           >
                             <XMarkIcon className="size-4" />
@@ -131,19 +131,19 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                     <Input
                       placeholder="Search your friends..."
                     />
-                    <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+                    <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
                       <ChevronUpDownIcon
                         className="h-5 w-5 text-gray-400"
                         aria-hidden="true"
                       />
                     </BaseButton>
                   </div>
-                  <Popover className="react-aria-Popover w-[--trigger-width]">
+                  <Popover className="react-aria-Popover w-(--trigger-width)">
                     <ListBox className="-mx-4 -my-2 text-gray-800">
                       {(friend: Friend) => (
                         <ListBoxItem
                           id={friend.uid}
-                          className="flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-none hover:bg-gray-100"
+                          className="flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-hidden hover:bg-gray-100"
                           textValue={friend.fullName}
                         >
                           <Avatar

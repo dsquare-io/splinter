@@ -71,15 +71,15 @@ export const fieldBorderStyles = tv({
     'text-base text-gray-950',
     'border border-gray-300',
     'bg-white',
-    'focus:outline-none',
+    'focus:outline-hidden',
     'transition-colors duration-75',
   ],
   variants: {
     isFocusWithin: {
-      true: 'ring',
+      true: 'ring-3',
     },
     isInvalid: {
-      true: 'border-red-500 data-[hover]:border-red-500',
+      true: 'border-red-500 data-hover:border-red-500',
     },
     isDisabled: {
       true: 'border-zinc-950/20',

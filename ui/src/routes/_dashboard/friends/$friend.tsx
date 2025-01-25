@@ -48,7 +48,7 @@ function RootComponent() {
         >
           <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
-              className="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#267360] to-[#9089FC]"
+              className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
               style={{
                 clipPath:
                   'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
@@ -109,7 +109,7 @@ function RootComponent() {
       <div className="my-3 px-4 sm:px-6 md:px-8">
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
-            <h3 className="sticky top-0 bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur">
+            <h3 className="sticky top-0 bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur-sm">
               {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>

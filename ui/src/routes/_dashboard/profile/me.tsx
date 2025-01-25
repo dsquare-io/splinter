@@ -24,7 +24,7 @@ function RootComponent() {
         >
           <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
-              className="aspect-[1154/678] w-[72.125rem] bg-gradient-to-br from-[#267360] to-[#9089FC]"
+              className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
               style={{
                 clipPath:
                   'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
@@ -33,7 +33,7 @@ function RootComponent() {
           </div>
         </div>
 
-        <div className="mx-auto flex max-w-screen-lg items-center gap-x-5 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-(--breakpoint-lg) items-center gap-x-5 px-4 sm:px-6 lg:px-8">
           <Avatar
             className="size-16 bg-white"
             fallback={profile?.fullName}
@@ -45,7 +45,7 @@ function RootComponent() {
         </div>
       </div>
 
-      <div className="@container mx-auto max-w-screen-lg divide-y divide-neutral-200">
+      <div className="@container mx-auto max-w-(--breakpoint-lg) divide-y divide-neutral-200">
         <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>

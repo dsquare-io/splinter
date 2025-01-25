@@ -8,12 +8,12 @@ const button = tv({
   extend: buttonBaseStyles,
   base: [
     'relative inline-flex items-center justify-center gap-x-2 font-medium',
-    '[&>[data-slot=icon]]:shrink-0',
+    '*:data-[slot=icon]:shrink-0',
   ],
   variants: {
     size: {
-      large: 'px-3.5 py-2.5 text-base/6 sm:py-1.5 sm:text-sm/6 [&>[data-slot=icon]]:size-5',
-      small: 'px-3 py-2 text-xs [&>[data-slot=icon]]:size-4',
+      large: 'px-3.5 py-2.5 text-base/6 sm:py-1.5 sm:text-sm/6 *:data-[slot=icon]:size-5',
+      small: 'px-3 py-2 text-xs *:data-[slot=icon]:size-4',
     },
   },
   defaultVariants: {

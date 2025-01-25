@@ -137,7 +137,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
                       {!balanceByUsers[memeber.uid]?.length && (
                         <button
                           type="button"
-                          className="focus:ring-ring rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+                          className="focus:ring-ring rounded-xs focus:outline-hidden focus:ring-2 focus:ring-offset-2"
                           onClick={() => removeMember(memeber)}
                         >
                           <XMarkIcon className="size-4 text-neutral-800" />
@@ -155,7 +155,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
                     disabled={!!balanceByUsers[profileData?.uid ?? '']?.length}
                     type="button"
                     onClick={() => profileData && removeMember(profileData)}
-                    className="flex w-full items-center gap-x-3 rounded px-2 py-2.5 hover:bg-gray-50 focus:outline-none disabled:opacity-60 disabled:hover:bg-transparent"
+                    className="flex w-full items-center gap-x-3 rounded-sm px-2 py-2.5 hover:bg-gray-50 focus:outline-hidden disabled:opacity-60 disabled:hover:bg-transparent"
                   >
                     <ArrowRightStartOnRectangleIcon className="size-8 p-1.5 text-neutral-700" />
                     <div className="text-left">
@@ -169,7 +169,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
                   </button>
                   <button
                     type="button"
-                    className="flex w-full items-center gap-x-3 rounded px-2 py-2.5 text-red-700 hover:bg-red-50 focus:outline-none"
+                    className="flex w-full items-center gap-x-3 rounded-sm px-2 py-2.5 text-red-700 hover:bg-red-50 focus:outline-hidden"
                     onClick={deleteGroup}
                   >
                     <TrashIcon className="size-8 p-1.5 text-red-700" />

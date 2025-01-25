@@ -143,14 +143,14 @@ export default function ParticipantsSelector() {
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
         {selectedParticipants.map((item) => (
-          <div className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
+          <div className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
             <Avatar
               className="size-6 rounded-none bg-neutral-50"
               fallback={item.name}
             />
             {item.name}
             <RACButton
-              className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-none"
+              className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-hidden"
               onPress={() => {
                 dispatch({type: 'remove', urn: item.urn});
               }}
@@ -175,7 +175,7 @@ export default function ParticipantsSelector() {
         {/*    {selectedParticipants.map((item) => (*/}
         {/*      <Tag*/}
         {/*        textValue={item.name}*/}
-        {/*        className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-none data-[focused]:border-brand-300 data-[focused]:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"*/}
+        {/*        className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"*/}
         {/*      >*/}
         {/*        <Avatar*/}
         {/*          className="size-6 rounded-none bg-neutral-50"*/}
@@ -183,7 +183,7 @@ export default function ParticipantsSelector() {
         {/*        />*/}
         {/*        {item.name}*/}
         {/*        <RACButton*/}
-        {/*          className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-none"*/}
+        {/*          className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-hidden"*/}
         {/*          slot="remove"*/}
         {/*        >*/}
         {/*          <XMarkIcon className="size-4" />*/}
@@ -195,10 +195,10 @@ export default function ParticipantsSelector() {
         <div className="-my-1 flex min-w-[100px] grow items-center">
           <Input
             placeholder="Search friends or groups..."
-            className="grow py-1.5 focus:outline-none"
+            className="grow py-1.5 focus:outline-hidden"
             onKeyDown={() => {}}
           />
-          <BaseButton className="flex items-center rounded-r-md py-2.5 focus:outline-none">
+          <BaseButton className="flex items-center rounded-r-md py-2.5 focus:outline-hidden">
             <ChevronDownIcon
               className="size-4 text-gray-500"
               aria-hidden="true"

@@ -35,5 +35,5 @@
 }
 
 .react-aria-Dialog {
-  @apply focus:outline-none;
+  @apply focus:outline-hidden;
 }
