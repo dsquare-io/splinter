@@ -27,8 +27,11 @@ class Expense(TimestampedModel, SoftDeleteModel, StateAwareModel, PublicModel):
         db_table = 'expenses'
         ordering = ('-datetime',)
 
-    def __str__(self):
+    def __public__str__(self):
         return self.description
+
+    def __str__(self):
+        return f'{self.description} ({self.amount})'
 
     def save(self, **kwargs):
         if self.amount == 0:

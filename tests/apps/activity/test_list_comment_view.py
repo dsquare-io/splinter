@@ -7,7 +7,7 @@ class ListCommentViewTests(AuthenticatedAPITestCase):
     def setUpTestData(cls):
         super().setUpTestData()
 
-        cls.activity = ActivityFactory(user=cls.user)
+        cls.activity = ActivityFactory(actor=cls.user)
         CommentFactory.create_batch(5, activity=cls.activity)
 
     def test_list_comment(self):

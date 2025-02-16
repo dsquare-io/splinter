@@ -1,16 +1,16 @@
 from django.utils.functional import cached_property
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.activity.models import Activity, Comment
-from splinter.apps.activity.serializers import ActivitySerializer, CommentSerializer
+from splinter.apps.activity.models import Activity, ActivityAudience, Comment
+from splinter.apps.activity.serializers import ActivityAudienceSerializer, CommentSerializer
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView
 
 
 class ListActivityView(ListAPIView):
-    serializer_class = ActivitySerializer
+    serializer_class = ActivityAudienceSerializer
 
     def get_queryset(self):
-        return Activity.objects.of(self.request.user.id).order_by('-created_at')
+        return ActivityAudience.objects.filter(user=self.request.user).order_by('-created_at')
 
 
 class GenericActivityView(GenericAPIView):

@@ -1,47 +1,44 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Union
 
+from django.db.models import Model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from splinter.apps.activity.models import Activity, Comment
 
 if TYPE_CHECKING:
+    from splinter.apps.group.models import Group
     from splinter.apps.user.models import User
 
 
 @dataclass(slots=True, frozen=True)
 class ActivityType:
     verb: str
-    template: '{actor} {verb} {action_object} on {target}'
+    template: str
 
-    __all__: ClassVar[dict[str, 'ActivityType']] = {}
+    def __post_init__(self) -> None:
+        Activity.known_types[self.verb] = self
 
-    @classmethod
-    def register(cls, verb: str, template: str) -> 'ActivityType':
-        if verb in cls.__all__:
-            raise ValueError(f'Activity type {verb} already registered')
-
-        activity_type = ActivityType(verb=verb, template=template)
-        cls.__all__[verb] = activity_type
-        return activity_type
-
-    @classmethod
-    def get_template(cls, verb: str) -> str:
-        return cls.__all__[verb].template
-
-    def log(self, user: 'User', audience: list['User'] = None, **kwargs) -> 'Activity':
-        activity = Activity.objects.create(user=user, verb=self.verb, **kwargs)
-
-        audiences = {user}
-        if audience:
-            audiences.update(audience)
-
-        activity.audience.add(*audiences, through_defaults={})
-        return activity
+    def log(
+        self,
+        actor: Union[int, 'User'],
+        target: Model,
+        audience: list[Union[int, 'User']] = None,
+        group: Union[int, 'Group'] = None,
+        action_object: Model | None = None,
+    ) -> 'Activity':
+        return Activity.objects.log(
+            activity_type=self,
+            actor=actor,
+            target=target,
+            audience=audience,
+            group=group,
+            action_object=action_object,
+        )
 
 
-CommentActivity = ActivityType.register(verb='comment', template='{actor} commented on {target}')
+CommentActivity = ActivityType(verb='comment', template='{actor} commented on {target}: {object}')
 
 
 @receiver(post_save, sender=Comment)
@@ -51,13 +48,13 @@ def handle_comment_save(instance: Comment, created: bool, **kwargs):
 
     original_activity = instance.activity
 
-    audience = list(original_activity.audience.all())
-    audience.append(original_activity.user)
+    audience = list(original_activity.audience.values_list('pk', flat=True))
+    audience.append(original_activity.actor_id)
 
     return CommentActivity.log(
-        user=instance.user,
+        actor=instance.user_id,
         target=original_activity,
-        description=instance.content,
         audience=audience,
-        group=original_activity.group,
+        group=original_activity.group_id,
+        action_object=instance,
     )

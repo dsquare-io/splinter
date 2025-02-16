@@ -1,6 +1,8 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from splinter.utils.strings import public_string
+
 
 class ObjectSerializer(serializers.Serializer):
     uid = serializers.SerializerMethodField(read_only=True, allow_null=True)
@@ -23,7 +25,7 @@ class ObjectSerializer(serializers.Serializer):
 
     @extend_schema_field(serializers.CharField(help_text='String representation of object'))
     def get_obj_value(self, obj) -> str:
-        return str(obj)
+        return public_string(obj)
 
 
 class PolymorphicSerializer(serializers.Serializer):

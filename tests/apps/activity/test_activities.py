@@ -15,5 +15,4 @@ class ActivitiesTests(ActivityTestCase):
         comment_activity = comment_activities[0]
         self.assertEqual(comment_activity.verb, 'comment')
         self.assertEqual(comment_activity.target, activity)
-        self.assertEqual(comment_activity.description, comment.content)
-        self.assertActivityAudience(comment_activity, [activity.user, comment.user])
+        self.assertActivityAudience(comment_activity, [activity.actor, comment.user])

@@ -7,7 +7,7 @@ class CreateCommentViewTests(AuthenticatedAPITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.activity = ActivityFactory(user=cls.user)
+        cls.activity = ActivityFactory(actor=cls.user)
 
     def setUp(self):
         super().setUp()
@@ -30,4 +30,4 @@ class CreateCommentViewTests(AuthenticatedAPITestCase):
 
         activity = activities[0]
         self.assertEqual(activity.verb, 'comment')
-        self.assertEqual(activity.user, self.user)
+        self.assertEqual(activity.actor, self.user)

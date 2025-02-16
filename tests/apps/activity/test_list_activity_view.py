@@ -9,7 +9,7 @@ class ListActivityViewTests(AuthenticatedAPITestCase):
         super().setUpTestData()
 
         for i in range(5):
-            activity = (ActivityFactory if i < 2 else GroupActivityFactory)(user=cls.user)
+            activity = (ActivityFactory if i < 2 else GroupActivityFactory)(actor=cls.user)
             ActivityAudience.objects.create(activity=activity, user=cls.user)
 
     def test_list_activities(self):

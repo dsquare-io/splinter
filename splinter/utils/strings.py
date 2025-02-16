@@ -102,3 +102,14 @@ def convert_html_to_text(html: str, wrap_width: int | None = None) -> str:
         paragraphs = instance.paragraphs
 
     return '\n'.join(paragraphs).strip()
+
+
+def public_string(obj) -> str:
+    if hasattr(obj, '__public_str__'):
+        return obj.__public_str__()
+
+    uid_field = getattr(obj, 'UID_FIELD', None)
+    if uid_field:
+        return f'{obj.__class__.__name__}: {getattr(obj, uid_field)}'
+
+    return obj.__class__.__name__

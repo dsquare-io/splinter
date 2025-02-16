@@ -6,7 +6,7 @@ from splinter.apps.activity.models import Activity, Comment
 from tests.apps.group.factories import GroupFactory
 from tests.apps.user.factories import UserFactory
 
-ActivityType.register(
+FakeActivity = ActivityType(
     verb='fake',
     template='{actor} {verb} on {target}',
 )
@@ -16,11 +16,9 @@ class ActivityFactory(DjangoModelFactory):
     class Meta:
         model = Activity
 
-    user = factory.SubFactory(UserFactory)
+    actor = factory.SubFactory(UserFactory)
     group = None
     verb = 'fake'
-    description = factory.Faker('paragraph', nb_sentences=1)
-    target = factory.SubFactory(UserFactory)
 
 
 class GroupActivityFactory(ActivityFactory):

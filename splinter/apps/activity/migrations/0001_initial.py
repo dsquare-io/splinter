@@ -2,7 +2,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-from splinter.db.models import UniqueUUIDField
+import splinter.db.models.fields
 
 
 class Migration(migrations.Migration):
@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('group', '0001_initial'),
+        ('group', '0003_alter_groupmembership_options'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -20,11 +20,17 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('public_id', UniqueUUIDField(editable=False)),
+                ('public_id', splinter.db.models.fields.UniqueUUIDField(editable=False)),
                 ('verb', models.CharField(max_length=32)),
-                ('description', models.CharField(max_length=255)),
-                ('target_object_id', models.BigIntegerField()),
+                ('target_object_id', models.BigIntegerField(blank=True, null=True)),
+                ('object_id', models.BigIntegerField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    'actor',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
+                    ),
+                ),
                 (
                     'group',
                     models.ForeignKey(
@@ -36,15 +42,23 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    'target_content_type',
+                    'object_content_type',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='contenttypes.contenttype'
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='+',
+                        to='contenttypes.contenttype',
                     ),
                 ),
                 (
-                    'user',
+                    'target_content_type',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to=settings.AUTH_USER_MODEL
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='+',
+                        to='contenttypes.contenttype',
                     ),
                 ),
             ],
@@ -58,6 +72,8 @@ class Migration(migrations.Migration):
             name='ActivityAudience',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('delivered_at', models.DateTimeField(blank=True, null=True)),
+                ('read_at', models.DateTimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 (
                     'activity',
@@ -81,7 +97,7 @@ class Migration(migrations.Migration):
             name='Comment',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('public_id', UniqueUUIDField(editable=False)),
+                ('public_id', splinter.db.models.fields.UniqueUUIDField(editable=False)),
                 ('removed_at', models.DateTimeField(blank=True, db_index=True, editable=False, null=True)),
                 ('content', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),

@@ -6,7 +6,7 @@ class DeleteCommentViewTests(AuthenticatedAPITestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.activity = ActivityFactory(user=cls.user)
+        cls.activity = ActivityFactory(actor=cls.user)
         cls.comment = CommentFactory(activity=cls.activity)
 
     def setUp(self):
