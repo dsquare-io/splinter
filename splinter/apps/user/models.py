@@ -6,7 +6,7 @@ from django.contrib.auth.validators import ASCIIUsernameValidator
 from django.db import models
 from django.utils import timezone
 
-from splinter.apps.user.managers import EmailVerificationManager, UserManager
+from splinter.apps.user.managers import EmailVerificationManager, UserInvitationManager, UserManager
 from splinter.db.models import SoftDeleteModel, TimestampedModel
 
 
@@ -47,6 +47,19 @@ class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
             self.email = None
 
         super().save(**kwargs)
+
+
+class UserInvitation(models.Model):
+    inviter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitations_sent')
+    invitee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invitations_received')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = UserInvitationManager()
+
+    def __str__(self):
+        return f'{self.inviter} invited {self.invitee}'
 
 
 class EmailVerification(models.Model):

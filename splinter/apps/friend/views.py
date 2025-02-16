@@ -2,7 +2,7 @@ from django.conf import settings
 
 from splinter.apps.friend.models import Friendship
 from splinter.apps.friend.serializers import CreateFriendshipSerializer, FriendSerializer
-from splinter.apps.user.shortcuts import invite_user
+from splinter.apps.user.models import UserInvitation
 from splinter.core.filters import TrigramSimilaritySearchBackend
 from splinter.core.views import CreateAPIView, ListAPIView, RetrieveAPIView
 
@@ -28,7 +28,7 @@ class ListCreateFriendView(ListAPIView, CreateAPIView):
         user = serializer.save()
 
         if not user.is_active:
-            invite_user(user, invited_by=self.request.user)
+            UserInvitation.objects.invite(invitee=user, inviter=self.request.user)
 
 
 class RetrieveFriendView(RetrieveAPIView):

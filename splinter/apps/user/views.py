@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import base36_to_int, int_to_base36
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import ValidationError
@@ -17,6 +15,7 @@ from splinter.apps.user.serializers import (
     ResetPasswordSerializer,
     UserSerializer,
 )
+from splinter.apps.user.tokens import password_reset_token_generator
 from splinter.authentication import UserAccessTokenAuthentication
 from splinter.core.request_identity import RequestIdentity
 from splinter.core.views import APIView, CreateAPIView, RetrieveAPIView, UpdateAPIView
@@ -43,7 +42,6 @@ class CreateUserAccountView(CreateAPIView):
 class VerifyEmailView(APIView):
     permission_classes = ()
     serializer_class = EmailVerificationSerializer
-    token_generator = default_token_generator
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -60,7 +58,7 @@ class VerifyEmailView(APIView):
         if not email_verification.verify():
             raise ValidationError('Email verification token expired', code='email_verification_token_expired')
 
-        return {'uid': int_to_base36(user.id), 'token': self.token_generator.make_token(user)}
+        return {'uid': int_to_base36(user.id), 'token': password_reset_token_generator.make_token(user)}
 
 
 class ChangePasswordView(APIView):
@@ -75,25 +73,19 @@ class ChangePasswordView(APIView):
 class ForgetPasswordView(APIView):
     permission_classes = ()
     serializer_class = ForgetPasswordSerializer
-    token_generator = default_token_generator
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        uid = int_to_base36(user.id)
-        recovery_token = self.token_generator.make_token(user)
-        password_reset_url = f'{settings.PUBLIC_URL}/reset?uid={uid}&token={recovery_token}'
-
         request_identity = RequestIdentity.from_request(request)
-        postman.send_password_reset_email(user, password_reset_url, request_identity)
+        postman.send_password_reset_email(user, request_identity)
 
 
 class ResetPasswordView(APIView):
     permission_classes = ()
     serializer_class = ResetPasswordSerializer
-    token_generator = default_token_generator
 
     @extend_schema(responses={200: AuthTokenDataSerializer})
     def post(self, request):
@@ -106,7 +98,7 @@ class ResetPasswordView(APIView):
         except (ValueError, User.DoesNotExist):
             raise ValidationError('Malfunctioned request', 'malfunctioned_request')
 
-        if not self.token_generator.check_token(user, validated_data['token']):
+        if not password_reset_token_generator.check_token(user, validated_data['token']):
             raise ValidationError('Password reset token expired', 'password_reset_token_expired')
 
         user.set_password(validated_data['password'])

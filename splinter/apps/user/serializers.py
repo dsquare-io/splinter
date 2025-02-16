@@ -94,7 +94,14 @@ class CreateUserSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         if 'username' not in validated_data:
-            validated_data['username'] = User.objects.suggest_username(validated_data['email'])
+            first_name = validated_data['first_name'] or ''
+            last_name = validated_data['last_name'] or ''
+
+            username = f'{first_name}{last_name}'
+            if not username:
+                username = validated_data['email'].split('@', 1)[0]
+
+            validated_data['username'] = User.objects.normalize_username(username)
 
         validated_data.setdefault('is_active', False)
         return User.objects.create_user(**validated_data)

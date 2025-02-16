@@ -1,6 +1,7 @@
 import os.path
 
 from django.conf import settings
+from django.contrib import admin
 from django.http import Http404
 from django.urls import include, path
 from django.views.static import serve
@@ -23,6 +24,7 @@ def serve_ui(request, path):
 
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', include('splinter.core.health.urls')),
     path('', include('splinter.core.openapi.urls', namespace='openapi')),
     path('api/', include('splinter.apps.activity.urls')),

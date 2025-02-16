@@ -1,25 +1,27 @@
-from django.test import TestCase
+from unittest.mock import Mock, patch
+
+from django.test import TestCase, override_settings
 from parameterized import parameterized
 
 from splinter.apps.user.models import User
 from tests.apps.user.factories import UserFactory
 
 
-class SuggestUsernameTests(TestCase):
+class NormalizeUsernameTests(TestCase):
     available_apps = ['splinter.apps.user']
 
     def test_no_conflict(self):
-        suggested_username = User.objects.suggest_username('someone@example.com')
+        suggested_username = User.objects.normalize_username('someone')
         self.assertEqual(suggested_username, 'someone')
 
     def test_substring(self):
         UserFactory(username='someone_else')
-        suggested_username = User.objects.suggest_username('someone@example.com')
+        suggested_username = User.objects.normalize_username('someone')
         self.assertEqual(suggested_username, 'someone')
 
     def test_conflict(self):
         UserFactory(username='someone')
-        suggested_username = User.objects.suggest_username('someone@example.com')
+        suggested_username = User.objects.normalize_username('someone')
         self.assertEqual(suggested_username, 'someone_1')
 
     def test_multiple_conflicts(self):
@@ -27,7 +29,7 @@ class SuggestUsernameTests(TestCase):
         for i in range(5):
             UserFactory(username=f'someone_{i}')
 
-        suggested_username = User.objects.suggest_username('someone@example.com')
+        suggested_username = User.objects.normalize_username('someone')
         self.assertEqual(suggested_username, 'someone_5')
 
     def test_missing_suffix(self):
@@ -38,8 +40,22 @@ class SuggestUsernameTests(TestCase):
 
             UserFactory(username=f'someone_{i}')
 
-        suggested_username = User.objects.suggest_username('someone@example.com')
+        suggested_username = User.objects.normalize_username('someone')
         self.assertEqual(suggested_username, 'someone_3')
+
+    def test_whitespace(self):
+        suggested_username = User.objects.normalize_username('someone else')
+        self.assertEqual(suggested_username, 'someone_else')
+
+    @override_settings(USERNAME_MIN_LENGTH=8)
+    @patch('splinter.apps.user.managers.generate_random_string')
+    def test_short_username(self, generate_random_string_mock: Mock):
+        generate_random_string_mock.return_value = '+random'
+
+        suggested_username = User.objects.normalize_username('a')
+        self.assertEqual(suggested_username, 'a' + '+random')
+
+        generate_random_string_mock.assert_called_with(7)
 
 
 class UserManagerTests(TestCase):

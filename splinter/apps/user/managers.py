@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import random
 import re
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth.models import UserManager as AuthUserManager
@@ -10,9 +11,12 @@ from django.db.models import Case, CharField, ExpressionWrapper, F, Value, When
 from django.db.models.functions import Concat, Now
 from django.utils import timezone
 
-from splinter.apps.user.postman import send_verification_email
-from splinter.db.models.soft_delete import SoftDeleteManagerMixin
+from splinter.apps.user import postman
+from splinter.db.models import SoftDeleteManagerMixin
 from splinter.utils.strings import generate_random_string
+
+if TYPE_CHECKING:
+    from splinter.apps.user.models import User
 
 DUPLICATE_UNDERSCORE_RE = re.compile(r'_+')
 DISALLOWED_USERNAME_CHARTS_RE = re.compile(r'[^A-Za-z0-9.]')
@@ -37,9 +41,8 @@ class UserManager(SoftDeleteManagerMixin, AuthUserManager):
             )
         )
 
-    def suggest_username(self, email: str) -> str:
-        username = email.split('@', 1)[0].lower()
-        username = DISALLOWED_USERNAME_CHARTS_RE.sub('_', username).strip('_')
+    def normalize_username(self, username: str) -> str:
+        username = DISALLOWED_USERNAME_CHARTS_RE.sub('_', username).strip('_').lower()
         username = DUPLICATE_UNDERSCORE_RE.sub('_', username)
 
         if len(username) < settings.USERNAME_MIN_LENGTH:
@@ -61,6 +64,17 @@ class UserManager(SoftDeleteManagerMixin, AuthUserManager):
             username += f'_{suggested_suffix}'
 
         return username
+
+
+class UserInvitationManager(models.Manager):
+    def invite(self, invitee: 'User', inviter: 'User'):
+        invitation = self.filter(invitee=invitee, inviter=inviter).first()
+        if invitation is None:
+            self.create(invitee=invitee, inviter=inviter)
+        else:
+            invitation.save(update_fields=['updated_at'])
+
+        postman.send_invitation_email(invitee, invited_by=inviter)
 
 
 class EmailVerificationManager(models.Manager):
@@ -86,8 +100,6 @@ class EmailVerificationManager(models.Manager):
         if email_verification is None:
             email_verification = self.create_for_user(user)
 
-        email_verification_url = f'{settings.PUBLIC_URL}/verify?code={email_verification.verification_token}'
-
-        send_verification_email(user, email_verification_url)
+        postman.send_verification_email(user, email_verification.verification_token)
         email_verification.dispatched_at = timezone.now()
         email_verification.save(update_fields=['dispatched_at'])
