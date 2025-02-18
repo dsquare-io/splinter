@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthVerifyImport } from './routes/auth/verify'
 import { Route as AuthSetupImport } from './routes/auth/setup'
 import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
@@ -37,6 +38,12 @@ const DashboardRoute = DashboardImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthVerifyRoute = AuthVerifyImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -179,6 +186,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSetupImport
       parentRoute: typeof rootRoute
     }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyImport
+      parentRoute: typeof rootRoute
+    }
     '/_dashboard/activity/$activity': {
       id: '/_dashboard/activity/$activity'
       path: '/activity/$activity'
@@ -298,6 +312,7 @@ export interface FileRoutesByFullPath {
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -316,6 +331,7 @@ export interface FileRoutesByTo {
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/profile/me': typeof DashboardProfileMeRoute
@@ -334,6 +350,7 @@ export interface FileRoutesById {
   '/auth/forget-pass': typeof AuthForgetPassRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
   '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
   '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -354,6 +371,7 @@ export interface FileRouteTypes {
     | '/auth/forget-pass'
     | '/auth/login'
     | '/auth/setup'
+    | '/auth/verify'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/groups/$group'
@@ -371,6 +389,7 @@ export interface FileRouteTypes {
     | '/auth/forget-pass'
     | '/auth/login'
     | '/auth/setup'
+    | '/auth/verify'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/profile/me'
@@ -387,6 +406,7 @@ export interface FileRouteTypes {
     | '/auth/forget-pass'
     | '/auth/login'
     | '/auth/setup'
+    | '/auth/verify'
     | '/_dashboard/activity/$activity'
     | '/_dashboard/friends/$friend'
     | '/_dashboard/groups/$group'
@@ -404,6 +424,7 @@ export interface RootRouteChildren {
   AuthForgetPassRoute: typeof AuthForgetPassRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSetupRoute: typeof AuthSetupRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -413,6 +434,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthForgetPassRoute: AuthForgetPassRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSetupRoute: AuthSetupRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
 }
 
 export const routeTree = rootRoute
@@ -430,7 +452,8 @@ export const routeTree = rootRoute
         "/auth/accept",
         "/auth/forget-pass",
         "/auth/login",
-        "/auth/setup"
+        "/auth/setup",
+        "/auth/verify"
       ]
     },
     "/": {
@@ -471,6 +494,9 @@ export const routeTree = rootRoute
     },
     "/auth/setup": {
       "filePath": "auth/setup.tsx"
+    },
+    "/auth/verify": {
+      "filePath": "auth/verify.tsx"
     },
     "/_dashboard/activity/$activity": {
       "filePath": "_dashboard/activity/$activity.tsx",

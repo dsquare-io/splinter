@@ -4,12 +4,13 @@ import {AnimatePresence, motion} from 'framer-motion';
 
 import {Alert} from '../Alert';
 
-export function FormRootErrors() {
+
+export function FormRootErrors({error}: {error?: string}) {
   const form = useFormContext();
 
   return (
     <AnimatePresence mode="wait">
-      {form.formState.errors?.root?.message && (
+      {(error || form?.formState.errors?.root?.message) && (
         <motion.div
           style={{overflow: 'hidden'}}
           initial={{opacity: 0, height: 0, marginBottom: -24}}
@@ -42,9 +43,9 @@ export function FormRootErrors() {
           }}
         >
           <Alert
-            title={form.formState.errors?.root?.message}
+            title={(error || form?.formState.errors?.root?.message)}
             color="danger"
-            onDismiss={() => form.clearErrors('root')}
+            onDismiss={() => form?.clearErrors('root')}
           />
         </motion.div>
       )}
