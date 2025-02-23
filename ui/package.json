@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prettier": "prettier . --write",
-    "codegen": "node tools/generate-types.js && node tools/generate-routes.js"
+    "codegen": "node tools/generate-types.js && node tools/generate-routes.js",
+    "generate-pwa-assets": "pwa-assets-generator"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -41,7 +42,8 @@
     "react-twc": "^1.4.1",
     "tailwind-merge": "^2.2.1",
     "tailwind-variants": "^0.1.20",
-    "ts-morph": "^22.0.0"
+    "ts-morph": "^22.0.0",
+    "vite-plugin-pwa": "^0.21.1"
   },
   "devDependencies": {
     "@react-types/shared": "^3.22.1",
@@ -54,6 +56,7 @@
     "@types/react-dom": "^18.2.20",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@vite-pwa/assets-generator": "^0.2.6",
     "@vitejs/plugin-react-swc": "^3.6.0",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^4.6.0",
