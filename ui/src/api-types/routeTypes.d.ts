@@ -167,6 +167,7 @@ export interface components {
   schemas: {
     AccessToken: import("./components/schemas.d.ts").AccessToken;
     Activity: import("./components/schemas.d.ts").Activity;
+    ActivityAudience: import("./components/schemas.d.ts").ActivityAudience;
     AggregatedOutstandingBalance: import("./components/schemas.d.ts").AggregatedOutstandingBalance;
     AuthTokenData: import("./components/schemas.d.ts").AuthTokenData;
     AuthenticateUser: import("./components/schemas.d.ts").AuthenticateUser;
@@ -200,7 +201,7 @@ export interface components {
     NotFound: import("./components/schemas.d.ts").NotFound;
     Object: import("./components/schemas.d.ts").Object_;
     OutstandingBalance: import("./components/schemas.d.ts").OutstandingBalance;
-    PaginatedActivityList: import("./components/schemas.d.ts").PaginatedActivityList;
+    PaginatedActivityAudienceList: import("./components/schemas.d.ts").PaginatedActivityAudienceList;
     PaginatedCommentList: import("./components/schemas.d.ts").PaginatedCommentList;
     PaginatedExpenseOrPaymentList: import("./components/schemas.d.ts").PaginatedExpenseOrPaymentList;
     PaginatedFriendList: import("./components/schemas.d.ts").PaginatedFriendList;
@@ -250,7 +251,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["PaginatedActivityList"];
+          "application/json": components["schemas"]["PaginatedActivityAudienceList"];
         };
       };
       /** @description Unauthorized */

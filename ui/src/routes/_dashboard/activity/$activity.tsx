@@ -1,4 +1,4 @@
-import {activities} from '@fake-data/acitivities.ts';
+
 import {
   BriefcaseIcon,
   CameraIcon,
@@ -16,9 +16,7 @@ export const Route = createFileRoute('/_dashboard/activity/$activity')({
 });
 
 function RootComponent() {
-  const {activity: activityId} = Route.useParams();
-
-  const activity = activities.find((e) => e.id.toString() === activityId);
+  const activity = null;
 
   if (!activity) {
     return <Navigate to="/activity" />;

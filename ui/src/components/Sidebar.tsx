@@ -3,7 +3,8 @@ import {ComponentProps} from 'react';
 import {DialogTrigger} from 'react-aria-components';
 
 import {
-  ArrowLeftStartOnRectangleIcon, // ArrowTrendingUpIcon,
+  ArrowLeftStartOnRectangleIcon,
+  ArrowTrendingUpIcon,
   PlusIcon,
   UserIcon,
   UsersIcon,
@@ -17,6 +18,7 @@ import useAuth from '@/hooks/useAuth.ts';
 
 import {ApiRoutes} from '../api-types';
 import {useApiQuery} from '../hooks/useApiQuery.ts';
+
 
 export default function Sidebar(props: ComponentProps<'div'>) {
   const {data} = useApiQuery(ApiRoutes.PROFILE);
@@ -69,7 +71,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           className={clsx(
             'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
             'hover:bg-gray-100 hover:text-gray-800',
-            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
+            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-brand-200 [&.active]:ring-1'
           )}
         >
           <UsersIcon className="size-5" />
@@ -80,23 +82,23 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           className={clsx(
             'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
             'hover:bg-gray-100 hover:text-gray-800',
-            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
+            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-brand-200 [&.active]:ring-1'
           )}
         >
           <UserIcon className="size-5" />
           <div className="text-sm font-medium">Friends</div>
         </Link>
-        {/*<Link*/}
-        {/*  to="/activity"*/}
-        {/*  className={clsx(*/}
-        {/*    'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',*/}
-        {/*    'hover:bg-gray-100 hover:text-gray-800',*/}
-        {/*    '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'*/}
-        {/*  )}*/}
-        {/*>*/}
-        {/*  <ArrowTrendingUpIcon className="size-5" />*/}
-        {/*  <div className="text-sm font-medium">Activity</div>*/}
-        {/*</Link>*/}
+        <Link
+          to="/activity"
+          className={clsx(
+            'flex items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors',
+            'hover:bg-gray-100 hover:text-gray-800',
+            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-brand-200 [&.active]:ring-1'
+          )}
+        >
+          <ArrowTrendingUpIcon className="size-5" />
+          <div className="text-sm font-medium">Activity</div>
+        </Link>
       </div>
 
       <div className="space-y-1">
@@ -117,7 +119,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           className={clsx(
             'flex items-center gap-x-2 rounded-md px-1.5 py-2.5 text-gray-600 transition-colors',
             'hover:bg-gray-100 hover:text-gray-800',
-            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-1 [&.active]:ring-brand-200'
+            '[&.active]:bg-brand-50 [&.active]:text-brand-700 [&.active]:ring-brand-200 [&.active]:ring-1'
           )}
         >
           <Avatar

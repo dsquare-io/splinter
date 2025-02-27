@@ -1,9 +1,10 @@
 import clsx from 'clsx';
 
-import {activities} from '@fake-data/acitivities.ts';
 import {Outlet, ScrollRestoration, createFileRoute, useMatchRoute} from '@tanstack/react-router';
 
 import ActivityListItem from './-components/ActivityListItem.tsx';
+import {useApiQuery} from "@/hooks/useApiQuery.ts";
+import {Paths} from "@/api-types/routePaths.ts";
 
 export const Route = createFileRoute('/_dashboard/activity/')({
   component: ActivityLayout,
@@ -12,6 +13,7 @@ export const Route = createFileRoute('/_dashboard/activity/')({
 function ActivityLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({to: '/activity'});
+  const {data} = useApiQuery(Paths.ACTIVITY_LIST);
 
   return (
     <>
@@ -29,10 +31,10 @@ function ActivityLayout() {
         </div>
 
         <div>
-          {activities.map((e) => (
+          {data?.results?.map((activity) => (
             <ActivityListItem
-              key={e.id}
-              {...e}
+              key={activity.urn}
+              activity={activity}
             />
           ))}
         </div>

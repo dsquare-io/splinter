@@ -5,14 +5,22 @@ export interface AccessToken {
 }
 
 export interface Activity {
+    actor: SimpleUser;
+    group: SimpleGroup;
+    object: Object_;
+    target: Object_;
+}
+
+export interface ActivityAudience {
     /** Format: uuid */
     uid: string;
     urn: string;
-    user: SimpleUser;
-    group: SimpleGroup;
-    template: string;
+    activity: Activity;
+    verb: string;
     description: string;
-    target: Object_;
+    template: string;
+    isRead?: boolean;
+    wasDelivered?: boolean;
     /** Format: date-time */
     createdAt?: string;
 }
@@ -240,9 +248,9 @@ export interface OutstandingBalance {
     currency: SimpleCurrency;
 }
 
-export interface PaginatedActivityList {
+export interface PaginatedActivityAudienceList {
     /** @example 123 */
-    count?: number;
+    count: number;
     /**
            * Format: uri
            * @example http://api.example.org/accounts/?offset=400&limit=100
@@ -253,12 +261,12 @@ export interface PaginatedActivityList {
            * @example http://api.example.org/accounts/?offset=200&limit=100
            */
     previous?: string | null;
-    results?: Activity[];
+    results: ActivityAudience[];
 }
 
 export interface PaginatedCommentList {
     /** @example 123 */
-    count?: number;
+    count: number;
     /**
            * Format: uri
            * @example http://api.example.org/accounts/?offset=400&limit=100
@@ -269,12 +277,12 @@ export interface PaginatedCommentList {
            * @example http://api.example.org/accounts/?offset=200&limit=100
            */
     previous?: string | null;
-    results?: Comment[];
+    results: Comment[];
 }
 
 export interface PaginatedExpenseOrPaymentList {
     /** @example 123 */
-    count?: number;
+    count: number;
     /**
            * Format: uri
            * @example http://api.example.org/accounts/?offset=400&limit=100
@@ -285,12 +293,12 @@ export interface PaginatedExpenseOrPaymentList {
            * @example http://api.example.org/accounts/?offset=200&limit=100
            */
     previous?: string | null;
-    results?: ExpenseOrPayment[];
+    results: ExpenseOrPayment[];
 }
 
 export interface PaginatedFriendList {
     /** @example 123 */
-    count?: number;
+    count: number;
     /**
            * Format: uri
            * @example http://api.example.org/accounts/?offset=400&limit=100
@@ -301,12 +309,12 @@ export interface PaginatedFriendList {
            * @example http://api.example.org/accounts/?offset=200&limit=100
            */
     previous?: string | null;
-    results?: Friend[];
+    results: Friend[];
 }
 
 export interface PaginatedGroupList {
     /** @example 123 */
-    count?: number;
+    count: number;
     /**
            * Format: uri
            * @example http://api.example.org/accounts/?offset=400&limit=100
@@ -317,7 +325,7 @@ export interface PaginatedGroupList {
            * @example http://api.example.org/accounts/?offset=200&limit=100
            */
     previous?: string | null;
-    results?: Group[];
+    results: Group[];
 }
 
 export interface PatchedExtendedGroup {
