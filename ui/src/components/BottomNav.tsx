@@ -11,7 +11,7 @@ export default function BottomNav() {
   const {data} = useApiQuery(ApiRoutes.PROFILE);
 
   return (
-    <div className="z-10 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white md:hidden">
+    <div className="z-10 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white md:hidden pb-[calc(env(safe-area-inset-bottom)-10px)]">
       <Link
         to="/groups"
         className="-mt-px flex max-w-40 grow flex-col items-center border-t-2 border-transparent px-3 py-2.5 text-gray-400 [&.active]:border-brand-600 [&.active]:text-brand-600"
