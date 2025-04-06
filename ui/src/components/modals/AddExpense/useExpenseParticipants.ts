@@ -21,7 +21,7 @@ export function useExpenseParticipants() {
 
   const results = useQueries({
     queries: partipants?.map((partipant) => {
-      if (partipant.type) return apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: partipant.uid}) as any;
+      if (partipant.type === 'group') return apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: partipant.uid}) as any;
       return apiQueryOptions(Paths.FRIEND_DETAIL, {friend_uid: partipant.uid}) as any;
     }) ?? [],
   });

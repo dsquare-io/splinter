@@ -8,7 +8,7 @@ import {Paths} from '@/api-types/routePaths.ts';
 import {Button, FieldScope, Form, HiddenField} from '@/components/common';
 import {CloseDialog} from '@/components/modals/utils';
 
-import {useApiQuery} from '../../../hooks/useApiQuery.ts';
+import {useApiQuery} from '@/hooks/useApiQuery.ts';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
 import {SingleExpenseShares} from './SingleExpenseShares';
