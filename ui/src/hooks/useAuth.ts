@@ -46,7 +46,9 @@ export default function useAuth() {
     if (accessToken) {
       profileRequest
         ?.then(() => setValidation(true))
-        .catch(() => {
+        .catch((e) => {
+          // only logout request failed with unauthorized error code
+          if (e.response?.status !== 401) return;
           removeToken();
           removeRefreshToken();
           setHeaders();
