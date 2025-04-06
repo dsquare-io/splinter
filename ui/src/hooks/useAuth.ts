@@ -37,7 +37,7 @@ export default function useAuth() {
   }
 
   useEffect(() => {
-    if (!profileRequest) {
+    if (!profileRequest && accessToken) {
       profileRequest = axiosInstance.get(ApiRoutes.PROFILE).finally(() => {
         profileRequest = undefined;
       });
@@ -45,7 +45,7 @@ export default function useAuth() {
 
     if (accessToken) {
       profileRequest
-        .then(() => setValidation(true))
+        ?.then(() => setValidation(true))
         .catch(() => {
           removeToken();
           removeRefreshToken();
