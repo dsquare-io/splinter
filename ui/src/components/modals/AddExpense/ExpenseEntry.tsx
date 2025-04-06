@@ -27,7 +27,7 @@ export default function ExpenseEntry({onNext}: Props) {
         <ParticipantsSelector />
 
         <FormField name="paidBy" defaultValue={profile?.uid}>
-          <ComboBox defaultItems={participants}>
+          <ComboBox items={participants}>
             <Label>Paid By</Label>
             <div className="relative">
               <Input placeholder="Search your friends..." />
@@ -39,11 +39,11 @@ export default function ExpenseEntry({onNext}: Props) {
               </BaseButton>
             </div>
             <Popover className="react-aria-Popover w-(--trigger-width)">
-              <ListBox className="-mx-4 -my-2 text-gray-800">
+              <ListBox className="react-aria-ListBox -mx-4 -my-2 text-gray-800">
                 {(friend: SimpleUser) => (
                   <ListBoxItem
                     id={friend.uid}
-                    className="flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-hidden hover:bg-gray-100"
+                    className="react-aria-ListBoxItem"
                     textValue={friend.fullName}
                   >
                     <Avatar

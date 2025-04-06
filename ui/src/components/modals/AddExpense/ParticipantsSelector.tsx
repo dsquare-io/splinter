@@ -40,7 +40,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
   if (action.type === 'select_group') {
     return [{...action.data, type: 'group', id: action.data.urn}] satisfies Participant[];
   }
-  if (action.type === 'select_friend' && state[0]?.type === 'group') {
+  if (action.type === 'select_friend' && state[0]?.type === 'group' && !state.find((p) => p.urn === action.data.urn)) {
     return [
       {
         ...action.data,
@@ -50,7 +50,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
       },
     ] satisfies Participant[];
   }
-  if (action.type === 'select_friend') {
+  if (action.type === 'select_friend' && !state.find((p) => p.urn === action.data.urn)) {
     return [
       ...state,
       {
@@ -61,7 +61,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
       },
     ] satisfies Participant[];
   }
-  throw Error('Unknown action.');
+  return state;
 }
 
 export default function ParticipantsSelector() {
@@ -143,7 +143,7 @@ export default function ParticipantsSelector() {
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
         {selectedParticipants.map((item) => (
-          <div className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
+          <div key={item.urn} className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
             <Avatar
               className="size-6 rounded-none bg-neutral-50"
               fallback={item.name}

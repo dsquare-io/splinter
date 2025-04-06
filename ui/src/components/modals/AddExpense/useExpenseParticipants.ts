@@ -2,9 +2,10 @@ import {useFormContext} from 'react-hook-form';
 
 import {useQueries} from '@tanstack/react-query';
 
-import {ApiResponse} from '@/api-types';
+import {ApiResponse, ApiRoutes} from '@/api-types';
 import {Paths} from '@/api-types/routePaths.ts';
-import {apiQueryOptions} from '@/hooks/useApiQuery.ts';
+import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
+
 
 export interface Participant {
   id: string;
@@ -17,6 +18,7 @@ export interface Participant {
 export function useExpenseParticipants() {
   const {watch, getValues} = useFormContext();
   const partipants = getValues('participants:del') as Participant[];
+  const {data} = useApiQuery(ApiRoutes.PROFILE);
   watch('participants:del');
 
   const results = useQueries({
@@ -26,7 +28,7 @@ export function useExpenseParticipants() {
     }) ?? [],
   });
 
-  return results?.flatMap((result) => {
+  return [...results?.flatMap((result) => {
     if (!result.data) return [];
 
     if ((result.data as { urn: string }).urn.includes('group')) {
@@ -38,5 +40,5 @@ export function useExpenseParticipants() {
       return result.data as ApiResponse<typeof Paths.FRIEND_DETAIL>;
     }
     return [];
-  });
+  }), ...data ? [data] : []];
 }

@@ -139,11 +139,11 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                     </BaseButton>
                   </div>
                   <Popover className="react-aria-Popover w-(--trigger-width)">
-                    <ListBox className="-mx-4 -my-2 text-gray-800">
+                    <ListBox className="react-aria-Listbox -mx-4 -my-2 text-gray-800">
                       {(friend: Friend) => (
                         <ListBoxItem
                           id={friend.uid}
-                          className="flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-hidden hover:bg-gray-100"
+                          className="react-aria-ListboxItem flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-hidden hover:bg-gray-100"
                           textValue={friend.fullName}
                         >
                           <Avatar

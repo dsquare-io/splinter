@@ -3,8 +3,13 @@ import {Button, DialogTrigger} from 'react-aria-components';
 
 import {ArrowTrendingUpIcon, PlusIcon, UserIcon, UsersIcon} from '@heroicons/react/24/outline';
 import {Link} from '@tanstack/react-router';
+import {useApiQuery} from "@/hooks/useApiQuery.ts";
+import {ApiRoutes} from "@/api-types";
+import {Avatar} from "@/components/common";
 
 export default function BottomNav() {
+  const {data} = useApiQuery(ApiRoutes.PROFILE);
+
   return (
     <div className="z-10 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white md:hidden">
       <Link
@@ -48,9 +53,10 @@ export default function BottomNav() {
         to="/profile/me"
         className="-mt-px flex max-w-40 grow flex-col items-center border-t-2 border-transparent px-3 py-2.5 text-gray-400 [&.active]:border-brand-600 [&.active]:text-brand-600"
       >
-        <div className="brand mb-1 flex size-6 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
-          <span className="text-[10px] font-medium text-gray-600">AF</span>
-        </div>
+        <Avatar
+          className="size-6"
+          fallback={data?.fullName}
+        ></Avatar>
         <span className="text-xs font-medium">Me</span>
       </Link>
     </div>

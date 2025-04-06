@@ -37,15 +37,15 @@ export default function useAuth() {
   }
 
   useEffect(() => {
-    if (!profileRequest && accessToken) {
-      profileRequest = axiosInstance.get(ApiRoutes.PROFILE).finally(() => {
-        profileRequest = undefined;
-      });
-    }
-
     if (accessToken) {
+      if (!profileRequest) {
+        profileRequest = axiosInstance.get(ApiRoutes.PROFILE).finally(() => {
+          profileRequest = undefined;
+        });
+      }
+
       profileRequest
-        ?.then(() => setValidation(true))
+        .then(() => setValidation(true))
         .catch((e) => {
           // only logout request failed with unauthorized error code
           if (e.response?.status !== 401) return;
