@@ -12,6 +12,7 @@ import {useApiQuery} from '@/hooks/useApiQuery.ts';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
 import {SingleExpenseShares} from './SingleExpenseShares';
+import {queryClient} from "@/queryClient.ts";
 
 export default function AddExpense({onOpenChange}: {onOpenChange?: (open: boolean) => void}) {
   const [currentStep, setCurrentStep] = useState('entry');
@@ -41,7 +42,10 @@ export default function AddExpense({onOpenChange}: {onOpenChange?: (open: boolea
                   }
                   return data;
                 }}
-                onSubmitSuccess={() => {
+                onSubmitSuccess={async () => {
+                  await queryClient.invalidateQueries({
+                    predicate: (query) => query.queryKey.includes('expenses')
+                  })
                   close();
                   setCurrentStep('entry');
                   form.reset();
