@@ -1,4 +1,4 @@
-FROM node:18-alpine AS node
+FROM node:24-alpine AS node
 
 COPY ui/package.json /app/package.json
 COPY ui/package-lock.json /app/package-lock.json

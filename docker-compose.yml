@@ -1,21 +1,25 @@
-version: '3'
 volumes:
-  postgresql_data:
+  postgresql:
   node_modules:
 
 services:
   database:
     container_name: splinter-database
     hostname: splinter-database.local
-    image: postgres:13
+    image: postgres:18
     environment:
       - "POSTGRES_USER=splinter"
       - "POSTGRES_PASSWORD=splinter"
       - "POSTGRES_DB=splinter"
     volumes:
-      - postgresql_data:/var/lib/postgresql/data
+      - postgresql:/var/lib/postgresql/
     ports:
       - "54321:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U splinter -d splinter" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   cache:
     container_name: splinter-cache
@@ -26,12 +30,22 @@ services:
     container_name: splinter-primary
     hostname: splinter.local
     image: splinter
+    depends_on:
+      database:
+        condition: service_healthy
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - DJANGO_DEBUG=True
+      - PUBLIC_DOMAIN=localhost:5173
+      - CELERY_TASK_ALWAYS_EAGER=True
+      - REDIS_HOST=splinter-cache.local
+      - POSTGRES_HOSTNAME=splinter-database.local
+      - POSTGRES_USERNAME=splinter
+      - POSTGRES_PASSWORD=splinter
     command: >
       bash -c "
-        sleep 2 &&
         splinter migrate &&
         splinter runserver 0.0.0.0:8000
       "
@@ -45,7 +59,7 @@ services:
   ui:
     container_name: splinter-ui
     hostname: splinter-ui
-    image: node:18-alpine
+    image: node:24-alpine
     command: >
       sh -c "
         cd /app &&
@@ -57,6 +71,7 @@ services:
     env_file: .env
     environment:
       - "NODE_ENV=development"
+      - "OAPI_SCHEMA_URL:http://splinter.local:8000/api/schema"
     volumes:
       - ./ui:/app
       - node_modules:/app/node_modules/

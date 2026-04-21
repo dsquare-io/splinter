@@ -8,244 +8,319 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSetupRouteImport } from './routes/auth/setup'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthForgetPassRouteImport } from './routes/auth/forget-pass'
+import { Route as AuthAcceptRouteImport } from './routes/auth/accept'
+import { Route as DashboardGroupsRouteImport } from './routes/_dashboard/groups'
+import { Route as DashboardFriendsRouteImport } from './routes/_dashboard/friends'
+import { Route as DashboardActivityIndexRouteImport } from './routes/_dashboard/activity/index'
+import { Route as DashboardProfileMeRouteImport } from './routes/_dashboard/profile/me'
+import { Route as DashboardGroupsGroupRouteImport } from './routes/_dashboard/groups/$group'
+import { Route as DashboardFriendsFriendRouteImport } from './routes/_dashboard/friends/$friend'
+import { Route as DashboardActivityActivityRouteImport } from './routes/_dashboard/activity/$activity'
+import { Route as DashboardGroupsGroupIndexRouteImport } from './routes/_dashboard/groups/$group/index'
+import { Route as DashboardGroupsGroupExpenseRouteImport } from './routes/_dashboard/groups/$group/$expense'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as DashboardImport } from './routes/_dashboard'
-import { Route as IndexImport } from './routes/index'
-import { Route as AuthVerifyImport } from './routes/auth/verify'
-import { Route as AuthSetupImport } from './routes/auth/setup'
-import { Route as AuthLoginImport } from './routes/auth/login'
-import { Route as AuthForgetPassImport } from './routes/auth/forget-pass'
-import { Route as AuthAcceptImport } from './routes/auth/accept'
-import { Route as DashboardGroupsImport } from './routes/_dashboard/groups'
-import { Route as DashboardFriendsImport } from './routes/_dashboard/friends'
-import { Route as DashboardActivityIndexImport } from './routes/_dashboard/activity/index'
-import { Route as DashboardProfileMeImport } from './routes/_dashboard/profile/me'
-import { Route as DashboardGroupsGroupImport } from './routes/_dashboard/groups/$group'
-import { Route as DashboardFriendsFriendImport } from './routes/_dashboard/friends/$friend'
-import { Route as DashboardActivityActivityImport } from './routes/_dashboard/activity/$activity'
-import { Route as DashboardGroupsGroupIndexImport } from './routes/_dashboard/groups/$group/index'
-import { Route as DashboardGroupsGroupExpenseImport } from './routes/_dashboard/groups/$group/$expense'
-
-// Create/Update Routes
-
-const DashboardRoute = DashboardImport.update({
+const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthVerifyRoute = AuthVerifyImport.update({
-  id: '/auth/verify',
-  path: '/auth/verify',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AuthSetupRoute = AuthSetupImport.update({
+const AuthSetupRoute = AuthSetupRouteImport.update({
   id: '/auth/setup',
   path: '/auth/setup',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthLoginRoute = AuthLoginImport.update({
+const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/auth/login',
   path: '/auth/login',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthForgetPassRoute = AuthForgetPassImport.update({
+const AuthForgetPassRoute = AuthForgetPassRouteImport.update({
   id: '/auth/forget-pass',
   path: '/auth/forget-pass',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AuthAcceptRoute = AuthAcceptImport.update({
+const AuthAcceptRoute = AuthAcceptRouteImport.update({
   id: '/auth/accept',
   path: '/auth/accept',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const DashboardGroupsRoute = DashboardGroupsImport.update({
+const DashboardGroupsRoute = DashboardGroupsRouteImport.update({
   id: '/groups',
   path: '/groups',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardFriendsRoute = DashboardFriendsImport.update({
+const DashboardFriendsRoute = DashboardFriendsRouteImport.update({
   id: '/friends',
   path: '/friends',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardActivityIndexRoute = DashboardActivityIndexImport.update({
+const DashboardActivityIndexRoute = DashboardActivityIndexRouteImport.update({
   id: '/activity/',
   path: '/activity/',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardProfileMeRoute = DashboardProfileMeImport.update({
+const DashboardProfileMeRoute = DashboardProfileMeRouteImport.update({
   id: '/profile/me',
   path: '/profile/me',
   getParentRoute: () => DashboardRoute,
 } as any)
-
-const DashboardGroupsGroupRoute = DashboardGroupsGroupImport.update({
+const DashboardGroupsGroupRoute = DashboardGroupsGroupRouteImport.update({
   id: '/$group',
   path: '/$group',
   getParentRoute: () => DashboardGroupsRoute,
 } as any)
-
-const DashboardFriendsFriendRoute = DashboardFriendsFriendImport.update({
+const DashboardFriendsFriendRoute = DashboardFriendsFriendRouteImport.update({
   id: '/$friend',
   path: '/$friend',
   getParentRoute: () => DashboardFriendsRoute,
 } as any)
-
-const DashboardActivityActivityRoute = DashboardActivityActivityImport.update({
-  id: '/activity/$activity',
-  path: '/activity/$activity',
-  getParentRoute: () => DashboardRoute,
-} as any)
-
-const DashboardGroupsGroupIndexRoute = DashboardGroupsGroupIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DashboardGroupsGroupRoute,
-} as any)
-
+const DashboardActivityActivityRoute =
+  DashboardActivityActivityRouteImport.update({
+    id: '/activity/$activity',
+    path: '/activity/$activity',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardGroupsGroupIndexRoute =
+  DashboardGroupsGroupIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardGroupsGroupRoute,
+  } as any)
 const DashboardGroupsGroupExpenseRoute =
-  DashboardGroupsGroupExpenseImport.update({
+  DashboardGroupsGroupExpenseRouteImport.update({
     id: '/$expense',
     path: '/$expense',
     getParentRoute: () => DashboardGroupsGroupRoute,
   } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
+  '/friends': typeof DashboardFriendsRouteWithChildren
+  '/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
+  '/auth/forget-pass': typeof AuthForgetPassRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
+  '/activity/$activity': typeof DashboardActivityActivityRoute
+  '/friends/$friend': typeof DashboardFriendsFriendRoute
+  '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
+  '/profile/me': typeof DashboardProfileMeRoute
+  '/activity/': typeof DashboardActivityIndexRoute
+  '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/groups/$group/': typeof DashboardGroupsGroupIndexRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/friends': typeof DashboardFriendsRouteWithChildren
+  '/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
+  '/auth/forget-pass': typeof AuthForgetPassRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
+  '/activity/$activity': typeof DashboardActivityActivityRoute
+  '/friends/$friend': typeof DashboardFriendsFriendRoute
+  '/profile/me': typeof DashboardProfileMeRoute
+  '/activity': typeof DashboardActivityIndexRoute
+  '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/groups/$group': typeof DashboardGroupsGroupIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_dashboard': typeof DashboardRouteWithChildren
+  '/_dashboard/friends': typeof DashboardFriendsRouteWithChildren
+  '/_dashboard/groups': typeof DashboardGroupsRouteWithChildren
+  '/auth/accept': typeof AuthAcceptRoute
+  '/auth/forget-pass': typeof AuthForgetPassRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/setup': typeof AuthSetupRoute
+  '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
+  '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
+  '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
+  '/_dashboard/profile/me': typeof DashboardProfileMeRoute
+  '/_dashboard/activity/': typeof DashboardActivityIndexRoute
+  '/_dashboard/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/_dashboard/groups/$group/': typeof DashboardGroupsGroupIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/friends'
+    | '/groups'
+    | '/auth/accept'
+    | '/auth/forget-pass'
+    | '/auth/login'
+    | '/auth/setup'
+    | '/activity/$activity'
+    | '/friends/$friend'
+    | '/groups/$group'
+    | '/profile/me'
+    | '/activity/'
+    | '/groups/$group/$expense'
+    | '/groups/$group/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/friends'
+    | '/groups'
+    | '/auth/accept'
+    | '/auth/forget-pass'
+    | '/auth/login'
+    | '/auth/setup'
+    | '/activity/$activity'
+    | '/friends/$friend'
+    | '/profile/me'
+    | '/activity'
+    | '/groups/$group/$expense'
+    | '/groups/$group'
+  id:
+    | '__root__'
+    | '/'
+    | '/_dashboard'
+    | '/_dashboard/friends'
+    | '/_dashboard/groups'
+    | '/auth/accept'
+    | '/auth/forget-pass'
+    | '/auth/login'
+    | '/auth/setup'
+    | '/_dashboard/activity/$activity'
+    | '/_dashboard/friends/$friend'
+    | '/_dashboard/groups/$group'
+    | '/_dashboard/profile/me'
+    | '/_dashboard/activity/'
+    | '/_dashboard/groups/$group/$expense'
+    | '/_dashboard/groups/$group/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  AuthAcceptRoute: typeof AuthAcceptRoute
+  AuthForgetPassRoute: typeof AuthForgetPassRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthSetupRoute: typeof AuthSetupRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/_dashboard': {
-      id: '/_dashboard'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/_dashboard/friends': {
-      id: '/_dashboard/friends'
-      path: '/friends'
-      fullPath: '/friends'
-      preLoaderRoute: typeof DashboardFriendsImport
-      parentRoute: typeof DashboardImport
-    }
-    '/_dashboard/groups': {
-      id: '/_dashboard/groups'
-      path: '/groups'
-      fullPath: '/groups'
-      preLoaderRoute: typeof DashboardGroupsImport
-      parentRoute: typeof DashboardImport
-    }
-    '/auth/accept': {
-      id: '/auth/accept'
-      path: '/auth/accept'
-      fullPath: '/auth/accept'
-      preLoaderRoute: typeof AuthAcceptImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/forget-pass': {
-      id: '/auth/forget-pass'
-      path: '/auth/forget-pass'
-      fullPath: '/auth/forget-pass'
-      preLoaderRoute: typeof AuthForgetPassImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/setup': {
       id: '/auth/setup'
       path: '/auth/setup'
       fullPath: '/auth/setup'
-      preLoaderRoute: typeof AuthSetupImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthSetupRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/auth/verify': {
-      id: '/auth/verify'
-      path: '/auth/verify'
-      fullPath: '/auth/verify'
-      preLoaderRoute: typeof AuthVerifyImport
-      parentRoute: typeof rootRoute
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_dashboard/activity/$activity': {
-      id: '/_dashboard/activity/$activity'
-      path: '/activity/$activity'
-      fullPath: '/activity/$activity'
-      preLoaderRoute: typeof DashboardActivityActivityImport
-      parentRoute: typeof DashboardImport
+    '/auth/forget-pass': {
+      id: '/auth/forget-pass'
+      path: '/auth/forget-pass'
+      fullPath: '/auth/forget-pass'
+      preLoaderRoute: typeof AuthForgetPassRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_dashboard/friends/$friend': {
-      id: '/_dashboard/friends/$friend'
-      path: '/$friend'
-      fullPath: '/friends/$friend'
-      preLoaderRoute: typeof DashboardFriendsFriendImport
-      parentRoute: typeof DashboardFriendsImport
+    '/auth/accept': {
+      id: '/auth/accept'
+      path: '/auth/accept'
+      fullPath: '/auth/accept'
+      preLoaderRoute: typeof AuthAcceptRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_dashboard/groups/$group': {
-      id: '/_dashboard/groups/$group'
-      path: '/$group'
-      fullPath: '/groups/$group'
-      preLoaderRoute: typeof DashboardGroupsGroupImport
-      parentRoute: typeof DashboardGroupsImport
+    '/_dashboard/groups': {
+      id: '/_dashboard/groups'
+      path: '/groups'
+      fullPath: '/groups'
+      preLoaderRoute: typeof DashboardGroupsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/friends': {
+      id: '/_dashboard/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof DashboardFriendsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/activity/': {
+      id: '/_dashboard/activity/'
+      path: '/activity'
+      fullPath: '/activity/'
+      preLoaderRoute: typeof DashboardActivityIndexRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/profile/me': {
       id: '/_dashboard/profile/me'
       path: '/profile/me'
       fullPath: '/profile/me'
-      preLoaderRoute: typeof DashboardProfileMeImport
-      parentRoute: typeof DashboardImport
+      preLoaderRoute: typeof DashboardProfileMeRouteImport
+      parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/activity/': {
-      id: '/_dashboard/activity/'
-      path: '/activity'
-      fullPath: '/activity'
-      preLoaderRoute: typeof DashboardActivityIndexImport
-      parentRoute: typeof DashboardImport
+    '/_dashboard/groups/$group': {
+      id: '/_dashboard/groups/$group'
+      path: '/$group'
+      fullPath: '/groups/$group'
+      preLoaderRoute: typeof DashboardGroupsGroupRouteImport
+      parentRoute: typeof DashboardGroupsRoute
     }
-    '/_dashboard/groups/$group/$expense': {
-      id: '/_dashboard/groups/$group/$expense'
-      path: '/$expense'
-      fullPath: '/groups/$group/$expense'
-      preLoaderRoute: typeof DashboardGroupsGroupExpenseImport
-      parentRoute: typeof DashboardGroupsGroupImport
+    '/_dashboard/friends/$friend': {
+      id: '/_dashboard/friends/$friend'
+      path: '/$friend'
+      fullPath: '/friends/$friend'
+      preLoaderRoute: typeof DashboardFriendsFriendRouteImport
+      parentRoute: typeof DashboardFriendsRoute
+    }
+    '/_dashboard/activity/$activity': {
+      id: '/_dashboard/activity/$activity'
+      path: '/activity/$activity'
+      fullPath: '/activity/$activity'
+      preLoaderRoute: typeof DashboardActivityActivityRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/groups/$group/': {
       id: '/_dashboard/groups/$group/'
       path: '/'
       fullPath: '/groups/$group/'
-      preLoaderRoute: typeof DashboardGroupsGroupIndexImport
-      parentRoute: typeof DashboardGroupsGroupImport
+      preLoaderRoute: typeof DashboardGroupsGroupIndexRouteImport
+      parentRoute: typeof DashboardGroupsGroupRoute
+    }
+    '/_dashboard/groups/$group/$expense': {
+      id: '/_dashboard/groups/$group/$expense'
+      path: '/$expense'
+      fullPath: '/groups/$group/$expense'
+      preLoaderRoute: typeof DashboardGroupsGroupExpenseRouteImport
+      parentRoute: typeof DashboardGroupsGroupRoute
     }
   }
 }
-
-// Create and export the route tree
 
 interface DashboardFriendsRouteChildren {
   DashboardFriendsFriendRoute: typeof DashboardFriendsFriendRoute
@@ -303,130 +378,6 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
   DashboardRouteChildren,
 )
 
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof DashboardRouteWithChildren
-  '/friends': typeof DashboardFriendsRouteWithChildren
-  '/groups': typeof DashboardGroupsRouteWithChildren
-  '/auth/accept': typeof AuthAcceptRoute
-  '/auth/forget-pass': typeof AuthForgetPassRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/setup': typeof AuthSetupRoute
-  '/auth/verify': typeof AuthVerifyRoute
-  '/activity/$activity': typeof DashboardActivityActivityRoute
-  '/friends/$friend': typeof DashboardFriendsFriendRoute
-  '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
-  '/profile/me': typeof DashboardProfileMeRoute
-  '/activity': typeof DashboardActivityIndexRoute
-  '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
-  '/groups/$group/': typeof DashboardGroupsGroupIndexRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '': typeof DashboardRouteWithChildren
-  '/friends': typeof DashboardFriendsRouteWithChildren
-  '/groups': typeof DashboardGroupsRouteWithChildren
-  '/auth/accept': typeof AuthAcceptRoute
-  '/auth/forget-pass': typeof AuthForgetPassRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/setup': typeof AuthSetupRoute
-  '/auth/verify': typeof AuthVerifyRoute
-  '/activity/$activity': typeof DashboardActivityActivityRoute
-  '/friends/$friend': typeof DashboardFriendsFriendRoute
-  '/profile/me': typeof DashboardProfileMeRoute
-  '/activity': typeof DashboardActivityIndexRoute
-  '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
-  '/groups/$group': typeof DashboardGroupsGroupIndexRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/_dashboard': typeof DashboardRouteWithChildren
-  '/_dashboard/friends': typeof DashboardFriendsRouteWithChildren
-  '/_dashboard/groups': typeof DashboardGroupsRouteWithChildren
-  '/auth/accept': typeof AuthAcceptRoute
-  '/auth/forget-pass': typeof AuthForgetPassRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/auth/setup': typeof AuthSetupRoute
-  '/auth/verify': typeof AuthVerifyRoute
-  '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
-  '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
-  '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
-  '/_dashboard/profile/me': typeof DashboardProfileMeRoute
-  '/_dashboard/activity/': typeof DashboardActivityIndexRoute
-  '/_dashboard/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
-  '/_dashboard/groups/$group/': typeof DashboardGroupsGroupIndexRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/friends'
-    | '/groups'
-    | '/auth/accept'
-    | '/auth/forget-pass'
-    | '/auth/login'
-    | '/auth/setup'
-    | '/auth/verify'
-    | '/activity/$activity'
-    | '/friends/$friend'
-    | '/groups/$group'
-    | '/profile/me'
-    | '/activity'
-    | '/groups/$group/$expense'
-    | '/groups/$group/'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/friends'
-    | '/groups'
-    | '/auth/accept'
-    | '/auth/forget-pass'
-    | '/auth/login'
-    | '/auth/setup'
-    | '/auth/verify'
-    | '/activity/$activity'
-    | '/friends/$friend'
-    | '/profile/me'
-    | '/activity'
-    | '/groups/$group/$expense'
-    | '/groups/$group'
-  id:
-    | '__root__'
-    | '/'
-    | '/_dashboard'
-    | '/_dashboard/friends'
-    | '/_dashboard/groups'
-    | '/auth/accept'
-    | '/auth/forget-pass'
-    | '/auth/login'
-    | '/auth/setup'
-    | '/auth/verify'
-    | '/_dashboard/activity/$activity'
-    | '/_dashboard/friends/$friend'
-    | '/_dashboard/groups/$group'
-    | '/_dashboard/profile/me'
-    | '/_dashboard/activity/'
-    | '/_dashboard/groups/$group/$expense'
-    | '/_dashboard/groups/$group/'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRouteWithChildren
-  AuthAcceptRoute: typeof AuthAcceptRoute
-  AuthForgetPassRoute: typeof AuthForgetPassRoute
-  AuthLoginRoute: typeof AuthLoginRoute
-  AuthSetupRoute: typeof AuthSetupRoute
-  AuthVerifyRoute: typeof AuthVerifyRoute
-}
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
@@ -434,102 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthForgetPassRoute: AuthForgetPassRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSetupRoute: AuthSetupRoute,
-  AuthVerifyRoute: AuthVerifyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/_dashboard",
-        "/auth/accept",
-        "/auth/forget-pass",
-        "/auth/login",
-        "/auth/setup",
-        "/auth/verify"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/_dashboard": {
-      "filePath": "_dashboard.tsx",
-      "children": [
-        "/_dashboard/friends",
-        "/_dashboard/groups",
-        "/_dashboard/activity/$activity",
-        "/_dashboard/profile/me",
-        "/_dashboard/activity/"
-      ]
-    },
-    "/_dashboard/friends": {
-      "filePath": "_dashboard/friends.tsx",
-      "parent": "/_dashboard",
-      "children": [
-        "/_dashboard/friends/$friend"
-      ]
-    },
-    "/_dashboard/groups": {
-      "filePath": "_dashboard/groups.tsx",
-      "parent": "/_dashboard",
-      "children": [
-        "/_dashboard/groups/$group"
-      ]
-    },
-    "/auth/accept": {
-      "filePath": "auth/accept.tsx"
-    },
-    "/auth/forget-pass": {
-      "filePath": "auth/forget-pass.tsx"
-    },
-    "/auth/login": {
-      "filePath": "auth/login.tsx"
-    },
-    "/auth/setup": {
-      "filePath": "auth/setup.tsx"
-    },
-    "/auth/verify": {
-      "filePath": "auth/verify.tsx"
-    },
-    "/_dashboard/activity/$activity": {
-      "filePath": "_dashboard/activity/$activity.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/friends/$friend": {
-      "filePath": "_dashboard/friends/$friend.tsx",
-      "parent": "/_dashboard/friends"
-    },
-    "/_dashboard/groups/$group": {
-      "filePath": "_dashboard/groups/$group.tsx",
-      "parent": "/_dashboard/groups",
-      "children": [
-        "/_dashboard/groups/$group/$expense",
-        "/_dashboard/groups/$group/"
-      ]
-    },
-    "/_dashboard/profile/me": {
-      "filePath": "_dashboard/profile/me.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/activity/": {
-      "filePath": "_dashboard/activity/index.tsx",
-      "parent": "/_dashboard"
-    },
-    "/_dashboard/groups/$group/$expense": {
-      "filePath": "_dashboard/groups/$group/$expense.tsx",
-      "parent": "/_dashboard/groups/$group"
-    },
-    "/_dashboard/groups/$group/": {
-      "filePath": "_dashboard/groups/$group/index.tsx",
-      "parent": "/_dashboard/groups/$group"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

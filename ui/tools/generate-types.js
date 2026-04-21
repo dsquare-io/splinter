@@ -5,7 +5,7 @@ import {Project, ts} from 'ts-morph';
 /////////////
 // Constants
 
-const OAPI_SCHEMA_URL = 'http://localhost:8000/api/schema';
+const OAPI_SCHEMA_URL = process.env.OAPI_SCHEMA_URL || 'http://localhost:8000/api/schema';
 const ROUTE_TYPES_FILE = './src/api-types/routeTypes.d.ts';
 const SCHEMA_TYPES_FILE = './src/api-types/components/schemas.d.ts';
 const builtinNames = ['Object'];
