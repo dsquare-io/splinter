@@ -1,6 +1,6 @@
 import fs from 'node:fs';
-import openapiTS from 'openapi-typescript';
-import {Project, ts} from 'ts-morph';
+import openapiTS, { astToString } from 'openapi-typescript';
+import { Project, ts } from 'ts-morph';
 
 /////////////
 // Constants
@@ -25,7 +25,8 @@ if (!fs.existsSync('./src/api-types/components')) {
 // Fetch schema
 
 console.log('Fetching schema...');
-const commonRouteTypes = await openapiTS(OAPI_SCHEMA_URL);
+const commonRouteAst = await openapiTS(OAPI_SCHEMA_URL);
+const commonRouteTypes = astToString(commonRouteAst);
 fs.writeFileSync(ROUTE_TYPES_FILE, commonRouteTypes);
 
 ////////////////

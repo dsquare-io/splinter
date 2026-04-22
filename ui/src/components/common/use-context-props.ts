@@ -1,9 +1,9 @@
-import {Context, ForwardedRef, RefObject, useContext, useEffect, useMemo} from 'react';
-import {SlotProps} from 'react-aria-components';
+import { Context, ForwardedRef, RefObject, useContext, useEffect, useMemo } from 'react';
+import { SlotProps } from 'react-aria-components';
 
-import {mergeProps, mergeRefs, useObjectRef} from '@react-aria/utils';
+import { mergeProps, mergeRefs, useObjectRef } from '@react-aria/utils';
 
-export type WithRef<T, E> = T & {ref?: ForwardedRef<E>};
+export type WithRef<T, E> = T & { ref?: ForwardedRef<E> };
 
 interface SlottedValue<T> {
   slots?: Record<string | symbol, T>;
@@ -24,7 +24,7 @@ export function useContextProps<T, U extends SlotProps, E extends Element>(
   ref: ForwardedRef<E>,
   context: Context<ContextValue<U, E>>
 ): [T, RefObject<E>] {
-  const {...ctx} = useContext(context) || {};
+  const { ...ctx } = useContext(context) || {};
 
   const rootCtx = ctx as WithRef<U, E>;
   let defaultCtx: WithRef<U, E> | undefined;
@@ -48,11 +48,19 @@ export function useContextProps<T, U extends SlotProps, E extends Element>(
   }
 
   // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
-  const {ref: rootCtxRef, [slotCallbackSymbol]: rootCtxCallback, ...rootCtxProps} = rootCtx;
+  const { ref: rootCtxRef, [slotCallbackSymbol]: rootCtxCallback, ...rootCtxProps } = rootCtx;
   // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
-  const {ref: defaultCtxRef, [slotCallbackSymbol]: defaultCtxCallback, ...defaultCtxProps} = defaultCtx || {};
+  const {
+    ref: defaultCtxRef,
+    [slotCallbackSymbol]: defaultCtxCallback,
+    ...defaultCtxProps
+  } = defaultCtx || {};
   // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
-  const {ref: slottedCtxRef, [slotCallbackSymbol]: slottedCtxCallback, ...slottedCtxProps} = slottedCtx || {};
+  const {
+    ref: slottedCtxRef,
+    [slotCallbackSymbol]: slottedCtxCallback,
+    ...slottedCtxProps
+  } = slottedCtx || {};
 
   const mergedRef = useObjectRef(
     useMemo(

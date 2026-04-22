@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {RefAttributes} from 'react';
+import { RefAttributes } from 'react';
 import {
   type FieldErrorProps,
   InputProps,
@@ -11,17 +11,17 @@ import {
   composeRenderProps,
 } from 'react-aria-components';
 
-import {AnimatePresence, motion} from 'framer-motion';
-import {twMerge} from 'tailwind-merge';
-import {tv} from 'tailwind-variants';
+import { AnimatePresence, motion } from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
+import { tv } from 'tailwind-variants';
 
-import {FieldError as RACFieldError} from '@/components/common/Form/FieldError';
+import { FieldError as RACFieldError } from '@/components/common/Form/FieldError';
 
 export function Label(props: LabelProps) {
   return (
     <RACLabel
       {...props}
-      className={twMerge('mb-1 block text-sm font-bold leading-relaxed text-gray-800', props.className)}
+      className={twMerge('mb-1 block text-sm leading-relaxed font-bold text-gray-800', props.className)}
     />
   );
 }
@@ -36,7 +36,7 @@ export function Description(props: TextProps) {
   );
 }
 
-export function FieldError({className, ...props}: FieldErrorProps) {
+export function FieldError({ className, ...props }: FieldErrorProps) {
   return (
     <RACFieldError
       {...props}
@@ -46,12 +46,12 @@ export function FieldError({className, ...props}: FieldErrorProps) {
         <AnimatePresence>
           {validationError && (
             <motion.div
-              initial={{opacity: 0, height: 0, marginTop: 0}}
-              animate={{opacity: 1, height: 'auto', marginTop: 4}}
-              exit={{opacity: 0, height: 0, marginTop: 0}}
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginTop: 4 }}
+              exit={{ opacity: 0, height: 0, marginTop: 0 }}
               className={clsx(
                 typeof className === 'function'
-                  ? className({...renderProps, defaultClassName: ''})
+                  ? className({ ...renderProps, defaultClassName: '' })
                   : className,
                 'mt-1.5 block text-xs text-red-600'
               )}
@@ -121,7 +121,10 @@ export const inputStyles = tv({
   ],
 });
 
-export function Input({inpRef, ...props}: InputProps & {inpRef?: RefAttributes<HTMLInputElement>['ref']}) {
+export function Input({
+  inpRef,
+  ...props
+}: InputProps & { inpRef?: RefAttributes<HTMLInputElement>['ref'] }) {
   return (
     <RACInput
       ref={inpRef}

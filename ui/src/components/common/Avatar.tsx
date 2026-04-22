@@ -1,8 +1,8 @@
-import {ComponentProps} from 'react';
-import {twc} from 'react-twc';
+import { ComponentProps } from 'react';
+import { twc } from 'react-twc';
 
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
-import {twMerge} from 'tailwind-merge';
+import { twMerge } from 'tailwind-merge';
 
 const AvatarRoot = twc(
   AvatarPrimitive.Root
@@ -33,12 +33,12 @@ function getInitials(name?: string) {
     .join('');
 }
 
-function InitialsAvatar({name}: {name?: string}) {
+function InitialsAvatar({ name }: { name?: string }) {
   const initials = getInitials(name);
 
   return (
     <svg
-      className="h-[85%] w-[85%] select-none fill-current text-[48px] font-medium uppercase"
+      className="h-[85%] w-[85%] fill-current text-[48px] font-medium uppercase select-none"
       viewBox="0 0 100 100"
       aria-hidden={name ? undefined : 'true'}
     >
@@ -57,7 +57,7 @@ function InitialsAvatar({name}: {name?: string}) {
   );
 }
 
-export function Avatar({img, fallback, className, ...props}: AvatarProps) {
+export function Avatar({ img, fallback, className, ...props }: AvatarProps) {
   return (
     <AvatarRoot
       {...props}

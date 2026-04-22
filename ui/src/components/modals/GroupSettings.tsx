@@ -1,28 +1,28 @@
-import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
+import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
-import {ArrowRightStartOnRectangleIcon, TrashIcon, XMarkIcon} from '@heroicons/react/24/outline';
-import {useQuery} from '@tanstack/react-query';
-import {useNavigate} from '@tanstack/react-router';
+import { ArrowRightStartOnRectangleIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
-import {urlWithArgs} from '@/api-types';
-import {Paths} from '@/api-types/routePaths.ts';
-import {axiosInstance} from '@/axios.ts';
-import {Avatar, Button, FieldError, Form, Input, Label, TextFormField} from '@/components/common';
-import {CloseDialog} from '@/components/modals/utils.tsx';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-import {useConfirmation} from '@/hooks/useConfirmation.tsx';
-import {queryClient} from '@/queryClient.ts';
+import { urlWithArgs } from '@/api-types';
+import { Paths } from '@/api-types/routePaths.ts';
+import { axiosInstance } from '@/axios.ts';
+import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
+import { CloseDialog } from '@/components/modals/utils.tsx';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useConfirmation } from '@/hooks/useConfirmation.tsx';
+import { queryClient } from '@/queryClient.ts';
 
-export function GroupSettingsModal({group_uid}: {group_uid: string}) {
+export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
   const confirm = useConfirmation();
   const navigate = useNavigate();
 
-  const {data: profileData} = useApiQuery(Paths.PROFILE);
-  const {data: group} = useApiQuery(Paths.GROUP_DETAIL, {group_uid});
+  const { data: profileData } = useApiQuery(Paths.PROFILE);
+  const { data: group } = useApiQuery(Paths.GROUP_DETAIL, { group_uid });
 
-  const {data: groupData} = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: group_uid ?? ''}, undefined, {
+  const { data: groupData } = useQuery(
+    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
@@ -31,7 +31,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
     Object.entries(balanceByUsers).map(([uId, balances]) => [uId, balances])
   );
 
-  async function removeMember(member: {uid: string; fullName?: string}) {
+  async function removeMember(member: { uid: string; fullName?: string }) {
     return confirm({
       title: 'Remove Member',
       description: (
@@ -47,7 +47,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
             member_uid: member.uid,
           })
         );
-        return queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, {group_uid}));
+        return queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }));
       },
     });
   }
@@ -68,7 +68,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
           })
         );
         await queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_LIST));
-        return navigate({to: '/groups'});
+        return navigate({ to: '/groups' });
       },
     });
   }
@@ -77,7 +77,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
     <ModalOverlay isDismissable>
       <Modal className="react-aria-Modal max-h-[580px] overflow-y-auto sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Group Settings</Heading>
@@ -85,11 +85,13 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
               </div>
 
               <Form
-                values={{name: group?.name}}
+                values={{ name: group?.name }}
                 method="PATCH"
-                action={urlWithArgs(Paths.GROUP_DETAIL, {group_uid})}
+                action={urlWithArgs(Paths.GROUP_DETAIL, { group_uid })}
                 onSubmitSuccess={() =>
-                  queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, {group_uid})).then(close)
+                  queryClient
+                    .invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }))
+                    .then(close)
                 }
               >
                 <TextFormField
@@ -116,7 +118,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
               </Form>
 
               <section className="mt-6">
-                <h2 className="block text-sm font-bold leading-relaxed text-gray-800">Group Members</h2>
+                <h2 className="block text-sm leading-relaxed font-bold text-gray-800">Group Members</h2>
                 <p className="mb-2 text-sm text-neutral-500">
                   Members with outstanding balances can't be remove from group
                 </p>
@@ -137,7 +139,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
                       {!balanceByUsers[memeber.uid]?.length && (
                         <button
                           type="button"
-                          className="focus:ring-ring rounded-xs focus:outline-hidden focus:ring-2 focus:ring-offset-2"
+                          className="focus:ring-ring rounded-xs focus:ring-2 focus:ring-offset-2 focus:outline-hidden"
                           onClick={() => removeMember(memeber)}
                         >
                           <XMarkIcon className="size-4 text-neutral-800" />
@@ -149,7 +151,7 @@ export function GroupSettingsModal({group_uid}: {group_uid: string}) {
               </section>
 
               <section className="mt-6">
-                <h2 className="mb-2 block text-sm font-bold leading-relaxed text-gray-800">Group Settings</h2>
+                <h2 className="mb-2 block text-sm leading-relaxed font-bold text-gray-800">Group Settings</h2>
                 <div className="-mx-2">
                   <button
                     disabled={!!balanceByUsers[profileData?.uid ?? '']?.length}

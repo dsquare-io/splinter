@@ -1,6 +1,7 @@
-import type {ReactElement, ReactNode} from 'react';
-import {useWatch} from 'react-hook-form';
-import {useScopedFieldName} from './FieldScope.tsx';
+import type { ReactElement, ReactNode } from 'react';
+import { useWatch } from 'react-hook-form';
+
+import { useScopedFieldName } from './FieldScope.tsx';
 
 interface Props {
   name?: string;
@@ -9,9 +10,9 @@ interface Props {
   children: ((value: any) => ReactNode) | ReactNode;
 }
 
-export function WatchState({name, children, showIf, hideIfNull = false}: Props): ReactNode | null {
+export function WatchState({ name, children, showIf, hideIfNull = false }: Props): ReactNode | null {
   const scopedName = useScopedFieldName(name);
-  const state = useWatch({name: scopedName});
+  const state = useWatch({ name: scopedName });
 
   if (hideIfNull && [null, undefined].includes(state as any)) {
     return null;

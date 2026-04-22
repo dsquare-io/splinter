@@ -1,4 +1,4 @@
-import type {Message, RegisterOptions, ValidationRule, ValidationValueMessage} from 'react-hook-form';
+import type { Message, RegisterOptions, ValidationRule, ValidationValueMessage } from 'react-hook-form';
 
 export const patternsMap = {
   email: {

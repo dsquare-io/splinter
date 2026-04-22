@@ -1,4 +1,4 @@
-import {Outlet, RootRoute} from '@tanstack/react-router';
+import { Outlet, RootRoute } from '@tanstack/react-router';
 
 function RootComponent() {
   return <Outlet />;

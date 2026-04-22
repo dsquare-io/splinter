@@ -1,9 +1,9 @@
-import {ComponentProps, ReactNode} from 'react';
-import {Checkbox as CheckboxPrimitive} from 'react-aria-components';
+import { ComponentProps, ReactNode } from 'react';
+import { Checkbox as CheckboxPrimitive } from 'react-aria-components';
 
-import {CheckIcon, MinusIcon} from '@heroicons/react/24/outline';
-import {twMerge} from 'tailwind-merge';
-import {VariantProps, tv} from 'tailwind-variants';
+import { CheckIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { twMerge } from 'tailwind-merge';
+import { VariantProps, tv } from 'tailwind-variants';
 
 export const checkboxStyles = tv({
   base: [
@@ -35,10 +35,10 @@ export const checkboxStyles = tv({
 });
 
 type CheckboxProps = Omit<ComponentProps<typeof CheckboxPrimitive>, 'children' | 'className'> &
-  Omit<VariantProps<typeof checkboxStyles>, 'state' | 'focus'> & {children?: ReactNode; className?: string};
+  Omit<VariantProps<typeof checkboxStyles>, 'state' | 'focus'> & { children?: ReactNode; className?: string };
 
 export function Checkbox(props: CheckboxProps) {
-  const {size = 'large', shape, isIndeterminate, children, className, isDisabled, ...restProps} = props;
+  const { size = 'large', shape, isIndeterminate, children, className, isDisabled, ...restProps } = props;
 
   return (
     <CheckboxPrimitive
@@ -47,14 +47,14 @@ export function Checkbox(props: CheckboxProps) {
       isIndeterminate={isIndeterminate}
       {...restProps}
     >
-      {({isFocused}) => (
+      {({ isFocused }) => (
         <>
           <div
             className={checkboxStyles({
               state: isDisabled ? 'disabled' : 'active',
               size,
               shape,
-              isFocused
+              isFocused,
             })}
           >
             {isIndeterminate ? (

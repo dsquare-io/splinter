@@ -1,11 +1,10 @@
-import {useFormContext} from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
-import {useQueries} from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
-import {ApiResponse, ApiRoutes} from '@/api-types';
-import {Paths} from '@/api-types/routePaths.ts';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-
+import { ApiResponse , ApiRoutes} from '@/api-types';
+import { Paths } from '@/api-types/routePaths.ts';
+import { apiQueryOptions , useApiQuery} from '@/hooks/useApiQuery.ts';
 
 export interface Participant {
   id: string;
@@ -16,16 +15,17 @@ export interface Participant {
 }
 
 export function useExpenseParticipants() {
-  const {watch, getValues} = useFormContext();
+  const { watch, getValues } = useFormContext();
   const partipants = getValues('participants:del') as Participant[];
   const {data} = useApiQuery(ApiRoutes.PROFILE);
   watch('participants:del');
 
   const results = useQueries({
-    queries: partipants?.map((partipant) => {
-      if (partipant.type === 'group') return apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: partipant.uid}) as any;
-      return apiQueryOptions(Paths.FRIEND_DETAIL, {friend_uid: partipant.uid}) as any;
-    }) ?? [],
+    queries:
+      partipants?.map((partipant) => {
+        if (partipant.type === 'group') return apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: partipant.uid }) as any;
+        return apiQueryOptions(Paths.FRIEND_DETAIL, { friend_uid: partipant.uid }) as any;
+      }) ?? [],
   });
 
   return [...results?.flatMap((result) => {

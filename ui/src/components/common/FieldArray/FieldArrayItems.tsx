@@ -1,11 +1,11 @@
-import {ComponentProps, type ReactNode, useContext} from 'react';
-import {ButtonContext, Provider} from 'react-aria-components';
-import {type FieldArrayWithId} from 'react-hook-form';
+import { ComponentProps, type ReactNode, useContext } from 'react';
+import { ButtonContext, Provider } from 'react-aria-components';
+import { type FieldArrayWithId } from 'react-hook-form';
 
-import {FieldArrayContext} from '@/components/common/FieldArray/FieldArray.tsx';
-import {type RenderProps, composeRenderProps} from '@/components/common/render-props.ts';
+import { FieldArrayContext } from '@/components/common/FieldArray/FieldArray.tsx';
+import { type RenderProps, composeRenderProps } from '@/components/common/render-props.ts';
 
-import {useCachedChildren} from './utils.ts';
+import { useCachedChildren } from './utils.ts';
 
 interface FieldArrayItemsRenderProps {
   field: FieldArrayWithId;
@@ -25,14 +25,14 @@ interface Props
   renderEmptyState?: () => ReactNode;
 }
 
-export function FieldArrayItems({renderEmptyState, children, ...props}: Props) {
+export function FieldArrayItems({ renderEmptyState, children, ...props }: Props) {
   const context = useContext(FieldArrayContext);
 
   if (!context) {
     throw new Error("FieldArrayItems can't be used outside FieldArray");
   }
 
-  const {fields, remove, keyName} = context;
+  const { fields, remove, keyName } = context;
 
   const cachedChildren = useCachedChildren({
     children: composeRenderProps(children, (renderedChildren, renderProps) => (

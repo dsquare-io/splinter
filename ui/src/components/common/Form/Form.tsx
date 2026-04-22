@@ -1,24 +1,23 @@
-import {ForwardedRef, forwardRef, useId} from 'react';
-import {ButtonContext} from 'react-aria-components';
-import {type FieldValues, FormProvider, useForm} from 'react-hook-form';
+import { ForwardedRef, forwardRef, useId } from 'react';
+import { ButtonContext } from 'react-aria-components';
+import { type FieldValues, FormProvider, useForm } from 'react-hook-form';
 
-import {axiosInstance} from '@/axios';
-import {handleSubmissionError} from '@/components/common/Form/errors';
-import {Provider} from '@/components/common/Provider.tsx';
-import {forwardRefType} from '@/components/common/types.ts';
-import {useContextProps} from '@/components/common/use-context-props.ts';
+import { axiosInstance } from '@/axios';
+import { handleSubmissionError } from '@/components/common/Form/errors';
+import { Provider } from '@/components/common/Provider.tsx';
+import { forwardRefType } from '@/components/common/types.ts';
+import { useContextProps } from '@/components/common/use-context-props.ts';
 
-import {FormContext} from './context';
-import {applyTransformers} from './transformers.ts';
-import type {FormProps, Method} from './types';
-
+import { FormContext } from './context';
+import { applyTransformers } from './transformers.ts';
+import type { FormProps, Method } from './types';
 
 function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValues, TransformedData = any>(
-  {...props}: FormProps<SubmitResponse, TFieldValues, TransformedData>,
+  { ...props }: FormProps<SubmitResponse, TFieldValues, TransformedData>,
   ref: ForwardedRef<HTMLFormElement>
 ) {
   const formId = useId();
-  const {onSubmit: formSubmitHandler} = props;
+  const { onSubmit: formSubmitHandler } = props;
 
   if (!props.name) {
     props.name = props?.id ?? formId;
@@ -149,7 +148,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
             // resolve headers
             const resolvedHeaders =
               typeof headers === 'function'
-                ? await headers(transformedData, {method: method as Method, action}, event)
+                ? await headers(transformedData, { method: method as Method, action }, event)
                 : headers;
 
             if (resolvedHeaders === null) {
@@ -159,7 +158,11 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
             // call submission handler
             let response: any;
             try {
-              response = await onSubmit?.(transformedData, {method, action, headers: resolvedHeaders}, event);
+              response = await onSubmit?.(
+                transformedData,
+                { method, action, headers: resolvedHeaders },
+                event
+              );
             } catch (err: unknown) {
               handleSubmissionError(err, control);
               return onSubmitError?.(err, control);
@@ -178,4 +181,4 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
 }
 
 const Form2 = (forwardRef as forwardRefType)(Form);
-export {Form2 as Form};
+export { Form2 as Form };

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import {formatDistanceToNow} from 'date-fns';
 
 import {ActivityAudience} from '@/api-types';
-import {Avatar} from '@/components/common';
+import { Avatar } from '@/components/common';
 
 
 export default function ActivityListItem({activity}: {activity: ActivityAudience}) {

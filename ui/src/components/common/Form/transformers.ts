@@ -1,7 +1,5 @@
 interface Transformer {
-  (actualKey: string, value: any, args: string[]):
-    | [string, any]
-    | readonly [string, any];
+  (actualKey: string, value: any, args: string[]): [string, any] | readonly [string, any];
 }
 
 interface ParsedKey {
@@ -29,7 +27,7 @@ interface ParsedKey {
  *  ```
  */
 export function applyTransformers<T>(data: T) {
-  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+  if (typeof data !== 'object' || data === null || Array.isArray(data)) {
     return data;
   }
 
@@ -40,16 +38,15 @@ export function applyTransformers<T>(data: T) {
     let mappedValue = value;
     let mappedKey = actualKey;
 
-    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
       mappedValue = applyTransformers(value);
     }
     if (Array.isArray(value)) {
-      mappedValue = value.map(applyTransformers)
+      mappedValue = value.map(applyTransformers);
     }
 
     if (fn && transformerMap[fn]) {
-      [mappedKey, mappedValue] =
-        transformerMap[fn](actualKey, mappedValue, args) ?? [];
+      [mappedKey, mappedValue] = transformerMap[fn](actualKey, mappedValue, args) ?? [];
     }
 
     if (newData[mappedKey] && mappedValue) {
@@ -63,8 +60,8 @@ export function applyTransformers<T>(data: T) {
 }
 
 function parseKey(key: string): ParsedKey {
-  const [actualKey, op = ""] = key.split(":");
-  const [fn, ...args ] = op.split("__");
+  const [actualKey, op = ''] = key.split(':');
+  const [fn, ...args] = op.split('__');
   return {
     fn,
     actualKey,
@@ -79,11 +76,11 @@ const transformerMap: Record<string, Transformer> = {
 } satisfies Record<string, Transformer>;
 
 function toDict(baseKey: string, value: unknown, args: string[]) {
-  const keyName = args?.[0] ? args[0] : "id";
-  const valueName = args?.[1] ? args[1] : "value";
+  const keyName = args?.[0] ? args[0] : 'id';
+  const valueName = args?.[1] ? args[1] : 'value';
 
-  if (typeof value === "object" && value !== null) {
-    const newValue = Object.entries(value).map(([k, v]) => ({[keyName]: k, [valueName]: v}));
+  if (typeof value === 'object' && value !== null) {
+    const newValue = Object.entries(value).map(([k, v]) => ({ [keyName]: k, [valueName]: v }));
     return [baseKey, newValue] as const;
   }
   return [baseKey, value] as const;

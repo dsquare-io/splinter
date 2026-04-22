@@ -1,4 +1,4 @@
-import {Avatar} from '@/components/common';
+import { Avatar } from '@/components/common';
 
 interface SingleEntryItemProps {
   id: number;
@@ -7,7 +7,7 @@ interface SingleEntryItemProps {
   currency: string;
 }
 
-export default function SingleEntryItem({name, balance, currency}: SingleEntryItemProps) {
+export default function SingleEntryItem({ name, balance, currency }: SingleEntryItemProps) {
   return (
     <div
       // to="/friends/$friend"
@@ -17,7 +17,7 @@ export default function SingleEntryItem({name, balance, currency}: SingleEntryIt
       <div className="flex items-center justify-center gap-2">
         <div className="flex flex-col">
           <p className="text-[8px] uppercase">DEC</p>
-          <p className="text-base uppercase text-gray-500">12</p>
+          <p className="text-base text-gray-500 uppercase">12</p>
         </div>
         <Avatar
           className="size-9 rounded-lg"

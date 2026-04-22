@@ -1,19 +1,19 @@
 import tailwindcss from '@tailwindcss/vite';
-import {TanStackRouterVite} from '@tanstack/router-vite-plugin';
-import react from '@vitejs/plugin-react-swc';
+import { tanstackRouter } from '@tanstack/router-vite-plugin';
+import react from '@vitejs/plugin-react';
 import path from 'node:path';
-import {defineConfig, loadEnv} from 'vite';
 import {VitePWA} from 'vite-plugin-pwa';
+import {defineConfig, loadEnv} from 'vite';
 
 
 // https://vitejs.dev/config/
-export default defineConfig(({mode}) => {
-  const env = {...process.env, ...loadEnv(mode, process.cwd())};
+export default defineConfig(({ mode }) => {
+  const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return {
     plugins: [
       react(),
-      TanStackRouterVite(),
+      tanstackRouter(),
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',

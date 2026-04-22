@@ -1,4 +1,3 @@
-
 import {
   BriefcaseIcon,
   CameraIcon,
@@ -6,17 +5,17 @@ import {
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import {ChevronLeftIcon} from '@heroicons/react/24/solid';
-import {Link, Navigate, createFileRoute} from '@tanstack/react-router';
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { Link, Navigate, createFileRoute } from '@tanstack/react-router';
 
-import {Avatar} from '@/components/common';
+import { Avatar } from '@/components/common';
 
 export const Route = createFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,
 });
 
 function RootComponent() {
-  const activity = null;
+  const  activity= null;
 
   if (!activity) {
     return <Navigate to="/activity" />;
@@ -25,18 +24,18 @@ function RootComponent() {
   return (
     <div className="flex h-dvh flex-col">
       <Link
-        className="mb-1 flex items-center gap-x-1.5 px-6 pb-4 pt-6 text-sm font-medium text-brand-700 xl:hidden"
+        className="text-brand-700 mb-1 flex items-center gap-x-1.5 px-6 pt-6 pb-4 text-sm font-medium xl:hidden"
         to="/activity"
       >
         <ChevronLeftIcon className="size-3" />
         Activity
       </Link>
 
-      <div className="flex w-full items-center justify-end gap-3 px-6 pb-4 pt-6">
+      <div className="flex w-full items-center justify-end gap-3 px-6 pt-6 pb-4">
         <PencilIcon className="size-5 text-gray-600" />
         <TrashIcon className="size-5 text-gray-600" />
       </div>
-      <div className="mt-16 flex items-center justify-center border-b border-gray-200 px-6 pb-8 pt-6">
+      <div className="mt-16 flex items-center justify-center border-b border-gray-200 px-6 pt-6 pb-8">
         <div className="flex flex-col items-center justify-center gap-1">
           <div className="rounded-lg bg-blue-50 p-1.5">
             <BriefcaseIcon className="size-12 text-gray-800" />
@@ -49,7 +48,7 @@ function RootComponent() {
         </div>
       </div>
 
-      <div className="flex h-full flex-col justify-between px-6 pb-8 pt-6">
+      <div className="flex h-full flex-col justify-between px-6 pt-6 pb-8">
         <div className="flex items-start gap-x-3">
           <Avatar
             className="size-12 rounded-lg"
@@ -93,7 +92,7 @@ function RootComponent() {
                   type="text"
                   name="comment"
                   id="comment"
-                  className="block w-full rounded-md bg-white/60 py-1.5 pl-4 pr-10 ring-1 ring-gray-300 placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-brand-600 sm:text-sm sm:leading-6"
+                  className="focus:ring-brand-600 block w-full rounded-md bg-white/60 py-1.5 pr-10 pl-4 ring-1 ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:outline-hidden sm:text-sm sm:leading-6"
                   placeholder="Add a comment"
                 />
               </div>

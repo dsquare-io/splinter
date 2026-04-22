@@ -23,7 +23,8 @@ function extractPaths(filePath) {
       const operationNames = [];
 
       ts.forEachChild(pathInterfaceNodes.type, (operationsNode) => {
-        if (!ts.isPropertySignature(operationsNode)) return;
+        if (!ts.isPropertySignature(operationsNode) || !ts.isIndexedAccessTypeNode(operationsNode.type))
+          return;
 
         operationNames.push(operationsNode.type.indexType.literal.text);
       });

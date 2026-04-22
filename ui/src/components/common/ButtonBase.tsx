@@ -1,4 +1,4 @@
-import {tv} from 'tailwind-variants';
+import { tv } from 'tailwind-variants';
 
 export const buttonBaseStyles = tv({
   base: [
@@ -75,11 +75,11 @@ export const buttonBaseStyles = tv({
     {
       color: 'default',
       variant: 'solid',
-      className: '[--ring:var(--color-brand-500)]'
-    }
+      className: '[--ring:var(--color-brand-500)]',
+    },
   ],
   defaultVariants: {
     color: 'default',
     variant: 'solid',
   },
-})
+});

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import {ComponentProps} from 'react';
-import {Heading} from 'react-aria-components';
+import { ComponentProps } from 'react';
+import { Heading } from 'react-aria-components';
 
 export function AlertIcon({
   type = 'danger',
@@ -13,7 +13,7 @@ export function AlertIcon({
     <div
       {...props}
       className={clsx(
-        'mx-auto flex size-12 shrink-0 items-center justify-center rounded-full [grid-area:icon] sm:mx-0 sm:h-10 sm:w-10 **:data-[slot="icon"]:size-6',
+        'mx-auto flex size-12 shrink-0 items-center justify-center rounded-full [grid-area:icon] **:data-[slot="icon"]:size-6 sm:mx-0 sm:h-10 sm:w-10',
         type === 'danger' && 'bg-red-100 **:data-[slot="icon"]:text-red-600',
         type === 'warn' && 'bg-yellow-100 **:data-[slot="icon"]:text-yellow-700',
         type === 'info' && 'bg-blue-100 **:data-[slot="icon"]:text-blue-600',
@@ -41,7 +41,7 @@ export function AlertHeading(props: ComponentProps<typeof Heading>) {
       {...props}
       slot="title"
       className={clsx(
-        'mt-3 text-base font-semibold leading-6 text-gray-900 [grid-area:title] sm:ml-3 sm:mt-0',
+        'mt-3 text-base leading-6 font-semibold text-gray-900 [grid-area:title] sm:mt-0 sm:ml-3',
         props.className
       )}
     />

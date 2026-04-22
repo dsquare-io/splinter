@@ -1,4 +1,4 @@
-import {ComponentProps, ReactNode} from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import {
   CheckCircleIcon,
@@ -7,9 +7,9 @@ import {
   InformationCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import {VariantProps, tv} from 'tailwind-variants';
+import { VariantProps, tv } from 'tailwind-variants';
 
-import {IconButton} from './IconButton.tsx';
+import { IconButton } from './IconButton.tsx';
 
 export const IconsMap = {
   default: <ExclamationCircleIcon className="h-6 w-6" />,
@@ -43,7 +43,7 @@ export function Alert({
 
   return (
     <div
-      className={alertStyles({color, className})}
+      className={alertStyles({ color, className })}
       role={role}
       {...restProps}
     >

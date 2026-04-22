@@ -1,8 +1,8 @@
-import {createFileRoute} from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
-import {Paths} from '@/api-types/routePaths.ts';
-import {Avatar} from '@/components/common';
-import {useApiQuery} from '@/hooks/useApiQuery.ts';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Avatar } from '@/components/common';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 import ChangePassword from './-change-password.tsx';
 import PersonalInfo from './-personal-info.tsx';
@@ -13,16 +13,16 @@ export const Route = createFileRoute('/_dashboard/profile/me')({
 });
 
 function RootComponent() {
-  const {data: profile} = useApiQuery(Paths.PROFILE);
+  const { data: profile } = useApiQuery(Paths.PROFILE);
 
   return (
     <div>
-      <div className="relative border-b border-gray-900/5 px-4 pb-6 pt-16 sm:px-6 md:px-8">
+      <div className="relative border-b border-gray-900/5 px-4 pt-16 pb-6 sm:px-6 md:px-8">
         <div
           className="absolute inset-0 -z-10 overflow-hidden"
           aria-hidden="true"
         >
-          <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
+          <div className="absolute top-full left-16 -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
               className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
               style={{
@@ -46,27 +46,27 @@ function RootComponent() {
       </div>
 
       <div className="@container mx-auto max-w-(--breakpoint-lg) divide-y divide-neutral-200">
-        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8 @3xl:grid-cols-3">
           <div>
-            <h1 className="text-lg font-medium leading-6 text-gray-900">Personal Info</h1>
+            <h1 className="text-lg leading-6 font-medium text-gray-900">Personal Info</h1>
             <p className="mt-1.5 text-sm text-gray-500">Manage your personal information.</p>
           </div>
 
           <PersonalInfo />
         </section>
 
-        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8 @3xl:grid-cols-3">
           <div>
-            <h1 className="text-lg font-medium leading-6 text-gray-900">Your Preferences</h1>
+            <h1 className="text-lg leading-6 font-medium text-gray-900">Your Preferences</h1>
             <p className="mt-1.5 text-sm text-gray-500">Customize your experience</p>
           </div>
 
           <Preferences />
         </section>
 
-        <section className="@3xl:grid-cols-3 grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8">
+        <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8 @3xl:grid-cols-3">
           <div>
-            <h1 className="text-lg font-medium leading-6 text-gray-900">Change Password</h1>
+            <h1 className="text-lg leading-6 font-medium text-gray-900">Change Password</h1>
             <p className="mt-1.5 text-sm text-gray-500">Set a different password for your account.</p>
           </div>
 

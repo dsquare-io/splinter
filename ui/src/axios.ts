@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import {Paths} from '@/api-types/routePaths.ts';
+import { Paths } from '@/api-types/routePaths.ts';
 
 export const axiosInstance = axios.create({
   withCredentials: true,
@@ -17,7 +17,7 @@ export function setLocalStorage(key: string, value: string) {
   window.dispatchEvent(new Event('local-storage'));
   window.dispatchEvent(
     new CustomEvent('mantine-local-storage', {
-      detail: {key, value},
+      detail: { key, value },
     })
   );
 }

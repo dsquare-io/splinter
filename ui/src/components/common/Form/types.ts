@@ -1,6 +1,6 @@
-import {BaseSyntheticEvent, ComponentProps} from 'react';
-import {SlotProps} from 'react-aria-components';
-import {FieldErrors, type FieldValues, UseFormProps, type UseFormReturn} from 'react-hook-form';
+import { BaseSyntheticEvent, ComponentProps } from 'react';
+import { SlotProps } from 'react-aria-components';
+import { FieldErrors, type FieldValues, UseFormProps, type UseFormReturn } from 'react-hook-form';
 
 export type Method =
   | 'get'

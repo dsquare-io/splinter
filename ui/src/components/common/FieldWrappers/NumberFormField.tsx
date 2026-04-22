@@ -1,7 +1,9 @@
-import {ComponentProps} from 'react';
-import {NumberField} from 'react-aria-components';
-import {FormField} from '@/components/common/Form/FormField';
-import {MergeFormFieldProps} from './types';
+import { ComponentProps } from 'react';
+import { NumberField } from 'react-aria-components';
+
+import { FormField } from '@/components/common/Form/FormField';
+
+import { MergeFormFieldProps } from './types';
 
 export function NumberFormField(props: MergeFormFieldProps<ComponentProps<typeof NumberField>>) {
   const {

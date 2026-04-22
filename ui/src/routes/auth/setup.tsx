@@ -1,20 +1,19 @@
-import {createFileRoute, useNavigate} from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import {ApiRoutes} from '@/api-types';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
+import { ApiRoutes } from '@/api-types';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { queryClient } from '@/queryClient.ts';
 
 import AuthLayout from './-layout';
-import {queryClient} from "@/queryClient.ts";
-import {apiQueryOptions, useApiQuery} from "@/hooks/useApiQuery.ts";
-import {Paths} from "@/api-types/routePaths.ts";
-
 
 export const Route = createFileRoute('/auth/setup')({
   component: RootComponent,
 });
 
 function RootComponent() {
-  const {data: profile} = useApiQuery(Paths.PROFILE);
+  const { data: profile } = useApiQuery(Paths.PROFILE);
   const navigate = useNavigate();
 
   if (!profile) return;
@@ -26,8 +25,8 @@ function RootComponent() {
         values={profile}
         method="PUT"
         onSubmitSuccess={async () => {
-          await queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE))
-          return navigate({to: '/friends'});
+          await queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE));
+          return navigate({ to: '/friends' });
         }}
         className="space-y-6"
       >

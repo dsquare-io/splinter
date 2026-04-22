@@ -14,26 +14,26 @@ import {
   TagGroup,
   TagList,
 } from 'react-aria-components';
-import {useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import {ChevronUpDownIcon, XMarkIcon} from '@heroicons/react/24/outline';
+import { ChevronUpDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-import {urlWithArgs} from '@/api-types';
-import {Friend} from '@/api-types/components/schemas';
-import {Paths} from '@/api-types/routePaths.ts';
-import {Avatar, Button, Form, Input, Label} from '@/components/common';
-import {CloseDialog} from '@/components/modals/utils.tsx';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-import {queryClient} from '@/queryClient.ts';
+import { urlWithArgs } from '@/api-types';
+import { Friend } from '@/api-types/components/schemas';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Avatar, Button, Form, Input, Label } from '@/components/common';
+import { CloseDialog } from '@/components/modals/utils.tsx';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { queryClient } from '@/queryClient.ts';
 
-export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
-  const formControl = useForm<{members: string[]}>({
-    defaultValues: {members: []},
+export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
+  const formControl = useForm<{ members: string[] }>({
+    defaultValues: { members: [] },
   });
   const selectedMembers = formControl.watch('members') ?? [];
 
-  const {data: group} = useApiQuery(Paths.GROUP_DETAIL, {group_uid});
-  const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
+  const { data: group } = useApiQuery(Paths.GROUP_DETAIL, { group_uid });
+  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
 
   const friendsExcludingMembers = friends?.results?.filter(
     (f) => !group?.members.find((m) => m.uid === f.uid) && !selectedMembers.includes(f.uid)
@@ -59,7 +59,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
     <ModalOverlay isDismissable>
       <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Invite Members</Heading>
@@ -69,13 +69,15 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
 
               <Form
                 method="PUT"
-                action={urlWithArgs(Paths.GROUP_MEMBERSHIP, {group_uid})}
+                action={urlWithArgs(Paths.GROUP_MEMBERSHIP, { group_uid })}
                 transformData={(data) => {
                   data.members = [...(data.members ?? []), ...(group?.members.map((m) => m.uid) ?? [])];
                   return data;
                 }}
                 onSubmitSuccess={() =>
-                  queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, {group_uid})).then(close)
+                  queryClient
+                    .invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }))
+                    .then(close)
                 }
                 className="space-y-4"
                 control={formControl}
@@ -98,19 +100,19 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                     <TagList
                       className={clsx(
                         'react-aria-TagList flex flex-wrap items-center gap-x-2 gap-y-1',
-                        selectedMembers?.length > 0 && 'mb-4 mt-3'
+                        selectedMembers?.length > 0 && 'mt-3 mb-4'
                       )}
                       items={
                         selectedMembers
                           ?.map((uid) => friends?.results?.find((f) => f.uid === uid))
                           .filter(Boolean)
-                          .map((f) => ({...f, id: f.uid})) ?? []
+                          .map((f) => ({ ...f, id: f.uid })) ?? []
                       }
                     >
                       {(item) => (
                         <Tag
                           textValue={item.fullName}
-                          className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
+                          className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden"
                         >
                           <Avatar
                             className="size-6 rounded-none bg-neutral-50"
@@ -128,9 +130,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                     </TagList>
                   </TagGroup>
                   <div className="relative">
-                    <Input
-                      placeholder="Search your friends..."
-                    />
+                    <Input placeholder="Search your friends..." />
                     <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
                       <ChevronUpDownIcon
                         className="h-5 w-5 text-gray-400"
@@ -143,7 +143,7 @@ export function InviteGroupMembersModal({group_uid}: {group_uid: string}) {
                       {(friend: Friend) => (
                         <ListBoxItem
                           id={friend.uid}
-                          className="react-aria-ListboxItem flex cursor-default select-none items-center gap-x-3 px-4 py-1.5 outline-hidden hover:bg-gray-100"
+                          className="react-aria-ListboxItem flex cursor-default items-center gap-x-3 px-4 py-1.5 outline-hidden select-none hover:bg-gray-100"
                           textValue={friend.fullName}
                         >
                           <Avatar

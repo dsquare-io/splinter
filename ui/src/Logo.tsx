@@ -1,4 +1,4 @@
-import {ComponentProps} from 'react';
+import { ComponentProps } from 'react';
 
 export default function Logo(props: ComponentProps<'svg'>) {
   return (

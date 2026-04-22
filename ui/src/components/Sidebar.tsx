@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import {ComponentProps} from 'react';
-import {DialogTrigger} from 'react-aria-components';
+import { ComponentProps } from 'react';
+import { DialogTrigger } from 'react-aria-components';
 
 import {
   ArrowLeftStartOnRectangleIcon,
@@ -9,20 +9,18 @@ import {
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import {Link, useNavigate} from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 
-import {setHeaders} from '@/axios.ts';
-import {Avatar, Button} from '@/components/common';
+import { ApiRoutes } from '@/api-types';
+import { setHeaders } from '@/axios.ts';
+import { Avatar, Button } from '@/components/common';
 import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
 
-import {ApiRoutes} from '../api-types';
-import {useApiQuery} from '../hooks/useApiQuery.ts';
-
-
 export default function Sidebar(props: ComponentProps<'div'>) {
-  const {data} = useApiQuery(ApiRoutes.PROFILE);
-  const {setToken} = useAuth();
+  const { data } = useApiQuery(ApiRoutes.PROFILE);
+  const { setToken } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -106,7 +104,7 @@ export default function Sidebar(props: ComponentProps<'div'>) {
           onClick={() => {
             setToken();
             setHeaders();
-            return navigate({to: '/auth/login'});
+            return navigate({ to: '/auth/login' });
           }}
           className="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
         >

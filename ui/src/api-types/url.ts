@@ -1,4 +1,4 @@
-import type {A} from 'ts-toolbelt';
+import type { A } from 'ts-toolbelt';
 
 type IsParameter<Part> = Part extends `{${infer ParamName}}` ? ParamName : never;
 type FilteredParts<Path> = Path extends `${infer PartA}/${infer PartB}`

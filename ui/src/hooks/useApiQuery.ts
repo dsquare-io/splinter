@@ -1,8 +1,7 @@
-import {type UndefinedInitialDataOptions, queryOptions, useQuery} from '@tanstack/react-query';
+import { type UndefinedInitialDataOptions, queryOptions, useQuery } from '@tanstack/react-query';
 
-import {ApiResponse, type UrlArgs, paths, urlWithArgs} from '@/api-types';
-
-import {axiosInstance} from '../axios.ts';
+import { ApiResponse, type UrlArgs, paths, urlWithArgs } from '@/api-types';
+import { axiosInstance } from '@/axios.ts';
 
 export function apiQueryOptions<Path extends keyof paths>(
   url: Path,
@@ -16,7 +15,8 @@ export function apiQueryOptions<Path extends keyof paths>(
   return queryOptions<ApiResponse<Path>>({
     ...(options as any),
     queryKey: [...pathParts, ...(params ? [params] : [])],
-    queryFn: ({signal}) => axiosInstance.get(resolvedUrl, {signal}).then((r) => r.data as ApiResponse<Path>),
+    queryFn: ({ signal }) =>
+      axiosInstance.get(resolvedUrl, { signal }).then((r) => r.data as ApiResponse<Path>),
   });
 }
 

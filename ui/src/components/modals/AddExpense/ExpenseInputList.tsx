@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import {TextField} from 'react-aria-components';
+import { TextField } from 'react-aria-components';
 
-import {XMarkIcon} from '@heroicons/react/24/outline';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import throttle from 'just-throttle';
 
-import {Button, Input, Label, NumberFormField, TextFormField} from '@/components/common';
-import {FieldArray} from '@/components/common/FieldArray/FieldArray.tsx';
-import {FieldArrayItems} from '@/components/common/FieldArray/FieldArrayItems.tsx';
-import {useApiQuery} from '../../../hooks/useApiQuery.ts';
-import {Paths} from '../../../api-types/routePaths.ts';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, Input, Label, NumberFormField, TextFormField } from '@/components/common';
+import { FieldArray } from '@/components/common/FieldArray/FieldArray.tsx';
+import { FieldArrayItems } from '@/components/common/FieldArray/FieldArrayItems.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function ExpenseItems() {
   const [inpValue, setInptValue] = useState('');
-  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
   if (!preferredCurrency) return null;
 
   return (
@@ -21,12 +21,12 @@ export default function ExpenseItems() {
       <FieldArray
         name="expenses"
         initialItemsCount={1}
-        className="grid grid-cols-[2fr_minmax(106px,1fr)_auto] grid-rows-[auto] gap-y-4 gap-x-3"
+        className="grid grid-cols-[2fr_minmax(106px,1fr)_auto] grid-rows-[auto] gap-x-3 gap-y-4"
       >
-        {({append}) => (
+        {({ append }) => (
           <>
             <FieldArrayItems className="contents">
-              {({index}) => (
+              {({ index }) => (
                 <div className="col-span-3 grid grid-cols-subgrid">
                   <TextFormField
                     name={`expenses.${index}.description`}

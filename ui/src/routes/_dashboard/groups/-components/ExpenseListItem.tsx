@@ -1,18 +1,17 @@
 import clsx from 'clsx';
 
-import {Link, useParams} from '@tanstack/react-router';
-import {format} from 'date-fns';
+import { Link, useParams } from '@tanstack/react-router';
+import { format } from 'date-fns';
 
-import {ExpenseOrPayment} from '@/api-types/components/schemas';
+import { ExpenseOrPayment } from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
-
 
 interface ExpenseListItemProps {
   expense: ExpenseOrPayment;
 }
 
-export default function ExpenseListItem({expense}: ExpenseListItemProps) {
-  const params = useParams({from: '/_dashboard/groups/$group'});
+export default function ExpenseListItem({ expense }: ExpenseListItemProps) {
+  const params = useParams({ from: '/_dashboard/groups/$group' });
 
   const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1;
   const description =
@@ -25,7 +24,7 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
   return (
     <Link
       to="/groups/$group/$expense"
-      params={{group: params.group, expense: expense.uid}}
+      params={{ group: params.group, expense: expense.uid }}
       replace
       className="flex items-center gap-x-4 py-3"
     >
@@ -34,7 +33,7 @@ export default function ExpenseListItem({expense}: ExpenseListItemProps) {
       {expense.type === 'expense' ? (
         <>
           <div className="flex-1">
-            <p className={clsx(hasSubExpense ? 'italic text-gray-900' : 'text-gray-900')}>{description}</p>
+            <p className={clsx(hasSubExpense ? 'text-gray-900 italic' : 'text-gray-900')}>{description}</p>
             <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
           </div>
 
@@ -78,11 +77,11 @@ function OutstandingBalance({
   );
 }
 
-function MonthDay({datetime}: {datetime: string}) {
+function MonthDay({ datetime }: { datetime: string }) {
   return (
     <div className="flex flex-col items-center">
       <p className="text-[9px] uppercase">{format(new Date(datetime), 'MMM')}</p>
-      <p className="text-base uppercase text-gray-500">{format(new Date(datetime), 'dd')}</p>
+      <p className="text-base text-gray-500 uppercase">{format(new Date(datetime), 'dd')}</p>
     </div>
   );
 }

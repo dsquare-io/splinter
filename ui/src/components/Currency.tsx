@@ -1,7 +1,7 @@
-import {ComponentProps} from 'react';
+import { ComponentProps } from 'react';
 
-import {useNumberFormatter} from '@react-aria/i18n';
-import {twMerge} from 'tailwind-merge';
+import { useNumberFormatter } from '@react-aria/i18n';
+import { twMerge } from 'tailwind-merge';
 
 interface Props extends Omit<ComponentProps<'span'>, 'children'> {
   currency: string;
@@ -10,7 +10,14 @@ interface Props extends Omit<ComponentProps<'span'>, 'children'> {
   noTabularNums?: boolean;
 }
 
-export default function Currency({value, currency, className, noColor, noTabularNums = false, ...props}: Props) {
+export default function Currency({
+  value,
+  currency,
+  className,
+  noColor,
+  noTabularNums = false,
+  ...props
+}: Props) {
   const formatter = useNumberFormatter({
     style: 'currency',
     currency,

@@ -1,5 +1,5 @@
-import {paths} from './routeTypes';
-import {VerbType} from './utils.ts';
+import { paths } from './routeTypes';
+import { VerbType } from './utils.ts';
 
 export type VerbType = 'get' | 'post' | 'put' | 'patch' | 'delete';
 

@@ -1,12 +1,12 @@
-import {TextField} from 'react-aria-components';
+import { TextField } from 'react-aria-components';
 
-import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-import {queryClient} from '@/queryClient.ts';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { queryClient } from '@/queryClient.ts';
 
 export default function PersonalInfo() {
-  const {data: profile} = useApiQuery(Paths.PROFILE);
+  const { data: profile } = useApiQuery(Paths.PROFILE);
 
   if (!profile) return;
 
@@ -21,7 +21,7 @@ export default function PersonalInfo() {
       <FormRootErrors />
 
       <div className="space-y-6">
-        <div className="@lg:space-y-0 @lg:flex @lg:space-x-3 items-center space-y-6 *:w-full">
+        <div className="items-center space-y-6 *:w-full @lg:flex @lg:space-y-0 @lg:space-x-3">
           <TextFormField
             name="firstName"
             required

@@ -1,4 +1,4 @@
-import {PropsWithChildren, createContext, useContext} from 'react';
+import { PropsWithChildren, createContext, useContext } from 'react';
 
 const FieldScopeContext = createContext<string>('');
 
@@ -24,7 +24,7 @@ export function useScopedFieldName(name?: string): string {
  * </FieldScope>
  * ```
  */
-export function FieldScope({name = '', children}: PropsWithChildren<{name?: string}>) {
+export function FieldScope({ name = '', children }: PropsWithChildren<{ name?: string }>) {
   const scopedName = useScopedFieldName(name);
   return <FieldScopeContext.Provider value={scopedName}>{children}</FieldScopeContext.Provider>;
 }

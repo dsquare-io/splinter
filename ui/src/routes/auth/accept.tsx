@@ -1,12 +1,11 @@
-import {createFileRoute, Navigate, useNavigate} from '@tanstack/react-router';
+import { Navigate, createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import {ApiRoutes} from '@/api-types';
-import {setHeaders} from '@/axios';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
+import { ApiRoutes } from '@/api-types';
+import { setHeaders } from '@/axios';
+import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import useAuth from '@/hooks/useAuth';
 
 import AuthLayout from './-layout';
-
 
 export const Route = createFileRoute('/auth/accept')({
   component: RootComponent,
@@ -20,11 +19,11 @@ export const Route = createFileRoute('/auth/accept')({
 
 function RootComponent() {
   const navigate = useNavigate();
-  const {uid, token} = Route.useSearch();
-  const {setToken} = useAuth();
+  const { uid, token } = Route.useSearch();
+  const { setToken } = useAuth();
 
   if (!uid || !token) {
-    return <Navigate to="/auth/login" />
+    return <Navigate to="/auth/login" />;
   }
 
   return (
@@ -41,7 +40,7 @@ function RootComponent() {
             refresh: res.data.refreshToken,
           });
           setHeaders(res.data.accessToken);
-          return navigate({to: '/auth/setup'});
+          return navigate({ to: '/auth/setup' });
         }}
         transformData={(data, form) => {
           if (data['password'] !== data['password2']) {

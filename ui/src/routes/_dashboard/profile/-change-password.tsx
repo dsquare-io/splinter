@@ -1,5 +1,5 @@
-import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 
 export default function ChangePassword() {
   return (
@@ -23,7 +23,7 @@ export default function ChangePassword() {
           });
           return undefined;
         }
-        return {oldPassword, password};
+        return { oldPassword, password };
       }}
       onSubmitSuccess={(_, formRef) => {
         formRef.reset();

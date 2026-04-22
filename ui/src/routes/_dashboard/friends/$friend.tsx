@@ -1,29 +1,28 @@
 import clsx from 'clsx';
-import {Fragment} from 'react';
-import {DialogTrigger} from 'react-aria-components';
+import { Fragment } from 'react';
+import { DialogTrigger } from 'react-aria-components';
 
-import {BanknotesIcon} from '@heroicons/react/16/solid';
-import {ChevronLeftIcon} from '@heroicons/react/24/solid';
-import {Link, createFileRoute} from '@tanstack/react-router';
-import {format} from 'date-fns';
+import { BanknotesIcon } from '@heroicons/react/16/solid';
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
-import {ApiRoutes} from '@/api-types';
+import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency.tsx';
-import {Avatar, Button} from '@/components/common';
-import {useApiQuery} from '@/hooks/useApiQuery.ts';
-
-import {AddPaymentModal} from '../../../components/modals/AddPayment.tsx';
+import { Avatar, Button } from '@/components/common';
+import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
 });
 
 function RootComponent() {
-  const {friend: friend_uid} = Route.useParams();
+  const { friend: friend_uid } = Route.useParams();
 
-  const {data} = useApiQuery(ApiRoutes.FRIEND_DETAIL, {friend_uid});
-  const {data: friendExpenseList} = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, {friend_uid});
+  const { data } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
+  const { data: friendExpenseList } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, { friend_uid });
 
   if (!data) return null;
 
@@ -38,7 +37,7 @@ function RootComponent() {
     <div>
       <div
         className={clsx(
-          'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pb-6 pt-10 sm:px-6 md:px-8',
+          'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pt-10 pb-6 sm:px-6 md:px-8',
           (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
         )}
       >
@@ -46,7 +45,7 @@ function RootComponent() {
           className="absolute inset-0 -z-10 overflow-hidden"
           aria-hidden="true"
         >
-          <div className="absolute left-16 top-full -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
+          <div className="absolute top-full left-16 -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
               className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
               style={{
@@ -59,7 +58,7 @@ function RootComponent() {
 
         <div className="col-span-2">
           <Link
-            className="mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium text-brand-700 xl:hidden"
+            className="text-brand-700 mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium xl:hidden"
             to="/friends"
           >
             <ChevronLeftIcon className="size-3" />
@@ -109,7 +108,7 @@ function RootComponent() {
       <div className="my-3 px-4 sm:px-6 md:px-8">
         {monthlyActivity.map(([month, expenses]) => (
           <div key={month}>
-            <h3 className="sticky top-0 bg-gray-50/70 pb-2 pt-4 text-sm text-neutral-500 backdrop-blur-sm">
+            <h3 className="sticky top-0 bg-gray-50/70 pt-4 pb-2 text-sm text-neutral-500 backdrop-blur-sm">
               {format(new Date(month), 'MMM yyy')}
             </h3>
             <div>
@@ -120,7 +119,7 @@ function RootComponent() {
                 >
                   <div className="flex flex-col items-center">
                     <p className="text-[8px] uppercase">{format(new Date(month), 'MMM')}</p>
-                    <p className="text-base uppercase tabular-nums text-gray-500">
+                    <p className="text-base text-gray-500 uppercase tabular-nums">
                       {format(new Date(month), 'dd')}
                     </p>
                   </div>

@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import { useEffect } from 'react';
 import {
   Button as BaseButton,
   ComboBox,
@@ -12,13 +12,13 @@ import {
   Radio,
   RadioGroup,
 } from 'react-aria-components';
-import {useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import {ChevronUpDownIcon} from '@heroicons/react/24/outline';
-import {useQuery} from '@tanstack/react-query';
+import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
+import { useQuery } from '@tanstack/react-query';
 import groupBy from 'just-group-by';
 
-import {Paths} from '@/api-types/routePaths.ts';
+import { Paths } from '@/api-types/routePaths.ts';
 import Currency from '@/components/Currency.tsx';
 import {
   Avatar,
@@ -31,9 +31,9 @@ import {
   NumberFormField,
   WatchState,
 } from '@/components/common';
-import {FormField} from '@/components/common/Form/FormField.tsx';
-import {CloseDialog} from '@/components/modals/utils.tsx';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
+import { FormField } from '@/components/common/Form/FormField.tsx';
+import { CloseDialog } from '@/components/modals/utils.tsx';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 
 interface SettleUpModalProps {
   group_uid?: string;
@@ -41,14 +41,14 @@ interface SettleUpModalProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
+export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
   const formControl = useForm();
-  const {data: profileData} = useApiQuery(Paths.PROFILE);
-  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: profileData } = useApiQuery(Paths.PROFILE);
+  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
   // for single friend
-  const {data: friendData} = useQuery(
-    apiQueryOptions(Paths.FRIEND_DETAIL, {friend_uid: friend_uid ?? ''}, undefined, {
+  const { data: friendData } = useQuery(
+    apiQueryOptions(Paths.FRIEND_DETAIL, { friend_uid: friend_uid ?? '' }, undefined, {
       enabled: !!friend_uid,
     })
   );
@@ -65,8 +65,8 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
   }, [friendData, friend_uid]);
 
   // for groups
-  const {data: groupData} = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: group_uid ?? ''}, undefined, {
+  const { data: groupData } = useQuery(
+    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
@@ -82,7 +82,7 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
     <ModalOverlay isDismissable>
       <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Settle Up</Heading>
@@ -142,13 +142,13 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
                     aria-label="Payment direction"
                   >
                     <Radio
-                      className="w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs data-focus-visible:ring-2 data-focus-visible:ring-brand-500"
+                      className="data-focus-visible:ring-brand-500 w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-focus-visible:ring-2 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs"
                       value="out"
                     >
                       I'm Paying
                     </Radio>
                     <Radio
-                      className="w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs data-focus-visible:ring-2 data-focus-visible:ring-brand-500"
+                      className="data-focus-visible:ring-brand-500 w-full rounded-sm px-3 py-2 text-sm font-medium text-gray-600 data-focus-visible:ring-2 data-selected:bg-white data-selected:text-gray-900 data-selected:shadow-xs"
                       value="in"
                     >
                       I'm Getting Paid
@@ -160,7 +160,7 @@ export function AddPaymentModal({group_uid, friend_uid}: SettleUpModalProps) {
                   <div className="mt-6">
                     <WatchState name="paymentDir">
                       {(paymentDir) => (
-                        <label className="mb-1 block text-sm font-bold leading-relaxed text-gray-800">
+                        <label className="mb-1 block text-sm leading-relaxed font-bold text-gray-800">
                           {paymentDir === 'in' ? 'Who is paying you?' : 'Who is getting Paid?'}
                         </label>
                       )}

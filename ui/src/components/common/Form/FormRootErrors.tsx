@@ -1,8 +1,8 @@
-import {useFormContext} from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
-import {AnimatePresence, motion} from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
-import {Alert} from '../Alert';
+import { Alert } from '../Alert';
 
 
 export function FormRootErrors({error}: {error?: string}) {
@@ -12,8 +12,8 @@ export function FormRootErrors({error}: {error?: string}) {
     <AnimatePresence mode="wait">
       {(error || form?.formState.errors?.root?.message) && (
         <motion.div
-          style={{overflow: 'hidden'}}
-          initial={{opacity: 0, height: 0, marginBottom: -24}}
+          style={{ overflow: 'hidden' }}
+          initial={{ opacity: 0, height: 0, marginBottom: -24 }}
           animate={{
             opacity: 1,
             height: 'auto',

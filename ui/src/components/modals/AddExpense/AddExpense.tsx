@@ -1,23 +1,23 @@
-import {useState} from 'react';
-import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
-import {useForm} from 'react-hook-form';
+import { useState } from 'react';
+import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
+import { useForm } from 'react-hook-form';
 
-import {CheckIcon, ChevronLeftIcon} from '@heroicons/react/20/solid';
+import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid';
 
-import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldScope, Form, HiddenField} from '@/components/common';
-import {CloseDialog} from '@/components/modals/utils';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, FieldScope, Form, HiddenField } from '@/components/common';
+import { CloseDialog } from '@/components/modals/utils';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-import {useApiQuery} from '@/hooks/useApiQuery.ts';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
-import {SingleExpenseShares} from './SingleExpenseShares';
+import { SingleExpenseShares } from './SingleExpenseShares';
 import {queryClient} from "@/queryClient.ts";
 
-export default function AddExpense({onOpenChange}: {onOpenChange?: (open: boolean) => void}) {
+export default function AddExpense({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   const [currentStep, setCurrentStep] = useState('entry');
   const form = useForm();
-  const {data: preferredCurrency} = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
   return (
     <ModalOverlay isDismissable>
@@ -26,7 +26,7 @@ export default function AddExpense({onOpenChange}: {onOpenChange?: (open: boolea
         className="react-aria-Modal flex min-h-[420px] flex-col overflow-auto sm:max-w-lg"
       >
         <Dialog className="react-aria-Dialog flex h-full grow flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Add Expense</Heading>

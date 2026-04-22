@@ -1,10 +1,9 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
-import {useLocalStorage} from '@mantine/hooks';
+import { useLocalStorage } from '@mantine/hooks';
 
-import {ApiRoutes} from '@/api-types';
-import {axiosInstance, setHeaders} from '@/axios.ts';
-
+import { ApiRoutes } from '@/api-types';
+import { axiosInstance, setHeaders } from '@/axios.ts';
 
 export enum AuthStatus {
   LOGGED_OUT = 'logged_out',
@@ -63,9 +62,8 @@ export default function useAuth() {
 
   return {
     status,
-    token: {accessToken, refreshToken},
-    setToken: ({access, refresh} = {access: '', refresh: ''}) => {
-      console.log({access, refresh});
+    token: { accessToken, refreshToken },
+    setToken: ({ access, refresh } = { access: '', refresh: '' }) => {
       if (access) {
         setToken(access);
       } else {

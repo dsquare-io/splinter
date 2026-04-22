@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import {useRef, useState} from 'react';
+import { useRef, useState } from 'react';
 import {
   Button as ButtonBase,
   Dialog,
@@ -12,29 +12,29 @@ import {
   TagList,
 } from 'react-aria-components';
 
-import {CheckIcon, ChevronDownIcon, XMarkIcon} from '@heroicons/react/24/outline';
-import {useQuery} from '@tanstack/react-query';
-import {useNavigate} from '@tanstack/react-router';
-import {AxiosResponse} from 'axios';
+import { CheckIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
+import { AxiosResponse } from 'axios';
 
-import {ApiResponse, urlWithArgs} from '@/api-types';
-import {Friend} from '@/api-types/components/schemas';
-import {Paths} from '@/api-types/routePaths.ts';
-import {axiosInstance} from '@/axios.ts';
-import {Avatar, Button, FieldError, Form, Input, Label, TextFormField} from '@/components/common';
-import {Command, CommandEmpty, CommandInput, CommandItem, CommandList} from '@/components/common/Command';
-import {CloseDialog} from '@/components/modals/utils.tsx';
-import {apiQueryOptions, useApiQuery} from '@/hooks/useApiQuery.ts';
-import {queryClient} from '@/queryClient.ts';
+import { ApiResponse, urlWithArgs } from '@/api-types';
+import { Friend } from '@/api-types/components/schemas';
+import { Paths } from '@/api-types/routePaths.ts';
+import { axiosInstance } from '@/axios.ts';
+import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/common/Command';
+import { CloseDialog } from '@/components/modals/utils.tsx';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { queryClient } from '@/queryClient.ts';
 
-export function CreateGroupModal({group_uid}: {group_uid?: string}) {
-  const {data} = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, {group_uid: group_uid ?? ''}, undefined, {
+export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
+  const { data } = useQuery(
+    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
-  const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
-  const {data: profileData} = useApiQuery(Paths.PROFILE);
+  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
+  const { data: profileData } = useApiQuery(Paths.PROFILE);
 
   const navigate = useNavigate();
   const [isOpen, setOpen] = useState(false);
@@ -46,13 +46,13 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
     res: AxiosResponse<ApiResponse<typeof Paths.GROUP_LIST, 'post', 201>>
   ) {
     return axiosInstance
-      .put(urlWithArgs(Paths.GROUP_MEMBERSHIP, {group_uid: res.data.uid!}), {
+      .put(urlWithArgs(Paths.GROUP_MEMBERSHIP, { group_uid: res.data.uid! }), {
         members: [...selectedFriends.map((f) => f.uid), profileData?.uid],
       })
       .then(() =>
         navigate({
           to: `/groups/$group`,
-          params: {group: res.data.uid!},
+          params: { group: res.data.uid! },
         })
       )
       .then(() => queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_LIST)));
@@ -62,7 +62,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
     <ModalOverlay isDismissable>
       <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Create Group</Heading>
@@ -71,7 +71,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
               </div>
 
               <Form
-                values={{name: data?.name}}
+                values={{ name: data?.name }}
                 method={'POST'}
                 action={group_uid ? Paths.GROUP_DETAIL : Paths.GROUP_LIST}
                 onSubmitSuccess={(res) => handleFormSubmissionSuccess(res!).then(close)}
@@ -90,7 +90,7 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                 </TextFormField>
 
                 <div className="react-aria-TextField">
-                  <label className="mb-1 block text-sm font-bold leading-relaxed text-gray-800">
+                  <label className="mb-1 block text-sm leading-relaxed font-bold text-gray-800">
                     Members
                   </label>
                   <div
@@ -110,14 +110,14 @@ export function CreateGroupModal({group_uid}: {group_uid?: string}) {
                         }}
                       >
                         <TagList
-                          items={selectedFriends.map((e) => ({id: e.uid, ...e}))}
+                          items={selectedFriends.map((e) => ({ id: e.uid, ...e }))}
                           className="react-aria-TagList contents"
                           renderEmptyState={() => <span className="cursor-default">Select friends...</span>}
                         >
                           {(item: Friend) => (
                             <Tag
                               textValue={item.fullName}
-                              className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"
+                              className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden"
                             >
                               <Avatar
                                 className="size-6 rounded-none bg-neutral-50"

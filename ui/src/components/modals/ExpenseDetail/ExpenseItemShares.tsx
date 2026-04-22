@@ -1,7 +1,7 @@
-import {ApiRoutes, ChildExpense, ExpenseShare, SimpleCurrency} from '@/api-types';
+import { ApiRoutes, ChildExpense, ExpenseShare, SimpleCurrency } from '@/api-types';
 import Currency from '@/components/Currency';
-import {Avatar} from '@/components/common';
-import {useApiQuery} from '@/hooks/useApiQuery';
+import { Avatar } from '@/components/common';
+import { useApiQuery } from '@/hooks/useApiQuery';
 
 export default function ExpenseItemShares({
   expenseItem,
@@ -19,8 +19,8 @@ export default function ExpenseItemShares({
   ));
 }
 
-function UserShare({shareItem, currency}: {shareItem: ExpenseShare; currency: SimpleCurrency}) {
-  const {data: userProfile} = useApiQuery(ApiRoutes.FRIEND_DETAIL, {friend_uid: shareItem.user});
+function UserShare({ shareItem, currency }: { shareItem: ExpenseShare; currency: SimpleCurrency }) {
+  const { data: userProfile } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid: shareItem.user });
 
   return (
     <div className="group flex items-center gap-x-3 px-4 py-3 transition-colors">

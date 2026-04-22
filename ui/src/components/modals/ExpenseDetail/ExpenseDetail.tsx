@@ -1,21 +1,21 @@
-import {ComponentProps, forwardRef} from 'react';
-import {Dialog, Heading, Modal} from 'react-aria-components';
+import { ComponentProps, forwardRef } from 'react';
+import { Dialog, Heading, Modal } from 'react-aria-components';
 
-import {useParams} from '@tanstack/react-router';
-import {format} from 'date-fns';
+import { useParams } from '@tanstack/react-router';
+import { format } from 'date-fns';
 
-import {ApiRoutes} from '@/api-types';
+import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency';
-import {useApiQuery} from '@/hooks/useApiQuery';
+import { useApiQuery } from '@/hooks/useApiQuery';
 
-import {CloseDialog} from '../utils';
+import { CloseDialog } from '../utils';
 import ExpenseActivity from './ExpenseActivity';
 import ExpenseItemShares from './ExpenseItemShares';
 import ExpenseItems from './ExpenseItems';
 
 function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
-  const params = useParams({from: '/_dashboard/groups/$group/$expense'});
-  const {data: expense} = useApiQuery(ApiRoutes.EXPENSE_DETAIL, {expense_uid: params.expense});
+  const params = useParams({ from: '/_dashboard/groups/$group/$expense' });
+  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: params.expense });
 
   if (!expense) return null;
 
@@ -35,7 +35,7 @@ function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
         <div className="-mx-px my-6 flex items-center gap-x-3 rounded-md border border-gray-300 px-4 py-3">
           <div className="flex w-6 flex-col items-center">
             <p className="text-[9px] uppercase">{format(new Date(expense.datetime), 'MMM')}</p>
-            <p className="text-base uppercase text-gray-500">{format(new Date(expense.datetime), 'dd')}</p>
+            <p className="text-base text-gray-500 uppercase">{format(new Date(expense.datetime), 'dd')}</p>
           </div>
 
           <div className="flex-1">

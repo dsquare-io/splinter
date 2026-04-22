@@ -1,15 +1,22 @@
-import {Button} from 'react-aria-components';
-import {useFormContext} from 'react-hook-form';
+import { Button } from 'react-aria-components';
+import { useFormContext } from 'react-hook-form';
 
-import {MinusIcon, PlusIcon} from '@heroicons/react/24/outline';
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 
-import {Avatar, Checkbox, Input, NumberFormField, WatchState, useScopedFieldName} from '@/components/common';
+import {
+  Avatar,
+  Checkbox,
+  Input,
+  NumberFormField,
+  WatchState,
+  useScopedFieldName,
+} from '@/components/common';
 
-import {useExpenseParticipants} from './useExpenseParticipants';
+import { useExpenseParticipants } from './useExpenseParticipants';
 
 export function SingleExpenseShares() {
   const participants = useExpenseParticipants();
-  const {setValue, getValues} = useFormContext();
+  const { setValue, getValues } = useFormContext();
   const sharesBaseName = useScopedFieldName('shares:to_dict__user__share');
 
   return (
@@ -22,7 +29,7 @@ export function SingleExpenseShares() {
             for (const user of participants) {
               const key = [sharesBaseName, user.uid].join('.');
               const currentValue = getValues(key);
-              setValue(key, checked ? (currentValue || 1) : 0);
+              setValue(key, checked ? currentValue || 1 : 0);
             }
           }}
         >

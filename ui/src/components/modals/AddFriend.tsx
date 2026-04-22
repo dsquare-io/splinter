@@ -1,12 +1,12 @@
-import {Dialog, Heading, Modal, ModalOverlay} from 'react-aria-components';
+import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
-import {Paths} from '@/api-types/routePaths.ts';
-import {Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField} from '@/components/common';
-import {CloseDialog} from '@/components/modals/utils.tsx';
-import {apiQueryOptions} from '@/hooks/useApiQuery.ts';
-import {queryClient} from '@/queryClient.ts';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import { CloseDialog } from '@/components/modals/utils.tsx';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { queryClient } from '@/queryClient.ts';
 
-export function AddFriendModal({onOpenChange}: {onOpenChange?: (open: boolean) => void}) {
+export function AddFriendModal({ onOpenChange }: { onOpenChange?: (open: boolean) => void }) {
   return (
     <ModalOverlay isDismissable>
       <Modal
@@ -14,7 +14,7 @@ export function AddFriendModal({onOpenChange}: {onOpenChange?: (open: boolean) =
         className="react-aria-Modal max-h-[580px] sm:max-w-lg"
       >
         <Dialog className="react-aria-Dialog flex h-full flex-col">
-          {({close}) => (
+          {({ close }) => (
             <>
               <div className="mb-6">
                 <Heading slot="title">Add Friend</Heading>
@@ -28,7 +28,7 @@ export function AddFriendModal({onOpenChange}: {onOpenChange?: (open: boolean) =
                 onSubmitSuccess={() =>
                   queryClient.invalidateQueries(apiQueryOptions(Paths.FRIEND_LIST)).then(close)
                 }
-                transformData={({email}: {email: string}) => {
+                transformData={({ email }: { email: string }) => {
                   return {
                     email,
                     name: email.split('@')[0],

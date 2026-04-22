@@ -1,4 +1,4 @@
-import {useEffect, useReducer, useRef, useState} from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import {
   Button as BaseButton,
   Collection,
@@ -12,21 +12,21 @@ import {
   Popover,
   Button as RACButton,
 } from 'react-aria-components';
-import {useFormContext} from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
-import {ChevronDownIcon, XMarkIcon} from '@heroicons/react/24/outline';
-import {useParams} from '@tanstack/react-router';
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useParams } from '@tanstack/react-router';
 
-import {Friend, Group} from '@/api-types/components/schemas';
-import {Paths} from '@/api-types/routePaths.ts';
-import {Avatar} from '@/components/common';
-import {useApiQuery} from '@/hooks/useApiQuery.ts';
+import { Friend, Group } from '@/api-types/components/schemas';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Avatar } from '@/components/common';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-import {type Participant} from './useExpenseParticipants';
+import { type Participant } from './useExpenseParticipants';
 
 type participantsAction =
-  | {type: 'select_group'; data: Group}
-  | {type: 'select_friend'; data: Friend}
+  | { type: 'select_group'; data: Group }
+  | { type: 'select_friend'; data: Friend }
   | {
       type: 'remove';
       urn: string;
@@ -38,7 +38,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
   }
 
   if (action.type === 'select_group') {
-    return [{...action.data, type: 'group', id: action.data.urn}] satisfies Participant[];
+    return [{ ...action.data, type: 'group', id: action.data.urn }] satisfies Participant[];
   }
   if (action.type === 'select_friend' && state[0]?.type === 'group' && !state.find((p) => p.urn === action.data.urn)) {
     return [
@@ -65,12 +65,12 @@ function participantsReducer(state: Participant[], action: participantsAction): 
 }
 
 export default function ParticipantsSelector() {
-  const params = useParams({strict: false});
-  const {setValue} = useFormContext();
+  const params = useParams({ strict: false });
+  const { setValue } = useFormContext();
 
   const triggerRef = useRef<HTMLDivElement>(null);
-  const {data: groups} = useApiQuery(Paths.GROUP_LIST);
-  const {data: friends} = useApiQuery(Paths.FRIEND_LIST);
+  const { data: groups } = useApiQuery(Paths.GROUP_LIST);
+  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
 
   const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
   useEffect(() => {
@@ -95,13 +95,13 @@ export default function ParticipantsSelector() {
   };
 
   useEffect(() => {
-    const friend = friends?.results?.find((f) => f.uid === (params as {friend: string}).friend);
-    const group = groups?.results?.find((g) => g.uid === (params as {group: string}).group);
+    const friend = friends?.results?.find((f) => f.uid === (params as { friend: string }).friend);
+    const group = groups?.results?.find((g) => g.uid === (params as { group: string }).group);
 
     if (friend) {
-      dispatch({type: 'select_friend', data: friend});
+      dispatch({ type: 'select_friend', data: friend });
     } else if (group) {
-      dispatch({type: 'select_group', data: group});
+      dispatch({ type: 'select_group', data: group });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -109,14 +109,14 @@ export default function ParticipantsSelector() {
   if (!groups?.results || !friends?.results) return;
 
   const comboboxItems = [
-    {name: 'Groups', children: groups.results},
-    {name: 'Friends', children: friends.results},
+    { name: 'Groups', children: groups.results },
+    { name: 'Friends', children: friends.results },
   ] as const;
 
   return (
     <div
       ref={triggerRef}
-      className="-mx-4 border-b border-t border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
+      className="-mx-4 border-t border-b border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
     >
       <ComboBox
         className="flex flex-wrap items-center gap-x-2 gap-y-1"
@@ -130,9 +130,9 @@ export default function ParticipantsSelector() {
           const group = groups?.results?.find((g) => g.urn === key);
 
           if (friend) {
-            dispatch({type: 'select_friend', data: friend});
+            dispatch({ type: 'select_friend', data: friend });
           } else if (group) {
-            dispatch({type: 'select_group', data: group});
+            dispatch({ type: 'select_group', data: group });
           }
 
           setFieldState({
@@ -143,7 +143,7 @@ export default function ParticipantsSelector() {
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
         {selectedParticipants.map((item) => (
-          <div key={item.urn} className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300">
+          <div key={item.urn} className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden">
             <Avatar
               className="size-6 rounded-none bg-neutral-50"
               fallback={item.name}
@@ -152,7 +152,7 @@ export default function ParticipantsSelector() {
             <RACButton
               className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-hidden"
               onPress={() => {
-                dispatch({type: 'remove', urn: item.urn});
+                dispatch({ type: 'remove', urn: item.urn });
               }}
             >
               <XMarkIcon className="size-4" />

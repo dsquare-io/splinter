@@ -1,12 +1,11 @@
-import {ComponentProps} from 'react';
-import {Provider, FieldErrorContext as RACFieldErrorContext, TagGroup} from 'react-aria-components';
-import {useController} from 'react-hook-form';
+import { ComponentProps } from 'react';
+import { Provider, FieldErrorContext as RACFieldErrorContext, TagGroup } from 'react-aria-components';
+import { useController } from 'react-hook-form';
 
-import {useScopedFieldName} from '@/components/common';
-import {MergeFormFieldProps} from '@/components/common/FieldWrappers/types';
-import {FieldErrorContext} from '@/components/common/Form/FieldError';
-import {messagifyValidationRules} from '@/components/common/Form/validations';
-
+import { useScopedFieldName } from '@/components/common';
+import { MergeFormFieldProps } from '@/components/common/FieldWrappers/types';
+import { FieldErrorContext } from '@/components/common/Form/FieldError';
+import { messagifyValidationRules } from '@/components/common/Form/validations';
 
 type TagGroupFieldProps = MergeFormFieldProps<ComponentProps<typeof TagGroup>>;
 
@@ -27,8 +26,8 @@ export function TagGroupField({
 }: TagGroupFieldProps) {
   const scopedName = useScopedFieldName(name);
   const {
-    field: {value, onBlur, onChange, ref},
-    fieldState: {invalid, error},
+    field: { value, onBlur, onChange, ref },
+    fieldState: { invalid, error },
   } = useController({
     name: scopedName,
     defaultValue: selectedKeys ?? new Set(),

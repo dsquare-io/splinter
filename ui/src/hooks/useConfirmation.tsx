@@ -1,10 +1,16 @@
-import React, {ReactElement, createContext, useCallback, useContext, useRef, useState} from 'react';
-import {Dialog, Modal} from 'react-aria-components';
+import React, { ReactElement, createContext, useCallback, useContext, useRef, useState } from 'react';
+import { Dialog, Modal } from 'react-aria-components';
 
-import {ExclamationTriangleIcon} from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
-import {AlertActions, AlertContent, AlertDescription, AlertHeading, AlertIcon} from '@/components/Alert.tsx';
-import {Button} from '@/components/common';
+import {
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertHeading,
+  AlertIcon,
+} from '@/components/Alert.tsx';
+import { Button } from '@/components/common';
 
 interface Options {
   callback?: () => Promise<any> | void;
@@ -19,19 +25,19 @@ const ConfirmationServiceContext = createContext<(options: Options) => Promise<b
 
 export const useConfirmation = () => useContext(ConfirmationServiceContext);
 
-export function ConfirmationProvider({children}: React.PropsWithChildren<any>) {
+export function ConfirmationProvider({ children }: React.PropsWithChildren<any>) {
   const [options, setOptions] = useState<Options>({} as any);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const awaitingPromiseRef = useRef<{resolve: (value: boolean) => void}>();
+  const awaitingPromiseRef = useRef<{ resolve: (value: boolean) => void }>();
 
   const openConfirmation = useCallback(
     (opt: Options) => {
       setOptions(opt);
       setShow(true);
       return new Promise<boolean>((resolve) => {
-        awaitingPromiseRef.current = {resolve};
+        awaitingPromiseRef.current = { resolve };
       });
     },
     [setOptions, setShow]

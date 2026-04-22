@@ -1,19 +1,19 @@
-import {ChevronDownIcon} from '@heroicons/react/24/outline';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import * as Accordion from '@radix-ui/react-accordion';
 import groupBy from 'just-group-by';
 
-import {ApiRoutes} from '@/api-types';
+import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency.tsx';
-import {Avatar} from '@/components/common';
-import {useApiQuery} from '@/hooks/useApiQuery.ts';
+import { Avatar } from '@/components/common';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 interface Props {
   group_uid: string;
 }
 
-export function GroupBalancesTab({group_uid}: Props) {
-  const {data} = useApiQuery(ApiRoutes.GROUP_DETAIL, {group_uid});
-  const {data: profileData} = useApiQuery(ApiRoutes.PROFILE);
+export function GroupBalancesTab({ group_uid }: Props) {
+  const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data: profileData } = useApiQuery(ApiRoutes.PROFILE);
   if (!data || !profileData) return null;
 
   const balanceByUsers = Object.entries(
@@ -36,7 +36,7 @@ export function GroupBalancesTab({group_uid}: Props) {
             <div className="flex-1 text-left">{balances[0]!.user.fullName}</div>
             <ChevronDownIcon className="h-4 w-4 shrink-0 text-gray-600 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
           </Accordion.Trigger>
-          <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <Accordion.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
             <div className="py-3 pl-4">
               {balances.map((e) => (
                 <div
@@ -44,7 +44,7 @@ export function GroupBalancesTab({group_uid}: Props) {
                   className="relative pb-6"
                 >
                   <span
-                    className="absolute left-[13px] top-4 -ml-px h-full w-px bg-gray-200 [:last-of-type>&]:hidden"
+                    className="absolute top-4 left-[13px] -ml-px h-full w-px bg-gray-200 [:last-of-type>&]:hidden"
                     aria-hidden="true"
                   ></span>
                   <div className="relative flex items-center gap-x-2">

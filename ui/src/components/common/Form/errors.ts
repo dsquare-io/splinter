@@ -1,9 +1,9 @@
-import type {FieldErrors, FieldValues, UseFormReturn} from 'react-hook-form';
+import type { FieldErrors, FieldValues, UseFormReturn } from 'react-hook-form';
 
-import {isAxiosError} from 'axios';
+import { isAxiosError } from 'axios';
 
 export type DrfErrors = {
-  [key: string]: {message: string; code: string}[] | string;
+  [key: string]: { message: string; code: string }[] | string;
 };
 
 const API_ERROR_MESSAGE = {
@@ -49,7 +49,7 @@ export function drfToFieldErrors(error: unknown) {
       } else if (typeof error === 'object') {
         formErrors[fieldName || 'root'] = {
           type: 'validate',
-          message: (error as {message: string; code: string}).message,
+          message: (error as { message: string; code: string }).message,
         };
       } else if (typeof error === 'string') {
         formErrors[fieldName || 'root'] = {

@@ -1,4 +1,4 @@
-import {ReactNode} from 'react';
+import { ReactNode } from 'react';
 import {
   CheckboxContext,
   CheckboxGroupContext,
@@ -10,12 +10,12 @@ import {
   SwitchContext,
   TextFieldContext,
 } from 'react-aria-components';
-import {type RegisterOptions, type UseControllerProps, useController} from 'react-hook-form';
+import { type RegisterOptions, type UseControllerProps, useController } from 'react-hook-form';
 
-import {FieldErrorContext} from './FieldError';
-import {useScopedFieldName} from './FieldScope';
-import {getFocusableRef} from './utils';
-import {messagifyValidationRules} from './validations';
+import { FieldErrorContext } from './FieldError';
+import { useScopedFieldName } from './FieldScope';
+import { getFocusableRef } from './utils';
+import { messagifyValidationRules } from './validations';
 
 export type FieldProps = {
   children?: ReactNode;
@@ -60,8 +60,8 @@ export function FormField({
 }: FieldProps) {
   const scopedName = useScopedFieldName(name);
   const {
-    field: {value, onBlur, onChange, ref},
-    fieldState: {invalid, error},
+    field: { value, onBlur, onChange, ref },
+    fieldState: { invalid, error },
   } = useController({
     name: scopedName,
     ...props,

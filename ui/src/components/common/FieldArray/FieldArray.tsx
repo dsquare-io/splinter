@@ -1,16 +1,16 @@
 import { ComponentProps, createContext, useEffect, useMemo, useRef } from 'react';
-import {UseFieldArrayProps, UseFieldArrayReturn, useFieldArray} from 'react-hook-form';
+import { UseFieldArrayProps, UseFieldArrayReturn, useFieldArray } from 'react-hook-form';
 
-import {RenderProps, useRenderProps} from '@/components/common/render-props.ts';
+import { RenderProps, useRenderProps } from '@/components/common/render-props.ts';
 
 interface Props
-  extends RenderProps<UseFieldArrayReturn & {keyName: string}>,
+  extends RenderProps<UseFieldArrayReturn & { keyName: string }>,
     UseFieldArrayProps,
     Omit<ComponentProps<'div'>, keyof RenderProps<UseFieldArrayReturn>> {
   initialItemsCount?: number;
 }
 
-export const FieldArrayContext = createContext<(UseFieldArrayReturn & {keyName: string}) | null>(null);
+export const FieldArrayContext = createContext<(UseFieldArrayReturn & { keyName: string }) | null>(null);
 
 export function FieldArray({
   keyName = 'id',
@@ -25,9 +25,9 @@ export function FieldArray({
 
   // here we can properly type Keyname instead of a string but that won't make any difference
   // as the type will be lost in children
-  const fieldArrayProps = useFieldArray({keyName, name, control, rules, shouldUnregister});
+  const fieldArrayProps = useFieldArray({ keyName, name, control, rules, shouldUnregister });
 
-  const contextValue = useMemo(() => ({...fieldArrayProps, keyName}), [fieldArrayProps, keyName]);
+  const contextValue = useMemo(() => ({ ...fieldArrayProps, keyName }), [fieldArrayProps, keyName]);
 
   const renderProps = useRenderProps({
     ...restProps,

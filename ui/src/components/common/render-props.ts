@@ -1,6 +1,6 @@
-import {CSSProperties, ReactNode, useMemo} from 'react';
+import { CSSProperties, ReactNode, useMemo } from 'react';
 
-import {AriaLabelingProps, DOMProps as SharedDOMProps} from '@react-types/shared';
+import { AriaLabelingProps, DOMProps as SharedDOMProps } from '@react-types/shared';
 
 export interface StyleRenderProps<T> {
   /** The CSS [className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className) for the element. A function may be provided to compute the class based on component state. */
@@ -21,7 +21,7 @@ interface RenderPropsHookOptions<T> extends RenderProps<T>, SharedDOMProps, Aria
 }
 
 export function computeRenderProps<T>(props: RenderPropsHookOptions<T>) {
-  const {className, style, children, defaultClassName, defaultChildren, values} = props;
+  const { className, style, children, defaultClassName, defaultChildren, values } = props;
 
   let computedClassName: string | undefined;
   let computedStyle: React.CSSProperties | undefined;
@@ -56,7 +56,7 @@ export function computeRenderProps<T>(props: RenderPropsHookOptions<T>) {
 }
 
 export function useRenderProps<T>(props: RenderPropsHookOptions<T>) {
-  const {className, style, children, defaultClassName, defaultChildren, values} = props;
+  const { className, style, children, defaultClassName, defaultChildren, values } = props;
 
   return useMemo(
     () =>

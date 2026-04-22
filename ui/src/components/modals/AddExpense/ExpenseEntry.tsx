@@ -1,32 +1,35 @@
-import {Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover} from 'react-aria-components';
+import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'react-aria-components';
 
-import {ChevronRightIcon} from '@heroicons/react/20/solid';
-import {ChevronUpDownIcon} from '@heroicons/react/24/outline';
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
-import {SimpleUser} from '@/api-types/components/schemas';
-import {Avatar, Button, Input, Label} from '@/components/common';
-import {FormField} from '@/components/common/Form/FormField.tsx';
+import { SimpleUser } from '@/api-types/components/schemas';
+import { Paths } from '@/api-types/routePaths.ts';
+import { Avatar, Button, Input, Label } from '@/components/common';
+import { FormField } from '@/components/common/Form/FormField.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 import ExpenseInputList from './ExpenseInputList.tsx';
 import ParticipantsSelector from './ParticipantsSelector.tsx';
-import {useExpenseParticipants} from './useExpenseParticipants.ts';
-import {useApiQuery} from '../../../hooks/useApiQuery.ts';
-import {Paths} from '../../../api-types/routePaths.ts';
+import { useExpenseParticipants } from './useExpenseParticipants.ts';
 
 interface Props {
   onNext?: () => void;
 }
 
-export default function ExpenseEntry({onNext}: Props) {
+export default function ExpenseEntry({ onNext }: Props) {
   const participants = useExpenseParticipants();
-  const {data: profile} = useApiQuery(Paths.PROFILE);
+  const { data: profile } = useApiQuery(Paths.PROFILE);
 
   return (
     <>
       <div className="grow space-y-4">
         <ParticipantsSelector />
 
-        <FormField name="paidBy" defaultValue={profile?.uid}>
+        <FormField
+          name="paidBy"
+          defaultValue={profile?.uid}
+        >
           <ComboBox items={participants}>
             <Label>Paid By</Label>
             <div className="relative">

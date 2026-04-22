@@ -2,14 +2,14 @@
 
 import * as React from 'react';
 
-import {MagnifyingGlassIcon} from '@heroicons/react/24/outline';
-import {Command as CommandPrimitive} from 'cmdk';
-import {twMerge} from 'tailwind-merge';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Command as CommandPrimitive } from 'cmdk';
+import { twMerge } from 'tailwind-merge';
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <CommandPrimitive
     ref={ref}
     className={twMerge(
@@ -24,7 +24,7 @@ Command.displayName = CommandPrimitive.displayName;
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <div
     className="flex items-center border-b px-3"
     cmdk-input-wrapper=""
@@ -46,10 +46,10 @@ CommandInput.displayName = CommandPrimitive.Input.displayName;
 const CommandList = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={twMerge('max-h-[300px] overflow-y-auto overflow-x-hidden', className)}
+    className={twMerge('max-h-[300px] overflow-x-hidden overflow-y-auto', className)}
     {...props}
   />
 ));
@@ -72,7 +72,7 @@ CommandEmpty.displayName = CommandPrimitive.Empty.displayName;
 const CommandGroup = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Group>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <CommandPrimitive.Group
     ref={ref}
     className={twMerge(
@@ -88,7 +88,7 @@ CommandGroup.displayName = CommandPrimitive.Group.displayName;
 const CommandSeparator = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <CommandPrimitive.Separator
     ref={ref}
     className={twMerge('bg-border -mx-1 h-px', className)}
@@ -100,11 +100,11 @@ CommandSeparator.displayName = CommandPrimitive.Separator.displayName;
 const CommandItem = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
->(({className, ...props}, ref) => (
+>(({ className, ...props }, ref) => (
   <CommandPrimitive.Item
     ref={ref}
     className={twMerge(
-      'aria-selected:text-accent-foreground relative flex cursor-default select-none items-center rounded-xs px-2 py-1.5 text-sm outline-hidden aria-selected:bg-gray-100 data-disabled:pointer-events-none data-disabled:opacity-50',
+      'aria-selected:text-accent-foreground relative flex cursor-default items-center rounded-xs px-2 py-1.5 text-sm outline-hidden select-none aria-selected:bg-gray-100 data-disabled:pointer-events-none data-disabled:opacity-50',
       className
     )}
     {...props}
@@ -113,7 +113,7 @@ const CommandItem = React.forwardRef<
 
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
-const CommandShortcut = ({className, ...props}: React.HTMLAttributes<HTMLSpanElement>) => {
+const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
       className={twMerge('text-muted-foreground ml-auto text-xs tracking-widest', className)}
