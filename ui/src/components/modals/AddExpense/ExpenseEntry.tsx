@@ -3,11 +3,9 @@ import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'r
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
-import { SimpleUser } from '@/api-types/components/schemas';
-import { Paths } from '@/api-types/routePaths.ts';
 import { Avatar, Button, Input, Label } from '@/components/common';
 import { FormField } from '@/components/common/Form/FormField.tsx';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 import ExpenseInputList from './ExpenseInputList.tsx';
 import ParticipantsSelector from './ParticipantsSelector.tsx';
@@ -19,7 +17,7 @@ interface Props {
 
 export default function ExpenseEntry({ onNext }: Props) {
   const participants = useExpenseParticipants();
-  const { data: profile } = useApiQuery(Paths.PROFILE);
+  const { currentUser } = useAuth();
 
   return (
     <>
@@ -28,7 +26,7 @@ export default function ExpenseEntry({ onNext }: Props) {
 
         <FormField
           name="paidBy"
-          defaultValue={profile?.uid}
+          defaultValue={currentUser?.uid}
         >
           <ComboBox items={participants}>
             <Label>Paid By</Label>

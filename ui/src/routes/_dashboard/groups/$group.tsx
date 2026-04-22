@@ -13,6 +13,7 @@ import { AddPaymentModal } from '@/components/modals/AddPayment';
 import { GroupSettingsModal } from '@/components/modals/GroupSettings';
 import { InviteGroupMembersModal } from '@/components/modals/InviteGroupMembers';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery';
+import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient';
 
 import { GroupActivityTab } from './-components/GroupActivityTab';
@@ -27,13 +28,13 @@ export const Route = createFileRoute('/_dashboard/groups/$group')({
 
 function RootComponent() {
   const { group: group_uid } = Route.useParams();
+  const { currentUser } = useAuth();
 
   const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
-  const { data: profileData } = useApiQuery(ApiRoutes.PROFILE);
   if (!data) return null;
 
   const myOutstandingBalances =
-    data.outstandingBalances?.filter((e) => e.user.uid === profileData?.uid) ?? [];
+    data.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
 
   return (
     <>

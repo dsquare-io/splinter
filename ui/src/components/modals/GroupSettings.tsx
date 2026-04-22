@@ -11,14 +11,15 @@ import { axiosInstance } from '@/axios.ts';
 import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 import { useConfirmation } from '@/hooks/useConfirmation.tsx';
 import { queryClient } from '@/queryClient.ts';
 
 export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
   const confirm = useConfirmation();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
-  const { data: profileData } = useApiQuery(Paths.PROFILE);
   const { data: group } = useApiQuery(Paths.GROUP_DETAIL, { group_uid });
 
   const { data: groupData } = useQuery(
@@ -75,7 +76,7 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
 
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal max-h-[580px] overflow-y-auto sm:max-w-lg">
+      <Modal className="react-aria-Modal max-h-145 overflow-y-auto sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({ close }) => (
             <>
@@ -154,15 +155,15 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
                 <h2 className="mb-2 block text-sm leading-relaxed font-bold text-gray-800">Group Settings</h2>
                 <div className="-mx-2">
                   <button
-                    disabled={!!balanceByUsers[profileData?.uid ?? '']?.length}
+                    disabled={!!balanceByUsers[currentUser?.uid ?? '']?.length}
                     type="button"
-                    onClick={() => profileData && removeMember(profileData)}
+                    onClick={() => currentUser && removeMember(currentUser)}
                     className="flex w-full items-center gap-x-3 rounded-sm px-2 py-2.5 hover:bg-gray-50 focus:outline-hidden disabled:opacity-60 disabled:hover:bg-transparent"
                   >
                     <ArrowRightStartOnRectangleIcon className="size-8 p-1.5 text-neutral-700" />
                     <div className="text-left">
                       <div className="text-gray-800">Leave Group</div>
-                      {!!balanceByUsers[profileData?.uid ?? '']?.length && (
+                      {!!balanceByUsers[currentUser?.uid ?? '']?.length && (
                         <div className="text-xs text-neutral-600">
                           Please settle up your outstanding balances first.
                         </div>

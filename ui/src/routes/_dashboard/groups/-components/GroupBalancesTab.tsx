@@ -6,6 +6,7 @@ import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import { Avatar } from '@/components/common';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 interface Props {
   group_uid: string;
@@ -13,8 +14,8 @@ interface Props {
 
 export function GroupBalancesTab({ group_uid }: Props) {
   const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
-  const { data: profileData } = useApiQuery(ApiRoutes.PROFILE);
-  if (!data || !profileData) return null;
+  const { currentUser } = useAuth();
+  if (!data || !currentUser) return null;
 
   const balanceByUsers = Object.entries(
     groupBy(data.outstandingBalances ?? [], (balance) => balance.user.uid)
@@ -24,7 +25,7 @@ export function GroupBalancesTab({ group_uid }: Props) {
     <Accordion.Root
       className="my-2 divide-y divide-neutral-200"
       type="multiple"
-      defaultValue={[profileData.uid]}
+      defaultValue={[currentUser.uid]}
     >
       {balanceByUsers.map(([userId, balances]) => (
         <Accordion.Item

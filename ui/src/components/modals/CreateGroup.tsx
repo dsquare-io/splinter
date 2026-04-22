@@ -25,6 +25,7 @@ import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/common/Command';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient.ts';
 
 export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
@@ -34,7 +35,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
     })
   );
   const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
-  const { data: profileData } = useApiQuery(Paths.PROFILE);
+  const { currentUser } = useAuth();
 
   const navigate = useNavigate();
   const [isOpen, setOpen] = useState(false);
@@ -47,7 +48,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
   ) {
     return axiosInstance
       .put(urlWithArgs(Paths.GROUP_MEMBERSHIP, { group_uid: res.data.uid! }), {
-        members: [...selectedFriends.map((f) => f.uid), profileData?.uid],
+        members: [...selectedFriends.map((f) => f.uid), currentUser?.uid],
       })
       .then(() =>
         navigate({
@@ -60,7 +61,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
 
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
+      <Modal className="react-aria-Modal max-h-145 sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({ close }) => (
             <>
@@ -96,7 +97,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
                   <div
                     ref={triggerRef}
                     onClick={() => setOpen((o) => !o)}
-                    className="relative flex w-full min-w-0 flex-1 items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-[8px] text-left text-sm text-gray-500 outline outline-0 transition-colors duration-75 hover:border-gray-400 focus:outline-hidden"
+                    className="relative flex w-full min-w-0 flex-1 items-center justify-between rounded-md border border-gray-300 bg-white px-4 py-2 text-left text-sm text-gray-500 outline outline-0 transition-colors duration-75 hover:border-gray-400 focus:outline-hidden"
                   >
                     <div
                       className="contents"

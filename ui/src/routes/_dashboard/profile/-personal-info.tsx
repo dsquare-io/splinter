@@ -2,17 +2,17 @@ import { TextField } from 'react-aria-components';
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient.ts';
 
 export default function PersonalInfo() {
-  const { data: profile } = useApiQuery(Paths.PROFILE);
-
-  if (!profile) return;
+  const { currentUser } = useAuth();
+  if (!currentUser) return;
 
   return (
     <Form
-      values={profile}
+      values={currentUser}
       action={Paths.PROFILE}
       onSubmitSuccess={() => queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE))}
       method="PUT"
@@ -50,11 +50,11 @@ export default function PersonalInfo() {
         <TextField isReadOnly>
           <div className="flex items-center justify-between">
             <Label>Email</Label>
-            {profile.isVerified && <div className="text-sm text-red-600">Not verified</div>}
+            {currentUser.isVerified && <div className="text-sm text-red-600">Not verified</div>}
           </div>
           <Input
             type="email"
-            value={profile.email!}
+            value={currentUser.email!}
           />
           <FieldError />
         </TextField>

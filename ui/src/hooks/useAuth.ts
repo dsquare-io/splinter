@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { ApiRoutes } from '@/api-types';
+import { ApiRoutes, User } from '@/api-types';
 import {
   addAuthTokenChangeListener,
   getAccessToken,
@@ -20,9 +20,9 @@ export enum AuthStatus {
 let profileRequest: Promise<any> | undefined;
 
 export default function useAuth() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [accessToken, setAccessTokenState] = useState<string | null>(getAccessToken);
   const [refreshToken, setRefreshTokenState] = useState<string | null>(getRefreshToken);
-  const [validationResponse, setValidation] = useState<boolean | undefined>();
 
   useEffect(() => {
     const sync = () => {
@@ -34,9 +34,9 @@ export default function useAuth() {
   }, []);
 
   let status: AuthStatus = AuthStatus.LOGGED_OUT;
-  if (validationResponse === undefined && accessToken) {
+  if (!currentUser && accessToken) {
     status = AuthStatus.VALIDATING;
-  } else if (validationResponse) {
+  } else if (currentUser) {
     status = AuthStatus.LOGGED_IN;
   }
 
@@ -49,23 +49,26 @@ export default function useAuth() {
       }
 
       profileRequest
-        .then(() => setValidation(true))
+        .then(({ data }) => {
+          setCurrentUser(data);
+        })
         .catch((e) => {
           // only logout request failed with unauthorized error code
           if (e.response?.status !== 401) return;
           setAccessToken(null);
           setRefreshToken(null);
           setHeaders();
-          setValidation(false);
+          setCurrentUser(null);
         });
     } else {
       // user is logged out intentionally
-      setValidation(false);
+      setCurrentUser(null);
     }
   }, [accessToken, refreshToken]);
 
   return {
     status,
+    currentUser,
     token: { accessToken, refreshToken },
     setToken: ({ access, refresh } = { access: '', refresh: '' }) => {
       setAccessToken(access || null);

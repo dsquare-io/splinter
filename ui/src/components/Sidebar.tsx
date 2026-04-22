@@ -11,16 +11,13 @@ import {
 } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
 import { setHeaders } from '@/axios.ts';
 import { Avatar, Button } from '@/components/common';
 import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
 
 export default function Sidebar(props: ComponentProps<'div'>) {
-  const { data } = useApiQuery(ApiRoutes.PROFILE);
-  const { setToken } = useAuth();
+  const { setToken, currentUser } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -122,11 +119,11 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         >
           <Avatar
             className="size-8"
-            fallback={data?.fullName}
+            fallback={currentUser?.fullName}
           ></Avatar>
           <div>
-            <div className="text-sm font-medium text-gray-700">{data?.fullName}</div>
-            <div className="text-xs font-medium text-gray-500">{data?.email}</div>
+            <div className="text-sm font-medium text-gray-700">{currentUser?.fullName}</div>
+            <div className="text-xs font-medium text-gray-500">{currentUser?.email}</div>
           </div>
         </Link>
       </div>

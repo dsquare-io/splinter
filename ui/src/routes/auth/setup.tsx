@@ -3,7 +3,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { ApiRoutes } from '@/api-types';
 import { Paths } from '@/api-types/routePaths.ts';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient.ts';
 
 import AuthLayout from './-layout';
@@ -13,16 +14,16 @@ export const Route = createFileRoute('/auth/setup')({
 });
 
 function RootComponent() {
-  const { data: profile } = useApiQuery(Paths.PROFILE);
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  if (!profile) return;
+  if (!currentUser) return;
 
   return (
     <AuthLayout title="Setup your account">
       <Form
         action={ApiRoutes.PROFILE}
-        values={profile}
+        values={currentUser}
         method="PUT"
         onSubmitSuccess={async () => {
           await queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE));

@@ -1,8 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Paths } from '@/api-types/routePaths.ts';
 import { Avatar } from '@/components/common';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 import ChangePassword from './-change-password.tsx';
 import PersonalInfo from './-personal-info.tsx';
@@ -13,7 +12,7 @@ export const Route = createFileRoute('/_dashboard/profile/me')({
 });
 
 function RootComponent() {
-  const { data: profile } = useApiQuery(Paths.PROFILE);
+  const { currentUser } = useAuth();
 
   return (
     <div>
@@ -24,7 +23,7 @@ function RootComponent() {
         >
           <div className="absolute top-full left-16 -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
-              className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
+              className="from-brand-600 aspect-1154/678 w-288.5 bg-linear-to-br to-[#9089FC]"
               style={{
                 clipPath:
                   'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
@@ -36,11 +35,11 @@ function RootComponent() {
         <div className="mx-auto flex max-w-(--breakpoint-lg) items-center gap-x-5 px-4 sm:px-6 lg:px-8">
           <Avatar
             className="size-16 bg-white"
-            fallback={profile?.fullName}
+            fallback={currentUser?.fullName}
           />
           <div>
-            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{profile?.fullName}</div>
-            <div className="text-sm font-medium text-gray-600">{profile?.email}</div>
+            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{currentUser?.fullName}</div>
+            <div className="text-sm font-medium text-gray-600">{currentUser?.email}</div>
           </div>
         </div>
       </div>

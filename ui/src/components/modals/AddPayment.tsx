@@ -34,6 +34,7 @@ import {
 import { FormField } from '@/components/common/Form/FormField.tsx';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 interface SettleUpModalProps {
   group_uid?: string;
@@ -43,7 +44,7 @@ interface SettleUpModalProps {
 
 export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
   const formControl = useForm();
-  const { data: profileData } = useApiQuery(Paths.PROFILE);
+  const { currentUser } = useAuth();
   const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
 
   // for single friend
@@ -74,13 +75,13 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
   balanceByUsers = Object.fromEntries(
     Object.entries(balanceByUsers).map(([uId, balances]) => [
       uId,
-      balances.filter((balance) => balance.friend.uid === profileData?.uid),
+      balances.filter((balance) => balance.friend.uid === currentUser?.uid),
     ])
   );
 
   return (
     <ModalOverlay isDismissable>
-      <Modal className="react-aria-Modal max-h-[580px] sm:max-w-lg">
+      <Modal className="react-aria-Modal max-h-145 sm:max-w-lg">
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({ close }) => (
             <>
@@ -101,11 +102,11 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                     ...data,
                     ...(paymentDir === 'in'
                       ? {
-                          receiver: profileData?.uid,
+                          receiver: currentUser?.uid,
                           sender: friend_uid ?? friend,
                         }
                       : {
-                          sender: profileData?.uid,
+                          sender: currentUser?.uid,
                           receiver: friend_uid ?? friend,
                         }),
                   };
@@ -208,7 +209,7 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                       <Popover className="react-aria-Popover w-(--trigger-width)">
                         <ListBox className="-mx-4 -my-2 text-sm text-gray-900">
                           {groupData?.members
-                            ?.filter((e) => e.uid !== profileData?.uid)
+                            ?.filter((e) => e.uid !== currentUser?.uid)
                             .map((memeber) => (
                               <ListBoxItem
                                 className="flex items-center gap-x-3 px-4 py-2 data-focused:bg-gray-100"
