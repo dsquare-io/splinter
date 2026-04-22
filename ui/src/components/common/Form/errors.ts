@@ -129,8 +129,13 @@ export function handleSubmissionError<TFieldValues extends FieldValues = FieldVa
   control: UseFormReturn<TFieldValues>
 ) {
   const fieldErrors = drfToFieldErrors(error);
+  const values = control.getValues();
 
   for (const [field, fieldError] of Object.entries(fieldErrors)) {
-    control.setError(field as any, fieldError);
+    if (field in values || field.startsWith('root.') || field === 'root') {
+      control.setError(field as any, fieldError as any);
+    } else {
+      control.setError(`root.${field}`, fieldError as any);
+    }
   }
 }

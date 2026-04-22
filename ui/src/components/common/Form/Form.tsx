@@ -180,5 +180,5 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
   );
 }
 
-const Form2 = (forwardRef as forwardRefType)(Form);
-export { Form2 as Form };
+const FormWithRef = (forwardRef as forwardRefType)(Form);
+export { FormWithRef as Form };

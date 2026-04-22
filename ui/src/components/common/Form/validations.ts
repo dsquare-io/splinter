@@ -45,7 +45,7 @@ export function messagifyValidationRules(
     required: ['boolean', 'string'].includes(typeof rules.required)
       ? {
           value: !!rules.required,
-          message: 'Field is required',
+          message: '',
         }
       : (rules.required as ValidationValueMessage<boolean>),
     pattern:
