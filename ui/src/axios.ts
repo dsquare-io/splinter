@@ -1,33 +1,23 @@
 import axios from 'axios';
 
 import { Paths } from '@/api-types/routePaths.ts';
+import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '@/authStorage.ts';
 
 export const axiosInstance = axios.create({
   withCredentials: true,
-  headers: localStorage.getItem('splinter:access_token')
+  headers: getAccessToken()
     ? {
-        Authorization: `Bearer ${localStorage.getItem('splinter:access_token')}`,
+        Authorization: `Bearer ${getAccessToken()}`,
       }
     : {},
 });
-
-export function setLocalStorage(key: string, value: string) {
-  localStorage.setItem(key, value);
-
-  window.dispatchEvent(new Event('local-storage'));
-  window.dispatchEvent(
-    new CustomEvent('mantine-local-storage', {
-      detail: { key, value },
-    })
-  );
-}
 
 let refreshTokenRequest: Promise<any> | undefined;
 
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (err) => {
-    const refreshToken = localStorage.getItem('splinter:refresh_token');
+    const refreshToken = getRefreshToken();
     if (err.response?.status === 401 && refreshToken) {
       let tokenRes;
 
@@ -45,12 +35,11 @@ axiosInstance.interceptors.response.use(
         refreshTokenRequest = undefined;
       }
 
-      setLocalStorage('splinter:access_token', tokenRes.data.accessToken);
-      setLocalStorage('splinter:refresh_token', tokenRes.data.refreshToken);
-      setHeaders(tokenRes.data.refreshToken);
+      setAccessToken(tokenRes.data.accessToken);
+      setRefreshToken(tokenRes.data.refreshToken);
+      setHeaders(tokenRes.data.accessToken);
 
-      err.config.headers.Authorization = `Token ${tokenRes.data.accessToken}`;
-      err.config.headers.Authorization = `Token ${tokenRes.data.accessToken}`;
+      err.config.headers.Authorization = `Bearer ${tokenRes.data.accessToken}`;
       return axios.request(err.config);
     }
     throw err;

@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import { useLocalStorage } from '@mantine/hooks';
-
 import { ApiRoutes } from '@/api-types';
+import {
+  addAuthTokenChangeListener,
+  getAccessToken,
+  getRefreshToken,
+  removeAuthTokenChangeListener,
+  setAccessToken,
+  setRefreshToken,
+} from '@/authStorage.ts';
 import { axiosInstance, setHeaders } from '@/axios.ts';
 
 export enum AuthStatus {
@@ -14,19 +20,18 @@ export enum AuthStatus {
 let profileRequest: Promise<any> | undefined;
 
 export default function useAuth() {
-  const [accessToken, setToken, removeToken] = useLocalStorage({
-    key: 'splinter:access_token',
-    serialize: (v) => v,
-    deserialize: (v) => v!,
-    getInitialValueInEffect: false,
-  });
-  const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage({
-    key: 'splinter:refresh_token',
-    serialize: (v) => v,
-    deserialize: (v) => v!,
-    getInitialValueInEffect: false,
-  });
+  const [accessToken, setAccessTokenState] = useState<string | null>(getAccessToken);
+  const [refreshToken, setRefreshTokenState] = useState<string | null>(getRefreshToken);
   const [validationResponse, setValidation] = useState<boolean | undefined>();
+
+  useEffect(() => {
+    const sync = () => {
+      setAccessTokenState(getAccessToken());
+      setRefreshTokenState(getRefreshToken());
+    };
+    addAuthTokenChangeListener(sync);
+    return () => removeAuthTokenChangeListener(sync);
+  }, []);
 
   let status: AuthStatus = AuthStatus.LOGGED_OUT;
   if (validationResponse === undefined && accessToken) {
@@ -48,8 +53,8 @@ export default function useAuth() {
         .catch((e) => {
           // only logout request failed with unauthorized error code
           if (e.response?.status !== 401) return;
-          removeToken();
-          removeRefreshToken();
+          setAccessToken(null);
+          setRefreshToken(null);
           setHeaders();
           setValidation(false);
         });
@@ -64,17 +69,8 @@ export default function useAuth() {
     status,
     token: { accessToken, refreshToken },
     setToken: ({ access, refresh } = { access: '', refresh: '' }) => {
-      if (access) {
-        setToken(access);
-      } else {
-        removeToken();
-      }
-
-      if (refresh) {
-        setRefreshToken(refresh);
-      } else {
-        removeRefreshToken();
-      }
+      setAccessToken(access || null);
+      setRefreshToken(refresh || null);
     },
   };
 }
