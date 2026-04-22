@@ -58,8 +58,8 @@ export function SingleExpenseShares() {
                     }}
                   >
                     <div className="flex items-center gap-x-2">
-                      <Avatar fallback={user.fullName} />
-                      <div className="text-neutral-800">{user.fullName}</div>
+                      <Avatar fallback={user.initials || user.name} />
+                      <div className="text-neutral-800">{user.name}</div>
                     </div>
                   </Checkbox>
                 );

@@ -1,44 +1,61 @@
 import { useFormContext } from 'react-hook-form';
 
-import { useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { ApiResponse , ApiRoutes} from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
-import { apiQueryOptions , useApiQuery} from '@/hooks/useApiQuery.ts';
+import { ApiRoutes } from '@/api-types';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import useAuth from '@/hooks/useAuth.ts';
 
 export interface Participant {
-  id: string;
   uid: string;
   urn: string;
   name: string;
-  type: 'group' | 'friend';
+  initials?: string;
+  type: 'group' | 'friend' | 'user';
 }
 
-export function useExpenseParticipants() {
+export function useExpenseParticipants(): Participant[] {
   const { watch, getValues } = useFormContext();
+  const { currentUser } = useAuth();
+
   const partipants = getValues('participants:del') as Participant[];
   const {data} = useApiQuery(ApiRoutes.PROFILE);
   watch('participants:del');
 
-  const results = useQueries({
-    queries:
-      partipants?.map((partipant) => {
-        if (partipant.type === 'group') return apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: partipant.uid }) as any;
-        return apiQueryOptions(Paths.FRIEND_DETAIL, { friend_uid: partipant.uid }) as any;
-      }) ?? [],
-  });
+  const isGroup = partipants?.[0]?.type === 'group';
 
-  return [...results?.flatMap((result) => {
-    if (!result.data) return [];
+  const { data: groupDetail } = useQuery(
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: partipants?.[0]?.uid }, undefined, {
+      enabled: isGroup,
+    })
+  );
 
-    if ((result.data as { urn: string }).urn.includes('group')) {
-      const groupData = result.data as ApiResponse<typeof Paths.GROUP_DETAIL>;
-      return groupData.members;
-    }
+  if (isGroup) {
+    return (
+      groupDetail?.members?.map((member) => ({
+        uid: member.uid,
+        urn: member.urn,
+        name: member.fullName!,
+        type: 'friend',
+      })) ?? []
+    );
+  }
 
-    if ((result.data as { urn: string }).urn.includes('user')) {
-      return result.data as ApiResponse<typeof Paths.FRIEND_DETAIL>;
-    }
-    return [];
-  }), ...data ? [data] : []];
+  const currentUserParticipants: Participant[] = currentUser
+    ? [
+        {
+          uid: currentUser!.uid,
+          urn: currentUser!.urn,
+          initials: currentUser!.fullName,
+          name: `Me (${currentUser!.fullName!})`,
+          type: 'user',
+        },
+      ]
+    : [];
+
+  if (!partipants || partipants.length === 0) {
+    return currentUserParticipants;
+  }
+
+  return [...currentUserParticipants, ...partipants];
 }

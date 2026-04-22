@@ -9,15 +9,15 @@ import useAuth from '@/hooks/useAuth.ts';
 
 import ExpenseInputList from './ExpenseInputList.tsx';
 import ParticipantsSelector from './ParticipantsSelector.tsx';
-import { useExpenseParticipants } from './useExpenseParticipants.ts';
+import { Participant, useExpenseParticipants } from './useExpenseParticipants.ts';
 
 interface Props {
   onNext?: () => void;
 }
 
 export default function ExpenseEntry({ onNext }: Props) {
-  const participants = useExpenseParticipants();
   const { currentUser } = useAuth();
+  const participants = useExpenseParticipants();
 
   return (
     <>
@@ -41,17 +41,17 @@ export default function ExpenseEntry({ onNext }: Props) {
             </div>
             <Popover className="react-aria-Popover w-(--trigger-width)">
               <ListBox className="react-aria-ListBox -mx-4 -my-2 text-gray-800">
-                {(friend: SimpleUser) => (
+                {(participant: Participant) => (
                   <ListBoxItem
-                    id={friend.uid}
+                    id={participant.uid}
                     className="react-aria-ListBoxItem"
-                    textValue={friend.fullName}
+                    textValue={participant.name}
                   >
                     <Avatar
                       className="size-7 bg-neutral-50"
-                      fallback={friend.fullName}
+                      fallback={participant.initials || participant.name}
                     />
-                    {friend.fullName}
+                    {participant.name}
                   </ListBoxItem>
                 )}
               </ListBox>

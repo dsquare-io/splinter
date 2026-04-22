@@ -13,8 +13,8 @@ import { useFormContext } from 'react-hook-form';
 
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
+import { ApiRoutes } from '@/api-types';
 import type { ChildExpense } from '@/api-types/components/schemas';
-import { Paths } from '@/api-types/routePaths.ts';
 import Currency from '@/components/Currency.tsx';
 import { Avatar, FieldScope, useScopedFieldName } from '@/components/common';
 import { useExpenseParticipants } from '@/components/modals/AddExpense/useExpenseParticipants.ts';
@@ -26,7 +26,7 @@ interface Props {
 
 export default function ExpensesShares({ onExpenseDetail }: Props) {
   const { getValues, setValue } = useFormContext();
-  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
 
   const expenses: (ChildExpense & { id: string })[] = (getValues('expenses') ?? []).map(
     (e: ChildExpense, i: number) => ({
@@ -71,7 +71,7 @@ export default function ExpensesShares({ onExpenseDetail }: Props) {
             className={clsx(
               'mx-4 rounded-sm border border-neutral-200 bg-white focus:outline-hidden',
               'hover:border-brand-400 hover:bg-brand-50 cursor-pointer',
-              'data-drop-target:bg-brand-100 data-drop-target:outline-brand-400 data-drop-target:outline data-drop-target:outline-offset-[-1px]'
+              'data-drop-target:bg-brand-100 data-drop-target:outline-brand-400 data-drop-target:outline data-drop-target:-outline-offset-1'
             )}
           >
             <div
@@ -140,11 +140,11 @@ function ExpenseItemShares() {
   const { invalid, error } = getFieldState(sharesFieldName, formState);
 
   if (invalid && shareParticipants.length === 0) {
-    return <div className="py-[3px] text-sm text-red-600">{error?.message}</div>;
+    return <div className="py-0.75 text-sm text-red-600">{error?.message}</div>;
   }
 
   if (shareParticipants.length === 0) {
-    return <div className="py-[3px] text-sm text-neutral-500 italic">Drop participant here</div>;
+    return <div className="py-0.75 text-sm text-neutral-500 italic">Drop participant here</div>;
   }
 
   return (
@@ -167,14 +167,14 @@ function ExpenseItemShares() {
           {(shareParticipant) => (
             <Tag
               id={shareParticipant.participant.uid}
-              textValue={shareParticipant.participant.fullName}
+              textValue={shareParticipant.participant.name}
               className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 bg-white text-sm text-neutral-700 focus:outline-hidden"
             >
               <Avatar
                 className="size-6 rounded-none bg-neutral-50"
-                fallback={shareParticipant.participant.fullName}
+                fallback={shareParticipant.participant.initials || shareParticipant.participant.name}
               />
-              {shareParticipant.participant.fullName}
+              {shareParticipant.participant.name}
               {shareParticipant.share > 1 && ` (${shareParticipant.share})`}
               <ButtonBase
                 className="-ml-2 px-2 py-1 text-gray-500 focus:outline-hidden"
@@ -196,9 +196,7 @@ function DraggableParticipants() {
   const { dragAndDropHooks } = useDragAndDrop({
     renderDragPreview: (items) => (
       <div className="bg-brand-600 flex w-40 items-center justify-between gap-x-2 rounded-sm px-2 py-1 text-sm text-white">
-        <span className="truncate">
-          {participants.find((p) => p.urn === items[0]['text/plain'])?.fullName}
-        </span>
+        <span className="truncate">{participants.find((p) => p.urn === items[0]['text/plain'])?.name}</span>
         <span className="inline-flex size-5 items-center justify-center rounded-sm bg-white/20 text-xs font-medium">
           {items.length}
         </span>
@@ -223,7 +221,7 @@ function DraggableParticipants() {
       {(user) => (
         <ListBoxItem
           id={user.urn}
-          textValue={user.fullName}
+          textValue={user.name}
           className={clsx(
             'group flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 pr-2 text-sm text-neutral-700 select-none hover:bg-gray-100 focus:outline-hidden',
             'data-focus-visible:border-brand-500 data-focused:bg-neutral-100',
@@ -237,9 +235,9 @@ function DraggableParticipants() {
               'group-data-focused:bg-neutral-100 group-data-focused:ring-neutral-300',
               'group-data-selected:bg-brand-100 group-data-selected:ring-brand-300'
             )}
-            fallback={user.fullName}
+            fallback={user.initials || user.name}
           />
-          {user.fullName}
+          {user.name}
         </ListBoxItem>
       )}
     </ListBox>

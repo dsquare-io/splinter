@@ -17,8 +17,8 @@ import { useFormContext } from 'react-hook-form';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useParams } from '@tanstack/react-router';
 
+import { ApiRoutes } from '@/api-types';
 import { Friend, Group } from '@/api-types/components/schemas';
-import { Paths } from '@/api-types/routePaths.ts';
 import { Avatar } from '@/components/common';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
@@ -38,26 +38,30 @@ function participantsReducer(state: Participant[], action: participantsAction): 
   }
 
   if (action.type === 'select_group') {
-    return [{ ...action.data, type: 'group', id: action.data.urn }] satisfies Participant[];
+    return [
+      { type: 'group', uid: action.data.uid, urn: action.data.urn, name: action.data.name },
+    ] satisfies Participant[];
   }
+
   if (action.type === 'select_friend' && state[0]?.type === 'group' && !state.find((p) => p.urn === action.data.urn)) {
     return [
       {
-        ...action.data,
-        name: action.data.fullName!,
         type: 'friend',
-        id: action.data.urn,
+        uid: action.data.uid,
+        urn: action.data.urn,
+        name: action.data.fullName!,
       },
     ] satisfies Participant[];
   }
+
   if (action.type === 'select_friend' && !state.find((p) => p.urn === action.data.urn)) {
     return [
-      ...state,
+      ...state.filter((p) => p.urn !== action.data.urn),
       {
-        ...action.data,
-        name: action.data.fullName!,
         type: 'friend',
-        id: action.data.urn,
+        uid: action.data.uid,
+        urn: action.data.urn,
+        name: action.data.fullName!,
       },
     ] satisfies Participant[];
   }
@@ -69,8 +73,8 @@ export default function ParticipantsSelector() {
   const { setValue } = useFormContext();
 
   const triggerRef = useRef<HTMLDivElement>(null);
-  const { data: groups } = useApiQuery(Paths.GROUP_LIST);
-  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
+  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
+  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
   useEffect(() => {
@@ -143,7 +147,10 @@ export default function ParticipantsSelector() {
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
         {selectedParticipants.map((item) => (
-          <div key={item.urn} className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden">
+          <div
+            key={item.urn}
+            className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden"
+          >
             <Avatar
               className="size-6 rounded-none bg-neutral-50"
               fallback={item.name}
@@ -192,7 +199,7 @@ export default function ParticipantsSelector() {
         {/*    ))}*/}
         {/*  </TagList>*/}
         {/*</TagGroup>*/}
-        <div className="-my-1 flex min-w-[100px] grow items-center">
+        <div className="-my-1 flex min-w-25 grow items-center">
           <Input
             placeholder="Search friends or groups..."
             className="grow py-1.5 focus:outline-hidden"

@@ -4,7 +4,7 @@ import { TextField } from 'react-aria-components';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import throttle from 'just-throttle';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import { Button, Input, Label, NumberFormField, TextFormField } from '@/components/common';
 import { FieldArray } from '@/components/common/FieldArray/FieldArray.tsx';
 import { FieldArrayItems } from '@/components/common/FieldArray/FieldArrayItems.tsx';
@@ -12,7 +12,7 @@ import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function ExpenseItems() {
   const [inpValue, setInptValue] = useState('');
-  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
   if (!preferredCurrency) return null;
 
   return (
