@@ -112,12 +112,12 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
             group=data.get('group'),
             currency=data['currency'],
             amount=data['amount'],
-            paid_by=receiver,
+            paid_by=sender,
             created_by=self.actor,
         )
         ExpenseSplit.objects.create(
             expense=expense,
-            user=sender,
+            user=receiver,
             amount=data['amount'],
         )
 

@@ -154,15 +154,15 @@ class PaymentSerializer(serializers.ModelSerializer):
     created_by = SimpleUserSerializer(read_only=True)
     currency = SimpleCurrencySerializer()
 
-    sender = serializers.SerializerMethodField()
-    receiver = SimpleUserSerializer(source='paid_by', read_only=True)
+    sender = SimpleUserSerializer(source='paid_by', read_only=True)
+    receiver = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
         fields = ('uid', 'urn', 'datetime', 'description', 'amount', 'currency', 'created_by', 'sender', 'receiver')
 
     @extend_schema_field(SimpleUserSerializer())
-    def get_sender(self, expense: Expense):
+    def get_receiver(self, expense: Expense):
         splits = expense.splits.all()
         sender = splits[0].user
 
