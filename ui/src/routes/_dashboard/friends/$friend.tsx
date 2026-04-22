@@ -10,6 +10,7 @@ import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency.tsx';
+import UserLabel from '@/components/UserLabel.tsx';
 import { Avatar, Button } from '@/components/common';
 import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -47,7 +48,7 @@ function RootComponent() {
         >
           <div className="absolute top-full left-16 -mt-16 transform-gpu opacity-50 blur-3xl xl:left-1/2 xl:-ml-80">
             <div
-              className="aspect-1154/678 w-[72.125rem] bg-linear-to-br from-[#267360] to-[#9089FC]"
+              className="from-brand-600 aspect-1154/678 w-288.5 bg-linear-to-br to-[#9089FC]"
               style={{
                 clipPath:
                   'polygon(100% 38.5%, 82.6% 100%, 60.2% 37.7%, 52.4% 32.1%, 47.5% 41.8%, 45.2% 65.6%, 27.5% 23.4%, 0.1% 35.3%, 17.9% 0%, 27.7% 23.4%, 76.2% 2.5%, 74.2% 56%, 100% 38.5%)',
@@ -132,7 +133,14 @@ function RootComponent() {
                             ? expense.expenses[0].description
                             : `${expense.expenses.length} Items`}
                         </p>
-                        <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
+                        <div className="text-sm text-gray-500">
+                          <UserLabel user={expense.paidBy} />
+                          {' paid '}
+                          <Currency
+                            value={expense.amount}
+                            currency={expense.currency}
+                          />
+                        </div>
                       </div>
 
                       <div>
@@ -146,7 +154,7 @@ function RootComponent() {
                                 : 'You borrowed'}
                             </div>
                             <Currency
-                              currency="PKR"
+                              currency={expense.currency}
                               value={expense.outstandingBalance ?? '0'}
                             />
                           </div>
@@ -155,8 +163,17 @@ function RootComponent() {
                     </>
                   ) : (
                     <div className="text-gray-900">
-                      {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid}{' '}
-                      {expense.amount}
+                      <UserLabel user={expense.sender} />
+                      {' paid '}
+                      <UserLabel
+                        inline
+                        user={expense.receiver}
+                      />{' '}
+                      <Currency
+                        noColor
+                        value={expense.amount}
+                        currency={expense.currency}
+                      />
                     </div>
                   )}
                 </div>

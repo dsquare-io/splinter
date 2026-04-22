@@ -125,7 +125,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             help_text='The outstanding balance of current user in this expense document',
         )
     )
-    def get_outstanding_balance(self, expense: Expense):
+    def get_outstanding_balance(self, expense: Expense) -> str:
         current_user_id = self.context['request'].user.id
         user_share = next(
             (split.amount for split in expense.splits.all() if split.user_id == current_user_id),
@@ -133,10 +133,10 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
         )
 
         if expense.paid_by_id == current_user_id:
-            return expense.amount - user_share
+            return str(expense.amount - user_share)
 
         user_share = NEGATIVE_ONE_DECIMAL * user_share
-        return user_share
+        return str(user_share)
 
     @extend_schema_field(ChildExpenseSerializer(many=True))
     def get_expenses(self, expense: Expense):
