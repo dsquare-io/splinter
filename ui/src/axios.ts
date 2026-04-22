@@ -12,37 +12,50 @@ export const axiosInstance = axios.create({
     : {},
 });
 
-let refreshTokenRequest: Promise<any> | undefined;
+type Tokens = { accessToken: string; refreshToken: string };
+
+let _refreshTokenRequest: Promise<Tokens> | null = null;
+
+function refreshTokens(): Promise<Tokens> {
+  if (!_refreshTokenRequest) {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return Promise.reject(new Error('No refresh token'));
+
+    _refreshTokenRequest = axios
+      .post<Tokens>(Paths.REFRESH_ACCESS_TOKEN, { refreshToken })
+      .then((res) => {
+        setAccessToken(res.data.accessToken);
+        setRefreshToken(res.data.refreshToken);
+        setHeaders(res.data.accessToken);
+        return res.data;
+      })
+      .finally(() => {
+        _refreshTokenRequest = null;
+      });
+  }
+
+  return _refreshTokenRequest;
+}
 
 axiosInstance.interceptors.response.use(
   (res) => res,
   async (err) => {
-    const refreshToken = getRefreshToken();
-    if (err.response?.status === 401 && refreshToken) {
-      let tokenRes;
+    const originalRequest = err.config;
 
-      if (!refreshTokenRequest) {
-        refreshTokenRequest = axios.post(Paths.REFRESH_ACCESS_TOKEN, {
-          refreshToken,
-        });
-      }
-
-      try {
-        tokenRes = await refreshTokenRequest;
-      } catch (_) {
-        throw err;
-      } finally {
-        refreshTokenRequest = undefined;
-      }
-
-      setAccessToken(tokenRes.data.accessToken);
-      setRefreshToken(tokenRes.data.refreshToken);
-      setHeaders(tokenRes.data.accessToken);
-
-      err.config.headers.Authorization = `Bearer ${tokenRes.data.accessToken}`;
-      return axios.request(err.config);
+    if (
+      err.response?.status !== 401 ||
+      originalRequest._retry ||
+      originalRequest.url === Paths.REFRESH_ACCESS_TOKEN ||
+      !getRefreshToken()
+    ) {
+      throw err;
     }
-    throw err;
+
+    originalRequest._retry = true;
+
+    const { accessToken } = await refreshTokens();
+    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+    return axiosInstance.request(originalRequest);
   }
 );
 

@@ -62,7 +62,6 @@ export default function useAuth() {
       // user is logged out intentionally
       setValidation(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken, refreshToken]);
 
   return {

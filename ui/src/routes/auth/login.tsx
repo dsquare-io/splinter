@@ -1,8 +1,6 @@
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { setHeaders } from '@/axios';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import useAuth from '@/hooks/useAuth';
 
@@ -13,7 +11,6 @@ export const Route = createFileRoute('/auth/login')({
 });
 
 function RootComponent() {
-  const navigate = useNavigate();
   const { setToken } = useAuth();
 
   return (
@@ -23,8 +20,7 @@ function RootComponent() {
         method="POST"
         onSubmitSuccess={(res) => {
           setToken({ access: res.data.accessToken, refresh: res.data.refreshToken });
-          setHeaders(res.data.accessToken);
-          return navigate({ to: '/friends' });
+          window.location.href = '/friends';
         }}
         className="space-y-6"
       >
