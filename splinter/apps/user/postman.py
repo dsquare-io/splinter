@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 def password_reset_url(user: 'User') -> str:
     uid = int_to_base36(user.id)
     recovery_token = password_reset_token_generator.make_token(user)
-    return f'{settings.PUBLIC_URL}/reset?uid={uid}&token={recovery_token}'
+    return f'{settings.PUBLIC_URL}/auth/reset?uid={uid}&token={recovery_token}'
 
 
 def invitation_url(user: 'User') -> str:
@@ -27,7 +27,7 @@ def invitation_url(user: 'User') -> str:
 
 
 def email_verification_url(verification_token: str) -> str:
-    return f'{settings.PUBLIC_URL}/verify?code={verification_token}'
+    return f'{settings.PUBLIC_URL}/auth/verify?code={verification_token}'
 
 
 def send_password_reset_email(user: 'User', request_identity: 'RequestIdentity') -> None:

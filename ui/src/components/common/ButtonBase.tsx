@@ -2,7 +2,7 @@ import { tv } from 'tailwind-variants';
 
 export const buttonBaseStyles = tv({
   base: [
-    'rounded-md border transition-colors focus:outline-hidden',
+    'rounded-md border transition-colors focus:outline-hidden cursor-pointer disabled:cursor-not-allowed',
     'data-focus-visible:ring-2 data-focus-visible:ring-offset-2 data-focus-visible:ring-(--ring)',
   ],
   variants: {

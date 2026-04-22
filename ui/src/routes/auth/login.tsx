@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { setHeaders } from '@/axios';
@@ -52,6 +53,13 @@ function RootComponent() {
           />
           <FieldError />
         </TextFormField>
+
+        <Link
+          className="text-brand-600 hover:text-brand-700 mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium"
+          to="/auth/forget"
+        >
+          Forget Password?
+        </Link>
 
         <Button
           className="w-full"
