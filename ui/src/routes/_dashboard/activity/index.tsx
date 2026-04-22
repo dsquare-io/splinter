@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 
-import { Outlet, ScrollRestoration, createFileRoute, useMatchRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
 
 import ActivityListItem from './-components/ActivityListItem.tsx';
 import {useApiQuery} from "@/hooks/useApiQuery.ts";
@@ -40,7 +40,6 @@ function ActivityLayout() {
           ))}
         </div>
 
-        <ScrollRestoration />
       </div>
       <div className="xl:ms-96">
         <Outlet />

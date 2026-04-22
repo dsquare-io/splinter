@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { DialogTrigger } from 'react-aria-components';
 
-import { Outlet, ScrollRestoration, createFileRoute, useMatchRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
@@ -99,7 +99,6 @@ function GroupsLayout() {
               </div>
             ))}
         </div>
-        <ScrollRestoration />
       </div>
       <div className="xl:ms-96">
         <Outlet />

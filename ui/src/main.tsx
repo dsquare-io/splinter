@@ -17,6 +17,7 @@ const router = createRouter({
   routeTree,
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
+  scrollRestoration: true,
 });
 
 // Register things for typesafety
