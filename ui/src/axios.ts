@@ -1,13 +1,14 @@
 import axios from 'axios';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '@/authStorage.ts';
 
+const cachedAccessToken = getAccessToken();
 export const axiosInstance = axios.create({
   withCredentials: true,
-  headers: getAccessToken()
+  headers: cachedAccessToken
     ? {
-        Authorization: `Bearer ${getAccessToken()}`,
+        Authorization: `Bearer ${cachedAccessToken}`,
       }
     : {},
 });
@@ -22,12 +23,18 @@ function refreshTokens(): Promise<Tokens> {
     if (!refreshToken) return Promise.reject(new Error('No refresh token'));
 
     _refreshTokenRequest = axios
-      .post<Tokens>(Paths.REFRESH_ACCESS_TOKEN, { refreshToken })
+      .post<Tokens>(ApiRoutes.REFRESH_ACCESS_TOKEN, { refreshToken })
       .then((res) => {
         setAccessToken(res.data.accessToken);
         setRefreshToken(res.data.refreshToken);
         setHeaders(res.data.accessToken);
         return res.data;
+      })
+      .catch((e) => {
+        setAccessToken(null);
+        setRefreshToken(null);
+        setHeaders(null);
+        throw e;
       })
       .finally(() => {
         _refreshTokenRequest = null;
@@ -45,7 +52,7 @@ axiosInstance.interceptors.response.use(
     if (
       err.response?.status !== 401 ||
       originalRequest._retry ||
-      originalRequest.url === Paths.REFRESH_ACCESS_TOKEN ||
+      originalRequest.url === ApiRoutes.REFRESH_ACCESS_TOKEN ||
       !getRefreshToken()
     ) {
       throw err;
@@ -59,7 +66,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export function setHeaders(accessToken?: string) {
+export function setHeaders(accessToken?: string | null) {
   if (accessToken) {
     axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
   } else {

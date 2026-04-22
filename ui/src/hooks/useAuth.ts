@@ -9,7 +9,7 @@ import {
   setAccessToken,
   setRefreshToken,
 } from '@/authStorage.ts';
-import { axiosInstance, setHeaders } from '@/axios.ts';
+import { axiosInstance } from '@/axios.ts';
 
 export enum AuthStatus {
   LOGGED_OUT = 'logged_out',
@@ -17,10 +17,26 @@ export enum AuthStatus {
   LOGGED_IN = 'logged_in',
 }
 
-let profileRequest: Promise<any> | undefined;
+let cachedUser: User | null = null;
+let profileRequest: Promise<User> | null = null;
+
+function fetchProfile(): Promise<User> {
+  if (!profileRequest) {
+    profileRequest = axiosInstance
+      .get<User>(ApiRoutes.PROFILE)
+      .then((res) => {
+        cachedUser = res.data;
+        return res.data;
+      })
+      .finally(() => {
+        profileRequest = null;
+      });
+  }
+  return profileRequest;
+}
 
 export default function useAuth() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(cachedUser);
   const [accessToken, setAccessTokenState] = useState<string | null>(getAccessToken);
   const [refreshToken, setRefreshTokenState] = useState<string | null>(getRefreshToken);
 
@@ -33,38 +49,32 @@ export default function useAuth() {
     return () => removeAuthTokenChangeListener(sync);
   }, []);
 
+  useEffect(() => {
+    if (!accessToken) {
+      cachedUser = null;
+      setCurrentUser(null);
+      return;
+    }
+
+    if (cachedUser) {
+      setCurrentUser(cachedUser);
+      return;
+    }
+
+    fetchProfile()
+      .then(setCurrentUser)
+      .catch(() => {
+        cachedUser = null;
+        setCurrentUser(null);
+      });
+  }, [accessToken]); // refreshToken excluded — rotation doesn't change identity
+
   let status: AuthStatus = AuthStatus.LOGGED_OUT;
   if (!currentUser && accessToken) {
     status = AuthStatus.VALIDATING;
   } else if (currentUser) {
     status = AuthStatus.LOGGED_IN;
   }
-
-  useEffect(() => {
-    if (accessToken) {
-      if (!profileRequest) {
-        profileRequest = axiosInstance.get(ApiRoutes.PROFILE).finally(() => {
-          profileRequest = undefined;
-        });
-      }
-
-      profileRequest
-        .then(({ data }) => {
-          setCurrentUser(data);
-        })
-        .catch((e) => {
-          // only logout request failed with unauthorized error code
-          if (e.response?.status !== 401) return;
-          setAccessToken(null);
-          setRefreshToken(null);
-          setHeaders();
-          setCurrentUser(null);
-        });
-    } else {
-      // user is logged out intentionally
-      setCurrentUser(null);
-    }
-  }, [accessToken, refreshToken]);
 
   return {
     status,
