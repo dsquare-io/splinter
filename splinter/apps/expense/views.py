@@ -1,6 +1,6 @@
 from functools import cached_property
 
-from django.db.models import Case, Exists, IntegerField, OuterRef, Q, Sum, When, Window
+from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
@@ -79,7 +79,7 @@ class ListFriendExpenseView(ListAPIView):
 
     def get_queryset(self):
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return Expense.objects.filter(Exists(party_qs) | Q(paid_by=self.friend), group__isnull=True)
+        return Expense.objects.filter(Exists(party_qs), group__isnull=True)
 
 
 class ListGroupExpenseView(ListAPIView):
