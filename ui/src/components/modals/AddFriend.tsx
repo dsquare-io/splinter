@@ -1,6 +1,6 @@
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -24,9 +24,9 @@ export function AddFriendModal({ onOpenChange }: { onOpenChange?: (open: boolean
 
               <Form
                 className="space-y-4"
-                action={Paths.FRIEND_LIST}
+                action={ApiRoutes.FRIEND_LIST}
                 onSubmitSuccess={() =>
-                  queryClient.invalidateQueries(apiQueryOptions(Paths.FRIEND_LIST)).then(close)
+                  queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST)).then(close)
                 }
                 transformData={({ email }: { email: string }) => {
                   return {

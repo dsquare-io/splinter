@@ -5,7 +5,6 @@ import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
 import Currency from '@/components/Currency.tsx';
 import { Button } from '@/components/common';
 import { CreateGroupModal } from '@/components/modals/CreateGroup';
@@ -20,7 +19,7 @@ export const Route = createFileRoute('/_dashboard/groups')({
 function GroupsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/groups' });
-  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
   const { data } = useApiQuery(ApiRoutes.GROUP_LIST);
 
   if (!preferredCurrency) return null;

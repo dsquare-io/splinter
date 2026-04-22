@@ -2,15 +2,14 @@ import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'r
 
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
-import type { Currency } from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes, Currency } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label } from '@/components/common';
 import { FormField } from '@/components/common/Form/FormField.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function Preferences() {
-  const { data: currencies } = useApiQuery(Paths.CURRENCY_LIST);
-  const { data: userCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: currencies } = useApiQuery(ApiRoutes.CURRENCY_LIST);
+  const { data: userCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
 
   if (!currencies) return null;
 
@@ -19,7 +18,7 @@ export default function Preferences() {
       values={{ currency: userCurrency?.uid }}
       className="@container md:col-span-2"
       method="PUT"
-      action={Paths.CURRENCY_PREFERENCE}
+      action={ApiRoutes.CURRENCY_PREFERENCE}
     >
       <FormRootErrors />
 

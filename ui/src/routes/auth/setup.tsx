@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
@@ -26,7 +25,7 @@ function RootComponent() {
         values={currentUser}
         method="PUT"
         onSubmitSuccess={async () => {
-          await queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE));
+          await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.PROFILE));
           return navigate({ to: '/friends' });
         }}
         className="space-y-6"

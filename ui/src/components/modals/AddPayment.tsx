@@ -18,7 +18,7 @@ import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import groupBy from 'just-group-by';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency.tsx';
 import {
   Avatar,
@@ -45,11 +45,11 @@ interface SettleUpModalProps {
 export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
   const formControl = useForm();
   const { currentUser } = useAuth();
-  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
 
   // for single friend
   const { data: friendData } = useQuery(
-    apiQueryOptions(Paths.FRIEND_DETAIL, { friend_uid: friend_uid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.FRIEND_DETAIL, { friend_uid: friend_uid ?? '' }, undefined, {
       enabled: !!friend_uid,
     })
   );
@@ -67,7 +67,7 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
 
   // for groups
   const { data: groupData } = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
@@ -112,7 +112,7 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                   };
                 }}
                 method="POST"
-                action={Paths.PAYMENT}
+                action={ApiRoutes.PAYMENT}
                 onSubmitSuccess={() => {
                   formControl.reset();
                   close();

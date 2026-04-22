@@ -5,7 +5,6 @@ import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
 import Currency from '@/components/Currency.tsx';
 import { Button } from '@/components/common';
 import { AddFriendModal } from '@/components/modals/AddFriend.tsx';
@@ -20,7 +19,7 @@ export const Route = createFileRoute('/_dashboard/friends')({
 function FriendsLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/friends' });
-  const { data: preferredCurrency } = useApiQuery(Paths.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
   const { data } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   if (!preferredCurrency) return null;
@@ -101,7 +100,6 @@ function FriendsLayout() {
               </div>
             ))}
         </div>
-
       </div>
       <div className="xl:ms-96">
         <Outlet />

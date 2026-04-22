@@ -1,10 +1,10 @@
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 
 export default function ChangePassword() {
   return (
     <Form
-      action={Paths.CHANGE_PASSWORD}
+      action={ApiRoutes.CHANGE_PASSWORD}
       transformData={(
         {
           oldPassword,

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import {
   Alert,
   Button,
@@ -46,7 +46,7 @@ function RootComponent() {
         />
       ) : (
         <Form
-          action={Paths.RESET_PASSWORD}
+          action={ApiRoutes.RESET_PASSWORD}
           method="POST"
           transformData={(
             {

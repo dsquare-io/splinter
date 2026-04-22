@@ -1,6 +1,6 @@
 import { TextField } from 'react-aria-components';
 
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
@@ -13,8 +13,8 @@ export default function PersonalInfo() {
   return (
     <Form
       values={currentUser}
-      action={Paths.PROFILE}
-      onSubmitSuccess={() => queryClient.invalidateQueries(apiQueryOptions(Paths.PROFILE))}
+      action={ApiRoutes.PROFILE}
+      onSubmitSuccess={() => queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.PROFILE))}
       method="PUT"
       className="@container md:col-span-2"
     >

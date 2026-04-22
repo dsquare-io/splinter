@@ -5,8 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
-import { urlWithArgs } from '@/api-types';
-import { Paths } from '@/api-types/routePaths.ts';
+import { ApiRoutes, urlWithArgs } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils.tsx';
@@ -20,10 +19,10 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  const { data: group } = useApiQuery(Paths.GROUP_DETAIL, { group_uid });
+  const { data: group } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
 
   const { data: groupData } = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
@@ -43,12 +42,12 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
       ),
       callback: async () => {
         await axiosInstance.delete(
-          urlWithArgs(Paths.GROUP_MEMBERSHIP_DETAIL, {
+          urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP_DETAIL, {
             group_uid,
             member_uid: member.uid,
           })
         );
-        return queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }));
+        return queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid }));
       },
     });
   }
@@ -64,11 +63,11 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
       ),
       callback: async () => {
         await axiosInstance.delete(
-          urlWithArgs(Paths.GROUP_DETAIL, {
+          urlWithArgs(ApiRoutes.GROUP_DETAIL, {
             group_uid,
           })
         );
-        await queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_LIST));
+        await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST));
         return navigate({ to: '/groups' });
       },
     });
@@ -88,10 +87,10 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
               <Form
                 values={{ name: group?.name }}
                 method="PATCH"
-                action={urlWithArgs(Paths.GROUP_DETAIL, { group_uid })}
+                action={urlWithArgs(ApiRoutes.GROUP_DETAIL, { group_uid })}
                 onSubmitSuccess={() =>
                   queryClient
-                    .invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }))
+                    .invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid }))
                     .then(close)
                 }
               >

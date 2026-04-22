@@ -18,9 +18,8 @@ import { useForm } from 'react-hook-form';
 
 import { ChevronUpDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-import { urlWithArgs } from '@/api-types';
+import { ApiRoutes, urlWithArgs } from '@/api-types';
 import { Friend } from '@/api-types/components/schemas';
-import { Paths } from '@/api-types/routePaths.ts';
 import { Avatar, Button, Form, Input, Label } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -32,8 +31,8 @@ export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
   });
   const selectedMembers = formControl.watch('members') ?? [];
 
-  const { data: group } = useApiQuery(Paths.GROUP_DETAIL, { group_uid });
-  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
+  const { data: group } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   const friendsExcludingMembers = friends?.results?.filter(
     (f) => !group?.members.find((m) => m.uid === f.uid) && !selectedMembers.includes(f.uid)
@@ -69,14 +68,14 @@ export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
 
               <Form
                 method="PUT"
-                action={urlWithArgs(Paths.GROUP_MEMBERSHIP, { group_uid })}
+                action={urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP, { group_uid })}
                 transformData={(data) => {
                   data.members = [...(data.members ?? []), ...(group?.members.map((m) => m.uid) ?? [])];
                   return data;
                 }}
                 onSubmitSuccess={() =>
                   queryClient
-                    .invalidateQueries(apiQueryOptions(Paths.GROUP_DETAIL, { group_uid }))
+                    .invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid }))
                     .then(close)
                 }
                 className="space-y-4"

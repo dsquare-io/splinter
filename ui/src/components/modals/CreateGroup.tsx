@@ -17,9 +17,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { AxiosResponse } from 'axios';
 
-import { ApiResponse, urlWithArgs } from '@/api-types';
+import { ApiResponse, ApiRoutes, urlWithArgs } from '@/api-types';
 import { Friend } from '@/api-types/components/schemas';
-import { Paths } from '@/api-types/routePaths.ts';
 import { axiosInstance } from '@/axios.ts';
 import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/common/Command';
@@ -30,11 +29,11 @@ import { queryClient } from '@/queryClient.ts';
 
 export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
   const { data } = useQuery(
-    apiQueryOptions(Paths.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group_uid ?? '' }, undefined, {
       enabled: !!group_uid,
     })
   );
-  const { data: friends } = useApiQuery(Paths.FRIEND_LIST);
+  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
   const { currentUser } = useAuth();
 
   const navigate = useNavigate();
@@ -44,10 +43,10 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
   const selectedFriendIds = selectedFriends.map((e) => e.uid);
 
   async function handleFormSubmissionSuccess(
-    res: AxiosResponse<ApiResponse<typeof Paths.GROUP_LIST, 'post', 201>>
+    res: AxiosResponse<ApiResponse<typeof ApiRoutes.GROUP_LIST, 'post', 201>>
   ) {
     return axiosInstance
-      .put(urlWithArgs(Paths.GROUP_MEMBERSHIP, { group_uid: res.data.uid! }), {
+      .put(urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP, { group_uid: res.data.uid! }), {
         members: [...selectedFriends.map((f) => f.uid), currentUser?.uid],
       })
       .then(() =>
@@ -56,7 +55,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
           params: { group: res.data.uid! },
         })
       )
-      .then(() => queryClient.invalidateQueries(apiQueryOptions(Paths.GROUP_LIST)));
+      .then(() => queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST)));
   }
 
   return (
@@ -74,7 +73,7 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
               <Form
                 values={{ name: data?.name }}
                 method={'POST'}
-                action={group_uid ? Paths.GROUP_DETAIL : Paths.GROUP_LIST}
+                action={group_uid ? ApiRoutes.GROUP_DETAIL : ApiRoutes.GROUP_LIST}
                 onSubmitSuccess={(res) => handleFormSubmissionSuccess(res!).then(close)}
                 className="space-y-4"
               >
