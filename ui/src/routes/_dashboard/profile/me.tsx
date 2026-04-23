@@ -35,10 +35,10 @@ function RootComponent() {
         <div className="mx-auto flex max-w-(--breakpoint-lg) items-center gap-x-5 px-4 sm:px-6 lg:px-8">
           <Avatar
             className="size-16 bg-white"
-            fallback={currentUser?.fullName}
+            fallback={currentUser?.name}
           />
           <div>
-            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{currentUser?.fullName}</div>
+            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{currentUser?.name}</div>
             <div className="text-sm font-medium text-gray-600">{currentUser?.email}</div>
           </div>
         </div>

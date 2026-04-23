@@ -49,7 +49,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
         type: 'friend',
         uid: action.data.uid,
         urn: action.data.urn,
-        name: action.data.fullName!,
+        name: action.data.name,
       },
     ] satisfies Participant[];
   }
@@ -61,7 +61,7 @@ function participantsReducer(state: Participant[], action: participantsAction): 
         type: 'friend',
         uid: action.data.uid,
         urn: action.data.urn,
-        name: action.data.fullName!,
+        name: action.data.name,
       },
     ] satisfies Participant[];
   }
@@ -226,13 +226,13 @@ export default function ParticipantsSelector() {
                   {(item) => (
                     <ListBoxItem
                       id={item.urn}
-                      textValue={(item as Friend).fullName ?? (item as Group).name}
+                      textValue={item.name}
                     >
                       <Avatar
                         className="size-7 bg-neutral-50"
-                        fallback={(item as Friend).fullName ?? (item as Group).name}
+                        fallback={item.name}
                       />
-                      {(item as Friend).fullName ?? (item as Group).name}
+                      {item.name}
                     </ListBoxItem>
                   )}
                 </Collection>

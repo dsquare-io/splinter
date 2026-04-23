@@ -33,8 +33,8 @@ export function GroupBalancesTab({ group_uid }: Props) {
           value={userId}
         >
           <Accordion.Trigger className="flex w-full cursor-pointer items-center gap-x-2 py-4 text-sm">
-            <Avatar fallback={balances[0]!.user.fullName} />
-            <div className="flex-1 text-left">{balances[0]!.user.fullName}</div>
+            <Avatar fallback={balances[0]!.user.name} />
+            <div className="flex-1 text-left">{balances[0]!.user.name}</div>
             <ChevronDownIcon className="h-4 w-4 shrink-0 text-gray-600 transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
           </Accordion.Trigger>
           <Accordion.Content className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
@@ -51,12 +51,12 @@ export function GroupBalancesTab({ group_uid }: Props) {
                   <div className="relative flex items-center gap-x-2">
                     <div className="bg-gray-50 ring-[6px] ring-gray-50">
                       <Avatar
-                        fallback={e.friend.fullName}
+                        fallback={e.friend.name}
                         className="size-6"
                       />
                     </div>
                     <div className="text-sm">
-                      <span className="text-gray-800">{e.friend.fullName}</span>
+                      <span className="text-gray-800">{e.friend.name}</span>
                       {+e.amount < 0 ? (
                         <span className="text-gray-500"> lent you </span>
                       ) : (

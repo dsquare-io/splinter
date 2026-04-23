@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes, urlWithArgs } from '@/api-types';
+import { ApiRoutes, SimpleUser, urlWithArgs } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils.tsx';
@@ -31,12 +31,12 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
     Object.entries(balanceByUsers).map(([uId, balances]) => [uId, balances])
   );
 
-  async function removeMember(member: { uid: string; fullName?: string }) {
+  async function removeMember(member: SimpleUser) {
     return confirm({
       title: 'Remove Member',
       description: (
         <>
-          Are you sure you want to remove <span className="font-medium text-gray-800">{member.fullName}</span>{' '}
+          Are you sure you want to remove <span className="font-medium text-gray-800">{member.name}</span>{' '}
           from this group? This action cannot be undone.
         </>
       ),
@@ -129,11 +129,11 @@ export function GroupSettingsModal({ group_uid }: { group_uid: string }) {
                       className="flex items-center gap-x-3 py-2"
                     >
                       <Avatar
-                        fallback={memeber.fullName}
+                        fallback={memeber.name}
                         className="size-8"
                       />
                       <div className="flex-1 -space-y-0.5 text-neutral-800">
-                        <div>{memeber.fullName}</div>
+                        <div>{memeber.name}</div>
                         {!memeber.isActive && <div className="text-sm text-neutral-500">Inactive</div>}
                       </div>
                       {!balanceByUsers[memeber.uid]?.length && (

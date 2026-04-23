@@ -8,12 +8,12 @@ class SimpleUserSerializer(serializers.ModelSerializer):
     uid = serializers.CharField(source='username')
     urn = serializers.CharField(read_only=True)
 
-    full_name = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True, source='full_name')
     is_active = serializers.BooleanField(help_text='Indicates whether the user is active or not.', read_only=True)
 
     class Meta:
         model = User
-        fields = ('uid', 'urn', 'full_name', 'is_active')
+        fields = ('uid', 'urn', 'name', 'is_active')
 
 
 class UserSerializer(SimpleUserSerializer):

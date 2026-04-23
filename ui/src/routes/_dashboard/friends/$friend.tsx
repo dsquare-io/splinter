@@ -59,10 +59,10 @@ function RootComponent() {
 
         <Avatar
           className="size-16 bg-white"
-          fallback={data.fullName}
+          fallback={data.name}
         />
         <div>
-          <div className="mt-1 text-2xl font-semibold text-gray-900">{data.fullName}</div>
+          <div className="mt-1 text-2xl font-semibold text-gray-900">{data.name}</div>
           <OutstandingBalanceList balances={data.outstandingBalances} />
         </div>
 

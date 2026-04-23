@@ -35,7 +35,7 @@ export function useExpenseParticipants(): Participant[] {
       groupDetail?.members?.map((member) => ({
         uid: member.uid,
         urn: member.urn,
-        name: member.fullName!,
+        name: member.name,
         type: 'friend',
       })) ?? []
     );
@@ -46,8 +46,8 @@ export function useExpenseParticipants(): Participant[] {
         {
           uid: currentUser!.uid,
           urn: currentUser!.urn,
-          initials: currentUser!.fullName,
-          name: `Me (${currentUser!.fullName!})`,
+          initials: currentUser!.name,
+          name: `Me (${currentUser!.name})`,
           type: 'user',
         },
       ]

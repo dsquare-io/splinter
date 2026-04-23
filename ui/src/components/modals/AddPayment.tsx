@@ -169,9 +169,9 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                     <div className="flex w-full flex-1 items-center gap-x-2 rounded-md border border-gray-300 bg-white px-4 py-[8px] text-left text-sm">
                       <Avatar
                         className="size-5"
-                        fallback={friendData?.fullName}
+                        fallback={friendData?.name}
                       />
-                      <span>{friendData?.fullName}</span>
+                      <span>{friendData?.name}</span>
                     </div>
                   </div>
                 )}
@@ -210,25 +210,25 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                         <ListBox className="-mx-4 -my-2 text-sm text-gray-900">
                           {groupData?.members
                             ?.filter((e) => e.uid !== currentUser?.uid)
-                            .map((memeber) => (
+                            .map((member) => (
                               <ListBoxItem
                                 className="flex items-center gap-x-3 px-4 py-2 data-focused:bg-gray-100"
-                                key={memeber.uid}
-                                textValue={memeber.fullName}
-                                id={memeber.uid}
+                                key={member.uid}
+                                textValue={member.name}
+                                id={member.uid}
                               >
                                 <Avatar
                                   className="size-6 bg-white"
-                                  fallback={memeber.fullName}
+                                  fallback={member.name}
                                 />
                                 <div className="flex-1">
-                                  <div>{memeber.fullName}</div>
-                                  {!memeber.isActive && <div className="text-xs text-gray-600">Inactive</div>}
+                                  <div>{member.name}</div>
+                                  {!member.isActive && <div className="text-xs text-gray-600">Inactive</div>}
                                 </div>
-                                {balanceByUsers[memeber.uid]?.[0] && (
+                                {balanceByUsers[member.uid]?.[0] && (
                                   <Currency
-                                    currency={balanceByUsers[memeber.uid][0].currency}
-                                    value={+balanceByUsers[memeber.uid][0].amount * -1}
+                                    currency={balanceByUsers[member.uid][0].currency}
+                                    value={+balanceByUsers[member.uid][0].amount * -1}
                                   />
                                 )}
                               </ListBoxItem>

@@ -79,7 +79,7 @@ function FriendsLayout() {
         </div>
 
         <div className="flex h-full flex-col -space-y-px overflow-y-auto">
-          {Object.entries(groupBy(data?.results ?? [], (friend) => friend.fullName?.[0]?.toLowerCase() ?? ''))
+          {Object.entries(groupBy(data?.results ?? [], (friend) => friend.name[0].toLowerCase()))
             .sort((a, b) => (a[0] < b[0] ? -1 : +1))
             .map(([letter, friends]) => (
               <div

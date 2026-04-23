@@ -116,14 +116,14 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
                         >
                           {(item: Friend) => (
                             <Tag
-                              textValue={item.fullName}
+                              textValue={item.name}
                               className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden"
                             >
                               <Avatar
                                 className="size-6 rounded-none bg-neutral-50"
-                                fallback={item.fullName}
+                                fallback={item.name}
                               />
-                              {item.fullName}
+                              {item.name}
                               <ButtonBase
                                 className="-ml-2 px-2 py-1 text-gray-500 focus:outline-hidden"
                                 slot="remove"
@@ -173,9 +173,9 @@ export function CreateGroupModal({ group_uid }: { group_uid?: string }) {
                             >
                               <Avatar
                                 className="size-8 bg-neutral-50"
-                                fallback={friend.fullName}
+                                fallback={friend.name}
                               />
-                              {friend.fullName}
+                              {friend.name}
                               <CheckIcon
                                 className={clsx(
                                   'ml-auto h-4 w-4',

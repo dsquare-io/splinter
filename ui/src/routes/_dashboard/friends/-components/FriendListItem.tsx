@@ -8,7 +8,7 @@ import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx'
 import { Avatar } from '@/components/common';
 
 export default function FriendListItem({
-  fullName,
+  name,
   uid,
   aggregatedOutstandingBalance,
   outstandingBalances,
@@ -27,19 +27,19 @@ export default function FriendListItem({
       <div className="flex items-center gap-x-3">
         <Avatar
           className="size-9"
-          fallback={fullName}
+          fallback={name}
         />
-        <div className="text-md flex-1 py-1">{fullName}</div>
-        {+(aggregatedOutstandingBalance?.amount ?? '0') === 0 ? (
+        <div className="text-md flex-1 py-1">{name}</div>
+        {+aggregatedOutstandingBalance.amount === 0 ? (
           <div className="text-xs text-gray-400">Settled up</div>
         ) : (
           <div className="text-right text-sm">
             <div className="text-xs text-gray-400">
-              {+(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
+              {+aggregatedOutstandingBalance.amount > 0 ? 'You lent' : 'You borrowed'}
             </div>
             <Currency
-              currency={aggregatedOutstandingBalance?.currency ?? ''}
-              value={aggregatedOutstandingBalance?.amount ?? 0}
+              currency={aggregatedOutstandingBalance.currency}
+              value={aggregatedOutstandingBalance.amount}
             />
           </div>
         )}
