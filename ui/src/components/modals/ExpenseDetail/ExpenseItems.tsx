@@ -33,7 +33,7 @@ export default function ExpenseItems() {
               noTabularNums
               noColor
               className="font-medium"
-              currency={expense.currency.uid}
+              currency={expense.currency}
               value={expenseItem.amount}
             />
           </div>

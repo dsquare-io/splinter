@@ -41,7 +41,7 @@ function UserShare({ shareItem, currency }: { shareItem: ExpenseShare; currency:
         noTabularNums
         noColor
         className="text-sm"
-        currency={currency.uid}
+        currency={currency}
         value={shareItem.amount}
       />
     </div>

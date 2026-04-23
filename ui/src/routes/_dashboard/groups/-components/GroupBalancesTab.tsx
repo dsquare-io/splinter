@@ -63,7 +63,7 @@ export function GroupBalancesTab({ group_uid }: Props) {
                         <span className="text-gray-500"> borrowed </span>
                       )}
                       <Currency
-                        currency={e.currency.uid}
+                        currency={e.currency}
                         value={e.amount}
                       />
                     </div>

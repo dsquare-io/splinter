@@ -227,7 +227,7 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                                 </div>
                                 {balanceByUsers[memeber.uid]?.[0] && (
                                   <Currency
-                                    currency={balanceByUsers[memeber.uid][0].currency.uid!}
+                                    currency={balanceByUsers[memeber.uid][0].currency}
                                     value={+balanceByUsers[memeber.uid][0].amount * -1}
                                   />
                                 )}

@@ -38,7 +38,7 @@ export default function FriendListItem({
               {+(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
             </div>
             <Currency
-              currency={aggregatedOutstandingBalance?.currency.uid ?? ''}
+              currency={aggregatedOutstandingBalance?.currency ?? ''}
               value={aggregatedOutstandingBalance?.amount ?? 0}
             />
           </div>

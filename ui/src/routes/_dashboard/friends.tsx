@@ -56,7 +56,7 @@ function FriendsLayout() {
                   Overall,{' '}
                   {+aggregatedOutstandingBalance?.[preferredCurrency.uid] > 0 ? 'you lent ' : 'you borrowed '}
                   <Currency
-                    currency={preferredCurrency.uid}
+                    currency={preferredCurrency}
                     value={aggregatedOutstandingBalance?.[preferredCurrency.uid]}
                   />
                 </>

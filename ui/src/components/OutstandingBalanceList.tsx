@@ -23,7 +23,7 @@ export function OutstandingBalanceList({ balances }: Props) {
             <UserLabel user={e.friend} />
             {+e.amount > 0 ? ' borrowed ' : ' lent '}
             <Currency
-              currency={e.currency.uid}
+              currency={e.currency}
               value={e.amount}
             />
             {'group' in e && e.group && <> in {e.group.name}</>}

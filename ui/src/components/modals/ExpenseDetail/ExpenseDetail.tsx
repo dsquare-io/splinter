@@ -47,7 +47,7 @@ function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
             noTabularNums
             noColor
             className="font-medium"
-            currency={expense.currency.uid}
+            currency={expense.currency}
             value={expense.amount}
           />
         </div>

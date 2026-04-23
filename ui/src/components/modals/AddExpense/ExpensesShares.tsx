@@ -85,7 +85,7 @@ export default function ExpensesShares({ onExpenseDetail }: Props) {
                   noTabularNums
                   value={expense.amount}
                   className="text-neutral-600"
-                  currency={preferredCurrency.uid}
+                  currency={preferredCurrency}
                 />
               </div>
               <div className="mt-4">

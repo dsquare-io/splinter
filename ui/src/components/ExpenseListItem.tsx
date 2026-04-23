@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
-import { ExpenseOrPayment } from '@/api-types/components/schemas';
+import { ExpenseOrPayment, SimpleCurrency } from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
 import UserLabel from '@/components/UserLabel.tsx';
 
@@ -41,7 +41,7 @@ export default function ExpenseListItem({ expense, group }: ExpenseListItemProps
 
           <OutstandingBalance
             outstandingBalance={expense.outstandingBalance}
-            currency={expense.currency.uid}
+            currency={expense.currency}
           />
         </>
       ) : (
@@ -82,7 +82,7 @@ function OutstandingBalance({
   currency,
 }: {
   outstandingBalance?: string;
-  currency: string;
+  currency: SimpleCurrency;
 }) {
   const amount = +(outstandingBalance ?? 0);
 
