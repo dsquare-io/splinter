@@ -8,11 +8,10 @@ import { ApiRoutes, Currency } from '@/api-types';
 import { Button, FieldScope, Form, HiddenField } from '@/components/common';
 import { CloseDialog } from '@/components/modals/utils';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-
+import { queryClient } from '@/queryClient.ts';
 import ExpenseEntry from './ExpenseEntry.tsx';
 import ExpensesShares from './ExpensesShares.tsx';
 import { SingleExpenseShares } from './SingleExpenseShares';
-import {queryClient} from "@/queryClient.ts";
 
 function DialogContent({ preferredCurrency, close }: { preferredCurrency: Currency; close: () => void }) {
   const form = useForm();
@@ -35,9 +34,9 @@ function DialogContent({ preferredCurrency, close }: { preferredCurrency: Curren
           return data;
         }}
         onSubmitSuccess={async () => {
-                  await queryClient.invalidateQueries({
-                    predicate: (query) => query.queryKey.includes('expenses')
-                  })
+          await queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey.includes('expenses'),
+          });
           close();
           setCurrentStep('entry');
           form.reset();

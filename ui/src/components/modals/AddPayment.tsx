@@ -19,7 +19,6 @@ import { useQuery } from '@tanstack/react-query';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import Currency from '@/components/Currency.tsx';
 import {
   Avatar,
   Button,
@@ -32,6 +31,7 @@ import {
   WatchState,
 } from '@/components/common';
 import { FormField } from '@/components/common/Form/FormField.tsx';
+import Currency from '@/components/Currency.tsx';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';

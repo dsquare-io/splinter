@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { twMerge } from 'tailwind-merge';
-import { VariantProps, tv } from 'tailwind-variants';
+import { tv, VariantProps } from 'tailwind-variants';
 
 const alertVariants = tv({
   base: 'alert relative w-full rounded-md border px-4 py-3 text-sm',

@@ -1,4 +1,4 @@
-import { Navigate, Outlet, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
 
 import BottomNav from '@/components/BottomNav.tsx';
 import Sidebar from '@/components/Sidebar.tsx';

@@ -10,7 +10,7 @@ import {
   SwitchContext,
   TextFieldContext,
 } from 'react-aria-components';
-import { type RegisterOptions, type UseControllerProps, useController } from 'react-hook-form';
+import { useController, type RegisterOptions, type UseControllerProps } from 'react-hook-form';
 
 import { FieldErrorContext } from './FieldError';
 import { useScopedFieldName } from './FieldScope';

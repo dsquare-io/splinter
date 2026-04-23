@@ -1,28 +1,28 @@
 export interface AccessToken {
-  accessToken?: string;
+  accessToken: string;
   /** Format: date-time */
-  expiresAt?: string;
+  expiresAt: string;
 }
 
 export interface Activity {
-    actor: SimpleUser;
-    group: SimpleGroup;
-    object: Object_;
-    target: Object_;
+  readonly actor: SimpleUser;
+  readonly group: SimpleGroup;
+  readonly object: Object_;
+  readonly target: Object_;
 }
 
 export interface ActivityAudience {
-    /** Format: uuid */
-    uid: string;
-    urn: string;
-    activity: Activity;
-    verb: string;
-    description: string;
-    template: string;
-    isRead?: boolean;
-    wasDelivered?: boolean;
-    /** Format: date-time */
-    createdAt?: string;
+  /** Format: uuid */
+  readonly uid: string;
+  readonly urn: string;
+  readonly activity: Activity;
+  readonly verb: string;
+  readonly description: string;
+  readonly template: string;
+  readonly isRead: boolean;
+  readonly wasDelivered: boolean;
+  /** Format: date-time */
+  readonly createdAt: string;
 }
 
 export interface AggregatedOutstandingBalance {
@@ -33,10 +33,10 @@ export interface AggregatedOutstandingBalance {
 }
 
 export interface AuthTokenData {
-  accessToken?: string;
-  refreshToken?: string;
+  accessToken: string;
+  refreshToken: string;
   /** Format: date-time */
-  expiresAt?: string;
+  expiresAt: string;
 }
 
 export interface AuthenticateUser {
@@ -54,7 +54,7 @@ export interface ChallengeMfaDeviceResponse {
 }
 
 export interface ChangePassword {
-  oldPassword?: string;
+  oldPassword: string;
   password: string;
 }
 
@@ -75,7 +75,7 @@ export interface Comment {
   readonly user: SimpleUser;
   content: string;
   /** Format: date-time */
-  readonly createdAt?: string;
+  readonly createdAt: string;
 }
 
 export interface Country {
@@ -85,22 +85,21 @@ export interface Country {
   flag: string;
 }
 
-export interface CreateFriendship {
-  /** Format: email */
-  email: string;
-  name: string;
-}
+export type CreateFriendship = CreateUser;
 
 export interface CreateGroupMembership {
   user: string;
 }
 
-export interface Currency {
-  uid: string;
-  readonly urn: string;
-  symbol?: string | null;
-  readonly country: Country;
+export interface CreateUser {
+  /** Format: email */
+  email: string;
+  name: string;
 }
+
+export type Currency = SimpleCurrency & {
+  readonly country: Country;
+};
 
 export interface Device {
   id: number;
@@ -120,7 +119,7 @@ export interface EnableMfaDeviceRequest {
 
 export interface EnableMfaDeviceResponse {
   /** Format: uri */
-  configUrl?: string | null;
+  configUrl: string | null;
 }
 
 export interface Error {
@@ -143,16 +142,17 @@ export interface Expense {
    * Format: decimal
    * @description The outstanding balance of current user in this expense document
    */
-  readonly outstandingBalance?: string;
+  readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
-  readonly paidBy?: SimpleUser;
-  readonly createdBy?: SimpleUser;
+  readonly paidBy: SimpleUser;
+  readonly createdBy: SimpleUser;
 }
 
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 
 export interface ExpenseShare {
   user: string;
+  readonly userProfile: SimpleUser;
   /**
    * @description The share of the user in the expense
    * @default 1
@@ -175,61 +175,40 @@ export type ExpenseTyped = {
     type: 'expense';
   };
 export type ExpenseTypedTypeEnum = 'expense';
-
-export interface ExtendedGroup {
-  readonly uid: string;
-  readonly urn: string;
-  name: string;
+export type ExtendedGroup = SimpleGroup & {
   /** @description Outstanding balances for all group members */
-  readonly outstandingBalances?: GroupOutstandingBalance[];
+  readonly outstandingBalances: GroupOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-  readonly createdBy?: SimpleUser;
+  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+  readonly createdBy: SimpleUser;
   readonly members: SimpleUser[];
-}
+};
 
 export interface ForgetPassword {
   /** Format: email */
   email: string;
 }
 
-export interface Friend {
-  uid: string;
-  readonly urn: string;
-  readonly fullName?: string;
-  /** @description Indicates whether the user is active or not. */
-  readonly isActive?: boolean;
+export type Friend = SimpleUser & {
   /** @description Outstanding balances for current user. Only top 5 on list view */
-  readonly outstandingBalances?: FriendOutstandingBalance[];
+  readonly outstandingBalances: FriendOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-}
-
-export interface FriendOutstandingBalance {
-  /** Format: decimal */
-  amount: string;
-  readonly currency: SimpleCurrency;
+  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+};
+export type FriendOutstandingBalance = OutstandingBalance & {
   readonly group: SimpleGroup;
   readonly friend: SimpleUser;
-}
-
-export interface Group {
-  readonly uid: string;
-  readonly urn: string;
-  name: string;
+};
+export type Group = SimpleGroup & {
   /** @description Top 5 Outstanding balances for current user */
-  readonly outstandingBalances?: GroupOutstandingBalance[];
+  readonly outstandingBalances: GroupOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-}
-
-export interface GroupOutstandingBalance {
-  /** Format: decimal */
-  amount: string;
-  readonly currency: SimpleCurrency;
+  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+};
+export type GroupOutstandingBalance = OutstandingBalance & {
   readonly user: SimpleUser;
   readonly friend: SimpleUser;
-}
+};
 
 export interface MfaToken {
   token: string;
@@ -334,30 +313,21 @@ export interface PaginatedGroupList {
   results: Group[];
 }
 
-export interface PatchedExtendedGroup {
-  readonly uid?: string;
-  readonly urn?: string;
-  name?: string;
+export type PatchedExtendedGroup = SimpleGroup & {
   /** @description Outstanding balances for all group members */
-  readonly outstandingBalances?: GroupOutstandingBalance[];
+  readonly outstandingBalances: GroupOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
-  readonly createdBy?: SimpleUser;
-  readonly members?: SimpleUser[];
-}
-
-export interface PatchedUser {
-  uid?: string;
-  readonly urn?: string;
-  readonly fullName?: string;
-  /** @description Indicates whether the user is active or not. */
-  readonly isActive?: boolean;
+  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+  readonly createdBy: SimpleUser;
+  readonly members: SimpleUser[];
+};
+export type PatchedUser = SimpleUser & {
   firstName?: string;
   lastName?: string;
   /** Format: email */
   email?: string | null;
-  readonly isVerified?: boolean;
-}
+  readonly isVerified: boolean;
+};
 
 export interface Payment {
   /** Format: uuid */
@@ -369,7 +339,7 @@ export interface Payment {
   /** Format: decimal */
   amount: string;
   currency: SimpleCurrency;
-  readonly createdBy?: SimpleUser;
+  readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
 }
@@ -386,7 +356,7 @@ export type PaymentTyped = {
 export type PaymentTypedTypeEnum = 'payment';
 
 export interface RefreshAccessToken {
-  refreshToken?: string;
+  refreshToken: string;
 }
 
 export interface ResetPassword {
@@ -410,9 +380,9 @@ export interface SimpleGroup {
 export interface SimpleUser {
   uid: string;
   readonly urn: string;
-  readonly fullName?: string;
+  readonly name: string;
   /** @description Indicates whether the user is active or not. */
-  readonly isActive?: boolean;
+  readonly isActive: boolean;
 }
 
 export interface UpdateGroupMembership {
@@ -445,18 +415,13 @@ export interface UpsertPayment {
   amount: string;
 }
 
-export interface User {
-  uid: string;
-  readonly urn: string;
-  readonly fullName?: string;
-  /** @description Indicates whether the user is active or not. */
-  readonly isActive?: boolean;
+export type User = SimpleUser & {
   firstName?: string;
   lastName?: string;
   /** Format: email */
   email?: string | null;
-  readonly isVerified?: boolean;
-}
+  readonly isVerified: boolean;
+};
 
 export interface UserCurrency {
   /** @description ISO 4217 Currency Code */
@@ -464,9 +429,9 @@ export interface UserCurrency {
 }
 
 export interface UserDeviceInfo {
-  availableDevices?: AvailableDevice[];
-  configuredDevices?: Device[];
-  authenticationMethods?: Device[];
+  availableDevices: AvailableDevice[];
+  configuredDevices: Device[];
+  authenticationMethods: Device[];
 }
 
 export interface UserOutstandingBalance {

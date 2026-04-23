@@ -4,7 +4,6 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency';
 import { useApiQuery } from '@/hooks/useApiQuery';
-
 import ExpenseItemShares from './ExpenseItemShares';
 
 type ExpenseItemsProps = {

@@ -7,7 +7,7 @@ import {
   InformationCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { VariantProps, tv } from 'tailwind-variants';
+import { tv, VariantProps } from 'tailwind-variants';
 
 import { IconButton } from './IconButton.tsx';
 

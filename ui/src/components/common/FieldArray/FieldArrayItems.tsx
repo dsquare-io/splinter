@@ -1,10 +1,9 @@
-import { ComponentProps, type ReactNode, useContext } from 'react';
+import { ComponentProps, useContext, type ReactNode } from 'react';
 import { ButtonContext, Provider } from 'react-aria-components';
 import { type FieldArrayWithId } from 'react-hook-form';
 
 import { FieldArrayContext } from '@/components/common/FieldArray/FieldArray.tsx';
-import { type RenderProps, composeRenderProps } from '@/components/common/render-props.ts';
-
+import { composeRenderProps, type RenderProps } from '@/components/common/render-props.ts';
 import { useCachedChildren } from './utils.ts';
 
 interface FieldArrayItemsRenderProps {
@@ -20,8 +19,7 @@ interface FieldArrayItemsRenderProps {
 }
 
 interface Props
-  extends Pick<RenderProps<FieldArrayItemsRenderProps>, 'children'>,
-    Omit<ComponentProps<'div'>, 'children'> {
+  extends Pick<RenderProps<FieldArrayItemsRenderProps>, 'children'>, Omit<ComponentProps<'div'>, 'children'> {
   renderEmptyState?: () => ReactNode;
 }
 

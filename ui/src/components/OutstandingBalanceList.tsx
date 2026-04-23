@@ -17,8 +17,8 @@ export function OutstandingBalanceList({ balances }: Props) {
 
   return (
     <div className="mt-1.5 space-y-0.5 text-xs font-normal text-gray-500">
-      {top3.map((e) => (
-        <Fragment key={e.friend?.uid ?? e.currency.uid}>
+      {top3.map((e, i) => (
+        <Fragment key={i}>
           <p>
             <UserLabel user={e.friend} />
             {+e.amount > 0 ? ' borrowed ' : ' lent '}

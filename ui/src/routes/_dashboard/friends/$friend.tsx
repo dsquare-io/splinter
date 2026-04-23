@@ -3,13 +3,13 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { ExpenseList } from '@/components/ExpenseList.tsx';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
 import { Avatar, Button } from '@/components/common';
+import { ExpenseList } from '@/components/ExpenseList.tsx';
 import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
+import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({

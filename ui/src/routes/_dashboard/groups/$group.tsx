@@ -3,18 +3,17 @@ import { DialogTrigger, Tab, TabList, TabPanel, Tabs } from 'react-aria-componen
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
 import { Avatar, Button } from '@/components/common';
 import { AddPaymentModal } from '@/components/modals/AddPayment';
 import { GroupSettingsModal } from '@/components/modals/GroupSettings';
 import { InviteGroupMembersModal } from '@/components/modals/InviteGroupMembers';
+import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery';
 import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient';
-
 import { GroupActivityTab } from './-components/GroupActivityTab';
 import { GroupBalancesTab } from './-components/GroupBalancesTab';
 

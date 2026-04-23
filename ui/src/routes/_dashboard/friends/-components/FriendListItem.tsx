@@ -3,9 +3,9 @@ import clx from 'clsx';
 import { Link } from '@tanstack/react-router';
 
 import { Friend } from '@/api-types/components/schemas';
+import { Avatar } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
 import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
-import { Avatar } from '@/components/common';
 
 export default function FriendListItem({
   name,

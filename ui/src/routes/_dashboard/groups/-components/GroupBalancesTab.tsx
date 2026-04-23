@@ -3,8 +3,8 @@ import * as Accordion from '@radix-ui/react-accordion';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import Currency from '@/components/Currency.tsx';
 import { Avatar } from '@/components/common';
+import Currency from '@/components/Currency.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
 

@@ -7,11 +7,10 @@ import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency';
 import UserLabel from '@/components/UserLabel.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
-
 import { CloseDialog } from '../utils';
 import ExpenseActivity from './ExpenseActivity';
-import ExpenseItemShares from './ExpenseItemShares';
 import ExpenseItems from './ExpenseItems';
+import ExpenseItemShares from './ExpenseItemShares';
 
 type ExpenseDetailProps = ComponentProps<typeof Modal> & {
   expenseId: string;

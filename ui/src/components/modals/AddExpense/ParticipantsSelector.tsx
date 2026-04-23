@@ -21,7 +21,6 @@ import { ApiRoutes } from '@/api-types';
 import { Friend, Group } from '@/api-types/components/schemas';
 import { Avatar } from '@/components/common';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-
 import { type Participant } from './useExpenseParticipants';
 
 type participantsAction =
@@ -43,7 +42,11 @@ function participantsReducer(state: Participant[], action: participantsAction): 
     ] satisfies Participant[];
   }
 
-  if (action.type === 'select_friend' && state[0]?.type === 'group' && !state.find((p) => p.urn === action.data.urn)) {
+  if (
+    action.type === 'select_friend' &&
+    state[0]?.type === 'group' &&
+    !state.find((p) => p.urn === action.data.urn)
+  ) {
     return [
       {
         type: 'friend',

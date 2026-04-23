@@ -1,11 +1,10 @@
 import clsx from 'clsx';
 
+import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
-import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
-
+import { Paths } from '@/api-types/routePaths.ts';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import ActivityListItem from './-components/ActivityListItem.tsx';
-import {useApiQuery} from "@/hooks/useApiQuery.ts";
-import {Paths} from "@/api-types/routePaths.ts";
 
 export const Route = createFileRoute('/_dashboard/activity/')({
   component: ActivityLayout,
@@ -14,7 +13,7 @@ export const Route = createFileRoute('/_dashboard/activity/')({
 function ActivityLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/activity' });
-  const {data} = useApiQuery(Paths.ACTIVITY_LIST);
+  const { data } = useApiQuery(Paths.ACTIVITY_LIST);
 
   return (
     <>
@@ -39,7 +38,6 @@ function ActivityLayout() {
             />
           ))}
         </div>
-
       </div>
       <div className="xl:ms-96">
         <Outlet />

@@ -1,14 +1,14 @@
 import clsx from 'clsx';
 import { RefAttributes } from 'react';
 import {
-  type FieldErrorProps,
+  composeRenderProps,
   InputProps,
   LabelProps,
   Input as RACInput,
   Label as RACLabel,
   Text,
   TextProps,
-  composeRenderProps,
+  type FieldErrorProps,
 } from 'react-aria-components';
 
 import { AnimatePresence, motion } from 'framer-motion';

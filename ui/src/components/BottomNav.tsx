@@ -2,17 +2,16 @@ import { Button, DialogTrigger } from 'react-aria-components';
 
 import { ArrowTrendingUpIcon, PlusIcon, UserIcon, UsersIcon } from '@heroicons/react/24/outline';
 import { Link } from '@tanstack/react-router';
-import {useApiQuery} from "@/hooks/useApiQuery.ts";
-import {ApiRoutes} from "@/api-types";
-import {Avatar} from "@/components/common";
 
+import { Avatar } from '@/components/common';
 import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
+import useAuth from '../hooks/useAuth.ts';
 
 export default function BottomNav() {
-  const {data} = useApiQuery(ApiRoutes.PROFILE);
+  const { currentUser } = useAuth();
 
   return (
-    <div className="z-10 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white md:hidden pb-[calc(env(safe-area-inset-bottom)-10px)]">
+    <div className="z-10 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white pb-[calc(env(safe-area-inset-bottom)-10px)] md:hidden">
       <Link
         to="/groups"
         className="[&.active]:border-brand-600 [&.active]:text-brand-600 -mt-px flex max-w-40 grow flex-col items-center border-t-2 border-transparent px-3 py-2.5 text-gray-400"
@@ -56,7 +55,7 @@ export default function BottomNav() {
       >
         <Avatar
           className="size-6"
-          fallback={data?.fullName}
+          fallback={currentUser?.name}
         ></Avatar>
         <span className="text-xs font-medium">Me</span>
       </Link>

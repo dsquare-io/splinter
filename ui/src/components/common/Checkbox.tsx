@@ -3,7 +3,7 @@ import { Checkbox as CheckboxPrimitive } from 'react-aria-components';
 
 import { CheckIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { twMerge } from 'tailwind-merge';
-import { VariantProps, tv } from 'tailwind-variants';
+import { tv, VariantProps } from 'tailwind-variants';
 
 export const checkboxStyles = tv({
   base: [

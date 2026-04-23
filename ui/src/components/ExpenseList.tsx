@@ -2,7 +2,6 @@ import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
 import { ExpenseOrPayment } from '@/api-types/components/schemas';
-
 import ExpenseListItem from './ExpenseListItem.tsx';
 
 interface Props {

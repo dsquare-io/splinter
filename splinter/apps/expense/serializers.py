@@ -41,12 +41,13 @@ class ExpenseShareListSerializer(serializers.ListSerializer):
 
 
 class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
-    user = SimpleUserSerializer(read_only=True)
+    user = UserSerializerField()
+    user_profile = SimpleUserSerializer(source='user', read_only=True)
 
     class Meta:
         model = ExpenseSplit
         list_serializer_class = ExpenseShareListSerializer
-        fields = ('user', 'share', 'amount')
+        fields = ('user', 'user_profile', 'share', 'amount')
         read_only_fields = ('amount',)
         extra_kwargs = {
             'share': {'help_text': 'The share of the user in the expense', 'min_value': 1, 'default': 1},

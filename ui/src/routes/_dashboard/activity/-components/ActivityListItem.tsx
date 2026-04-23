@@ -1,12 +1,11 @@
 import clsx from 'clsx';
 
-import {formatDistanceToNow} from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 
-import {ActivityAudience} from '@/api-types';
+import { ActivityAudience } from '@/api-types';
 import { Avatar } from '@/components/common';
 
-
-export default function ActivityListItem({activity}: {activity: ActivityAudience}) {
+export default function ActivityListItem({ activity }: { activity: ActivityAudience }) {
   return (
     <div
       className={clsx(
@@ -16,7 +15,7 @@ export default function ActivityListItem({activity}: {activity: ActivityAudience
     >
       <Avatar
         className="size-12 rounded-lg"
-        fallback={activity.activity.actor.fullName}
+        fallback={activity.activity.actor.name}
       />
       <div className="grow text-sm text-gray-800">
         <p>{activity.description}</p>
@@ -41,7 +40,7 @@ export default function ActivityListItem({activity}: {activity: ActivityAudience
         {/*)}*/}
         {activity.createdAt && (
           <p className="mt-1 text-xs font-normal text-gray-400">
-            {formatDistanceToNow(new Date(activity.createdAt), {addSuffix: true})}
+            {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
           </p>
         )}
       </div>

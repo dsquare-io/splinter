@@ -3,8 +3,8 @@ import { Label, TextArea, TextField } from 'react-aria-components';
 import { formatDistanceToNow } from 'date-fns';
 
 import { ApiRoutes } from '@/api-types';
-import UserLabel from '@/components/UserLabel.tsx';
 import { Avatar, Button } from '@/components/common';
+import UserLabel from '@/components/UserLabel.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import useAuth from '@/hooks/useAuth.ts';
 

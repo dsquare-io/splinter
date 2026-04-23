@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+
 import ts from 'typescript';
 
 function extractPaths(filePath) {
@@ -85,5 +86,4 @@ const routePaths = [['./src/api-types/routeTypes.d.ts', 'Paths']]
   .map(([filePath, recordName]) => buildPathsRecord(extractPaths(filePath), recordName))
   .join('\n\n');
 
-// eslint-disable-next-line prefer-template
 fs.writeFileSync('./src/api-types/routePaths.ts', routePaths + '\n');

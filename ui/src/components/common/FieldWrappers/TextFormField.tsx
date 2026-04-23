@@ -2,7 +2,6 @@ import { ComponentProps } from 'react';
 import { TextField } from 'react-aria-components';
 
 import { FormField } from '@/components/common/Form/FormField';
-
 import { MergeFormFieldProps } from './types';
 
 export function TextFormField(props: MergeFormFieldProps<ComponentProps<typeof TextField>>) {

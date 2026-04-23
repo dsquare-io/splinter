@@ -1,5 +1,4 @@
 import useAuth from '@/hooks/useAuth.ts';
-
 import { SimpleUser } from '../api-types';
 
 type UserLabelProps = {

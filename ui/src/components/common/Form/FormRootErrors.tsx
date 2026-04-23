@@ -4,8 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 import { Alert } from '../Alert';
 
-
-export function FormRootErrors({error}: {error?: string}) {
+export function FormRootErrors({ error }: { error?: string }) {
   const form = useFormContext();
 
   return (
@@ -43,7 +42,7 @@ export function FormRootErrors({error}: {error?: string}) {
           }}
         >
           <Alert
-            title={(error || form?.formState.errors?.root?.message)}
+            title={error || form?.formState.errors?.root?.message}
             color="danger"
             onDismiss={() => form?.clearErrors('root')}
           />

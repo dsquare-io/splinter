@@ -6,7 +6,6 @@ import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 import { Avatar, Button, Input, Label } from '@/components/common';
 import { FormField } from '@/components/common/Form/FormField.tsx';
 import useAuth from '@/hooks/useAuth.ts';
-
 import ExpenseInputList from './ExpenseInputList.tsx';
 import ParticipantsSelector from './ParticipantsSelector.tsx';
 import { Participant, useExpenseParticipants } from './useExpenseParticipants.ts';

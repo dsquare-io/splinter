@@ -5,7 +5,6 @@ import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField }
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient.ts';
-
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/setup')({

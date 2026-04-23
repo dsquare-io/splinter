@@ -15,8 +15,8 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes } from '@/api-types';
 import type { ChildExpense } from '@/api-types/components/schemas';
-import Currency from '@/components/Currency.tsx';
 import { Avatar, FieldScope, useScopedFieldName } from '@/components/common';
+import Currency from '@/components/Currency.tsx';
 import { useExpenseParticipants } from '@/components/modals/AddExpense/useExpenseParticipants.ts';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 

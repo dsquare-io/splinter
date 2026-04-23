@@ -8,14 +8,7 @@ module.exports = {
   printWidth: 110,
   arrowParens: 'always',
   singleAttributePerLine: true,
-  importOrder: ['^(react|clsx|cva)', '<THIRD_PARTY_MODULES>', '^@/(.*)$', '^[./]'],
-  importOrderSeparation: true,
-  importOrderSortSpecifiers: true,
-  plugins: [
-    '@trivago/prettier-plugin-sort-imports',
-    'prettier-plugin-tailwindcss',
-    // require.resolve('@ianvs/prettier-plugin-sort-imports'),
-    // '@ianvs/prettier-plugin-sort-imports',
-    // require('./tools/merged-prettier-plugin.cjs')
-  ],
+  importOrder: ['^(react|clsx|cva)', '', '<THIRD_PARTY_MODULES>', '', '^@/(.*)$', '^[./]'],
+  importOrderTypeScriptVersion: '5.0.0',
+  plugins: ['@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
 };

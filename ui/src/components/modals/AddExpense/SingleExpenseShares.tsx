@@ -8,10 +8,9 @@ import {
   Checkbox,
   Input,
   NumberFormField,
-  WatchState,
   useScopedFieldName,
+  WatchState,
 } from '@/components/common';
-
 import { useExpenseParticipants } from './useExpenseParticipants';
 
 export function SingleExpenseShares() {

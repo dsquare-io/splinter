@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
 import { Route as AuthSetupRouteImport } from './routes/auth/setup'
 import { Route as AuthResetRouteImport } from './routes/auth/reset'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -33,6 +34,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyRoute = AuthVerifyRouteImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSetupRoute = AuthSetupRouteImport.update({
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
   '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/profile/me': typeof DashboardProfileMeRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/reset': typeof AuthResetRoute
   '/auth/setup': typeof AuthSetupRoute
+  '/auth/verify': typeof AuthVerifyRoute
   '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
   '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
   '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/reset'
     | '/auth/setup'
+    | '/auth/verify'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/groups/$group'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/reset'
     | '/auth/setup'
+    | '/auth/verify'
     | '/activity/$activity'
     | '/friends/$friend'
     | '/profile/me'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/reset'
     | '/auth/setup'
+    | '/auth/verify'
     | '/_dashboard/activity/$activity'
     | '/_dashboard/friends/$friend'
     | '/_dashboard/groups/$group'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthResetRoute: typeof AuthResetRoute
   AuthSetupRoute: typeof AuthSetupRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -239,6 +252,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/setup': {
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthResetRoute: AuthResetRoute,
   AuthSetupRoute: AuthSetupRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

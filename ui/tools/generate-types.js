@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+
 import openapiTS, { astToString } from 'openapi-typescript';
 import { Project, ts } from 'ts-morph';
 

@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, cloneElement, useMemo } from 'react';
+import { cloneElement, ReactElement, ReactNode, useMemo } from 'react';
 
 import { CollectionBase } from '@react-types/shared';
 

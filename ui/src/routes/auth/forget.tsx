@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import {
@@ -13,7 +13,6 @@ import {
   Label,
   TextFormField,
 } from '@/components/common';
-
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/forget')({

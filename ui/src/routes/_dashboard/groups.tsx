@@ -1,15 +1,14 @@
 import clsx from 'clsx';
 import { DialogTrigger } from 'react-aria-components';
 
-import { Outlet, createFileRoute, useMatchRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import Currency from '@/components/Currency.tsx';
 import { Button } from '@/components/common';
+import Currency from '@/components/Currency.tsx';
 import { CreateGroupModal } from '@/components/modals/CreateGroup';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-
 import GroupListItem from './groups/-components/GroupListItem';
 
 export const Route = createFileRoute('/_dashboard/groups')({

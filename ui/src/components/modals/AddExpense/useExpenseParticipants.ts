@@ -18,14 +18,13 @@ export function useExpenseParticipants(): Participant[] {
   const { watch, getValues } = useFormContext();
   const { currentUser } = useAuth();
 
-  const partipants = getValues('participants:del') as Participant[];
-  const {data} = useApiQuery(ApiRoutes.PROFILE);
+  const participants = getValues('participants:del') as Participant[];
   watch('participants:del');
 
-  const isGroup = partipants?.[0]?.type === 'group';
+  const isGroup = participants?.[0]?.type === 'group';
 
   const { data: groupDetail } = useQuery(
-    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: partipants?.[0]?.uid }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: participants?.[0]?.uid }, undefined, {
       enabled: isGroup,
     })
   );
@@ -53,9 +52,9 @@ export function useExpenseParticipants(): Participant[] {
       ]
     : [];
 
-  if (!partipants || partipants.length === 0) {
+  if (!participants || participants.length === 0) {
     return currentUserParticipants;
   }
 
-  return [...currentUserParticipants, ...partipants];
+  return [...currentUserParticipants, ...participants];
 }

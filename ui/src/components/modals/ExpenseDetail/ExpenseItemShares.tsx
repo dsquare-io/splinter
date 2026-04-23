@@ -1,6 +1,6 @@
 import { ChildExpense, ExpenseShare, SimpleCurrency } from '@/api-types';
-import Currency from '@/components/Currency';
 import { Avatar } from '@/components/common';
+import Currency from '@/components/Currency';
 
 export default function ExpenseItemShares({
   expenseItem,
@@ -11,7 +11,7 @@ export default function ExpenseItemShares({
 }) {
   return expenseItem.shares.map((shareItem) => (
     <UserShare
-      key={shareItem.user.uid}
+      key={shareItem.user}
       shareItem={shareItem}
       currency={currency}
     />
@@ -23,10 +23,10 @@ function UserShare({ shareItem, currency }: { shareItem: ExpenseShare; currency:
     <div className="group flex items-center gap-x-3 px-4 py-3 transition-colors">
       <Avatar
         className="size-6"
-        fallback={shareItem.user.name}
+        fallback={shareItem.userProfile.name}
       />
       <div className="flex flex-1 items-center gap-x-2 text-sm text-gray-900">
-        {shareItem.user.name}
+        {shareItem.userProfile.name}
 
         {shareItem.share !== 1 && (
           <div className="rounded-md bg-gray-100 px-1 py-px text-xs text-gray-600 ring-1 ring-gray-300">

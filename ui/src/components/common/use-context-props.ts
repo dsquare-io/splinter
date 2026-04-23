@@ -19,6 +19,10 @@ export type ContextValue<T extends SlotProps, E extends Element> =
 export const slotCallbackSymbol = Symbol('callback');
 export const defaultSlot = Symbol('default');
 
+type CtxWithCallback<T, E extends Element> = WithRef<T, E> & {
+  [slotCallbackSymbol]?: (value: T) => void;
+};
+
 export function useContextProps<T, U extends SlotProps, E extends Element>(
   props: T & SlotProps,
   ref: ForwardedRef<E>,
@@ -26,7 +30,7 @@ export function useContextProps<T, U extends SlotProps, E extends Element>(
 ): [T, RefObject<E>] {
   const { ...ctx } = useContext(context) || {};
 
-  const rootCtx = ctx as WithRef<U, E>;
+  const rootCtx = ctx as CtxWithCallback<U, E>;
   let defaultCtx: WithRef<U, E> | undefined;
   let slottedCtx: WithRef<U, E> | undefined;
 
@@ -47,20 +51,17 @@ export function useContextProps<T, U extends SlotProps, E extends Element>(
     delete rootCtx.slots;
   }
 
-  // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
   const { ref: rootCtxRef, [slotCallbackSymbol]: rootCtxCallback, ...rootCtxProps } = rootCtx;
-  // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
   const {
     ref: defaultCtxRef,
     [slotCallbackSymbol]: defaultCtxCallback,
     ...defaultCtxProps
-  } = defaultCtx || {};
-  // @ts-ignore - TS says "Type 'unique symbol' cannot be used as an index type." but not sure why.
+  } = (defaultCtx || {}) as CtxWithCallback<U, E>;
   const {
     ref: slottedCtxRef,
     [slotCallbackSymbol]: slottedCtxCallback,
     ...slottedCtxProps
-  } = slottedCtx || {};
+  } = (slottedCtx || {}) as CtxWithCallback<U, E>;
 
   const mergedRef = useObjectRef(
     useMemo(
@@ -73,13 +74,13 @@ export function useContextProps<T, U extends SlotProps, E extends Element>(
   // A parent component might need the props from a child, so call slot callback if needed.
   useEffect(() => {
     if (rootCtxCallback) {
-      rootCtxCallback(props);
+      rootCtxCallback(props as unknown as U);
     }
     if (defaultCtxCallback) {
-      defaultCtxCallback(props);
+      defaultCtxCallback(props as unknown as U);
     }
     if (slottedCtxCallback) {
-      slottedCtxCallback(props);
+      slottedCtxCallback(props as unknown as U);
     }
   }, [rootCtxCallback, defaultCtxCallback, slottedCtxCallback, props]);
 

@@ -119,10 +119,10 @@ export default function Sidebar(props: ComponentProps<'div'>) {
         >
           <Avatar
             className="size-8"
-            fallback={currentUser?.fullName}
+            fallback={currentUser?.name}
           ></Avatar>
           <div>
-            <div className="text-sm font-medium text-gray-700">{currentUser?.fullName}</div>
+            <div className="text-sm font-medium text-gray-700">{currentUser?.name}</div>
             <div className="text-xs font-medium text-gray-500">{currentUser?.email}</div>
           </div>
         </Link>

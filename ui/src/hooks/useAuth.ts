@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 
 import { ApiRoutes, User } from '@/api-types';
 import {
@@ -52,12 +52,12 @@ export default function useAuth() {
   useEffect(() => {
     if (!accessToken) {
       cachedUser = null;
-      setCurrentUser(null);
+      startTransition(() => setCurrentUser(null));
       return;
     }
 
     if (cachedUser) {
-      setCurrentUser(cachedUser);
+      startTransition(() => setCurrentUser(cachedUser));
       return;
     }
 

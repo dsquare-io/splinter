@@ -6,7 +6,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link, Navigate, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
 
 import { Avatar } from '@/components/common';
 
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_dashboard/activity/$activity')({
 });
 
 function RootComponent() {
-  const  activity= null;
+  const activity = null;
 
   if (!activity) {
     return <Navigate to="/activity" />;

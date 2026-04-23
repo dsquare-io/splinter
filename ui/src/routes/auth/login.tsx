@@ -1,9 +1,8 @@
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
 import useAuth from '@/hooks/useAuth';
-
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/login')({

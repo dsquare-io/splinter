@@ -1,10 +1,10 @@
 import {
+  composeRenderProps,
   Button as RACButton,
   ButtonProps as RACButtonProps,
-  composeRenderProps,
 } from 'react-aria-components';
 
-import { VariantProps, tv } from 'tailwind-variants';
+import { tv, VariantProps } from 'tailwind-variants';
 
 import { buttonBaseStyles } from './ButtonBase.tsx';
 

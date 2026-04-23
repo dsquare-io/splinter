@@ -1,10 +1,11 @@
 import { ComponentProps, createContext, useEffect, useMemo, useRef } from 'react';
-import { UseFieldArrayProps, UseFieldArrayReturn, useFieldArray } from 'react-hook-form';
+import { useFieldArray, UseFieldArrayProps, UseFieldArrayReturn } from 'react-hook-form';
 
 import { RenderProps, useRenderProps } from '@/components/common/render-props.ts';
 
 interface Props
-  extends RenderProps<UseFieldArrayReturn & { keyName: string }>,
+  extends
+    RenderProps<UseFieldArrayReturn & { keyName: string }>,
     UseFieldArrayProps,
     Omit<ComponentProps<'div'>, keyof RenderProps<UseFieldArrayReturn>> {
   initialItemsCount?: number;
