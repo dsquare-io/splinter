@@ -202,11 +202,11 @@ class ExpenseEventOrchestrator(ContextDecorator):
             return False
 
         with transaction.atomic():
-            if self._root_expense.group_id is None:  # Personal expense
-                self.update_expense_parties()
-
             if self._update_expense_splits:
                 self.update_expense_splits()
+
+            if self._root_expense.group_id is None:  # Personal expense
+                self.update_expense_parties()
 
             self._outstanding_balance.apply()
 
