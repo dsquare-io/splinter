@@ -145,14 +145,14 @@ class CreatePaymentViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
 
         self.assertUserOutstandingBalance(
             {
-                self.user: -100,
-                self.friend: 100,
+                self.user: 100,
+                self.friend: -100,
             }
         )
 
         self.assertFriendOutstandingBalance(
             {
-                self.friend: -100,
+                self.friend: 100,
             },
             payer=self.user,
         )

@@ -34,14 +34,14 @@ class ExpenseTestCase(TestCase):
         expense = ExpenseFactory(
             amount=amount,
             currency=cls.currency,
-            paid_by=receiver,
+            paid_by=sender,
             is_payment=True,
             **kwargs,
         )
 
         ExpenseSplit.objects.create(
             expense=expense,
-            user=sender,
+            user=receiver,
             amount=amount,
         )
 

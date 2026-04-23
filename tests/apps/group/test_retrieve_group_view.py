@@ -46,7 +46,7 @@ class RetrieveGroupViewTest(AuthenticatedAPITestCase):
             {
                 'uid': self.user.username,
                 'urn': self.user.urn,
-                'fullName': self.user.full_name,
+                'name': self.user.full_name,
                 'isActive': self.user.is_active,
             },
             response_json['members'],
