@@ -131,6 +131,8 @@ class AutoSchema(AutoSchemaBase):
         mapped = super()._map_basic_serializer(*args, **kwargs)
         if 'properties' in mapped:
             mapped['properties'] = to_camel_case(mapped['properties'])
+        if 'required' in mapped:
+            mapped['required'] = [underscore_to_camel(f) for f in mapped['required']]
 
         return mapped
 
