@@ -180,7 +180,7 @@ export function AddPaymentModal({ group_uid, friend_uid }: SettleUpModalProps) {
                   <FormField name="friend">
                     <ComboBox
                       menuTrigger="focus"
-                      onSelectionChange={(key) => {
+                      onChange={(key) => {
                         let balance = 0;
                         if (key) {
                           balance = +(balanceByUsers[key]?.[0]?.amount ?? 0);

@@ -126,10 +126,10 @@ export default function ParticipantsSelector() {
         className="flex flex-wrap items-center gap-x-2 gap-y-1"
         aria-label="participants"
         defaultItems={comboboxItems}
-        selectedKey={fieldState.selectedKey}
+        value={fieldState.selectedKey}
         inputValue={fieldState.inputValue}
         onInputChange={onInputChange}
-        onSelectionChange={(key) => {
+        onChange={(key) => {
           const friend = friends?.results?.find((f) => f.urn === key);
           const group = groups?.results?.find((g) => g.urn === key);
 

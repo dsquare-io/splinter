@@ -170,7 +170,7 @@ export function FormField({
           {
             selectedKey: value,
             onBlur,
-            onSelectionChange: onChange,
+            onChange,
             isInvalid: invalid,
             ref: (el) => el && ref(getFocusableRef(el)),
             validationBehavior: 'aria',

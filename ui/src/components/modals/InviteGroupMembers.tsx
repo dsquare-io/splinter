@@ -82,7 +82,7 @@ export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
                 control={formControl}
               >
                 <ComboBox
-                  onSelectionChange={(val) => {
+                  onChange={(val) => {
                     addMember(val as string);
                   }}
                   defaultItems={friendsExcludingMembers}
