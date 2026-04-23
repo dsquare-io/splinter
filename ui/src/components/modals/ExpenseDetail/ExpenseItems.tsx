@@ -1,16 +1,18 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import * as Collapsible from '@radix-ui/react-collapsible';
-import { useParams } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
+import Currency from '@/components/Currency';
 import { useApiQuery } from '@/hooks/useApiQuery';
 
-import Currency from '../../Currency';
 import ExpenseItemShares from './ExpenseItemShares';
 
-export default function ExpenseItems() {
-  const params = useParams({ from: '/_dashboard/groups/$group/$expense' });
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: params.expense });
+type ExpenseItemsProps = {
+  expenseId: string;
+};
+
+export default function ExpenseItems({ expenseId }: ExpenseItemsProps) {
+  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
 
   if (!expense) return null;
 

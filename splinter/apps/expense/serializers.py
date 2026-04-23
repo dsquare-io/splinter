@@ -41,7 +41,7 @@ class ExpenseShareListSerializer(serializers.ListSerializer):
 
 
 class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
-    user = UserSerializerField()
+    user = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = ExpenseSplit

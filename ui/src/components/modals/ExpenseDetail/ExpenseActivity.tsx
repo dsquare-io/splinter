@@ -1,16 +1,20 @@
 import { Label, TextArea, TextField } from 'react-aria-components';
 
-import { useParams } from '@tanstack/react-router';
 import { formatDistanceToNow } from 'date-fns';
 
 import { ApiRoutes } from '@/api-types';
+import UserLabel from '@/components/UserLabel.tsx';
 import { Avatar, Button } from '@/components/common';
 import { useApiQuery } from '@/hooks/useApiQuery';
+import useAuth from '@/hooks/useAuth.ts';
 
-export default function ExpenseActivity() {
-  const { data } = useApiQuery('/api/user/profile');
-  const params = useParams({ from: '/_dashboard/groups/$group/$expense' });
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: params.expense });
+type ExpenseActivityProps = {
+  expenseId: string;
+};
+
+export default function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
+  const { currentUser } = useAuth();
+  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
 
   return (
     <div>
@@ -28,8 +32,10 @@ export default function ExpenseActivity() {
             <div className="h-1.5 w-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300"></div>
           </div>
           <p className="flex-auto py-0.5 text-sm leading-5 text-gray-500">
-            <span className="font-medium text-gray-900">{expense?.createdBy?.fullName}</span> created the
-            expense.
+            <span className="font-medium text-gray-900">
+              <UserLabel user={expense.createdBy} />
+            </span>{' '}
+            created the expense.
           </p>
           {expense?.datetime && (
             <time
@@ -43,7 +49,7 @@ export default function ExpenseActivity() {
 
         <li className="relative flex gap-x-3 px-4">
           <Avatar
-            fallback={data?.fullName}
+            fallback={currentUser?.name}
             className="size-6"
           />
           <div className="relative flex-auto">

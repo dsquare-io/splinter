@@ -1,11 +1,11 @@
 import { ComponentProps, forwardRef } from 'react';
 import { Dialog, Heading, Modal } from 'react-aria-components';
 
-import { useParams } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
 import { ApiRoutes } from '@/api-types';
 import Currency from '@/components/Currency';
+import UserLabel from '@/components/UserLabel.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 
 import { CloseDialog } from '../utils';
@@ -13,9 +13,12 @@ import ExpenseActivity from './ExpenseActivity';
 import ExpenseItemShares from './ExpenseItemShares';
 import ExpenseItems from './ExpenseItems';
 
-function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
-  const params = useParams({ from: '/_dashboard/groups/$group/$expense' });
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: params.expense });
+type ExpenseDetailProps = ComponentProps<typeof Modal> & {
+  expenseId: string;
+};
+
+function ExpenseDetail({ expenseId, ...props }: ExpenseDetailProps, ref: any) {
+  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
 
   if (!expense) return null;
 
@@ -40,7 +43,13 @@ function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
 
           <div className="flex-1">
             <div className="text-gray-900">{expense.description}</div>
-            <div className="-mt-px text-sm text-gray-500">Paid by {expense.paidBy?.fullName}</div>
+            <div className="-mt-px text-sm text-gray-500">
+              Paid by{' '}
+              <UserLabel
+                user={expense.paidBy}
+                inline
+              />
+            </div>
           </div>
 
           <Currency
@@ -53,7 +62,7 @@ function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
         </div>
 
         {expense.expenses.length > 1 ? (
-          <ExpenseItems />
+          <ExpenseItems expenseId={expenseId} />
         ) : (
           <ExpenseItemShares
             expenseItem={expense.expenses[0]}
@@ -63,7 +72,7 @@ function ExpenseDetail(props: ComponentProps<typeof Modal>, ref: any) {
 
         <hr className="my-6 border-gray-300" />
 
-        <ExpenseActivity />
+        <ExpenseActivity expenseId={expenseId} />
       </Dialog>
     </Modal>
   );

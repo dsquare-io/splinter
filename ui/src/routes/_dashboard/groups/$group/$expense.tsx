@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import ExpenseDetail from '@/components/modals/ExpenseDetail/ExpenseDetail';
+import ExpenseDetail from '@/components/modals/ExpenseDetail';
 import { apiQueryOptions } from '@/hooks/useApiQuery';
 import { queryClient } from '@/queryClient';
 
@@ -44,6 +44,7 @@ function RootComponent() {
     <ExpenseDetail
       ref={modalRef}
       isOpen={isOpen}
+      expenseId={params.expense}
       onOpenChange={(open) => {
         setIsOpen(open);
       }}
