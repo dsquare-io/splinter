@@ -6,5 +6,5 @@ DeleteExpenseActivity = ActivityType(verb='delete_expense', template='{actor} de
 SettleUpActivity = ActivityType(verb='settle_up', template='{actor} settled up with {target}')
 
 CreatePaymentActivity = ActivityType(verb='payment', template='{actor} paid {target}')
-UpdatePaymentActivity = ActivityType(verb='update_payment', template='{actor} updated a payment to {target}')
-DeletePaymentActivity = ActivityType(verb='delete_payment', template='{actor} deleted a payment to {target}')
+UpdatePaymentActivity = ActivityType(verb='update_payment', template='{actor} updated a payment: {target}')
+DeletePaymentActivity = ActivityType(verb='delete_payment', template='{actor} deleted a payment: {target}')

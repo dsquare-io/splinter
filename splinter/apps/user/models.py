@@ -39,6 +39,9 @@ class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
     def full_name(self, value):
         self._full_name = value
 
+    def __public_str__(self):
+        return self.full_name
+
     def __str__(self):
         return f'{self.full_name} ({self.email})'
 

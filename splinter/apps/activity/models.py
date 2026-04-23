@@ -89,7 +89,7 @@ class Activity(PublicModel):
         verbose_name_plural = 'Activities'
         ordering = ('-created_at',)
 
-    def __public__str__(self):
+    def __public_str__(self):
         return self.render_template()
 
     def render_template(self):
@@ -131,7 +131,7 @@ class Comment(SoftDeleteModel, PublicModel):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __public__str__(self):
+    def __public_str__(self):
         return self.content
 
     class Meta:

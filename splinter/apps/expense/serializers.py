@@ -185,7 +185,7 @@ class ExpenseOrPaymentSerializer(PrefetchQuerysetSerializerMixin, PolymorphicSer
 
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
-    description = serializers.CharField(max_length=64)
+    description = serializers.CharField(max_length=64, default=None)
 
     paid_by = UserSerializerField(required=False, default='CurrentUser')
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
@@ -257,7 +257,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
     receiver = FriendSerializerField(include_self=True)
 
     datetime = serializers.DateTimeField()
-    description = serializers.CharField(max_length=64, default='Payment')
+    description = serializers.CharField(max_length=64, default=None)
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()

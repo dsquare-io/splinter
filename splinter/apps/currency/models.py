@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -46,6 +47,9 @@ class Currency(TimestampedModel):
 
     def __str__(self):
         return self.code
+
+    def format_amount(self, amount: Decimal | float) -> str:
+        return f'{self.symbol} {amount:.2f}'
 
 
 class ConversionRate(TimestampedModel):

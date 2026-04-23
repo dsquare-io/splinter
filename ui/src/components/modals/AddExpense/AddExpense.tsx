@@ -27,12 +27,6 @@ function DialogContent({ preferredCurrency, close }: { preferredCurrency: Curren
         control={form}
         className="flex grow flex-col"
         action={ApiRoutes.EXPENSE}
-        transformData={(data) => {
-          if (data.expenses.length === 1) {
-            data.description = data.expenses[0].description;
-          }
-          return data;
-        }}
         onSubmitSuccess={async () => {
           await queryClient.invalidateQueries({
             predicate: (query) => query.queryKey.includes('expenses'),
@@ -42,10 +36,6 @@ function DialogContent({ preferredCurrency, close }: { preferredCurrency: Curren
           form.reset();
         }}
       >
-        <HiddenField
-          name="description"
-          value="."
-        />
         <HiddenField
           name="currency"
           value={preferredCurrency?.uid}

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from django.db import transaction
@@ -15,6 +16,7 @@ from splinter.apps.expense.orchestrator import expense_event_orchestrator
 from splinter.apps.expense.utils import split_amount
 
 if TYPE_CHECKING:
+    from splinter.apps.currency.models import Currency
     from splinter.apps.user.models import User
 
 
@@ -63,8 +65,15 @@ class CreateExpenseOperation(ExpenseOperation[dict]):
         }
 
         if len(data['expenses']) > 1:
+            if data.get('description'):
+                description = data['description']
+            else:
+                description = '; '.join(c['description'] for c in data['expenses'])
+                if len(description) > 32:
+                    description = f'{description[:32]}...'
+
             common_attrs['parent'] = Expense.objects.create(
-                description=data['description'],
+                description=description,
                 amount=sum(expense['amount'] for expense in data['expenses']),
                 group=data.get('group'),
                 **common_attrs,
@@ -102,29 +111,35 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
     activity_type = CreatePaymentActivity
 
     def _execute(self, data: dict) -> Expense:
-        sender = data['sender']
-        receiver = data['receiver']
+        sender: "User" = data['sender']
+        receiver: "User" = data['receiver']
+        currency: "Currency" = data['currency']
+        amount: Decimal = data['amount']
+
+        description = data['description']
+        if description is None:
+            description = f'{sender.full_name} paid {receiver.full_name} {currency.format_amount(amount)}'
 
         expense = Expense.objects.create(
             is_payment=True,
             datetime=data['datetime'],
-            description=data['description'],
+            description=description,
             group=data.get('group'),
-            currency=data['currency'],
-            amount=data['amount'],
+            currency=currency,
+            amount=amount,
             paid_by=sender,
             created_by=self.actor,
         )
         ExpenseSplit.objects.create(
             expense=expense,
             user=receiver,
-            amount=data['amount'],
+            amount=amount,
         )
 
         return expense
 
     def get_target(self, expense: Expense) -> Model:
-        return expense.paid_by
+        return expense
 
 
 class DeleteExpenseOperation(ExpenseOperation[Expense]):
@@ -143,4 +158,4 @@ class DeletePaymentOperation(ExpenseOperation[Expense]):
         return expense
 
     def get_target(self, expense: Expense) -> Model:
-        return expense.paid_by
+        return expense
