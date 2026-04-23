@@ -1,10 +1,6 @@
-import { format } from 'date-fns';
-import groupBy from 'just-group-by';
-
 import { ApiRoutes } from '@/api-types';
+import { ExpenseList } from '@/components/ExpenseList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-
-import ExpenseListItem from './ExpenseListItem.tsx';
 
 interface Props {
   group_uid: string;
@@ -15,27 +11,10 @@ export function GroupActivityTab({ group_uid }: Props) {
 
   if (!data) return null;
 
-  const monthlyActivity = Object.entries(
-    groupBy(data.results ?? [], (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01')
-  );
-
   return (
-    <div className="my-2">
-      {monthlyActivity.map(([month, expenses]) => (
-        <div key={month}>
-          <h3 className="sticky top-[46px] bg-gray-50/70 pt-4 pb-2 text-sm text-neutral-500 backdrop-blur-sm">
-            {format(new Date(month), 'MMM yyy')}
-          </h3>
-          <div>
-            {expenses.map((expense) => (
-              <ExpenseListItem
-                expense={expense}
-                key={expense.uid}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
+    <ExpenseList
+      expenses={data.results ?? []}
+      group={group_uid}
+    />
   );
 }

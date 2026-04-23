@@ -1,18 +1,18 @@
 import clsx from 'clsx';
 
-import { Link, useParams } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
 import { ExpenseOrPayment } from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
+import UserLabel from '@/components/UserLabel.tsx';
 
 interface ExpenseListItemProps {
   expense: ExpenseOrPayment;
+  group?: string;
 }
 
-export default function ExpenseListItem({ expense }: ExpenseListItemProps) {
-  const params = useParams({ from: '/_dashboard/groups/$group' });
-
+export default function ExpenseListItem({ expense, group }: ExpenseListItemProps) {
   const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1;
   const description =
     expense.description !== '.'
@@ -21,20 +21,22 @@ export default function ExpenseListItem({ expense }: ExpenseListItemProps) {
         ? `${expense.expenses.length} Expense Items`
         : expense.type === 'expense' && expense.expenses[0].description;
 
-  return (
-    <Link
-      to="/groups/$group/$expense"
-      params={{ group: params.group, expense: expense.uid }}
-      replace
-      className="flex items-center gap-x-4 py-3"
-    >
+  const content = (
+    <>
       <MonthDay datetime={expense.datetime} />
 
       {expense.type === 'expense' ? (
         <>
           <div className="flex-1">
             <p className={clsx(hasSubExpense ? 'text-gray-900 italic' : 'text-gray-900')}>{description}</p>
-            <div className="text-sm text-gray-500">{expense.paidBy?.fullName} paid</div>
+            <div className="text-sm text-gray-500">
+              <UserLabel user={expense.paidBy} />
+              {' paid '}
+              <Currency
+                currency={expense.currency}
+                value={expense.amount}
+              />
+            </div>
           </div>
 
           <OutstandingBalance
@@ -44,29 +46,53 @@ export default function ExpenseListItem({ expense }: ExpenseListItemProps) {
         </>
       ) : (
         <div className="text-gray-900">
-          {expense.sender.fullName} paid {expense.receiver.fullName} {expense.currency.uid} {expense.amount}
+          <UserLabel user={expense.sender} />
+          {' paid '}
+          <UserLabel
+            user={expense.receiver}
+            inline
+          />{' '}
+          <Currency
+            currency={expense.currency}
+            value={expense.amount}
+          />
         </div>
       )}
-    </Link>
+    </>
   );
+
+  if (group) {
+    return (
+      <Link
+        to="/groups/$group/$expense"
+        params={{ group, expense: expense.uid }}
+        replace
+        className="flex items-center gap-x-4 py-3"
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className="flex items-center gap-x-4 py-3">{content}</div>;
 }
 
 function OutstandingBalance({
   outstandingBalance,
   currency,
 }: {
-  outstandingBalance?: string | number;
+  outstandingBalance?: string;
   currency: string;
 }) {
+  const amount = +(outstandingBalance ?? 0);
+
   return (
     <div>
-      {+(outstandingBalance ?? 0) === 0 ? (
+      {amount === 0 ? (
         <div className="text-xs text-gray-400">Not involved</div>
       ) : (
         <div className="-mt-1 text-right text-sm">
-          <div className="text-xs text-gray-400">
-            {parseFloat(outstandingBalance?.toString() ?? '0') > 0 ? 'You lent' : 'You borrowed'}
-          </div>
+          <div className="text-xs text-gray-400">{amount > 0 ? 'You lent' : 'You borrowed'}</div>
           <Currency
             currency={currency}
             value={outstandingBalance ?? '0'}

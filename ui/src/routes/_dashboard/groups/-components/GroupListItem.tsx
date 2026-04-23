@@ -1,10 +1,10 @@
 import clx from 'clsx';
-import { Fragment } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
 import { Group } from '@/api-types/components/schemas';
 import Currency from '@/components/Currency.tsx';
+import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
 import { Avatar } from '@/components/common';
 
 export default function GroupListItem({
@@ -46,31 +46,7 @@ export default function GroupListItem({
       </div>
       <div className="grow pt-1 pl-12 text-sm font-medium text-gray-800">
         <div className="mt-1.5 space-y-1 text-xs font-normal text-gray-400">
-          {outstandingBalances?.slice(0, 3).map((e) => (
-            <Fragment key={e.friend?.uid}>
-              {+e.amount != 0 && +e.amount > 0 && (
-                <p>
-                  {e.friend?.fullName} borrowed{' '}
-                  <Currency
-                    currency={e.currency.uid}
-                    value={parseFloat(e.amount)}
-                  />
-                </p>
-              )}
-              {+e.amount != 0 && +e.amount < 0 && (
-                <p>
-                  {e.friend?.fullName} lent you{' '}
-                  <Currency
-                    currency={e.currency.uid}
-                    value={parseFloat(e.amount)}
-                  />
-                </p>
-              )}
-            </Fragment>
-          ))}
-          {(outstandingBalances?.length ?? 0) > 3 && (
-            <p className="text font-light text-gray-400">and {(outstandingBalances?.length ?? 0) - 3} more</p>
-          )}
+          <OutstandingBalanceList balances={outstandingBalances} />
         </div>
       </div>
     </Link>

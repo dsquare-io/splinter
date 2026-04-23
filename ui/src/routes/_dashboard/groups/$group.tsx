@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { Fragment } from 'react';
 import { DialogTrigger, Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
@@ -7,7 +6,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import Currency from '@/components/Currency';
+import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
 import { Avatar, Button } from '@/components/common';
 import { AddPaymentModal } from '@/components/modals/AddPayment';
 import { GroupSettingsModal } from '@/components/modals/GroupSettings';
@@ -78,20 +77,7 @@ function RootComponent() {
           />
           <div>
             <div className="text-2xl font-semibold text-gray-900">{data.name}</div>
-            <div className="mt-1.5 space-y-0.5 text-xs font-normal text-gray-500">
-              {myOutstandingBalances.map((e) => (
-                <Fragment key={e.friend?.uid ?? e.currency.uid}>
-                  <p>
-                    {+e.amount > 0 && <>{e.friend.fullName} borrowed </>}
-                    {+e.amount < 0 && <>{e.friend.fullName} lent you </>}
-                    <Currency
-                      currency={e.currency.uid}
-                      value={e.amount}
-                    />
-                  </p>
-                </Fragment>
-              ))}
-            </div>
+            <OutstandingBalanceList balances={myOutstandingBalances} />
           </div>
 
           <div className="col-span-2 mt-6 flex items-center gap-x-2.5">

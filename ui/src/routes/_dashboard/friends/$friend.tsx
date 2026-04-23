@@ -1,16 +1,13 @@
 import clsx from 'clsx';
-import { Fragment } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { format } from 'date-fns';
-import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import Currency from '@/components/Currency.tsx';
-import UserLabel from '@/components/UserLabel.tsx';
+import { ExpenseList } from '@/components/ExpenseList.tsx';
+import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
 import { Avatar, Button } from '@/components/common';
 import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -23,16 +20,9 @@ function RootComponent() {
   const { friend: friend_uid } = Route.useParams();
 
   const { data } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
-  const { data: friendExpenseList } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, { friend_uid });
+  const { data: expenses } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, { friend_uid });
 
   if (!data) return null;
-
-  const monthlyActivity = Object.entries(
-    groupBy(
-      friendExpenseList?.results ?? [],
-      (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01'
-    )
-  );
 
   return (
     <div>
@@ -73,26 +63,7 @@ function RootComponent() {
         />
         <div>
           <div className="mt-1 text-2xl font-semibold text-gray-900">{data.fullName}</div>
-          <div className="mt-1.5 space-y-0.5 text-xs font-normal text-gray-500">
-            {data.outstandingBalances?.slice(0, 3).map((e) => (
-              <Fragment key={e.group?.uid ?? e.currency.uid}>
-                <p>
-                  {+e.amount > 0 && <>{data.fullName} borrowed </>}
-                  {+e.amount < 0 && <>You lent </>}
-                  <Currency
-                    currency={e.currency.uid}
-                    value={e.amount}
-                  />
-                  {e.group && <> in {e.group.name}</>}
-                </p>
-              </Fragment>
-            ))}
-            {(data.outstandingBalances?.length ?? 0) > 3 && (
-              <p className="text font-light text-gray-400">
-                and {(data.outstandingBalances?.length ?? 0) - 3} more
-              </p>
-            )}
-          </div>
+          <OutstandingBalanceList balances={data.outstandingBalances} />
         </div>
 
         <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
@@ -106,82 +77,10 @@ function RootComponent() {
         </div>
       </div>
 
-      <div className="my-3 px-4 sm:px-6 md:px-8">
-        {monthlyActivity.map(([month, expenses]) => (
-          <div key={month}>
-            <h3 className="sticky top-0 bg-gray-50/70 pt-4 pb-2 text-sm text-neutral-500 backdrop-blur-sm">
-              {format(new Date(month), 'MMM yyy')}
-            </h3>
-            <div>
-              {expenses.map((expense) => (
-                <div
-                  className="flex items-center gap-x-4 py-3"
-                  key={expense.uid}
-                >
-                  <div className="flex flex-col items-center">
-                    <p className="text-[8px] uppercase">{format(new Date(month), 'MMM')}</p>
-                    <p className="text-base text-gray-500 uppercase tabular-nums">
-                      {format(new Date(month), 'dd')}
-                    </p>
-                  </div>
-
-                  {expense.type === 'expense' ? (
-                    <>
-                      <div className="flex-1">
-                        <p className="text-gray-900">
-                          {expense.expenses.length === 1
-                            ? expense.expenses[0].description
-                            : `${expense.expenses.length} Items`}
-                        </p>
-                        <div className="text-sm text-gray-500">
-                          <UserLabel user={expense.paidBy} />
-                          {' paid '}
-                          <Currency
-                            value={expense.amount}
-                            currency={expense.currency}
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        {+(expense.outstandingBalance ?? 0) === 0 ? (
-                          <div className="text-xs text-gray-400">Not involved</div>
-                        ) : (
-                          <div className="-mt-1 text-right text-sm">
-                            <div className="text-xs text-gray-400">
-                              {parseFloat(expense.outstandingBalance ?? '0') > 0
-                                ? 'You lent'
-                                : 'You borrowed'}
-                            </div>
-                            <Currency
-                              currency={expense.currency}
-                              value={expense.outstandingBalance ?? '0'}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-gray-900">
-                      <UserLabel user={expense.sender} />
-                      {' paid '}
-                      <UserLabel
-                        inline
-                        user={expense.receiver}
-                      />{' '}
-                      <Currency
-                        noColor
-                        value={expense.amount}
-                        currency={expense.currency}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ExpenseList
+        expenses={expenses?.results ?? []}
+        className="my-3 px-4 sm:px-6 md:px-8"
+      />
     </div>
   );
 }
