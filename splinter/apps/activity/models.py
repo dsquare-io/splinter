@@ -31,6 +31,7 @@ class ActivityManager(Manager):
         audience: list[Union[int, 'User']] = None,
         group: Union[int, 'Group'] = None,
         action_object: Model | None = None,
+        audience_attrs: dict[int, dict] = None,
     ) -> 'Activity':
         activity = self.create(
             actor_id=actor if isinstance(actor, int) else actor.pk,
@@ -43,8 +44,14 @@ class ActivityManager(Manager):
         audience_user_ids = {actor if isinstance(actor, int) else actor.pk}
         audience_user_ids.update(user if isinstance(user, int) else user.pk for user in audience or [])
 
+        if audience_attrs is None:
+            audience_attrs = {}
+
         ActivityAudience.objects.bulk_create(
-            [ActivityAudience(activity=activity, user_id=user_id) for user_id in audience_user_ids]
+            [
+                ActivityAudience(activity=activity, user_id=user_id, **audience_attrs.get(user_id, {}))
+                for user_id in audience_user_ids
+            ]
         )
         return activity
 
@@ -112,6 +119,9 @@ class Activity(PublicModel):
 class ActivityAudience(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, db_index=True, related_name='comments')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, db_index=True)
+
+    currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    outstanding_balance = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
 
     delivered_at = models.DateTimeField(null=True, blank=True)
     read_at = models.DateTimeField(null=True, blank=True)

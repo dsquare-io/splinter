@@ -27,12 +27,14 @@ class ActivityType:
         audience: list[Union[int, 'User']] = None,
         group: Union[int, 'Group'] = None,
         action_object: Model | None = None,
+        audience_attrs: dict[int, dict] = None,
     ) -> 'Activity':
         return Activity.objects.log(
             activity_type=self,
             actor=actor,
             target=target,
             audience=audience,
+            audience_attrs=audience_attrs,
             group=group,
             action_object=action_object,
         )

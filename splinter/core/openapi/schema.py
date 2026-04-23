@@ -168,7 +168,9 @@ class AutoSchema(AutoSchemaBase):
 
         parent_field_names = set(parent_instance.fields.keys())
         child_own_declared = {k for k, v in vars(type(serializer)).items() if isinstance(v, serializers.Field)}
-        extra_field_names = (set(serializer.fields.keys()) - parent_field_names) | (child_own_declared & parent_field_names)
+        extra_field_names = (set(serializer.fields.keys()) - parent_field_names) | (
+            child_own_declared & parent_field_names
+        )
 
         if not extra_field_names:
             return parent_component.ref

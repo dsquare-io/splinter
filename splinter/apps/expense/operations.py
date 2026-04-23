@@ -34,7 +34,18 @@ class ExpenseOperation[T]:
         return expense
 
     def log_activity(self, expense: Expense):
-        expense_audience = list(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
+        splits = ExpenseSplit.objects.filter(expense=expense).values_list('user_id', 'amount')
+        expense_audience = []
+        audience_attrs = {}
+        for user_id, amount in splits:
+            expense_audience.append(user_id)
+
+            if expense.paid_by_id == user_id:
+                amount = expense.amount - amount
+            else:
+                amount = -amount
+
+            audience_attrs[user_id] = {'outstanding_balance': amount, 'currency_id': expense.currency_id}
 
         self.activity_type.log(
             actor=self.actor,
@@ -42,6 +53,7 @@ class ExpenseOperation[T]:
             audience=expense_audience,
             group=expense.group_id,
             action_object=expense,
+            audience_attrs=audience_attrs,
         )
 
     def get_target(self, expense: Expense) -> Model | None:

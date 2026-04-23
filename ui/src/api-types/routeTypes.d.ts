@@ -562,7 +562,6 @@ export interface components {
   schemas: {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
-    ActivityAudience: import('./components/schemas.d.ts').ActivityAudience;
     AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
@@ -597,7 +596,7 @@ export interface components {
     NotFound: import('./components/schemas.d.ts').NotFound;
     Object: import('./components/schemas.d.ts').Object_;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
-    PaginatedActivityAudienceList: import('./components/schemas.d.ts').PaginatedActivityAudienceList;
+    PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
     PaginatedExpenseOrPaymentList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentList;
     PaginatedFriendList: import('./components/schemas.d.ts').PaginatedFriendList;
@@ -648,7 +647,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedActivityAudienceList'];
+          'application/json': components['schemas']['PaginatedActivityList'];
         };
       };
       /** @description Unauthorized */

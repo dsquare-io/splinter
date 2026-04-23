@@ -2,11 +2,14 @@ import clsx from 'clsx';
 
 import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
+import { ApiRoutes } from '@/api-types';
 import { Paths } from '@/api-types/routePaths.ts';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery';
+import { queryClient } from '@/queryClient';
 import ActivityListItem from './-components/ActivityListItem.tsx';
 
 export const Route = createFileRoute('/_dashboard/activity/')({
+  loader: () => queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.ACTIVITY_LIST)),
   component: ActivityLayout,
 });
 

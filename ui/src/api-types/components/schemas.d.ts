@@ -5,22 +5,21 @@ export interface AccessToken {
 }
 
 export interface Activity {
-  readonly actor: SimpleUser;
-  readonly group: SimpleGroup;
-  readonly object: Object_;
-  readonly target: Object_;
-}
-
-export interface ActivityAudience {
   /** Format: uuid */
   readonly uid: string;
   readonly urn: string;
-  readonly activity: Activity;
-  readonly verb: string;
+  readonly actor: SimpleUser;
+  readonly group: SimpleGroup;
+  readonly target: Object_;
+  readonly object: Object_;
   readonly description: string;
+  readonly verb: string;
   readonly template: string;
   readonly isRead: boolean;
-  readonly wasDelivered: boolean;
+  readonly isDelivered: boolean;
+  /** Format: decimal */
+  outstandingBalance?: string | null;
+  readonly currency: SimpleCurrency;
   /** Format: date-time */
   readonly createdAt: string;
 }
@@ -233,7 +232,7 @@ export interface OutstandingBalance {
   readonly currency: SimpleCurrency;
 }
 
-export interface PaginatedActivityAudienceList {
+export interface PaginatedActivityList {
   /** @example 123 */
   count: number;
   /**
@@ -246,7 +245,7 @@ export interface PaginatedActivityAudienceList {
    * @example http://api.example.org/accounts/?offset=200&limit=100
    */
   previous?: string | null;
-  results: ActivityAudience[];
+  results: Activity[];
 }
 
 export interface PaginatedCommentList {
@@ -392,7 +391,7 @@ export interface UpdateGroupMembership {
 export interface UpsertExpense {
   /** Format: date-time */
   datetime: string;
-  description: string;
+  description?: string;
   /** @default CurrentUser */
   paidBy: string;
   group?: string;
@@ -406,8 +405,7 @@ export interface UpsertPayment {
   receiver: string;
   /** Format: date-time */
   datetime: string;
-  /** @default Payment */
-  description: string;
+  description?: string;
   group?: string;
   /** @description ISO 4217 Currency Code */
   currency: string;

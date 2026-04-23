@@ -237,7 +237,11 @@ class UpsertExpenseSerializer(serializers.Serializer):
                 errors.setdefault('expenses', {}).setdefault(i, {})['shares'] = shares_errors
 
         # Validate Expense
-        if len(attrs['expenses']) == 1 and attrs['description'] != attrs['expenses'][0]['description']:
+        if (
+            len(attrs['expenses']) == 1
+            and attrs['description']
+            and attrs['description'] != attrs['expenses'][0]['description']
+        ):
             errors.setdefault('expenses', {}).setdefault(0, {})['description'] = ErrorDetail(
                 'Description must be same as the expense', 'description_mismatch'
             )
