@@ -9,10 +9,11 @@ import UserLabel from '@/components/UserLabel.tsx';
 
 interface ExpenseListItemProps {
   expense: ExpenseOrPayment;
-  group?: string;
+  detailRoute: string;
+  detailRouteParams: Record<string, string>;
 }
 
-export default function ExpenseListItem({ expense, group }: ExpenseListItemProps) {
+export default function ExpenseListItem({ expense, detailRoute, detailRouteParams }: ExpenseListItemProps) {
   const hasSubExpense = expense.type === 'expense' && expense.expenses.length > 1;
   const description =
     expense.description !== '.'
@@ -21,8 +22,13 @@ export default function ExpenseListItem({ expense, group }: ExpenseListItemProps
         ? `${expense.expenses.length} Expense Items`
         : expense.type === 'expense' && expense.expenses[0].description;
 
-  const content = (
-    <>
+  return (
+    <Link
+      to={detailRoute}
+      params={{ ...detailRouteParams, expense: expense.uid }}
+      replace
+      className="flex items-center gap-x-4 py-3"
+    >
       <MonthDay datetime={expense.datetime} />
 
       {expense.type === 'expense' ? (
@@ -58,23 +64,8 @@ export default function ExpenseListItem({ expense, group }: ExpenseListItemProps
           />
         </div>
       )}
-    </>
+    </Link>
   );
-
-  if (group) {
-    return (
-      <Link
-        to="/groups/$group/$expense"
-        params={{ group, expense: expense.uid }}
-        replace
-        className="flex items-center gap-x-4 py-3"
-      >
-        {content}
-      </Link>
-    );
-  }
-
-  return <div className="flex items-center gap-x-4 py-3">{content}</div>;
 }
 
 function OutstandingBalance({

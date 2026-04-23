@@ -1,16 +1,17 @@
+import { ComponentProps } from 'react';
+
 import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
 import { ExpenseOrPayment } from '@/api-types/components/schemas';
 import ExpenseListItem from './ExpenseListItem.tsx';
 
-interface Props {
+type ExpenseListProps = Omit<ComponentProps<typeof ExpenseListItem>, 'expense'> & {
   expenses: ExpenseOrPayment[];
-  group?: string;
   className?: string;
-}
+};
 
-export function ExpenseList({ expenses, group, className = 'my-2' }: Props) {
+export function ExpenseList({ expenses, className = 'my-2', ...props }: ExpenseListProps) {
   const monthlyActivity = Object.entries(
     groupBy(expenses, (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01')
   );
@@ -27,7 +28,7 @@ export function ExpenseList({ expenses, group, className = 'my-2' }: Props) {
               <ExpenseListItem
                 key={expense.uid}
                 expense={expense}
-                group={group}
+                {...props}
               />
             ))}
           </div>

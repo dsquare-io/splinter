@@ -25,7 +25,9 @@ import { Route as DashboardGroupsGroupRouteImport } from './routes/_dashboard/gr
 import { Route as DashboardFriendsFriendRouteImport } from './routes/_dashboard/friends/$friend'
 import { Route as DashboardActivityActivityRouteImport } from './routes/_dashboard/activity/$activity'
 import { Route as DashboardGroupsGroupIndexRouteImport } from './routes/_dashboard/groups/$group/index'
+import { Route as DashboardFriendsFriendIndexRouteImport } from './routes/_dashboard/friends/$friend/index'
 import { Route as DashboardGroupsGroupExpenseRouteImport } from './routes/_dashboard/groups/$group/$expense'
+import { Route as DashboardFriendsFriendExpenseRouteImport } from './routes/_dashboard/friends/$friend/$expense'
 
 const DashboardRoute = DashboardRouteImport.update({
   id: '/_dashboard',
@@ -108,11 +110,23 @@ const DashboardGroupsGroupIndexRoute =
     path: '/',
     getParentRoute: () => DashboardGroupsGroupRoute,
   } as any)
+const DashboardFriendsFriendIndexRoute =
+  DashboardFriendsFriendIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardFriendsFriendRoute,
+  } as any)
 const DashboardGroupsGroupExpenseRoute =
   DashboardGroupsGroupExpenseRouteImport.update({
     id: '/$expense',
     path: '/$expense',
     getParentRoute: () => DashboardGroupsGroupRoute,
+  } as any)
+const DashboardFriendsFriendExpenseRoute =
+  DashboardFriendsFriendExpenseRouteImport.update({
+    id: '/$expense',
+    path: '/$expense',
+    getParentRoute: () => DashboardFriendsFriendRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -126,11 +140,13 @@ export interface FileRoutesByFullPath {
   '/auth/setup': typeof AuthSetupRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
-  '/friends/$friend': typeof DashboardFriendsFriendRoute
+  '/friends/$friend': typeof DashboardFriendsFriendRouteWithChildren
   '/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
   '/profile/me': typeof DashboardProfileMeRoute
   '/activity/': typeof DashboardActivityIndexRoute
+  '/friends/$friend/$expense': typeof DashboardFriendsFriendExpenseRoute
   '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/friends/$friend/': typeof DashboardFriendsFriendIndexRoute
   '/groups/$group/': typeof DashboardGroupsGroupIndexRoute
 }
 export interface FileRoutesByTo {
@@ -144,10 +160,11 @@ export interface FileRoutesByTo {
   '/auth/setup': typeof AuthSetupRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/activity/$activity': typeof DashboardActivityActivityRoute
-  '/friends/$friend': typeof DashboardFriendsFriendRoute
   '/profile/me': typeof DashboardProfileMeRoute
   '/activity': typeof DashboardActivityIndexRoute
+  '/friends/$friend/$expense': typeof DashboardFriendsFriendExpenseRoute
   '/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/friends/$friend': typeof DashboardFriendsFriendIndexRoute
   '/groups/$group': typeof DashboardGroupsGroupIndexRoute
 }
 export interface FileRoutesById {
@@ -163,11 +180,13 @@ export interface FileRoutesById {
   '/auth/setup': typeof AuthSetupRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/_dashboard/activity/$activity': typeof DashboardActivityActivityRoute
-  '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRoute
+  '/_dashboard/friends/$friend': typeof DashboardFriendsFriendRouteWithChildren
   '/_dashboard/groups/$group': typeof DashboardGroupsGroupRouteWithChildren
   '/_dashboard/profile/me': typeof DashboardProfileMeRoute
   '/_dashboard/activity/': typeof DashboardActivityIndexRoute
+  '/_dashboard/friends/$friend/$expense': typeof DashboardFriendsFriendExpenseRoute
   '/_dashboard/groups/$group/$expense': typeof DashboardGroupsGroupExpenseRoute
+  '/_dashboard/friends/$friend/': typeof DashboardFriendsFriendIndexRoute
   '/_dashboard/groups/$group/': typeof DashboardGroupsGroupIndexRoute
 }
 export interface FileRouteTypes {
@@ -187,7 +206,9 @@ export interface FileRouteTypes {
     | '/groups/$group'
     | '/profile/me'
     | '/activity/'
+    | '/friends/$friend/$expense'
     | '/groups/$group/$expense'
+    | '/friends/$friend/'
     | '/groups/$group/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -201,10 +222,11 @@ export interface FileRouteTypes {
     | '/auth/setup'
     | '/auth/verify'
     | '/activity/$activity'
-    | '/friends/$friend'
     | '/profile/me'
     | '/activity'
+    | '/friends/$friend/$expense'
     | '/groups/$group/$expense'
+    | '/friends/$friend'
     | '/groups/$group'
   id:
     | '__root__'
@@ -223,7 +245,9 @@ export interface FileRouteTypes {
     | '/_dashboard/groups/$group'
     | '/_dashboard/profile/me'
     | '/_dashboard/activity/'
+    | '/_dashboard/friends/$friend/$expense'
     | '/_dashboard/groups/$group/$expense'
+    | '/_dashboard/friends/$friend/'
     | '/_dashboard/groups/$group/'
   fileRoutesById: FileRoutesById
 }
@@ -352,6 +376,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGroupsGroupIndexRouteImport
       parentRoute: typeof DashboardGroupsGroupRoute
     }
+    '/_dashboard/friends/$friend/': {
+      id: '/_dashboard/friends/$friend/'
+      path: '/'
+      fullPath: '/friends/$friend/'
+      preLoaderRoute: typeof DashboardFriendsFriendIndexRouteImport
+      parentRoute: typeof DashboardFriendsFriendRoute
+    }
     '/_dashboard/groups/$group/$expense': {
       id: '/_dashboard/groups/$group/$expense'
       path: '/$expense'
@@ -359,15 +390,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardGroupsGroupExpenseRouteImport
       parentRoute: typeof DashboardGroupsGroupRoute
     }
+    '/_dashboard/friends/$friend/$expense': {
+      id: '/_dashboard/friends/$friend/$expense'
+      path: '/$expense'
+      fullPath: '/friends/$friend/$expense'
+      preLoaderRoute: typeof DashboardFriendsFriendExpenseRouteImport
+      parentRoute: typeof DashboardFriendsFriendRoute
+    }
   }
 }
 
+interface DashboardFriendsFriendRouteChildren {
+  DashboardFriendsFriendExpenseRoute: typeof DashboardFriendsFriendExpenseRoute
+  DashboardFriendsFriendIndexRoute: typeof DashboardFriendsFriendIndexRoute
+}
+
+const DashboardFriendsFriendRouteChildren: DashboardFriendsFriendRouteChildren =
+  {
+    DashboardFriendsFriendExpenseRoute: DashboardFriendsFriendExpenseRoute,
+    DashboardFriendsFriendIndexRoute: DashboardFriendsFriendIndexRoute,
+  }
+
+const DashboardFriendsFriendRouteWithChildren =
+  DashboardFriendsFriendRoute._addFileChildren(
+    DashboardFriendsFriendRouteChildren,
+  )
+
 interface DashboardFriendsRouteChildren {
-  DashboardFriendsFriendRoute: typeof DashboardFriendsFriendRoute
+  DashboardFriendsFriendRoute: typeof DashboardFriendsFriendRouteWithChildren
 }
 
 const DashboardFriendsRouteChildren: DashboardFriendsRouteChildren = {
-  DashboardFriendsFriendRoute: DashboardFriendsFriendRoute,
+  DashboardFriendsFriendRoute: DashboardFriendsFriendRouteWithChildren,
 }
 
 const DashboardFriendsRouteWithChildren =

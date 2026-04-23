@@ -14,7 +14,8 @@ export function GroupActivityTab({ group_uid }: Props) {
   return (
     <ExpenseList
       expenses={data.results ?? []}
-      group={group_uid}
+      detailRouteParams={{ group: group_uid }}
+      detailRoute="/groups/$group/$expense"
     />
   );
 }
