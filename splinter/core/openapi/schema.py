@@ -5,12 +5,21 @@ from functools import cached_property
 import uritemplate
 from django.conf import settings
 from drf_spectacular.openapi import AutoSchema as AutoSchemaBase
+from drf_spectacular.plumbing import build_object_type, safe_ref
+from drf_spectacular.settings import spectacular_settings
 from rest_framework import serializers
 
 from splinter.core.views import CreateAPIView, UpdateAPIView
 from splinter.utils.strings import pascal_to_title, underscore_to_camel
 
 logger = logging.getLogger(__name__)
+
+_DRF_BASE_SERIALIZER_CLASSES = (
+    serializers.BaseSerializer,
+    serializers.Serializer,
+    serializers.ModelSerializer,
+    serializers.ListSerializer,
+)
 
 
 def to_camel_case(d: dict) -> dict:
@@ -127,14 +136,64 @@ class AutoSchema(AutoSchemaBase):
 
         return bodies
 
-    def _map_basic_serializer(self, *args, **kwargs):
-        mapped = super()._map_basic_serializer(*args, **kwargs)
-        if 'properties' in mapped:
-            mapped['properties'] = to_camel_case(mapped['properties'])
-        if 'required' in mapped:
-            mapped['required'] = [underscore_to_camel(f) for f in mapped['required']]
+    def _find_parent_serializer_class(self, serializer):
+        for base in type(serializer).__bases__:
+            if base in _DRF_BASE_SERIALIZER_CLASSES:
+                continue
+            if issubclass(base, serializers.BaseSerializer):
+                return base
+        return None
 
-        return mapped
+    def _camel_case_schema(self, schema):
+        if 'properties' in schema:
+            schema['properties'] = to_camel_case(schema['properties'])
+        if 'required' in schema:
+            schema['required'] = [underscore_to_camel(f) for f in schema['required']]
+        return schema
+
+    def _map_basic_serializer(self, serializer, direction):
+        parent_class = self._find_parent_serializer_class(serializer)
+
+        if parent_class is None:
+            return self._camel_case_schema(super()._map_basic_serializer(serializer, direction))
+
+        try:
+            parent_instance = parent_class()
+        except Exception:
+            return self._camel_case_schema(super()._map_basic_serializer(serializer, direction))
+
+        parent_component = self.resolve_serializer(parent_instance, direction)
+        if parent_component.name is None:
+            return self._camel_case_schema(super()._map_basic_serializer(serializer, direction))
+
+        parent_field_names = set(parent_instance.fields.keys())
+        child_own_declared = {k for k, v in vars(type(serializer)).items() if isinstance(v, serializers.Field)}
+        extra_field_names = (set(serializer.fields.keys()) - parent_field_names) | (child_own_declared & parent_field_names)
+
+        if not extra_field_names:
+            return parent_component.ref
+
+        required = set()
+        properties = {}
+        for field_name, field in serializer.fields.items():
+            if field_name not in extra_field_names:
+                continue
+            if isinstance(field, serializers.HiddenField):
+                continue
+            schema = self._map_serializer_field(field, direction)
+            if schema is None:
+                continue
+            if field.required or (schema.get('readOnly') and not spectacular_settings.COMPONENT_NO_READ_ONLY_REQUIRED):
+                required.add(field_name)
+            properties[field_name] = safe_ref(schema)
+
+        properties = {underscore_to_camel(k): v for k, v in properties.items()}
+        required = [underscore_to_camel(f) for f in required]
+
+        if not properties:
+            return parent_component.ref
+
+        return {'allOf': [parent_component.ref, build_object_type(properties=properties, required=required)]}
 
     def get_operation(self, *args, **kwargs):
         op = super().get_operation(*args, **kwargs)

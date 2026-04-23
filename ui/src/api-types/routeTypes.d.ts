@@ -574,6 +574,7 @@ export interface components {
     Country: import('./components/schemas.d.ts').Country;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
     CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
+    CreateUser: import('./components/schemas.d.ts').CreateUser;
     Currency: import('./components/schemas.d.ts').Currency;
     Device: import('./components/schemas.d.ts').Device;
     EmailVerification: import('./components/schemas.d.ts').EmailVerification;
@@ -1131,7 +1132,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
         'application/json': components['schemas']['CreateFriendship'];
       };
@@ -1329,7 +1330,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
         'application/json': components['schemas']['Group'];
       };
@@ -1434,7 +1435,7 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
         'application/json': components['schemas']['ExtendedGroup'];
       };
@@ -2701,7 +2702,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody: {
+    requestBody?: {
       content: {
         'application/json': components['schemas']['User'];
       };
