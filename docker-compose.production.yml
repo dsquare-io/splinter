@@ -1,0 +1,84 @@
+volumes:
+  postgresql:
+
+services:
+  database:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgresql:/var/lib/postgresql/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cache:
+    image: redis
+    restart: unless-stopped
+
+  web:
+    depends_on:
+      database:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: .github/Dockerfile
+    environment:
+      - ENVIRONMENT=production
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - REDIS_HOST=cache
+      - POSTGRES_HOSTNAME=database
+      - POSTGRES_DB_NAME=${POSTGRES_DB}
+      - POSTGRES_USERNAME=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-smtp}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL:-False}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - ENCRYPTION_KEY_${ENCRYPTION_KEY_HASH}=${ENCRYPTION_KEY}
+    expose:
+      - 8000
+    command: >
+      sh -c "
+        splinter migrate &&
+        gunicorn --name=splinter splinter.wsgi:application --access-logfile - --bind=0.0.0.0:8000
+      "
+
+  worker:
+    depends_on:
+      database:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: .github/Dockerfile
+    environment:
+      - C_FORCE_ROOT=true
+      - ENVIRONMENT=production
+      - HTTP_PROTOCOL=${HTTP_PROTOCOL:-https}
+      - PUBLIC_DOMAIN=${PUBLIC_DOMAIN}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - REDIS_HOST=cache
+      - POSTGRES_HOSTNAME=database
+      - POSTGRES_DB_NAME=${POSTGRES_DB}
+      - POSTGRES_USERNAME=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - EMAIL_BACKEND=${EMAIL_BACKEND:-smtp}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT:-587}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS:-True}
+      - EMAIL_USE_SSL=${EMAIL_USE_SSL:-False}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - ENCRYPTION_KEY_${ENCRYPTION_KEY_HASH}=${ENCRYPTION_KEY}
+    command: celery -A splinter:celery_app worker -l info

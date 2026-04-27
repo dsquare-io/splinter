@@ -9,7 +9,7 @@ RUN npm install
 COPY ui/ /app/
 RUN npm run build
 
-FROM python:3.12
+FROM python:3.12-alpine
 
 RUN pip install -U pip && pip install gunicorn --no-cache-dir
 
