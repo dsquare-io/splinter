@@ -1,23 +1,33 @@
 import datetime
-from functools import cached_property
+from functools import cached_property, lru_cache
 
 import jwt
-from cryptography.hazmat.primitives.asymmetric import ec
 from django.conf import settings
 from django.utils import timezone
 
 from splinter.apps.authn import ACCESS_TOKEN_ALGORITHM, REFRESH_TOKEN_ALGORITHM
-from splinter.apps.authn.models import UserSecret
+from splinter.apps.authn.models import GlobalKey, UserSecret
 from splinter.apps.authn.validator import ValidatedToken
 from splinter.apps.mfa import MFA_CONFIGURED, is_mfa_enabled_for_user
 from splinter.apps.user.models import User
 
 
+@lru_cache(maxsize=1)
+def _get_current_access_key() -> GlobalKey:
+    return GlobalKey.objects.get(key_type=GlobalKey.KEY_TYPE_ACCESS, version=settings.AUTHN_ACCESS_TOKEN_KEY_VERSION)
+
+
+@lru_cache(maxsize=1)
+def _get_current_refresh_key() -> GlobalKey:
+    return GlobalKey.objects.get(key_type=GlobalKey.KEY_TYPE_REFRESH, version=settings.AUTHN_REFRESH_TOKEN_KEY_VERSION)
+
+
 class AccessTokenProvider:
-    def __init__(self, subject: 'User', token_identifier: str, private_key: ec.EllipticCurvePrivateKey):
+    def __init__(self, subject: 'User', token_identifier: str, access_key: GlobalKey, refresh_key: GlobalKey):
         self.subject = subject
         self.token_identifier = token_identifier
-        self.private_key = private_key
+        self.access_key = access_key
+        self.refresh_key = refresh_key
 
         self.access_token_expiry_delta = settings.ACCESS_TOKEN_EXPIRY
 
@@ -40,16 +50,17 @@ class AccessTokenProvider:
     def generate_access_token(self) -> str:
         return jwt.encode(
             self.access_token_payload(),
-            self.private_key,
+            self.access_key.private_key.decode(),
             algorithm=ACCESS_TOKEN_ALGORITHM,
+            headers={'kid': self.access_key.kid},
         )
 
     def generate_refresh_token(self) -> str:
         return jwt.encode(
             self.refresh_token_payload(),
-            self.private_key,
+            self.refresh_key.private_key.decode(),
             algorithm=REFRESH_TOKEN_ALGORITHM,
-            headers={'kid': 'refresh'},
+            headers={'kid': self.refresh_key.kid},
         )
 
     def generate(self) -> dict:
@@ -70,7 +81,8 @@ class AccessTokenProvider:
         return cls(
             subject=user,
             token_identifier=user_secret.jti.decode(),
-            private_key=user_secret.private_key.decode(),
+            access_key=_get_current_access_key(),
+            refresh_key=_get_current_refresh_key(),
             **kwargs,
         )
 
@@ -109,7 +121,8 @@ class AccessTokenFromRefreshTokenProvider(AccessTokenProvider):
         super().__init__(
             subject=refresh_token.subject,
             token_identifier=refresh_token.subject_secret.jti.decode(),
-            private_key=refresh_token.subject_secret.private_key.decode(),
+            access_key=_get_current_access_key(),
+            refresh_key=_get_current_refresh_key(),
         )
 
         self.refresh_token = refresh_token
