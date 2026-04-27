@@ -77,7 +77,6 @@ class PolymorphicSerializerExtension(PolymorphicSerializerExtensionBase):
                 patched=is_patched_serializer(sub_serializer, direction),
                 discriminator=discriminator,
             )
-            print(typed_component)
             sub_components[discriminator] = typed_component.ref
 
         return {

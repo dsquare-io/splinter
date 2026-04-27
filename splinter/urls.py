@@ -26,7 +26,7 @@ def serve_ui(request, path):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('splinter.core.health.urls')),
-    path('', include('splinter.core.openapi.urls', namespace='openapi')),
+    path('api/', include('splinter.core.openapi.urls', namespace='openapi')),
     path('api/', include('splinter.apps.activity.urls')),
     path('api/', include('splinter.apps.authn.urls')),
     path('api/', include('splinter.apps.currency.urls')),

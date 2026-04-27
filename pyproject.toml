@@ -23,7 +23,7 @@ authors = [
 ]
 urls = { dSquare = "https://dsquare.io" }
 dependencies = [
-    "Django>=5",
+    "Django>=5,<6",
     "psycopg2-binary",
     "djangorestframework>=3.14",
     "orjson",
