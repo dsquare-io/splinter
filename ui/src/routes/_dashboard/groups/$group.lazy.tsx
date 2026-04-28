@@ -5,7 +5,6 @@ import { GroupTabs } from './-components/GroupTabs';
 
 export const Route = createLazyFileRoute('/_dashboard/groups/$group')({
   component: RootComponent,
-  errorComponent: () => <div>Error</div>,
 });
 
 function RootComponent() {

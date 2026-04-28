@@ -6,7 +6,6 @@ import ExpenseDetail from '@/components/modals/ExpenseDetail';
 
 export const Route = createLazyFileRoute('/_dashboard/groups/$group/$expense')({
   component: RootComponent,
-  errorComponent: () => <div>Error</div>,
 });
 
 function RootComponent() {
