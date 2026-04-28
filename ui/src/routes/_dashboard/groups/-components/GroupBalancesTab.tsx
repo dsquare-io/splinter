@@ -5,6 +5,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes } from '@/api-types';
 import { Avatar } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
+import { Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
 
@@ -13,9 +14,24 @@ interface Props {
 }
 
 export function GroupBalancesTab({ group_uid }: Props) {
-  const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data, isPending } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   const { currentUser } = useAuth();
-  if (!data || !currentUser) return null;
+
+  if (isPending || !currentUser) {
+    return (
+      <div className="my-2 divide-y divide-neutral-200">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-x-2 py-4"
+          >
+            <Skeleton className="size-8 rounded-full" />
+            <Skeleton className="h-4 flex-1" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const balanceByUsers = Object.entries(
     groupBy(data.outstandingBalances ?? [], (balance) => balance.user.uid)

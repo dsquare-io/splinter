@@ -10,6 +10,7 @@ import { Avatar, Button } from '@/components/common';
 import { ExpenseList } from '@/components/ExpenseList.tsx';
 import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
 import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
+import { ExpenseListSkeleton, Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend')({
@@ -19,10 +20,10 @@ export const Route = createFileRoute('/_dashboard/friends/$friend')({
 function RootComponent() {
   const { friend: friend_uid } = Route.useParams();
 
-  const { data } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
-  const { data: expenses } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, { friend_uid });
-
-  if (!data) return null;
+  const { data, isPending } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
+  const { data: expenses, isPending: expensesPending } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, {
+    friend_uid,
+  });
 
   return (
     <>
@@ -32,7 +33,7 @@ function RootComponent() {
         <div
           className={clsx(
             'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pt-10 pb-6 sm:px-6 md:px-8',
-            (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+            !isPending && (data?.outstandingBalances?.length ?? 0) < 2 && 'items-center'
           )}
         >
           <div
@@ -60,13 +61,26 @@ function RootComponent() {
             </Link>
           </div>
 
-          <Avatar
-            className="size-16 bg-white"
-            fallback={data.name}
-          />
+          {isPending ? (
+            <Skeleton className="size-16 rounded-full" />
+          ) : (
+            <Avatar
+              className="size-16 bg-white"
+              fallback={data!.name}
+            />
+          )}
           <div>
-            <div className="mt-1 text-2xl font-semibold text-gray-900">{data.name}</div>
-            <OutstandingBalanceList balances={data.outstandingBalances} />
+            {isPending ? (
+              <>
+                <Skeleton className="mt-1 h-7 w-36" />
+                <Skeleton className="mt-2 h-4 w-48" />
+              </>
+            ) : (
+              <>
+                <div className="mt-1 text-2xl font-semibold text-gray-900">{data!.name}</div>
+                <OutstandingBalanceList balances={data!.outstandingBalances} />
+              </>
+            )}
           </div>
 
           <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
@@ -80,12 +94,16 @@ function RootComponent() {
           </div>
         </div>
 
-        <ExpenseList
-          expenses={expenses?.results ?? []}
-          detailRouteParams={{ friend: friend_uid }}
-          detailRoute="/friends/$friend/$expense"
-          className="my-3 px-4 sm:px-6 md:px-8"
-        />
+        {expensesPending ? (
+          <ExpenseListSkeleton className="my-3 px-4 sm:px-6 md:px-8" />
+        ) : (
+          <ExpenseList
+            expenses={expenses?.results ?? []}
+            detailRouteParams={{ friend: friend_uid }}
+            detailRoute="/friends/$friend/$expense"
+            className="my-3 px-4 sm:px-6 md:px-8"
+          />
+        )}
       </div>
     </>
   );

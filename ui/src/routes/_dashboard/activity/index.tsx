@@ -2,21 +2,19 @@ import clsx from 'clsx';
 
 import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
 import { Paths } from '@/api-types/routePaths.ts';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery';
-import { queryClient } from '@/queryClient';
+import { ActivityListItemSkeleton } from '@/components/Skeleton.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery';
 import ActivityListItem from './-components/ActivityListItem.tsx';
 
 export const Route = createFileRoute('/_dashboard/activity/')({
-  loader: () => queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.ACTIVITY_LIST)),
   component: ActivityLayout,
 });
 
 function ActivityLayout() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/activity' });
-  const { data } = useApiQuery(Paths.ACTIVITY_LIST);
+  const { data, isPending } = useApiQuery(Paths.ACTIVITY_LIST);
 
   return (
     <>
@@ -34,12 +32,14 @@ function ActivityLayout() {
         </div>
 
         <div>
-          {data?.results?.map((activity) => (
-            <ActivityListItem
-              key={activity.urn}
-              activity={activity}
-            />
-          ))}
+          {isPending
+            ? Array.from({ length: 8 }).map((_, i) => <ActivityListItemSkeleton key={i} />)
+            : data?.results?.map((activity) => (
+                <ActivityListItem
+                  key={activity.urn}
+                  activity={activity}
+                />
+              ))}
         </div>
       </div>
       <div className="xl:ms-96">

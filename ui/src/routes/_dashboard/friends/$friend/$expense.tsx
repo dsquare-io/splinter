@@ -2,16 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
 import ExpenseDetail from '@/components/modals/ExpenseDetail';
-import { apiQueryOptions } from '@/hooks/useApiQuery';
-import { queryClient } from '@/queryClient';
 
 export const Route = createFileRoute('/_dashboard/friends/$friend/$expense')({
-  loader: ({ params: { expense: expense_uid } }) =>
-    expense_uid
-      ? queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.EXPENSE_DETAIL, { expense_uid }))
-      : undefined,
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });

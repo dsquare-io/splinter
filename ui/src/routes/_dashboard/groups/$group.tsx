@@ -11,15 +11,13 @@ import { AddPaymentModal } from '@/components/modals/AddPayment';
 import { GroupSettingsModal } from '@/components/modals/GroupSettings';
 import { InviteGroupMembersModal } from '@/components/modals/InviteGroupMembers';
 import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery';
+import { Skeleton } from '@/components/Skeleton.tsx';
+import { useApiQuery } from '@/hooks/useApiQuery';
 import useAuth from '@/hooks/useAuth.ts';
-import { queryClient } from '@/queryClient';
 import { GroupActivityTab } from './-components/GroupActivityTab';
 import { GroupBalancesTab } from './-components/GroupBalancesTab';
 
 export const Route = createFileRoute('/_dashboard/groups/$group')({
-  loader: ({ params: { group: group_uid } }) =>
-    queryClient.ensureQueryData(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })),
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });
@@ -28,11 +26,10 @@ function RootComponent() {
   const { group: group_uid } = Route.useParams();
   const { currentUser } = useAuth();
 
-  const { data } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
-  if (!data) return null;
+  const { data, isPending } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
 
   const myOutstandingBalances =
-    data.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
+    data?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
 
   return (
     <>
@@ -70,13 +67,26 @@ function RootComponent() {
             </Link>
           </div>
 
-          <Avatar
-            className="size-16 rounded-lg bg-white"
-            fallback={data.name}
-          />
+          {isPending ? (
+            <Skeleton className="size-16 rounded-lg" />
+          ) : (
+            <Avatar
+              className="size-16 rounded-lg bg-white"
+              fallback={data!.name}
+            />
+          )}
           <div>
-            <div className="text-2xl font-semibold text-gray-900">{data.name}</div>
-            <OutstandingBalanceList balances={myOutstandingBalances} />
+            {isPending ? (
+              <>
+                <Skeleton className="h-7 w-36" />
+                <Skeleton className="mt-2 h-4 w-48" />
+              </>
+            ) : (
+              <>
+                <div className="text-2xl font-semibold text-gray-900">{data!.name}</div>
+                <OutstandingBalanceList balances={myOutstandingBalances} />
+              </>
+            )}
           </div>
 
           <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
