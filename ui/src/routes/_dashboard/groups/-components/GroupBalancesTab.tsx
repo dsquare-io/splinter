@@ -3,6 +3,7 @@ import * as Accordion from '@radix-ui/react-accordion';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
+import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
 import { Avatar } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
 import { Skeleton } from '@/components/Skeleton.tsx';
@@ -14,7 +15,7 @@ interface Props {
 }
 
 export function GroupBalancesTab({ group_uid }: Props) {
-  const { data, isPending } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   const { currentUser } = useAuth();
 
   if (isPending || !currentUser) {
@@ -33,13 +34,15 @@ export function GroupBalancesTab({ group_uid }: Props) {
     );
   }
 
+  if (error) return <ApiErrorAlert error={error} />;
+
   const balanceByUsers = Object.entries(
     groupBy(data.outstandingBalances ?? [], (balance) => balance.user.uid)
   );
 
   return (
     <Accordion.Root
-      className="my-2 divide-y divide-neutral-200"
+      className="my-3 divide-y divide-neutral-200 px-4 sm:px-6 md:px-8"
       type="multiple"
       defaultValue={[currentUser.uid]}
     >

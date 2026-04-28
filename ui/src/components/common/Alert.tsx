@@ -11,7 +11,7 @@ import { tv, VariantProps } from 'tailwind-variants';
 
 import { IconButton } from './IconButton.tsx';
 
-export const IconsMap = {
+const IconsMap = {
   default: <ExclamationCircleIcon className="h-6 w-6" />,
   danger: <ExclamationCircleIcon className="h-6 w-6 text-red-500" />,
   warn: <ExclamationTriangleIcon className="h-6 w-6 text-yellow-600" />,

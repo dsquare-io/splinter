@@ -4,21 +4,17 @@ import { ExpenseList } from '@/components/ExpenseList.tsx';
 import { ExpenseListSkeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-interface Props {
-  group_uid: string;
-}
-
-export function GroupActivityTab({ group_uid }: Props) {
-  const { data, isPending, error } = useApiQuery(ApiRoutes.GROUP_EXPENSE_LIST, { group_uid });
+export function FriendExpenses({ friend_uid }: { friend_uid: string }) {
+  const { data: expenses, isPending, error } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, { friend_uid });
 
   if (isPending) return <ExpenseListSkeleton className="my-3 px-4 sm:px-6 md:px-8" />;
   if (error) return <ApiErrorAlert error={error} />;
 
   return (
     <ExpenseList
-      expenses={data?.results ?? []}
-      detailRouteParams={{ group: group_uid }}
-      detailRoute="/groups/$group/$expense"
+      expenses={expenses?.results ?? []}
+      detailRouteParams={{ friend: friend_uid }}
+      detailRoute="/friends/$friend/$expense"
       className="my-3 px-4 sm:px-6 md:px-8"
     />
   );
