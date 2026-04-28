@@ -12,6 +12,7 @@ import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
 import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
 import { ExpenseListSkeleton, Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export const Route = createLazyFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
@@ -20,7 +21,9 @@ export const Route = createLazyFileRoute('/_dashboard/friends/$friend')({
 function RootComponent() {
   const { friend: friend_uid } = Route.useParams();
 
-  const { data, isPending } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
+  const { data: friend, isPending, error } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
+  useRedirectOn404(error, '/friends');
+
   const { data: expenses, isPending: expensesPending } = useApiQuery(ApiRoutes.FRIEND_EXPENSE_LIST, {
     friend_uid,
   });
@@ -33,7 +36,7 @@ function RootComponent() {
         <div
           className={clsx(
             'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pt-10 pb-6 sm:px-6 md:px-8',
-            !isPending && (data?.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+            !isPending && (friend?.outstandingBalances?.length ?? 0) < 2 && 'items-center'
           )}
         >
           <div
@@ -66,7 +69,7 @@ function RootComponent() {
           ) : (
             <Avatar
               className="size-16 bg-white"
-              fallback={data!.name}
+              fallback={friend.name}
             />
           )}
           <div>
@@ -77,8 +80,8 @@ function RootComponent() {
               </>
             ) : (
               <>
-                <div className="mt-1 text-2xl font-semibold text-gray-900">{data!.name}</div>
-                <OutstandingBalanceList balances={data!.outstandingBalances} />
+                <div className="mt-1 text-2xl font-semibold text-gray-900">{friend.name}</div>
+                <OutstandingBalanceList balances={friend.outstandingBalances} />
               </>
             )}
           </div>

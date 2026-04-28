@@ -14,6 +14,7 @@ import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
 import { Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import useAuth from '@/hooks/useAuth.ts';
+import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 import { GroupActivityTab } from './-components/GroupActivityTab';
 import { GroupBalancesTab } from './-components/GroupBalancesTab';
 
@@ -26,10 +27,11 @@ function RootComponent() {
   const { group: group_uid } = Route.useParams();
   const { currentUser } = useAuth();
 
-  const { data, isPending } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  useRedirectOn404(error, '/groups');
 
   const myOutstandingBalances =
-    data?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
+    group?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
 
   return (
     <>
@@ -39,7 +41,7 @@ function RootComponent() {
         <div
           className={clsx(
             'relative grid grid-cols-[auto_1fr] gap-x-5 border-b border-gray-900/5 px-4 pt-10 pb-6 sm:px-6 md:px-8',
-            (data.outstandingBalances?.length ?? 0) < 2 && 'items-center'
+            (group.outstandingBalances?.length ?? 0) < 2 && 'items-center'
           )}
         >
           <div
@@ -72,7 +74,7 @@ function RootComponent() {
           ) : (
             <Avatar
               className="size-16 rounded-lg bg-white"
-              fallback={data!.name}
+              fallback={group!.name}
             />
           )}
           <div>
@@ -83,7 +85,7 @@ function RootComponent() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-semibold text-gray-900">{data!.name}</div>
+                <div className="text-2xl font-semibold text-gray-900">{group!.name}</div>
                 <OutstandingBalanceList balances={myOutstandingBalances} />
               </>
             )}
