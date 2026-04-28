@@ -1,6 +1,7 @@
 import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
 
 import BottomNav from '@/components/BottomNav.tsx';
+import ErrorBoundary from '@/components/ErrorBoundary.tsx';
 import Sidebar from '@/components/Sidebar.tsx';
 import useAuth, { AuthStatus } from '@/hooks/useAuth.ts';
 
@@ -15,7 +16,9 @@ function DashboardLayout() {
   return (
     <div className="flex h-full flex-col md:contents">
       <main className="flex-1 overflow-auto md:ms-60 md:h-full">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
 
       <Sidebar />

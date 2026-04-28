@@ -1,5 +1,6 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
+import ErrorBoundary from '@/components/ErrorBoundary.tsx';
 import { FriendExpenses } from './-components/FriendExpenses.tsx';
 import { FriendHeader } from './-components/FriendHeader.tsx';
 
@@ -12,7 +13,9 @@ function RootComponent() {
 
   return (
     <>
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
 
       <FriendHeader friend_uid={friend_uid} />
       <FriendExpenses friend_uid={friend_uid} />

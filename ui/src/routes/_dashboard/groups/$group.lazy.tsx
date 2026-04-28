@@ -1,5 +1,6 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
+import ErrorBoundary from '@/components/ErrorBoundary.tsx';
 import { GroupHeader } from './-components/GroupHeader';
 import { GroupTabs } from './-components/GroupTabs';
 
@@ -12,7 +13,9 @@ function RootComponent() {
 
   return (
     <>
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
 
       <GroupHeader group_uid={group_uid} />
       <GroupTabs group_uid={group_uid} />

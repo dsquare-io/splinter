@@ -7,6 +7,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes } from '@/api-types';
 import { Button } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
+import ErrorBoundary from '@/components/ErrorBoundary.tsx';
 import { CreateGroupModal } from '@/components/modals/CreateGroup';
 import { GroupListItemSkeleton, Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -111,7 +112,9 @@ function GroupsLayout() {
         </div>
       </div>
       <div className="xl:ms-96">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </div>
     </>
   );

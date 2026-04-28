@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 
+import ErrorBoundary from '@/components/ErrorBoundary.tsx';
 import useAuth, { AuthStatus } from '@/hooks/useAuth.ts';
 
 function TopLoader() {
@@ -31,7 +32,9 @@ function RootComponent() {
   return (
     <>
       <TopLoader />
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </>
   );
 }
