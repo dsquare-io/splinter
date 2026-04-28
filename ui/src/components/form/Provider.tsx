@@ -1,6 +1,6 @@
-import { Context, ReactNode, useContext } from 'react';
+import { Context, ReactNode, useContext, type ReactElement } from 'react';
 
-import { defaultSlot } from './use-context-props';
+import { defaultSlot } from '@/hooks/useContextProps';
 
 type ProviderValue<T> = [Context<T>, T];
 type ProviderValues<A, B, C, D, E, F, G, H> =
@@ -37,10 +37,10 @@ type ProviderValues<A, B, C, D, E, F, G, H> =
       ProviderValue<H>,
     ];
 
-interface ProviderProps<A, B, C, D, E, F, G, H> {
+type ProviderProps<A, B, C, D, E, F, G, H> = {
   values: ProviderValues<A, B, C, D, E, F, G, H>;
   children: ReactNode;
-}
+};
 
 export function Provider<A, B, C, D, E, F, G, H>({
   values,
@@ -65,5 +65,5 @@ export function Provider<A, B, C, D, E, F, G, H>({
     children = <ContextProvider.Provider value={mergedValue}>{children}</ContextProvider.Provider>;
   }
 
-  return children as JSX.Element;
+  return children as ReactElement;
 }

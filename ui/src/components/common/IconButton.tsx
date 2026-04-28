@@ -6,9 +6,18 @@ import {
 
 import { tv, VariantProps } from 'tailwind-variants';
 
-import { buttonBaseStyles } from './ButtonBase.tsx';
+import { buttonBaseStyles } from './ButtonBase';
 
-export interface IconButtonProps extends RACButtonProps, VariantProps<typeof iconButtonStyles> {}
+type IconButtonProps = RACButtonProps & VariantProps<typeof iconButtonStyles>;
+
+const iconButtonStyles = tv({
+  extend: buttonBaseStyles,
+  base: ['p-2'],
+  defaultVariants: {
+    color: 'default',
+    variant: 'solid',
+  },
+});
 
 export function IconButton({ color, variant, ...props }: IconButtonProps) {
   if (['submit', 'reset'].includes(props.type!) && !props.slot) props.slot = props.type;
@@ -22,12 +31,3 @@ export function IconButton({ color, variant, ...props }: IconButtonProps) {
     />
   );
 }
-
-const iconButtonStyles = tv({
-  extend: buttonBaseStyles,
-  base: ['p-2'],
-  defaultVariants: {
-    color: 'default',
-    variant: 'solid',
-  },
-});

@@ -3,16 +3,8 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import {
-  Alert,
-  Button,
-  FieldError,
-  Form,
-  FormRootErrors,
-  Input,
-  Label,
-  TextFormField,
-} from '@/components/common';
+import { Alert, Button } from '@/components/common';
+import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/reset')({

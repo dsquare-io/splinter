@@ -4,7 +4,7 @@ import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { axiosInstance } from '@/axios';
-import { FormRootErrors } from '@/components/common';
+import { FormRootErrors } from '@/components/form';
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/verify')({

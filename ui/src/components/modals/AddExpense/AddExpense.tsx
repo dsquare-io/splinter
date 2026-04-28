@@ -5,7 +5,8 @@ import { useForm } from 'react-hook-form';
 import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid';
 
 import { ApiRoutes, Currency } from '@/api-types';
-import { Button, FieldScope, Form, HiddenField } from '@/components/common';
+import { Button } from '@/components/common';
+import { FieldScope, Form, HiddenField } from '@/components/form';
 import { CloseDialog } from '@/components/modals/utils';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';

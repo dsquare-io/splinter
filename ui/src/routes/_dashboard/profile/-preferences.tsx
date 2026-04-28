@@ -3,8 +3,8 @@ import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'r
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes, Currency } from '@/api-types';
-import { Button, FieldError, Form, FormRootErrors, Input, Label } from '@/components/common';
-import { FormField } from '@/components/common/Form/FormField.tsx';
+import { Button } from '@/components/common';
+import { FieldError, Form, FormField, FormRootErrors, Input, Label } from '@/components/form';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function Preferences() {

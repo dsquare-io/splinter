@@ -5,7 +5,7 @@ import { CheckIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { twMerge } from 'tailwind-merge';
 import { tv, VariantProps } from 'tailwind-variants';
 
-export const checkboxStyles = tv({
+const checkboxStyles = tv({
   base: [
     'shrink-0 inline-flex items-center justify-center border-[1.5px] ',
     'transition-colors duration-100 ease',

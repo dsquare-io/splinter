@@ -3,14 +3,8 @@ import { useFormContext } from 'react-hook-form';
 
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 
-import {
-  Avatar,
-  Checkbox,
-  Input,
-  NumberFormField,
-  useScopedFieldName,
-  WatchState,
-} from '@/components/common';
+import { Avatar, Checkbox } from '@/components/common';
+import { Input, NumberFormField, useScopedFieldName, WatchState } from '@/components/form';
 import { useExpenseParticipants } from './useExpenseParticipants';
 
 export function SingleExpenseShares() {

@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { Alert } from '../Alert';
+import { Alert } from '@/components/common';
 
 export function FormRootErrors({ error }: { error?: string }) {
   const form = useFormContext();

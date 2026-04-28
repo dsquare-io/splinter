@@ -1,17 +1,14 @@
-import { ComponentProps, createContext, useEffect, useMemo, useRef } from 'react';
+import { ComponentProps, useEffect, useMemo, useRef } from 'react';
 import { useFieldArray, UseFieldArrayProps, UseFieldArrayReturn } from 'react-hook-form';
 
-import { RenderProps, useRenderProps } from '@/components/common/render-props.ts';
+import { FieldArrayContext } from '../context';
+import { RenderProps, useRenderProps } from './renderProps';
 
-interface Props
-  extends
-    RenderProps<UseFieldArrayReturn & { keyName: string }>,
-    UseFieldArrayProps,
-    Omit<ComponentProps<'div'>, keyof RenderProps<UseFieldArrayReturn>> {
-  initialItemsCount?: number;
-}
-
-export const FieldArrayContext = createContext<(UseFieldArrayReturn & { keyName: string }) | null>(null);
+type FieldArrayProps = RenderProps<UseFieldArrayReturn & { keyName: string }> &
+  UseFieldArrayProps &
+  Omit<ComponentProps<'div'>, keyof RenderProps<UseFieldArrayReturn>> & {
+    initialItemsCount?: number;
+  };
 
 export function FieldArray({
   keyName = 'id',
@@ -21,7 +18,7 @@ export function FieldArray({
   shouldUnregister,
   initialItemsCount,
   ...restProps
-}: Props) {
+}: FieldArrayProps) {
   const isInitialRender = useRef(true);
 
   // here we can properly type Keyname instead of a string but that won't make any difference

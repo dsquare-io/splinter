@@ -13,25 +13,25 @@ export const patternsMap = {
   },
 } as const;
 
-export interface InputRules {
+export type InputRules = {
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
   max: ValidationRule<number | string>;
   maxLength: ValidationRule<number>;
   minLength: ValidationRule<number>;
   pattern: ValidationRule<RegExp | string> | keyof typeof patternsMap;
-}
+};
 
-export interface OutputRules {
+export type OutputRules = {
   required: ValidationValueMessage<boolean>;
   min: ValidationValueMessage<number | string>;
   max: ValidationValueMessage<number | string>;
   maxLength: ValidationValueMessage<number>;
   minLength: ValidationValueMessage<number>;
   pattern: ValidationValueMessage<RegExp>;
-}
+};
 
-export function messagifyValidationRules(
+export function normalizeValidationRules(
   rules: Partial<InputRules> | undefined
 ): Partial<OutputRules> | undefined {
   if (!rules) return undefined;

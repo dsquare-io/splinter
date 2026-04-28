@@ -1,12 +1,12 @@
-import { cloneElement, ReactElement, ReactNode, useMemo } from 'react';
+import { cloneElement, useMemo, type ReactElement, type ReactNode } from 'react';
 
-import { CollectionBase } from '@react-types/shared';
+import type { CollectionBase } from '@react-types/shared';
 
-interface CachedChildrenOptions<T> extends Omit<CollectionBase<T>, 'children'> {
+type CachedChildrenOptions<T> = Omit<CollectionBase<T>, 'children'> & {
   /** The contents of the collection. */
   children?: ReactNode | ((item: T) => ReactNode);
   keyName?: string;
-}
+};
 
 export function useCachedChildren<T extends object>(props: CachedChildrenOptions<T>): ReactNode {
   const { children, items, keyName = 'id' } = props;
@@ -29,6 +29,7 @@ export function useCachedChildren<T extends object>(props: CachedChildrenOptions
 
           // Note: only works if wrapped Item passes through id...
           rendered = cloneElement(rendered, { key, id: key, value: item });
+          // eslint-disable-next-line react-hooks/immutability
           cache.set(key, rendered);
         }
         res.push(rendered);

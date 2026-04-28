@@ -2,11 +2,11 @@ import { ComponentProps, useContext, type ReactNode } from 'react';
 import { ButtonContext, Provider } from 'react-aria-components';
 import { type FieldArrayWithId } from 'react-hook-form';
 
-import { FieldArrayContext } from '@/components/common/FieldArray/FieldArray.tsx';
-import { composeRenderProps, type RenderProps } from '@/components/common/render-props.ts';
-import { useCachedChildren } from './utils.ts';
+import { FieldArrayContext } from '../context';
+import { composeRenderProps, type RenderProps } from './renderProps';
+import { useCachedChildren } from './useCachedChildren';
 
-interface FieldArrayItemsRenderProps {
+type FieldArrayItemsRenderProps = {
   field: FieldArrayWithId;
   /**
    * index of current item
@@ -16,7 +16,7 @@ interface FieldArrayItemsRenderProps {
    * removes current item from field array
    */
   remove: () => void;
-}
+};
 
 interface Props
   extends Pick<RenderProps<FieldArrayItemsRenderProps>, 'children'>, Omit<ComponentProps<'div'>, 'children'> {

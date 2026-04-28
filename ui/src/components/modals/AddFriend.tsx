@@ -1,7 +1,8 @@
 import { Dialog, Heading, Modal, ModalOverlay } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
-import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import { Button } from '@/components/common';
+import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
@@ -11,7 +12,7 @@ export function AddFriendModal({ onOpenChange }: { onOpenChange?: (open: boolean
     <ModalOverlay isDismissable>
       <Modal
         onOpenChange={onOpenChange}
-        className="react-aria-Modal max-h-[580px] sm:max-w-lg"
+        className="react-aria-Modal max-h-145 sm:max-w-lg"
       >
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           {({ close }) => (

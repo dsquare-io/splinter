@@ -3,13 +3,12 @@ import { ButtonContext } from 'react-aria-components';
 import { FormProvider, useForm, type FieldValues } from 'react-hook-form';
 
 import { axiosInstance } from '@/axios';
-import { handleSubmissionError } from '@/components/common/Form/errors';
-import { Provider } from '@/components/common/Provider.tsx';
-import { forwardRefType } from '@/components/common/types.ts';
-import { useContextProps } from '@/components/common/use-context-props.ts';
+import { useContextProps } from '@/hooks/useContextProps';
 import { FormContext } from './context';
-import { applyTransformers } from './transformers.ts';
-import type { FormProps, Method } from './types';
+import { handleSubmissionError } from './errors';
+import { Provider } from './Provider';
+import { applyTransformers } from './transformers';
+import type { FormProps, forwardRefType, Method } from './types';
 
 function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValues, TransformedData = any>(
   { ...props }: FormProps<SubmitResponse, TFieldValues, TransformedData>,
@@ -28,6 +27,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
   // but in case of onSubmit we need to override
   // base handler if a direct prop is provided
   if (formSubmitHandler) {
+    // eslint-disable-next-line react-hooks/immutability
     props.onSubmit = formSubmitHandler;
   }
 

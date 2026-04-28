@@ -1,11 +1,11 @@
-import { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { Provider, FieldErrorContext as RACFieldErrorContext, TagGroup } from 'react-aria-components';
 import { useController } from 'react-hook-form';
 
-import { useScopedFieldName } from '@/components/common';
-import { MergeFormFieldProps } from '@/components/common/FieldWrappers/types';
-import { FieldErrorContext } from '@/components/common/Form/FieldError';
-import { messagifyValidationRules } from '@/components/common/Form/validations';
+import { FieldErrorContext } from '../context';
+import { useScopedFieldName } from '../FieldScope';
+import { normalizeValidationRules } from '../validations';
+import { MergeFormFieldProps } from './types';
 
 type TagGroupFieldProps = MergeFormFieldProps<ComponentProps<typeof TagGroup>>;
 
@@ -34,7 +34,7 @@ export function TagGroupField({
     ...props,
     rules: {
       deps,
-      ...messagifyValidationRules({
+      ...normalizeValidationRules({
         min,
         max,
         minLength,

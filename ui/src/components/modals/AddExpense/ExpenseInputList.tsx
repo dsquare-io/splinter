@@ -5,9 +5,8 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import throttle from 'just-throttle';
 
 import { ApiRoutes } from '@/api-types';
-import { Button, Input, Label, NumberFormField, TextFormField } from '@/components/common';
-import { FieldArray } from '@/components/common/FieldArray/FieldArray.tsx';
-import { FieldArrayItems } from '@/components/common/FieldArray/FieldArrayItems.tsx';
+import { Button } from '@/components/common';
+import { FieldArray, FieldArrayItems, Input, Label, NumberFormField, TextFormField } from '@/components/form';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function ExpenseItems() {

@@ -6,7 +6,7 @@ import {
 
 import { tv, VariantProps } from 'tailwind-variants';
 
-import { buttonBaseStyles } from './ButtonBase.tsx';
+import { buttonBaseStyles } from './ButtonBase';
 
 const button = tv({
   extend: buttonBaseStyles,
@@ -26,7 +26,7 @@ const button = tv({
   },
 });
 
-export interface ButtonProps extends RACButtonProps, VariantProps<typeof button> {}
+type ButtonProps = RACButtonProps & VariantProps<typeof button>;
 
 export function Button({ variant, color, size, ...props }: ButtonProps) {
   if (['submit', 'reset'].includes(props.type!) && !props.slot) props.slot = props.type;

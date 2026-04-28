@@ -1,4 +1,4 @@
-import { BaseSyntheticEvent, ComponentProps } from 'react';
+import { BaseSyntheticEvent, ComponentProps, type ReactElement, type Ref, type RefAttributes } from 'react';
 import { SlotProps } from 'react-aria-components';
 import { FieldErrors, UseFormProps, type FieldValues, type UseFormReturn } from 'react-hook-form';
 
@@ -16,11 +16,11 @@ export type Method =
   | 'patch'
   | 'PATCH';
 
-export interface SubmissionConf {
+export type SubmissionConf = {
   method?: Method;
   action?: string;
   headers?: Record<string, string>;
-}
+};
 
 interface FormSubmissionProps<SubmitResponse, TFieldValues extends FieldValues, TransformedData> {
   name?: string;
@@ -60,3 +60,7 @@ export type FormProps<
   UseFormProps<TFieldValues> & {
     control?: UseFormReturn<TFieldValues>;
   };
+
+export type forwardRefType = <T, P = object>(
+  render: (props: P, ref: Ref<T>) => ReactElement | null
+) => (props: P & RefAttributes<T>) => ReactElement | null;

@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { tv, VariantProps } from 'tailwind-variants';
 
-import { IconButton } from './IconButton.tsx';
+import { IconButton } from './IconButton';
 
 const IconsMap = {
   default: <ExclamationCircleIcon className="h-6 w-6" />,
@@ -18,6 +18,22 @@ const IconsMap = {
   info: <InformationCircleIcon className="h-6 w-6 text-blue-600" />,
   success: <CheckCircleIcon className="h-6 w-6 text-green-600" />,
 } as const;
+
+const alertStyles = tv({
+  base: ['flex items-center px-6 py-4 gap-x-3 border-s-2 rounded-e'],
+  variants: {
+    color: {
+      default: 'bg-gray-100 text-gray-900 border-gray-900',
+      danger: 'bg-red-50 text-red-900 border-red-500',
+      warn: 'bg-amber-50 text-amber-900 border-amber-600',
+      info: 'bg-blue-50 text-blue-900 border-blue-600',
+      success: 'bg-green-50 text-green-900 border-green-600',
+    },
+  },
+  defaultVariants: {
+    color: 'default',
+  },
+});
 
 type AlertProps = Omit<ComponentProps<'div'>, 'children'> &
   VariantProps<typeof alertStyles> & {
@@ -68,19 +84,3 @@ export function Alert({
     </div>
   );
 }
-
-const alertStyles = tv({
-  base: ['flex items-center px-6 py-4 gap-x-3 border-s-2 rounded-e'],
-  variants: {
-    color: {
-      default: 'bg-gray-100 text-gray-900 border-gray-900',
-      danger: 'bg-red-50 text-red-900 border-red-500',
-      warn: 'bg-amber-50 text-amber-900 border-amber-600',
-      info: 'bg-blue-50 text-blue-900 border-blue-600',
-      success: 'bg-green-50 text-green-900 border-green-600',
-    },
-  },
-  defaultVariants: {
-    color: 'default',
-  },
-});

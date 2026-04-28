@@ -7,7 +7,8 @@ import groupBy from 'just-group-by';
 
 import { ApiRoutes, SimpleUser, urlWithArgs } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
-import { Avatar, Button, FieldError, Form, Input, Label, TextFormField } from '@/components/common';
+import { Avatar, Button } from '@/components/common';
+import { FieldError, Form, Input, Label, TextFormField } from '@/components/form';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';

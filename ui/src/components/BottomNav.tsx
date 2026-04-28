@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 
 import { Avatar } from '@/components/common';
 import AddExpense from '@/components/modals/AddExpense/AddExpense.tsx';
-import useAuth from '../hooks/useAuth.ts';
+import useAuth from '@/hooks/useAuth';
 
 export default function BottomNav() {
   const { currentUser } = useAuth();

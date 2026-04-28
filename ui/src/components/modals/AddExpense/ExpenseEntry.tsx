@@ -3,8 +3,8 @@ import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'r
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
 
-import { Avatar, Button, Input, Label } from '@/components/common';
-import { FormField } from '@/components/common/Form/FormField.tsx';
+import { Avatar, Button } from '@/components/common';
+import { FormField, Input, Label } from '@/components/form';
 import useAuth from '@/hooks/useAuth.ts';
 import ExpenseInputList from './ExpenseInputList.tsx';
 import ParticipantsSelector from './ParticipantsSelector.tsx';

@@ -84,7 +84,7 @@ export function ConfirmationProvider({ children }: React.PropsWithChildren<any>)
       <Modal
         isOpen={show}
         onOpenChange={(open) => !open && handleCancel()}
-        className="react-aria-Modal max-h-[580px] overflow-y-auto sm:max-w-lg"
+        className="react-aria-Modal max-h-145 overflow-y-auto sm:max-w-lg"
       >
         <Dialog className="react-aria-Dialog flex h-full flex-col">
           <AlertContent>

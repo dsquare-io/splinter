@@ -1,16 +1,21 @@
 import type { ReactElement, ReactNode } from 'react';
 import { useWatch } from 'react-hook-form';
 
-import { useScopedFieldName } from './FieldScope.tsx';
+import { useScopedFieldName } from './FieldScope';
 
-interface Props {
+type WatchStateProps = {
   name?: string;
   hideIfNull?: boolean;
   showIf?: any;
   children: ((value: any) => ReactNode) | ReactNode;
-}
+};
 
-export function WatchState({ name, children, showIf, hideIfNull = false }: Props): ReactNode | null {
+export function WatchState({
+  name,
+  children,
+  showIf,
+  hideIfNull = false,
+}: WatchStateProps): ReactNode | null {
   const scopedName = useScopedFieldName(name);
   const state = useWatch({ name: scopedName });
 

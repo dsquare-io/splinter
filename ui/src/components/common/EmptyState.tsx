@@ -1,14 +1,14 @@
 import { useState } from 'react';
 
-interface Message {
+type Message = {
   icon: string;
   title: string;
   body: string;
-}
+};
 
-interface EmptyStateProps {
+type EmptyStateProps = {
   messages: Message[];
-}
+};
 
 export function EmptyState({ messages }: EmptyStateProps) {
   const [{ icon, title, body }] = useState(() => messages[Math.floor(Math.random() * messages.length)]!);

@@ -12,10 +12,10 @@ import {
 } from 'react-aria-components';
 import { useController, type RegisterOptions, type UseControllerProps } from 'react-hook-form';
 
-import { FieldErrorContext } from './FieldError';
+import { FieldErrorContext } from './context';
 import { useScopedFieldName } from './FieldScope';
 import { getFocusableRef } from './utils';
-import { messagifyValidationRules } from './validations';
+import { normalizeValidationRules } from './validations';
 
 export type FieldProps = {
   children?: ReactNode;
@@ -67,7 +67,7 @@ export function FormField({
     ...props,
     rules: {
       deps,
-      ...messagifyValidationRules({
+      ...normalizeValidationRules({
         min,
         max,
         minLength,

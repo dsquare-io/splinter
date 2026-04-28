@@ -1,14 +1,14 @@
-import { ComponentProps } from 'react';
-import { NumberField } from 'react-aria-components';
+import type { ComponentProps } from 'react';
+import { TextField } from 'react-aria-components';
 
-import { FormField } from '@/components/common/Form/FormField';
+import { FormField } from '../FormField';
 import { MergeFormFieldProps } from './types';
 
-export function NumberFormField(props: MergeFormFieldProps<ComponentProps<typeof NumberField>>) {
+export function TextFormField(props: MergeFormFieldProps<ComponentProps<typeof TextField>>) {
   const {
     name,
     shouldUnregister,
-    defaultValue = 0,
+    defaultValue = '',
     control,
     disabled,
     min,
@@ -40,7 +40,7 @@ export function NumberFormField(props: MergeFormFieldProps<ComponentProps<typeof
         deps,
       }}
     >
-      <NumberField {...textProps} />
+      <TextField {...textProps} />
     </FormField>
   );
 }

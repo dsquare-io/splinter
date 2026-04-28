@@ -1,12 +1,12 @@
-interface Transformer {
+type Transformer = {
   (actualKey: string, value: any, args: string[]): [string, any] | readonly [string, any];
-}
+};
 
-interface ParsedKey {
+type ParsedKey = {
   fn: string;
   args: string[];
   actualKey: string;
-}
+};
 
 /**
  * Transformers are special keywords if added to the field names will transform the form data before submission.

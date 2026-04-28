@@ -20,7 +20,8 @@ import { ChevronUpDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes, urlWithArgs } from '@/api-types';
 import { Friend } from '@/api-types/components/schemas';
-import { Avatar, Button, Form, Input, Label } from '@/components/common';
+import { Avatar, Button } from '@/components/common';
+import { Form, Input, Label } from '@/components/form';
 import { CloseDialog } from '@/components/modals/utils.tsx';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
@@ -88,7 +89,7 @@ export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
                   defaultItems={friendsExcludingMembers}
                   aria-label="friends"
                 >
-                  <Label slot={null}>Your Friends</Label>
+                  <Label>Your Friends</Label>
                   <TagGroup
                     selectionMode="none"
                     aria-label="selected-friends"
@@ -105,7 +106,7 @@ export function InviteGroupMembersModal({ group_uid }: { group_uid: string }) {
                         selectedMembers
                           ?.map((uid) => friends?.results?.find((f) => f.uid === uid))
                           .filter(Boolean)
-                          .map((f) => ({ ...f, id: f.uid })) ?? []
+                          .map((f) => ({ ...f, id: f!.uid })) ?? []
                       }
                     >
                       {(item) => (

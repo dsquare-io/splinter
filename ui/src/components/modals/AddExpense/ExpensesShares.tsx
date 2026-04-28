@@ -15,10 +15,11 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes } from '@/api-types';
 import type { ChildExpense } from '@/api-types/components/schemas';
-import { Avatar, FieldScope, useScopedFieldName } from '@/components/common';
+import { Avatar } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
-import { useExpenseParticipants } from '@/components/modals/AddExpense/useExpenseParticipants.ts';
+import { FieldScope, useScopedFieldName } from '@/components/form';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useExpenseParticipants } from './useExpenseParticipants.ts';
 
 interface Props {
   onExpenseDetail?: (baseName: string) => void;
@@ -111,14 +112,8 @@ function ExpenseItemShares() {
 
   const shares = watch(sharesFieldName);
   const shareParticipants = participants
-    .map((participant) => {
-      if (!shares?.[participant.uid]) {
-        return undefined;
-      }
-
-      return { share: shares[participant.uid] as number, participant };
-    })
-    .filter(Boolean);
+    .filter((p) => shares?.[p.uid])
+    .map((participant) => ({ share: shares[participant.uid] as number, participant }));
 
   useEffect(() => {
     if (!shares) {

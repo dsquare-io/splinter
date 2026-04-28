@@ -1,7 +1,8 @@
 import { TextField } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
-import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
+import { Button } from '@/components/common';
+import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
 import useAuth from '@/hooks/useAuth.ts';
 
 export default function PersonalInfo() {
