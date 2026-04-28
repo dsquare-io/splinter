@@ -6,11 +6,11 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { createFileRoute, Link, Navigate } from '@tanstack/react-router';
+import { createLazyFileRoute, Link, Navigate } from '@tanstack/react-router';
 
 import { Avatar } from '@/components/common';
 
-export const Route = createFileRoute('/_dashboard/activity/$activity')({
+export const Route = createLazyFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,
 });
 

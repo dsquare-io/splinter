@@ -3,7 +3,7 @@ import { DialogTrigger, Tab, TabList, TabPanel, Tabs } from 'react-aria-componen
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Avatar, Button } from '@/components/common';
@@ -17,7 +17,7 @@ import useAuth from '@/hooks/useAuth.ts';
 import { GroupActivityTab } from './-components/GroupActivityTab';
 import { GroupBalancesTab } from './-components/GroupBalancesTab';
 
-export const Route = createFileRoute('/_dashboard/groups/$group')({
+export const Route = createLazyFileRoute('/_dashboard/groups/$group')({
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });

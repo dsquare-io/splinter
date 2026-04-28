@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
 import ExpenseDetail from '@/components/modals/ExpenseDetail';
 
-export const Route = createFileRoute('/_dashboard/groups/$group/$expense')({
+export const Route = createLazyFileRoute('/_dashboard/friends/$friend/$expense')({
   component: RootComponent,
   errorComponent: () => <div>Error</div>,
 });
@@ -22,10 +22,10 @@ function RootComponent() {
           .getAnimations({ subtree: true })
           .map((animation) => animation.finished);
         Promise.allSettled(animations).finally(() => {
-          return navigate({ to: '/groups/$group', params: params, replace: true });
+          return navigate({ to: '/friends/$friend', params: params, replace: true });
         });
       } else {
-        navigate({ to: '/groups/$group', params: params, replace: true });
+        navigate({ to: '/friends/$friend', params: params, replace: true });
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

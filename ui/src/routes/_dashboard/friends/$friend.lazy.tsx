@@ -3,7 +3,7 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
+import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Avatar, Button } from '@/components/common';
@@ -13,7 +13,7 @@ import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx'
 import { ExpenseListSkeleton, Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-export const Route = createFileRoute('/_dashboard/friends/$friend')({
+export const Route = createLazyFileRoute('/_dashboard/friends/$friend')({
   component: RootComponent,
 });
 

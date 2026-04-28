@@ -1,32 +1,32 @@
 import clsx from 'clsx';
 import { DialogTrigger } from 'react-aria-components';
 
-import { createFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
 import { Button } from '@/components/common';
 import Currency from '@/components/Currency.tsx';
-import { AddFriendModal } from '@/components/modals/AddFriend.tsx';
-import { FriendListItemSkeleton, Skeleton } from '@/components/Skeleton.tsx';
+import { CreateGroupModal } from '@/components/modals/CreateGroup';
+import { GroupListItemSkeleton, Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-import { EmptyFriends } from './friends/-components/EmptyFriends.tsx';
-import FriendListItem from './friends/-components/FriendListItem.tsx';
+import { EmptyGroups } from './groups/-components/EmptyGroups';
+import GroupListItem from './groups/-components/GroupListItem';
 
-export const Route = createFileRoute('/_dashboard/friends')({
-  component: FriendsLayout,
+export const Route = createLazyFileRoute('/_dashboard/groups')({
+  component: GroupsLayout,
 });
 
-function FriendsLayout() {
+function GroupsLayout() {
   const matchRoute = useMatchRoute();
-  const isRootLayout = matchRoute({ to: '/friends' });
+  const isRootLayout = matchRoute({ to: '/groups' });
   const { data: preferredCurrency, isPending: currencyPending } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { data, isPending } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data, isPending } = useApiQuery(ApiRoutes.GROUP_LIST);
 
   const aggregatedOutstandingBalance = data?.results?.reduce(
-    (acc, friend) => {
-      const currency = friend.aggregatedOutstandingBalance?.currency?.uid ?? '';
-      acc[currency] = (acc[currency] ?? 0) + +(friend.aggregatedOutstandingBalance?.amount ?? 0);
+    (acc, group) => {
+      const currency = group.aggregatedOutstandingBalance?.currency.uid ?? '';
+      acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalance?.amount ?? 0);
       return acc;
     },
     {} as Record<string, number>
@@ -43,10 +43,9 @@ function FriendsLayout() {
             'h-full flex-col overflow-auto xl:inset-y-0 xl:left-60 xl:flex xl:w-96 xl:border-e xl:border-gray-200'
         )}
       >
-        <div className="inset-y-0 right-0 z-40 w-px bg-gray-100" />
         <div className="z-40 flex items-center gap-x-2 bg-white py-6 pr-3 pl-6">
           <div className="flex-1">
-            <h2 className="text-lg font-medium text-gray-900">Friends</h2>
+            <h2 className="text-lg font-medium text-gray-900">Groups</h2>
             {currencyPending ? (
               <Skeleton className="mt-1 h-4 w-40" />
             ) : (
@@ -76,22 +75,21 @@ function FriendsLayout() {
                 className="text-brand-600 whitespace-nowrap"
                 variant="plain"
               >
-                Invite Friend
+                Create Group
               </Button>
-              <AddFriendModal />
+              <CreateGroupModal />
             </DialogTrigger>
           </div>
         </div>
-
         <div className="flex h-full flex-col -space-y-px overflow-y-auto">
           {isPending ? (
-            Array.from({ length: 6 }).map((_, i) => <FriendListItemSkeleton key={i} />)
+            Array.from({ length: 6 }).map((_, i) => <GroupListItemSkeleton key={i} />)
           ) : !data?.results?.length ? (
-            <EmptyFriends />
+            <EmptyGroups />
           ) : (
-            Object.entries(groupBy(data.results, (friend) => friend.name[0].toLowerCase()))
+            Object.entries(groupBy(data.results, (group) => group.name?.[0]?.toLowerCase() ?? ''))
               .sort((a, b) => (a[0] < b[0] ? -1 : +1))
-              .map(([letter, friends]) => (
+              .map(([letter, groups]) => (
                 <div
                   key={letter}
                   className="-space-y-px"
@@ -100,10 +98,10 @@ function FriendsLayout() {
                     <h3 className="uppercase">{letter}</h3>
                   </div>
                   <div className="-space-y-px">
-                    {friends.map((friend) => (
-                      <FriendListItem
-                        key={friend.uid}
-                        {...friend}
+                    {groups.map((group) => (
+                      <GroupListItem
+                        key={group.uid}
+                        {...group}
                       />
                     ))}
                   </div>
