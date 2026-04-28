@@ -6,6 +6,7 @@ import { Paths } from '@/api-types/routePaths.ts';
 import { ActivityListItemSkeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import ActivityListItem from './-components/ActivityListItem.tsx';
+import { EmptyActivity } from './-components/EmptyActivity.tsx';
 
 export const Route = createFileRoute('/_dashboard/activity/')({
   component: ActivityLayout,
@@ -32,14 +33,18 @@ function ActivityLayout() {
         </div>
 
         <div>
-          {isPending
-            ? Array.from({ length: 8 }).map((_, i) => <ActivityListItemSkeleton key={i} />)
-            : data?.results?.map((activity) => (
-                <ActivityListItem
-                  key={activity.urn}
-                  activity={activity}
-                />
-              ))}
+          {isPending ? (
+            Array.from({ length: 8 }).map((_, i) => <ActivityListItemSkeleton key={i} />)
+          ) : !data?.results?.length ? (
+            <EmptyActivity />
+          ) : (
+            data.results.map((activity) => (
+              <ActivityListItem
+                key={activity.urn}
+                activity={activity}
+              />
+            ))
+          )}
         </div>
       </div>
       <div className="xl:ms-96">
