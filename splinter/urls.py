@@ -40,6 +40,7 @@ urlpatterns = [
 if not settings.DEBUG:
     urlpatterns.extend(
         [
+            path(f'{settings.STATIC_URL.strip('/')}/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
             path('', serve_ui, {'path': ''}),
             path('<path:path>', serve_ui),
         ]
