@@ -19,13 +19,19 @@ export enum AuthStatus {
 
 let cachedUser: User | null = null;
 let profileRequest: Promise<User> | null = null;
+const profileListeners = new Set<(user: User | null) => void>();
 
-function fetchProfile(): Promise<User> {
+function fetchProfile(invalidate = false): Promise<User> {
+  if (invalidate) {
+    cachedUser = null;
+    profileRequest = null;
+  }
   if (!profileRequest) {
     profileRequest = axiosInstance
       .get<User>(ApiRoutes.PROFILE)
       .then((res) => {
         cachedUser = res.data;
+        profileListeners.forEach((fn) => fn(res.data));
         return res.data;
       })
       .finally(() => {
@@ -47,6 +53,13 @@ export default function useAuth() {
     };
     addAuthTokenChangeListener(sync);
     return () => removeAuthTokenChangeListener(sync);
+  }, []);
+
+  useEffect(() => {
+    profileListeners.add(setCurrentUser);
+    return () => {
+      profileListeners.delete(setCurrentUser);
+    };
   }, []);
 
   useEffect(() => {
@@ -84,5 +97,10 @@ export default function useAuth() {
       setAccessToken(access || null);
       setRefreshToken(refresh || null);
     },
+    refetchProfile: () =>
+      fetchProfile(true).catch(() => {
+        cachedUser = null;
+        profileListeners.forEach((fn) => fn(null));
+      }),
   };
 }

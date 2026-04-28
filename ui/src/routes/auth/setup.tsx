@@ -2,9 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
-import { queryClient } from '@/queryClient.ts';
 import AuthLayout from './-layout';
 
 export const Route = createFileRoute('/auth/setup')({
@@ -12,7 +10,7 @@ export const Route = createFileRoute('/auth/setup')({
 });
 
 function RootComponent() {
-  const { currentUser } = useAuth();
+  const { currentUser, refetchProfile } = useAuth();
   const navigate = useNavigate();
 
   if (!currentUser) return;
@@ -24,7 +22,7 @@ function RootComponent() {
         values={currentUser}
         method="PUT"
         onSubmitSuccess={async () => {
-          await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.PROFILE));
+          await refetchProfile();
           return navigate({ to: '/friends' });
         }}
         className="space-y-6"

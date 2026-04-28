@@ -2,19 +2,17 @@ import { TextField } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
 import { Button, FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/common';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
-import { queryClient } from '@/queryClient.ts';
 
 export default function PersonalInfo() {
-  const { currentUser } = useAuth();
+  const { currentUser, refetchProfile } = useAuth();
   if (!currentUser) return;
 
   return (
     <Form
       values={currentUser}
       action={ApiRoutes.PROFILE}
-      onSubmitSuccess={() => queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.PROFILE))}
+      onSubmitSuccess={() => refetchProfile()}
       method="PUT"
       className="@container md:col-span-2"
     >
