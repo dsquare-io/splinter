@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
 import { ExpenseOrPayment } from '@/api-types/components/schemas';
+import { EmptyExpenses } from './EmptyExpenses.tsx';
 import ExpenseListItem from './ExpenseListItem.tsx';
 
 type ExpenseListProps = Omit<ComponentProps<typeof ExpenseListItem>, 'expense'> & {
@@ -15,6 +16,8 @@ export function ExpenseList({ expenses, className = 'my-2', ...props }: ExpenseL
   const monthlyActivity = Object.entries(
     groupBy(expenses, (activity) => activity.datetime.split('-').slice(0, 2).join('-') + '-01')
   );
+
+  if (expenses.length === 0) return <EmptyExpenses />;
 
   return (
     <div className={className}>

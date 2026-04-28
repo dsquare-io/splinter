@@ -1,25 +1,17 @@
 import { ApiRoutes } from '@/api-types';
-import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
-import { ExpenseList } from '@/components/ExpenseList.tsx';
-import { ExpenseListSkeleton } from '@/components/Skeleton.tsx';
+import { ExpenseListPanel } from '@/components/ExpenseList';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-interface Props {
-  group_uid: string;
-}
-
-export function GroupActivityTab({ group_uid }: Props) {
+export function GroupActivityTab({ group_uid }: { group_uid: string }) {
   const { data, isPending, error } = useApiQuery(ApiRoutes.GROUP_EXPENSE_LIST, { group_uid });
 
-  if (isPending) return <ExpenseListSkeleton className="my-3 px-4 sm:px-6 md:px-8" />;
-  if (error) return <ApiErrorAlert error={error} />;
-
   return (
-    <ExpenseList
-      expenses={data?.results ?? []}
-      detailRouteParams={{ group: group_uid }}
+    <ExpenseListPanel
+      expenses={data?.results}
+      isPending={isPending}
+      error={error}
       detailRoute="/groups/$group/$expense"
-      className="my-3 px-4 sm:px-6 md:px-8"
+      detailRouteParams={{ group: group_uid }}
     />
   );
 }

@@ -1,4 +1,5 @@
 export * from './Alert';
+export * from './EmptyState';
 export * from './Avatar';
 export * from './Button';
 export * from './Form';

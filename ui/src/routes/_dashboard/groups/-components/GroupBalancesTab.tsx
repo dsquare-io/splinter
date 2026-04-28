@@ -9,6 +9,7 @@ import Currency from '@/components/Currency.tsx';
 import { Skeleton } from '@/components/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import useAuth from '@/hooks/useAuth.ts';
+import { EmptyBalances } from './EmptyBalances.tsx';
 
 interface Props {
   group_uid: string;
@@ -39,6 +40,8 @@ export function GroupBalancesTab({ group_uid }: Props) {
   const balanceByUsers = Object.entries(
     groupBy(data.outstandingBalances ?? [], (balance) => balance.user.uid)
   );
+
+  if (balanceByUsers.length === 0) return <EmptyBalances />;
 
   return (
     <Accordion.Root
