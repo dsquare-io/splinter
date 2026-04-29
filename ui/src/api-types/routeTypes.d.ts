@@ -572,6 +572,7 @@ export interface components {
     Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
+    CreateGroup: import('./components/schemas.d.ts').CreateGroup;
     CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
     CreateUser: import('./components/schemas.d.ts').CreateUser;
     Currency: import('./components/schemas.d.ts').Currency;
@@ -1329,9 +1330,9 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
+    requestBody: {
       content: {
-        'application/json': components['schemas']['Group'];
+        'application/json': components['schemas']['CreateGroup'];
       };
     };
     responses: {

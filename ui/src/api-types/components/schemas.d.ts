@@ -86,6 +86,11 @@ export interface Country {
 
 export type CreateFriendship = CreateUser;
 
+export interface CreateGroup {
+  name: string;
+  members: string[];
+}
+
 export interface CreateGroupMembership {
   user: string;
 }

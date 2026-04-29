@@ -7,6 +7,7 @@ from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.group.serializers import (
     CreateGroupMembershipSerializer,
+    CreateGroupSerializer,
     ExtendedGroupSerializer,
     GroupSerializer,
     UpdateGroupMembershipSerializer,
@@ -23,6 +24,12 @@ from splinter.core.views import (
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
     serializer_class = GroupSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateGroupSerializer
+
+        return GroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)

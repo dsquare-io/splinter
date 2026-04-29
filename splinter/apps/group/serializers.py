@@ -26,6 +26,24 @@ class SimpleGroupSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name')
 
 
+class CreateGroupSerializer(serializers.ModelSerializer):
+    members = serializers.ListField(
+        child=FriendSerializerField(),
+        min_length=1,
+        max_length=settings.GROUP_MAX_ALLOWED_MEMBERS - 1,
+    )
+
+    class Meta:
+        model = Group
+        fields = ('name', 'members')
+
+    def create(self, validated_data):
+        members = validated_data.pop('members')
+        group = super().create(validated_data)
+        group.members.set(members)
+        return group
+
+
 class GroupOutstandingBalanceSerializer(OutstandingBalanceSerializer):
     user = SimpleUserSerializer(read_only=True)
     friend = SimpleUserSerializer(read_only=True)
