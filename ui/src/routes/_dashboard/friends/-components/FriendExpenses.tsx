@@ -1,5 +1,5 @@
 import { ApiRoutes } from '@/api-types';
-import { ExpenseListPanel } from '@/components/ExpenseList';
+import { ExpenseListPanel } from '@/features/ExpenseList';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export function FriendExpenses({ friend_uid }: { friend_uid: string }) {

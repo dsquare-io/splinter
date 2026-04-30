@@ -1,9 +1,9 @@
 import { createFileRoute, Navigate, Outlet } from '@tanstack/react-router';
 
-import BottomNav from '@/components/BottomNav.tsx';
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
-import Sidebar from '@/components/Sidebar.tsx';
-import useAuth, { AuthStatus } from '@/hooks/useAuth.ts';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { BottomNav } from '@/components/layout/BottomNav.tsx';
+import { Sidebar } from '@/components/layout/Sidebar.tsx';
+import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
 
 export const Route = createFileRoute('/_dashboard')({
   component: DashboardLayout,

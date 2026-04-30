@@ -9,11 +9,11 @@ import { useCachedChildren } from './useCachedChildren';
 type FieldArrayItemsRenderProps = {
   field: FieldArrayWithId;
   /**
-   * index of current item
+   * index of the current item
    */
   index: number;
   /**
-   * removes current item from field array
+   * removes the current item from a field array
    */
   remove: () => void;
 };

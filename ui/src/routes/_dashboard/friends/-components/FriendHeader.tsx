@@ -6,10 +6,10 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Avatar, Button } from '@/components/common';
-import { AddPaymentModal } from '@/components/modals/AddPayment.tsx';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
-import { Skeleton } from '@/components/Skeleton.tsx';
+import { Skeleton } from '@/components/layout/Skeleton.tsx';
+import { Avatar, Button } from '@/components/primitives';
+import { AddPaymentDialog } from '@/features/AddPaymentDialog';
+import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
@@ -80,7 +80,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
             <BanknotesIcon />
             Settle Up
           </Button>
-          <AddPaymentModal friend_uid={friend_uid} />
+          <AddPaymentDialog friend={friend} />
         </DialogTrigger>
       </div>
     </div>

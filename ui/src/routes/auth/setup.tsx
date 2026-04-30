@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import useAuth from '@/hooks/useAuth.ts';
-import AuthLayout from './-layout';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls/index.js';
+import { Button } from '@/components/primitives';
+import { useAuth } from '@/hooks/useAuth.ts';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/setup')({
   component: RootComponent,
@@ -26,33 +27,25 @@ function RootComponent() {
           await refetchProfile();
           return navigate({ to: '/friends' });
         }}
-        className="space-y-6"
+        className="space-y-4"
       >
         <FormRootErrors />
 
-        <TextFormField
+        <TextFormInput
+          required
           name="firstName"
-          required
-        >
-          <Label>First Name</Label>
-          <Input
-            type="text"
-            placeholder="Your first name"
-          />
-          <FieldError />
-        </TextFormField>
+          type="text"
+          placeholder="Your first name"
+          label="First Name"
+        />
 
-        <TextFormField
-          name="lastName"
+        <TextFormInput
           required
-        >
-          <Label>Last Name</Label>
-          <Input
-            type="text"
-            placeholder="Your last name"
-          />
-          <FieldError />
-        </TextFormField>
+          name="lastName"
+          type="text"
+          placeholder="Your last name"
+          label="Last Name"
+        />
 
         <Button
           className="w-full"

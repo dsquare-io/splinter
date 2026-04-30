@@ -6,14 +6,14 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Avatar, Button } from '@/components/common';
-import { AddPaymentModal } from '@/components/modals/AddPayment';
-import { GroupSettingsModal } from '@/components/modals/GroupSettings';
-import { InviteGroupMembersModal } from '@/components/modals/InviteGroupMembers';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList';
-import { Skeleton } from '@/components/Skeleton.tsx';
+import { Skeleton } from '@/components/layout/Skeleton.tsx';
+import { Avatar, Button } from '@/components/primitives';
+import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
+import { AddPaymentDialog } from '@/features/AddPaymentDialog';
+import { GroupSettingsDialog } from '@/features/GroupSettingsDialog';
+import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import useAuth from '@/hooks/useAuth.ts';
+import { useAuth } from '@/hooks/useAuth.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export function GroupHeader({ group_uid }: { group_uid: string }) {
@@ -87,7 +87,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
             <BanknotesIcon />
             Settle Up
           </Button>
-          <AddPaymentModal group_uid={group_uid} />
+          <AddPaymentDialog group={group} />
         </DialogTrigger>
 
         <div className="flex-1" />
@@ -100,9 +100,9 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
             isDisabled={!group}
           >
             <UserPlusIcon />
-            Invite Member
+            Add Member
           </Button>
-          <InviteGroupMembersModal group_uid={group_uid} />
+          <AddGroupMemberDialog group={group} />
         </DialogTrigger>
         <DialogTrigger>
           <Button
@@ -114,7 +114,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
             <Cog8ToothIcon />
             Settings
           </Button>
-          <GroupSettingsModal group_uid={group_uid} />
+          {group && <GroupSettingsDialog group={group} />}
         </DialogTrigger>
       </div>
     </div>

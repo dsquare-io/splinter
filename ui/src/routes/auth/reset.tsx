@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Alert, Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import AuthLayout from './-layout';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls/index.js';
+import { Alert, Button } from '@/components/primitives';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/reset')({
   validateSearch: (search) => ({
@@ -58,33 +59,27 @@ function RootComponent() {
             return { password, uid, token };
           }}
           onSubmitSuccess={() => setSubmitted(true)}
-          className="space-y-6"
+          className="space-y-4"
         >
           <FormRootErrors />
 
-          <TextFormField
+          <TextFormInput
+            required
             name="password"
-            required
-          >
-            <Label>New Password</Label>
-            <Input
-              type="password"
-              placeholder="Enter new password"
-            />
-            <FieldError />
-          </TextFormField>
+            type="password"
+            autoComplete="new-password"
+            placeholder="Enter your new password"
+            label="New Password"
+          />
 
-          <TextFormField
-            name="confirmPassword"
+          <TextFormInput
             required
-          >
-            <Label>Confirm Password</Label>
-            <Input
-              type="password"
-              placeholder="Confirm new password"
-            />
-            <FieldError />
-          </TextFormField>
+            name="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Confirm your password"
+            label="Confirm Password"
+          />
 
           <Button
             className="w-full"

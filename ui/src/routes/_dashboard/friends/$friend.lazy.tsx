@@ -1,6 +1,6 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { FriendExpenses } from './-components/FriendExpenses.tsx';
 import { FriendHeader } from './-components/FriendHeader.tsx';
 

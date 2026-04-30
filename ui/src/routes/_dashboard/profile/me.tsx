@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 
-import { Avatar } from '@/components/common';
-import useAuth from '@/hooks/useAuth.ts';
+import { Avatar } from '@/components/primitives';
+import { useAuth } from '@/hooks/useAuth.ts';
 import ChangePassword from './-change-password.tsx';
 import PersonalInfo from './-personal-info.tsx';
 import Preferences from './-preferences.tsx';

@@ -4,8 +4,8 @@ import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { axiosInstance } from '@/axios';
-import { FormRootErrors } from '@/components/form';
-import AuthLayout from './-layout';
+import { ApiErrorAlert } from '@/components/ApiErrorAlert.js';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/verify')({
   component: RootComponent,
@@ -19,11 +19,7 @@ export const Route = createFileRoute('/auth/verify')({
 function RootComponent() {
   const navigate = useNavigate();
   const { code } = Route.useSearch();
-  const [error, setError] = useState<string>('');
-
-  if (!code) {
-    return <Navigate to="/auth/login" />;
-  }
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!code) return;
@@ -33,15 +29,19 @@ function RootComponent() {
         token: code,
       })
       .then(() => navigate({ to: '/friends' }))
-      .catch(() => setError('Unable to verify email. Link is invalid or expired.'));
-  }, [code]);
+      .catch((e) => setError(e));
+  }, [code, navigate]);
+
+  if (!code) {
+    return <Navigate to="/auth/login" />;
+  }
 
   return (
     <AuthLayout
       subtitle="Please wait we are verifying your email address"
       title="Verifying email"
     >
-      <FormRootErrors error={error} />
+      <ApiErrorAlert error={error} />
     </AuthLayout>
   );
 }

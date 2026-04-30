@@ -128,6 +128,7 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
       >
         <form
           {...elementProps}
+          noValidate={!shouldUseNativeValidation}
           data-form-name={props.name}
           ref={ref}
           onSubmit={control.handleSubmit(async (data, event) => {

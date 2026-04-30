@@ -5,20 +5,19 @@ import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-rout
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
-import { CreateGroupModal } from '@/components/modals/CreateGroup';
-import { GroupListItemSkeleton, Skeleton } from '@/components/Skeleton.tsx';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { GroupListItemSkeleton, Skeleton } from '@/components/layout/Skeleton.tsx';
+import { Button, Money } from '@/components/primitives';
+import { CreateGroupDialog } from '@/features/CreateGroupDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { EmptyGroups } from './groups/-components/EmptyGroups';
 import GroupListItem from './groups/-components/GroupListItem';
 
 export const Route = createLazyFileRoute('/_dashboard/groups')({
-  component: GroupsLayout,
+  component: GroupListRouteComponent,
 });
 
-function GroupsLayout() {
+function GroupListRouteComponent() {
   const matchRoute = useMatchRoute();
   const isRootLayout = matchRoute({ to: '/groups' });
   const { data: preferredCurrency, isPending: currencyPending } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
@@ -59,7 +58,7 @@ function GroupsLayout() {
                     {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
                       ? 'you lent '
                       : 'you borrowed '}
-                    <Currency
+                    <Money
                       currency={preferredCurrency!}
                       value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
                     />
@@ -78,7 +77,7 @@ function GroupsLayout() {
               >
                 Create Group
               </Button>
-              <CreateGroupModal />
+              <CreateGroupDialog />
             </DialogTrigger>
           </div>
         </div>

@@ -1,0 +1,60 @@
+import { useFormContext } from 'react-hook-form';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { ApiRoutes } from '@/api-types';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { useAuth } from '@/hooks/useAuth.ts';
+
+export interface Participant {
+  uid: string;
+  urn: string;
+  name: string;
+  initials?: string;
+  type: 'group' | 'friend' | 'user';
+}
+
+export function useExpenseParticipants(): Participant[] {
+  const { watch, getValues } = useFormContext();
+  const { currentUser } = useAuth();
+
+  const participants = getValues('participants:del') as Participant[];
+  watch('participants:del');
+
+  const isGroup = participants?.[0]?.type === 'group';
+
+  const { data: groupDetail } = useQuery(
+    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: participants?.[0]?.uid }, undefined, {
+      enabled: isGroup,
+    })
+  );
+
+  if (isGroup) {
+    return (
+      groupDetail?.members?.map((member) => ({
+        uid: member.uid,
+        urn: member.urn,
+        name: member.name,
+        type: 'friend',
+      })) ?? []
+    );
+  }
+
+  const currentUserParticipants: Participant[] = currentUser
+    ? [
+        {
+          uid: currentUser!.uid,
+          urn: currentUser!.urn,
+          initials: currentUser!.name,
+          name: `Me (${currentUser!.name})`,
+          type: 'user',
+        },
+      ]
+    : [];
+
+  if (!participants || participants.length === 0) {
+    return currentUserParticipants;
+  }
+
+  return [...currentUserParticipants, ...participants];
+}

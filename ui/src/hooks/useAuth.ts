@@ -41,7 +41,7 @@ function fetchProfile(invalidate = false): Promise<User> {
   return profileRequest;
 }
 
-export default function useAuth() {
+export function useAuth() {
   const [currentUser, setCurrentUser] = useState<User | null>(cachedUser);
   const [accessToken, setAccessTokenState] = useState<string | null>(getAccessToken);
   const [refreshToken, setRefreshTokenState] = useState<string | null>(getRefreshToken);

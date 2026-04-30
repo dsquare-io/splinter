@@ -1,4 +1,4 @@
-import { EmptyState } from '@/components/common';
+import { EmptyState } from '@/components/primitives';
 
 const MESSAGES = [
   { icon: '🍕', title: 'No groups yet', body: "Create one. Someone's gotta organize the pizza money." },

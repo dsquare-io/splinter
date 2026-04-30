@@ -51,7 +51,7 @@ export function drfToFieldErrors(error: unknown) {
           type: 'validate',
           message: (error as { message: string; code: string }).message,
         };
-      } else if (typeof error === 'string') {
+      } else {
         formErrors[fieldName || 'root'] = {
           type: 'validate',
           message: error,
@@ -73,7 +73,7 @@ export function drfToFieldErrors(error: unknown) {
   }
 
   if (error.response && error.response.data) {
-    // got a response from server with field errors
+    // got a response from the server with field errors
     // so decorate errors on respective fields/form root
     return handleObject(error.response.data);
   }

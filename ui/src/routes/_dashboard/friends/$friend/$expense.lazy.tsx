@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
-import ExpenseDetail from '@/components/modals/ExpenseDetail';
+import { ExpenseDetail } from '@/features/ExpenseDetail';
 
 export const Route = createLazyFileRoute('/_dashboard/friends/$friend/$expense')({
   component: RootComponent,

@@ -1,4 +1,4 @@
-import { EmptyState } from '@/components/common';
+import { EmptyState } from '@/components/primitives';
 
 const MESSAGES = [
   { icon: '⚖️', title: 'All settled up', body: 'No outstanding balances. Everyone is even.' },

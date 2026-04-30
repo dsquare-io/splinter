@@ -1,0 +1,249 @@
+import { useEffect, useReducer, useRef, useState } from 'react';
+import {
+  Button as BaseButton,
+  Collection,
+  ComboBox,
+  Header,
+  Input,
+  Label,
+  ListBox,
+  ListBoxItem,
+  ListBoxSection,
+  Popover,
+  Button as RACButton,
+} from 'react-aria-components';
+import { useFormContext } from 'react-hook-form';
+
+import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useParams } from '@tanstack/react-router';
+
+import { ApiRoutes } from '@/api-types';
+import { Friend, Group } from '@/api-types/components/schemas';
+import { Avatar } from '@/components/primitives';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { type Participant } from './useExpenseParticipants.ts';
+
+type participantsAction =
+  | { type: 'select_group'; data: Group }
+  | { type: 'select_friend'; data: Friend }
+  | {
+      type: 'remove';
+      urn: string;
+    };
+
+function participantsReducer(state: Participant[], action: participantsAction): Participant[] {
+  if (action.type === 'remove') {
+    return state.filter((p) => p.urn !== action.urn);
+  }
+
+  if (action.type === 'select_group') {
+    return [
+      { type: 'group', uid: action.data.uid, urn: action.data.urn, name: action.data.name },
+    ] satisfies Participant[];
+  }
+
+  if (
+    action.type === 'select_friend' &&
+    state[0]?.type === 'group' &&
+    !state.find((p) => p.urn === action.data.urn)
+  ) {
+    return [
+      {
+        type: 'friend',
+        uid: action.data.uid,
+        urn: action.data.urn,
+        name: action.data.name,
+      },
+    ] satisfies Participant[];
+  }
+
+  if (action.type === 'select_friend' && !state.find((p) => p.urn === action.data.urn)) {
+    return [
+      ...state.filter((p) => p.urn !== action.data.urn),
+      {
+        type: 'friend',
+        uid: action.data.uid,
+        urn: action.data.urn,
+        name: action.data.name,
+      },
+    ] satisfies Participant[];
+  }
+  return state;
+}
+
+export function ParticipantsSelector() {
+  const params = useParams({ strict: false });
+  const { setValue } = useFormContext();
+
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
+  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
+
+  const [selectedParticipants, dispatch] = useReducer(participantsReducer, [] as Participant[]);
+  useEffect(() => {
+    setValue('participants:del', selectedParticipants);
+    if (selectedParticipants[0]?.type === 'group') {
+      setValue('group', selectedParticipants[0].uid);
+    } else {
+      setValue('group', undefined);
+    }
+  }, [setValue, selectedParticipants]);
+
+  const [fieldState, setFieldState] = useState({
+    selectedKey: null,
+    inputValue: '',
+  });
+
+  const onInputChange = (value: string) => {
+    setFieldState((prevState) => ({
+      inputValue: value,
+      selectedKey: value === '' ? null : prevState.selectedKey,
+    }));
+  };
+
+  useEffect(() => {
+    const friend = friends?.results?.find((f) => f.uid === (params as { friend: string }).friend);
+    const group = groups?.results?.find((g) => g.uid === (params as { group: string }).group);
+
+    if (friend) {
+      dispatch({ type: 'select_friend', data: friend });
+    } else if (group) {
+      dispatch({ type: 'select_group', data: group });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!groups?.results || !friends?.results) return;
+
+  const comboboxItems = [
+    { name: 'Groups', children: groups.results },
+    { name: 'Friends', children: friends.results },
+  ] as const;
+
+  return (
+    <div
+      ref={triggerRef}
+      className="-mx-4 border-t border-b border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
+    >
+      <ComboBox
+        className="flex flex-wrap items-center gap-x-2 gap-y-1"
+        aria-label="participants"
+        defaultItems={comboboxItems}
+        value={fieldState.selectedKey}
+        inputValue={fieldState.inputValue}
+        onInputChange={onInputChange}
+        onChange={(key) => {
+          const friend = friends?.results?.find((f) => f.urn === key);
+          const group = groups?.results?.find((g) => g.urn === key);
+
+          if (friend) {
+            dispatch({ type: 'select_friend', data: friend });
+          } else if (group) {
+            dispatch({ type: 'select_group', data: group });
+          }
+
+          setFieldState({
+            selectedKey: null,
+            inputValue: '',
+          });
+        }}
+      >
+        <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
+        {selectedParticipants.map((item) => (
+          <div
+            key={item.urn}
+            className="react-aria-Tag data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300 flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden"
+          >
+            <Avatar
+              className="size-6 rounded-none bg-neutral-50"
+              fallback={item.name}
+            />
+            {item.name}
+            <RACButton
+              className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-hidden"
+              onPress={() => {
+                dispatch({ type: 'remove', urn: item.urn });
+              }}
+            >
+              <XMarkIcon className="size-4" />
+            </RACButton>
+          </div>
+        ))}
+        {/* todo: fix tag group is throwing fix it later. */}
+        {/*<TagGroup*/}
+        {/*  selectionMode="none"*/}
+        {/*  aria-label="Participants"*/}
+        {/*  className="react-aria-TagGroup contents"*/}
+        {/*  onRemove={(keys) => {*/}
+        {/*    keys.forEach((key) => dispatch({type: 'remove', urn: key.toString()}));*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <TagList*/}
+        {/*    // items={selectedParticipants}*/}
+        {/*    className="react-aria-TagList contents"*/}
+        {/*  >*/}
+        {/*    {selectedParticipants.map((item) => (*/}
+        {/*      <Tag*/}
+        {/*        textValue={item.name}*/}
+        {/*        className="react-aria-Tag flex shrink-0 cursor-default items-center gap-x-2 overflow-hidden rounded-md border border-gray-300 text-sm text-neutral-700 focus:outline-hidden data-focused:border-brand-300 data-focused:bg-brand-100 [&[data-focused]_span]:bg-brand-100 [&[data-focused]_span]:ring-brand-300"*/}
+        {/*      >*/}
+        {/*        <Avatar*/}
+        {/*          className="size-6 rounded-none bg-neutral-50"*/}
+        {/*          fallback={item.name}*/}
+        {/*        />*/}
+        {/*        {item.name}*/}
+        {/*        <RACButton*/}
+        {/*          className="-ml-2 px-2 py-1 text-neutral-800 focus:outline-hidden"*/}
+        {/*          slot="remove"*/}
+        {/*        >*/}
+        {/*          <XMarkIcon className="size-4" />*/}
+        {/*        </RACButton>*/}
+        {/*      </Tag>*/}
+        {/*    ))}*/}
+        {/*  </TagList>*/}
+        {/*</TagGroup>*/}
+        <div className="-my-1 flex min-w-25 grow items-center">
+          <Input
+            placeholder="Search friends or groups..."
+            className="grow py-1.5 focus:outline-hidden"
+            onKeyDown={() => {}}
+          />
+          <BaseButton className="flex items-center rounded-r-md py-2.5 focus:outline-hidden">
+            <ChevronDownIcon
+              className="size-4 text-gray-500"
+              aria-hidden="true"
+            />
+          </BaseButton>
+        </div>
+
+        <Popover
+          crossOffset={16}
+          triggerRef={triggerRef}
+          className="react-aria-Popover w-[min(464px,100vw)] overflow-y-auto"
+        >
+          <ListBox className="react-aria-ListBox -mx-3 -my-4">
+            {(section: (typeof comboboxItems)[number]) => (
+              <ListBoxSection id={section.name}>
+                <Header>{section.name}</Header>
+                <Collection items={section.children as (Friend | Group)[]}>
+                  {(item) => (
+                    <ListBoxItem
+                      id={item.urn}
+                      textValue={item.name}
+                    >
+                      <Avatar
+                        className="size-7 bg-neutral-50"
+                        fallback={item.name}
+                      />
+                      {item.name}
+                    </ListBoxItem>
+                  )}
+                </Collection>
+              </ListBoxSection>
+            )}
+          </ListBox>
+        </Popover>
+      </ComboBox>
+    </div>
+  );
+}

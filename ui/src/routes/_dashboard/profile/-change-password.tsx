@@ -1,6 +1,7 @@
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls/index.js';
+import { Button } from '@/components/primitives';
 
 export default function ChangePassword() {
   return (
@@ -29,50 +30,36 @@ export default function ChangePassword() {
       onSubmitSuccess={(_, formRef) => {
         formRef.reset();
       }}
-      className="md:col-span-2"
+      className="space-y-4 md:col-span-2"
     >
       <FormRootErrors />
 
-      <div className="space-y-6">
-        <TextFormField
-          name="oldPassword"
-          required
-        >
-          <Label>Old Password</Label>
-          <Input
-            type="password"
-            placeholder="You old password"
-            autoComplete="current-password"
-          />
-          <FieldError />
-        </TextFormField>
+      <TextFormInput
+        required
+        name="oldPassword"
+        type="password"
+        autoComplete="current-password"
+        placeholder="You old password"
+        label="Old Password"
+      />
 
-        <TextFormField
-          name="password"
-          required
-        >
-          <Label>Password</Label>
-          <Input
-            type="password"
-            placeholder="Your new password"
-            autoComplete="new-password"
-          />
-          <FieldError />
-        </TextFormField>
+      <TextFormInput
+        required
+        name="password"
+        type="password"
+        autoComplete="new-password"
+        placeholder="Enter your new password"
+        label="Password"
+      />
 
-        <TextFormField
-          name="password2"
-          required
-        >
-          <Label>Password again</Label>
-          <Input
-            type="password"
-            placeholder="Your new password again"
-            autoComplete="new-password"
-          />
-          <FieldError />
-        </TextFormField>
-      </div>
+      <TextFormInput
+        required
+        name="password2"
+        type="password"
+        autoComplete="new-password"
+        placeholder="Confirm your password"
+        label="Confirm Password"
+      />
 
       <Button
         className="mt-8"

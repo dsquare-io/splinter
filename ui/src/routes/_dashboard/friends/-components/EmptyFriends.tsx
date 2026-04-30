@@ -1,4 +1,4 @@
-import { EmptyState } from '@/components/common';
+import { EmptyState } from '@/components/primitives';
 
 const MESSAGES = [
   { icon: '🏝️', title: 'Flying solo', body: "No friends yet. Who's going to split the bill?" },

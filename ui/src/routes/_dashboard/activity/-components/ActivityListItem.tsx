@@ -3,8 +3,7 @@ import clsx from 'clsx';
 import { formatDistanceToNow } from 'date-fns';
 
 import { Activity, SimpleCurrency } from '@/api-types';
-import { Avatar } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
+import { Avatar, Money } from '@/components/primitives';
 
 type ActivityListItemProps = {
   activity: Activity;
@@ -18,7 +17,7 @@ function OutstandingBalance({ balance, currency }: { balance?: string | null; cu
   return +balance > 0 ? (
     <p className="mt-1 font-normal text-green-700">
       You received{' '}
-      <Currency
+      <Money
         currency={currency}
         value={balance}
       />
@@ -26,7 +25,7 @@ function OutstandingBalance({ balance, currency }: { balance?: string | null; cu
   ) : (
     <p className="mt-1 font-normal text-red-600">
       You borrowed{' '}
-      <Currency
+      <Money
         currency={currency}
         value={balance}
       />

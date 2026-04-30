@@ -2,10 +2,11 @@ import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { setHeaders } from '@/axios';
-import { Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import useAuth from '@/hooks/useAuth';
-import AuthLayout from './-layout';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls';
+import { Button } from '@/components/primitives';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/accept')({
   component: RootComponent,
@@ -55,35 +56,27 @@ function RootComponent() {
             password: data['password'],
           };
         }}
-        className="space-y-6"
+        className="space-y-4"
       >
         <FormRootErrors />
 
-        <TextFormField
+        <TextFormInput
+          required
           name="password"
-          required
-        >
-          <Label>Password</Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            placeholder="Enter your new password"
-          />
-          <FieldError />
-        </TextFormField>
+          type="password"
+          autoComplete="new-password"
+          placeholder="Enter your new password"
+          label="Password"
+        />
 
-        <TextFormField
-          name="password2"
+        <TextFormInput
           required
-        >
-          <Label>Confirm Password</Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            placeholder="Please confirm your password"
-          />
-          <FieldError />
-        </TextFormField>
+          name="password2"
+          type="password"
+          autoComplete="new-password"
+          placeholder="Confirm your password"
+          label="Confirm Password"
+        />
 
         <Button
           className="w-full"

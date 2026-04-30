@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Alert, Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import AuthLayout from './-layout';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls';
+import { Alert, Button } from '@/components/primitives';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/forget')({
   component: RootComponent,
@@ -28,21 +29,17 @@ function RootComponent() {
           action={ApiRoutes.FORGET_PASSWORD}
           method="POST"
           onSubmitSuccess={() => setSubmitted(true)}
-          className="space-y-6"
+          className="space-y-4"
         >
           <FormRootErrors />
 
-          <TextFormField
-            name="email"
+          <TextFormInput
             required
-          >
-            <Label>Email</Label>
-            <Input
-              type="email"
-              placeholder="Enter your email"
-            />
-            <FieldError />
-          </TextFormField>
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            label="Email"
+          />
 
           <Button
             className="w-full"

@@ -3,9 +3,8 @@ import clx from 'clsx';
 import { Link } from '@tanstack/react-router';
 
 import { Group } from '@/api-types/components/schemas';
-import { Avatar } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
+import { Avatar, Money } from '@/components/primitives';
+import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 
 export default function GroupListItem({
   uid,
@@ -37,7 +36,7 @@ export default function GroupListItem({
             <div className="text-xs text-gray-400">
               {parseFloat(aggregatedOutstandingBalance?.amount ?? '0') > 0 ? 'You lent' : 'You borrowed'}
             </div>
-            <Currency
+            <Money
               currency={aggregatedOutstandingBalance?.currency ?? ''}
               value={aggregatedOutstandingBalance?.amount ?? '0'}
             />

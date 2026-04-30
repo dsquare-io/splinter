@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { Paths } from '@/api-types/routePaths.ts';
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
-import { ActivityListItemSkeleton } from '@/components/Skeleton.tsx';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { ActivityListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import ActivityListItem from './activity/-components/ActivityListItem.tsx';
 import { EmptyActivity } from './activity/-components/EmptyActivity.tsx';

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
-import { ConfirmationProvider } from '@/hooks/useConfirmation.tsx';
+import { ConfirmationProvider } from '@/components/ConfirmationProvider';
 import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
 

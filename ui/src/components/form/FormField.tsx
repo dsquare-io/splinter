@@ -10,18 +10,23 @@ import {
   SwitchContext,
   TextFieldContext,
 } from 'react-aria-components';
-import { useController, type RegisterOptions, type UseControllerProps } from 'react-hook-form';
+import {
+  useController,
+  type RegisterOptions,
+  type UseControllerProps,
+  type ValidationRule,
+} from 'react-hook-form';
 
 import { FieldErrorContext } from './context';
 import { useScopedFieldName } from './FieldScope';
 import { getFocusableRef } from './utils';
-import { normalizeValidationRules } from './validations';
+import { normalizeValidationRules, patternsMap } from './validations';
 
 export type FieldProps = {
   children?: ReactNode;
   required?: RegisterOptions['required'];
   deps?: RegisterOptions['deps'];
-  pattern?: RegisterOptions['pattern'];
+  pattern?: ValidationRule<RegExp | string> | keyof typeof patternsMap;
   min?: RegisterOptions['min'];
   max?: RegisterOptions['max'];
   minLength?: RegisterOptions['minLength'];
@@ -169,6 +174,7 @@ export function FormField({
           ComboBoxContext,
           {
             selectedKey: value,
+            value,
             onBlur,
             onChange,
             isInvalid: invalid,

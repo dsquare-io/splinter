@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
-import useAuth, { AuthStatus } from '@/hooks/useAuth.ts';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
 
 function TopLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === 'pending' });

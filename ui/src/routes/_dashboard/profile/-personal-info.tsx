@@ -1,9 +1,8 @@
-import { TextField } from 'react-aria-components';
-
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import useAuth from '@/hooks/useAuth.ts';
+import { FieldError, Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls';
+import { Button, Input, Label } from '@/components/primitives';
+import { useAuth } from '@/hooks/useAuth.ts';
 
 export default function PersonalInfo() {
   const { currentUser, refetchProfile } = useAuth();
@@ -19,44 +18,36 @@ export default function PersonalInfo() {
     >
       <FormRootErrors />
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="items-center space-y-6 *:w-full @lg:flex @lg:space-y-0 @lg:space-x-3">
-          <TextFormField
+          <TextFormInput
+            required
             name="firstName"
-            required
-          >
-            <Label>First Name</Label>
-            <Input
-              type="text"
-              placeholder="Your first name"
-            />
-            <FieldError />
-          </TextFormField>
+            type="text"
+            placeholder="Your first name"
+            label="First Name"
+          />
 
-          <TextFormField
-            name="lastName"
+          <TextFormInput
             required
-          >
-            <Label>Last Name</Label>
-            <Input
-              type="text"
-              placeholder="Your last name"
-            />
-            <FieldError />
-          </TextFormField>
+            name="lastName"
+            type="text"
+            placeholder="Your last name"
+            label="Last Name"
+          />
         </div>
 
-        <TextField isReadOnly>
+        <div>
           <div className="flex items-center justify-between">
             <Label>Email</Label>
-            {currentUser.isVerified && <div className="text-sm text-red-600">Not verified</div>}
+            {!currentUser.isVerified && <div className="text-sm text-red-600">Not verified</div>}
           </div>
           <Input
             type="email"
             value={currentUser.email!}
           />
           <FieldError />
-        </TextField>
+        </div>
       </div>
 
       <Button

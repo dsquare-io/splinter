@@ -8,7 +8,7 @@ import {
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { createLazyFileRoute, Link, Navigate } from '@tanstack/react-router';
 
-import { Avatar } from '@/components/common';
+import { Avatar } from '@/components/primitives';
 
 export const Route = createLazyFileRoute('/_dashboard/activity/$activity')({
   component: RootComponent,

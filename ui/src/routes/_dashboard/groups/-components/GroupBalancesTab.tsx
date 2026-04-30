@@ -4,11 +4,10 @@ import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
 import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
-import { Avatar } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
-import { Skeleton } from '@/components/Skeleton.tsx';
+import { Skeleton } from '@/components/layout/Skeleton.tsx';
+import { Avatar, Money } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-import useAuth from '@/hooks/useAuth.ts';
+import { useAuth } from '@/hooks/useAuth.ts';
 import { EmptyBalances } from './EmptyBalances.tsx';
 
 interface Props {
@@ -84,7 +83,7 @@ export function GroupBalancesTab({ group_uid }: Props) {
                       ) : (
                         <span className="text-gray-500"> borrowed </span>
                       )}
-                      <Currency
+                      <Money
                         currency={e.currency}
                         value={e.amount}
                       />

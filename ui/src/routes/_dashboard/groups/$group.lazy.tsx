@@ -1,6 +1,6 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { GroupHeader } from './-components/GroupHeader';
 import { GroupTabs } from './-components/GroupTabs';
 

@@ -5,14 +5,13 @@ import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-rout
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
-import ErrorBoundary from '@/components/ErrorBoundary.tsx';
-import { AddFriendModal } from '@/components/modals/AddFriend.tsx';
-import { FriendListItemSkeleton, Skeleton } from '@/components/Skeleton.tsx';
+import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { FriendListItemSkeleton, Skeleton } from '@/components/layout/Skeleton.tsx';
+import { Button, Money } from '@/components/primitives';
+import { AddFriendModal } from '@/features/AddFriendDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { EmptyFriends } from './friends/-components/EmptyFriends.tsx';
-import FriendListItem from './friends/-components/FriendListItem.tsx';
+import { FriendListItem } from './friends/-components/FriendListItem.tsx';
 
 export const Route = createLazyFileRoute('/_dashboard/friends')({
   component: FriendsLayout,
@@ -60,7 +59,7 @@ function FriendsLayout() {
                     {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
                       ? 'you lent '
                       : 'you borrowed '}
-                    <Currency
+                    <Money
                       currency={preferredCurrency!}
                       value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
                     />

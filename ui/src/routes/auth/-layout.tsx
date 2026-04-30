@@ -1,14 +1,14 @@
 import { ReactNode } from 'react';
 
-import Logo from '@/Logo.tsx';
+import Logo from '@/components/Logo.tsx';
 
-interface Props {
+type AuthLayoutProps = {
   children?: ReactNode;
   title: string;
   subtitle?: string;
-}
+};
 
-export default function AuthLayout({ children, title, subtitle }: Props) {
+export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
     <>
       <div className="flex min-h-full flex-1 items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">

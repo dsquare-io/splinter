@@ -3,16 +3,10 @@ import clx from 'clsx';
 import { Link } from '@tanstack/react-router';
 
 import { Friend } from '@/api-types/components/schemas';
-import { Avatar } from '@/components/common';
-import Currency from '@/components/Currency.tsx';
-import { OutstandingBalanceList } from '@/components/OutstandingBalanceList.tsx';
+import { Avatar, Money } from '@/components/primitives';
+import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 
-export default function FriendListItem({
-  name,
-  uid,
-  aggregatedOutstandingBalance,
-  outstandingBalances,
-}: Friend) {
+export function FriendListItem({ name, uid, aggregatedOutstandingBalance, outstandingBalances }: Friend) {
   return (
     <Link
       to="/friends/$friend"
@@ -37,7 +31,7 @@ export default function FriendListItem({
             <div className="text-xs text-gray-400">
               {+aggregatedOutstandingBalance.amount > 0 ? 'You lent' : 'You borrowed'}
             </div>
-            <Currency
+            <Money
               currency={aggregatedOutstandingBalance.currency}
               value={aggregatedOutstandingBalance.amount}
             />

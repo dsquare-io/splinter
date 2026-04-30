@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Button } from '@/components/common';
-import { FieldError, Form, FormRootErrors, Input, Label, TextFormField } from '@/components/form';
-import useAuth from '@/hooks/useAuth';
-import AuthLayout from './-layout';
+import { Form, FormRootErrors } from '@/components/form';
+import { TextFormInput } from '@/components/form-controls/index.js';
+import { Button } from '@/components/primitives';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/login')({
   component: RootComponent,
@@ -22,33 +23,25 @@ function RootComponent() {
           setToken({ access: res.data.accessToken, refresh: res.data.refreshToken });
           window.location.href = '/friends';
         }}
-        className="space-y-6"
+        className="space-y-4"
       >
         <FormRootErrors />
 
-        <TextFormField
+        <TextFormInput
+          required
           name="username"
-          required
-        >
-          <Label>Username</Label>
-          <Input
-            type="text"
-            placeholder="Enter your username"
-          />
-          <FieldError />
-        </TextFormField>
+          type="text"
+          placeholder="Enter your username"
+          label="Username"
+        />
 
-        <TextFormField
-          name="password"
+        <TextFormInput
           required
-        >
-          <Label>Password</Label>
-          <Input
-            type="password"
-            placeholder="Enter your password"
-          />
-          <FieldError />
-        </TextFormField>
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          label="Password"
+        />
 
         <Link
           className="text-brand-600 hover:text-brand-700 mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium"
