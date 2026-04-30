@@ -1,5 +1,3 @@
-import { ListBoxItem } from 'react-aria-components';
-
 import { ApiRoutes, Currency } from '@/api-types';
 import { Form, FormRootErrors } from '@/components/form';
 import { SelectFormInput } from '@/components/form-controls';
@@ -21,21 +19,18 @@ export default function Preferences() {
     >
       <FormRootErrors />
 
-      <SelectFormInput
+      <SelectFormInput<Currency>
         name="currency"
         label="Currency"
         placeholder="Select your currency..."
-        defaultItems={currencies}
-      >
-        {(currency: Currency) => (
-          <ListBoxItem
-            id={currency.uid}
-            textValue={`${currency.country.flag} ${currency.uid}`}
-          >
-            {currency.country.flag} {currency.uid}
-          </ListBoxItem>
+        items={currencies}
+        textValuePropName="uid"
+        ItemComponent={({ item }) => (
+          <>
+            {item.country.flag} {item.uid}
+          </>
         )}
-      </SelectFormInput>
+      />
 
       <Button
         className="mt-8"
