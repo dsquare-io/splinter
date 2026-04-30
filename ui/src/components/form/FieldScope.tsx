@@ -5,6 +5,7 @@ const FieldScopeContext = createContext<string>('');
 /**
  * returns the scoped name of a field given the name of field.
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useScopedFieldName(name?: string): string {
   const baseName = useContext(FieldScopeContext) ?? '';
 

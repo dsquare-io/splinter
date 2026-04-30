@@ -129,7 +129,7 @@ function ExpenseItemShares() {
     }
 
     return () => clearErrors(sharesFieldName);
-  }, [register, sharesFieldName]);
+  }, [clearErrors, register, shares, sharesFieldName]);
 
   const { invalid, error } = getFieldState(sharesFieldName, formState);
 
