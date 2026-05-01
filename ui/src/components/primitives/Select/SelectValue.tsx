@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import type { ComponentType } from 'react';
 import { ComboBoxValue, Tag, TagGroup, TagList } from 'react-aria-components';
 
@@ -10,12 +11,14 @@ type SelectValueProps<T extends Record<string, any>> = {
   idPropName: string;
   textValuePropName: string;
   ItemComponent?: ComponentType<SelectItemRenderProps<T>>;
+  className?: string;
 };
 
 export function SelectValue<T extends Record<string, any>>({
   idPropName,
   textValuePropName,
   ItemComponent,
+  className,
 }: SelectValueProps<T>) {
   return (
     <ComboBoxValue<T>>
@@ -27,7 +30,7 @@ export function SelectValue<T extends Record<string, any>>({
           <TagGroup
             aria-label="Selected values"
             selectionMode="none"
-            className="react-aria-TagGroup mt-4 flex flex-wrap items-center gap-x-2 gap-y-1"
+            className={clsx('react-aria-TagGroup flex flex-wrap items-center gap-x-2 gap-y-1', className)}
             onRemove={(keys) => {
               // Remove keys from ComboBox state.
               if (Array.isArray(state.value)) {

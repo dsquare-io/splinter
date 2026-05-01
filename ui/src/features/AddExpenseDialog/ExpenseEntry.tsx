@@ -1,74 +1,53 @@
-import { Button as BaseButton, ComboBox, ListBox, ListBoxItem, Popover } from 'react-aria-components';
+import { useWatch } from 'react-hook-form';
 
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
-import { ChevronUpDownIcon } from '@heroicons/react/24/outline';
-
-import { FormField } from '@/components/form';
-import { Avatar, Button, Input, Label } from '@/components/primitives';
+import { SelectFormInput, TextFormInput } from '@/components/form-controls';
+import { Avatar, type SelectItemRenderProps } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
+import { Participant, useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ParticipantsSelector } from './ParticipantsSelector.tsx';
-import { Participant, useExpenseParticipants } from './useExpenseParticipants.ts';
 
-type ExpenseEntryProps = {
-  onNext?: () => void;
-};
-
-export function ExpenseEntry({ onNext }: ExpenseEntryProps) {
-  const { currentUser } = useAuth();
-  const participants = useExpenseParticipants();
-
+function ParticipantItem({ item }: SelectItemRenderProps<Participant>) {
   return (
     <>
-      <div className="grow space-y-4">
-        <ParticipantsSelector />
-
-        <FormField
-          name="paidBy"
-          defaultValue={currentUser?.uid}
-        >
-          <ComboBox items={participants}>
-            <Label>Paid By</Label>
-            <div className="relative">
-              <Input placeholder="Search your friends..." />
-              <BaseButton className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-hidden">
-                <ChevronUpDownIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </BaseButton>
-            </div>
-            <Popover className="react-aria-Popover w-(--trigger-width)">
-              <ListBox className="react-aria-ListBox -mx-4 -my-2 text-gray-800">
-                {(participant: Participant) => (
-                  <ListBoxItem
-                    id={participant.uid}
-                    className="react-aria-ListBoxItem"
-                    textValue={participant.name}
-                  >
-                    <Avatar
-                      className="size-7 bg-neutral-50"
-                      fallback={participant.initials || participant.name}
-                    />
-                    {participant.name}
-                  </ListBoxItem>
-                )}
-              </ListBox>
-            </Popover>
-          </ComboBox>
-        </FormField>
-
-        <ExpenseInputList />
-      </div>
-      <div className="-mx-4 mt-4 flex justify-end px-4 pt-2 sm:-mx-6 sm:px-6">
-        <Button
-          slot={null}
-          onPress={onNext}
-        >
-          Next
-          <ChevronRightIcon className="size-4" />
-        </Button>
-      </div>
+      <Avatar
+        className="size-7 bg-neutral-50"
+        fallback={item.initials || item.name}
+      />
+      {item.name}
     </>
+  );
+}
+
+export function ExpenseEntry() {
+  const { currentUser } = useAuth();
+  const { participants } = useParticipantsContext();
+  const expenses = useWatch({ name: 'expenses' });
+  const isMulti = (expenses?.length ?? 0) > 1;
+
+  return (
+    <div className="grow space-y-4">
+      <ParticipantsSelector />
+
+      <SelectFormInput
+        name="paidBy"
+        defaultValue={currentUser?.uid}
+        required
+        label="Paid By"
+        placeholder="Search participants..."
+        items={participants}
+        ItemComponent={ParticipantItem}
+      />
+
+      {isMulti && (
+        <TextFormInput
+          name="description"
+          label="Description"
+          placeholder="e.g. Dinner at restaurant"
+        />
+      )}
+
+      <ExpenseInputList />
+    </div>
   );
 }

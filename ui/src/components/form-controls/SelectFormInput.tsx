@@ -66,6 +66,7 @@ export function SelectFormInput<T extends Record<string, any>>({
           idPropName={idPropName}
           textValuePropName={textValuePropName}
           ItemComponent={ItemComponent}
+          className="mt-4"
         />
       )}
       <FieldError />

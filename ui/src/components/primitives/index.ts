@@ -1,6 +1,6 @@
 export { Alert } from './Alert';
 export { Avatar } from './Avatar';
-export { Button, IconButton, CloseDialogButton } from './Button';
+export { Button, IconButton } from './Button';
 export { Checkbox } from './Checkbox';
 export { Dialog, DialogHeader, useDialog } from './Dialog';
 export { Description } from './Description';
