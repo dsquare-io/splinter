@@ -1,5 +1,5 @@
 .react-aria-ModalOverlay {
-  @apply animate-in fixed inset-0 z-50 flex w-screen items-center justify-center bg-gray-500/75;
+  @apply fixed inset-0 z-50 flex w-screen items-end justify-center bg-gray-500/75 sm:items-center;
 
   &[data-entering] {
     @apply animate-in fade-in;
@@ -11,19 +11,19 @@
 }
 
 .react-aria-Modal {
-  @apply relative max-h-screen overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl sm:my-8 sm:w-full sm:p-6;
+  @apply relative w-full overflow-hidden rounded-t-2xl bg-white px-4 pt-5 pb-4 text-left shadow-xl max-sm:h-[92dvh] sm:my-8 sm:max-h-screen sm:rounded-lg sm:p-6;
 
   &[data-exiting] {
-    @apply animate-out slide-out-to-bottom-4 sm:zoom-out-95 sm:slide-out-to-bottom-0;
+    @apply animate-out slide-out-to-bottom sm:zoom-out-95 sm:slide-out-to-bottom-0;
   }
 
   &[data-entering] {
-    @apply animate-in slide-in-from-bottom-4 sm:zoom-in-95 sm:slide-in-from-bottom-0;
+    @apply animate-in slide-in-from-bottom sm:zoom-in-95 sm:slide-in-from-bottom-0;
   }
 }
 
 .react-aria-Drawer {
-  @apply fixed right-0 h-screen w-full max-w-lg overflow-auto bg-white px-4 pt-5 pb-4 text-left shadow-xl sm:p-6;
+  @apply fixed right-0 h-dvh w-full max-w-lg overflow-auto bg-white px-4 pt-5 pb-4 text-left shadow-xl sm:p-6;
 
   &[data-exiting] {
     @apply animate-out slide-out-to-right-8 fade-out-85;

@@ -8,7 +8,7 @@ import { fieldBorderStyles } from './style.ts';
 const inputStyles = tv({
   extend: fieldBorderStyles,
   base: [
-    'min-w-0 flex-1 bg-white text-sm text-gray-800 outline outline-0 disabled:text-gray-200',
+    'min-w-0 flex-1 bg-white text-base sm:text-sm text-gray-800 outline outline-0 disabled:text-gray-200',
     'placeholder:text-gray-500',
   ],
 });

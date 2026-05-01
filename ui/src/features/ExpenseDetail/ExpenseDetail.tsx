@@ -26,7 +26,10 @@ function ExpenseDetail({ expenseId, isOpen, onOpenChange }: ExpenseDetailProps, 
       isOpen={isOpen}
       onOpenChange={onOpenChange}
     >
-      <DialogHeader title="Expense Details" />
+      <DialogHeader
+        title="Expense Details"
+        backButton
+      />
 
       {isPending && (
         <div className="space-y-4">
