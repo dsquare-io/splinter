@@ -12,9 +12,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      tanstackRouter({
-        autoCodeSplitting: true,
-      }),
+      tanstackRouter(),
       react(),
       tailwindcss(),
       VitePWA({
