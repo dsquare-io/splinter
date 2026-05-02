@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useNavigate, useParams, useRouterState } from '@tanstack/react-router';
 
-import { Dialog, DialogHeader } from '@/components/primitives';
+import { Dialog } from '@/components/primitives';
 import { ExpenseActivity } from '@/features/ExpenseActivity';
 import { ExpenseDetail } from '@/features/ExpenseDetail';
+import { ExpenseDialogHeader } from './ExpenseDialogHeader.tsx';
 
 export function ExpenseDetailDialog() {
   const routeMatches = useRouterState({
@@ -45,10 +46,7 @@ export function ExpenseDetailDialog() {
       isOpen={isOpen}
       onOpenChange={setIsOpen}
     >
-      <DialogHeader
-        title="Expense Details"
-        backButton
-      />
+      <ExpenseDialogHeader expenseId={expense} />
 
       <ExpenseDetail expenseId={expense} />
 

@@ -36,7 +36,7 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
             <span className="font-medium text-gray-900">
               <UserLabel user={expense.createdBy} />
             </span>{' '}
-            created the expense.
+            {expense.type === 'payment' ? 'recorded this payment.' : 'created this expense.'}
           </p>
           {expense?.datetime && (
             <time

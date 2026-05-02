@@ -45,7 +45,14 @@ function RootComponent() {
     <>
       {activity && <ActivityDetailHeader activity={activity} />}
 
-      <div className="p-4">{expense_uid && <ExpenseDetail expenseId={expense_uid} />}</div>
+      <div className="p-4">
+        {expense_uid && (
+          <ExpenseDetail
+            expenseId={expense_uid}
+            group={activity?.group}
+          />
+        )}
+      </div>
     </>
   );
 }

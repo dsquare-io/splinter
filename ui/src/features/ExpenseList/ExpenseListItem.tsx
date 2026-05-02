@@ -1,5 +1,3 @@
-import clsx from 'clsx';
-
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
@@ -33,7 +31,7 @@ export function ExpenseListItem({ expense, detailRoute, detailRouteParams }: Exp
       {expense.type === 'expense' ? (
         <>
           <div className="flex-1">
-            <p className={clsx(hasSubExpense ? 'text-gray-900 italic' : 'text-gray-900')}>{description}</p>
+            <p className="text-gray-900">{description}</p>
             <div className="text-sm text-gray-500">
               <UserLabel user={expense.paidBy} />
               {' paid '}

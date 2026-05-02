@@ -13,7 +13,7 @@ type ExpenseItemsProps = {
 export function ExpenseItems({ expenseId }: ExpenseItemsProps) {
   const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
 
-  if (!expense) return null;
+  if (!expense || expense.type !== 'expense') return null;
 
   return (
     <div>
@@ -22,7 +22,7 @@ export function ExpenseItems({ expenseId }: ExpenseItemsProps) {
           defaultOpen
           key={expenseItem.uid}
         >
-          <div className="flex items-center gap-x-3 px-4 py-3 transition-colors">
+          <div className="flex items-center gap-x-3 py-3 transition-colors">
             <Collapsible.Trigger className="size-6 p-1 [&[data-state='closed']>svg]:-rotate-90">
               <ChevronDownIcon
                 className="size-4 text-gray-600 transition-transform hover:text-gray-800"
@@ -46,9 +46,7 @@ export function ExpenseItems({ expenseId }: ExpenseItemsProps) {
             />
           </Collapsible.Content>
 
-          {index < expense?.expenses.length - 1 && (
-            <hr className="mx-2 my-1.5 border-dashed border-gray-300" />
-          )}
+          {index < expense?.expenses.length - 1 && <hr className="my-1.5 border-dashed border-gray-300" />}
         </Collapsible.Root>
       ))}
     </div>
