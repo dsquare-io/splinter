@@ -38,7 +38,7 @@ class ActivityType:
         )
 
 
-CommentActivity = ActivityType(verb='comment', template='{actor} commented on {target}: {object}')
+CommentActivity = ActivityType(verb='comment', template='{actor} commented on {object}: {target}')
 
 
 @receiver(post_save, sender=Comment)
@@ -53,8 +53,8 @@ def handle_comment_save(instance: Comment, created: bool, **kwargs):
 
     CommentActivity.log(
         actor=instance.user_id,
-        target=original_activity,
+        target=instance,
         audience=audience,
         group=original_activity.group_id,
-        action_object=instance,
+        action_object=original_activity,
     )
