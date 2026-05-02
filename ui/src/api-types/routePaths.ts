@@ -1,4 +1,5 @@
 export const Paths = {
+  ACTIVITY_DETAIL: '/api/activities/{activity_uid}',
   ACTIVITY_LIST: '/api/activities',
   CHALLENGE_MFA_DEVICE: '/api/mfa/challenge/{device_type}',
   CHANGE_PASSWORD: '/api/user/password',
@@ -24,7 +25,6 @@ export const Paths = {
   MFA_STATIC_CODE_LIST: '/api/mfa/static',
   PASSWORD_LOGIN: '/api/authn/password',
   PAYMENT: '/api/payments',
-  PAYMENT_DETAIL: '/api/payments/{payment_uid}',
   PROFILE: '/api/user/profile',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
   RESET_PASSWORD: '/api/user/reset',

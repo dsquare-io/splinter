@@ -16,7 +16,6 @@ export interface Activity {
   readonly verb: string;
   readonly template: string;
   readonly isRead: boolean;
-  readonly isDelivered: boolean;
   /** Format: decimal */
   outstandingBalance?: string | null;
   readonly currency: SimpleCurrency;

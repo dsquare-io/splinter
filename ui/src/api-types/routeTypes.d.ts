@@ -16,6 +16,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/activities/{activity_uid}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Activity */
+    get: operations['RetrieveActivity'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/activities/{activity_uid}/comments': {
     parameters: {
       query?: never;
@@ -416,24 +433,6 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/payments/{payment_uid}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve Payment */
-    get: operations['RetrievePayment'];
-    put?: never;
-    post?: never;
-    /** Destroy Payment */
-    delete: operations['DestroyPayment'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
   '/api/user/currency': {
     parameters: {
       query?: never;
@@ -667,6 +666,54 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  RetrieveActivity: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        activity_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Activity'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
         };
       };
     };
@@ -1002,7 +1049,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Expense'];
+          'application/json': components['schemas']['ExpenseOrPayment'];
         };
       };
       /** @description Unauthorized */
@@ -2320,101 +2367,6 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  RetrievePayment: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        payment_uid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Payment'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Resource Not Found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['NotFound'];
-        };
-      };
-    };
-  };
-  DestroyPayment: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        payment_uid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Resource Not Found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['NotFound'];
         };
       };
     };
