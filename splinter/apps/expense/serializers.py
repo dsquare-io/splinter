@@ -81,6 +81,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
 
     class Meta:
         model = Expense
+        read_only_fields = ('is_deleted',)
         fields = (
             'uid',
             'urn',
@@ -91,6 +92,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'outstanding_balance',
             'expenses',
             'paid_by',
+            'is_deleted',
             'created_by',
         )
 
@@ -160,7 +162,19 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Expense
-        fields = ('uid', 'urn', 'datetime', 'description', 'amount', 'currency', 'created_by', 'sender', 'receiver')
+        read_only_fields = ('is_deleted',)
+        fields = (
+            'uid',
+            'urn',
+            'datetime',
+            'description',
+            'amount',
+            'currency',
+            'created_by',
+            'sender',
+            'receiver',
+            'is_deleted',
+        )
 
     @extend_schema_field(SimpleUserSerializer())
     def get_receiver(self, expense: Expense):

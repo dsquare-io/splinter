@@ -148,6 +148,7 @@ export interface Expense {
   readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
   readonly paidBy: SimpleUser;
+  readonly isDeleted: boolean;
   readonly createdBy: SimpleUser;
 }
 
@@ -345,6 +346,7 @@ export interface Payment {
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
+  readonly isDeleted: boolean;
 }
 
 export type PaymentTyped = {
