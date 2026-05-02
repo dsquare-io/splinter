@@ -28,10 +28,9 @@ class ActivityManager(Manager):
         activity_type: 'ActivityType',
         actor: Union[int, 'User'],
         target: Model,
-        audience: list[Union[int, 'User']] = None,
+        audience: list[Union[int, 'User']] | dict[int, dict] = None,
         group: Union[int, 'Group'] = None,
         action_object: Model | None = None,
-        audience_attrs: dict[int, dict] = None,
     ) -> 'Activity':
         activity = self.create(
             actor_id=actor if isinstance(actor, int) else actor.pk,
@@ -41,11 +40,14 @@ class ActivityManager(Manager):
             action_object=action_object,
         )
 
-        audience_user_ids = {actor if isinstance(actor, int) else actor.pk}
-        audience_user_ids.update(user if isinstance(user, int) else user.pk for user in audience or [])
-
-        if audience_attrs is None:
+        if isinstance(audience, dict):
+            audience_user_ids = set(audience.keys())
+            audience_attrs = audience
+        else:
+            audience_user_ids = {actor if isinstance(actor, int) else actor.pk}
             audience_attrs = {}
+
+        audience_user_ids.update(user if isinstance(user, int) else user.pk for user in audience or [])
 
         ActivityAudience.objects.bulk_create(
             [

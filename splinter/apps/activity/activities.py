@@ -24,17 +24,15 @@ class ActivityType:
         self,
         actor: Union[int, 'User'],
         target: Model,
-        audience: list[Union[int, 'User']] = None,
+        audience: list[Union[int, 'User']] | dict[int, dict] = None,
         group: Union[int, 'Group'] = None,
         action_object: Model | None = None,
-        audience_attrs: dict[int, dict] = None,
     ) -> 'Activity':
         return Activity.objects.log(
             activity_type=self,
             actor=actor,
             target=target,
             audience=audience,
-            audience_attrs=audience_attrs,
             group=group,
             action_object=action_object,
         )
@@ -53,7 +51,7 @@ def handle_comment_save(instance: Comment, created: bool, **kwargs):
     audience = list(original_activity.audience.values_list('pk', flat=True))
     audience.append(original_activity.actor_id)
 
-    return CommentActivity.log(
+    CommentActivity.log(
         actor=instance.user_id,
         target=original_activity,
         audience=audience,
