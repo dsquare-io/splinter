@@ -15,6 +15,8 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
   const { currentUser } = useAuth();
   const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
 
+  if (!expense) return null;
+
   return (
     <div>
       <h3 className="mb-4 px-4 text-sm font-medium">Activity Log</h3>
