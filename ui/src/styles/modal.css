@@ -11,7 +11,7 @@
 }
 
 .react-aria-Modal {
-  @apply relative w-full overflow-hidden rounded-t-2xl bg-white px-4 pt-5 pb-4 text-left shadow-xl max-sm:h-[92dvh] sm:my-8 sm:max-h-screen sm:rounded-lg sm:p-6;
+  @apply relative w-full overflow-hidden rounded-t-2xl bg-white text-left shadow-xl sm:my-8 sm:max-h-[90dvh] sm:rounded-lg;
 
   &[data-exiting] {
     @apply animate-out slide-out-to-bottom sm:zoom-out-95 sm:slide-out-to-bottom-0;
@@ -23,7 +23,7 @@
 }
 
 .react-aria-Drawer {
-  @apply fixed right-0 h-dvh w-full max-w-lg overflow-auto bg-white px-4 pt-5 pb-4 text-left shadow-xl sm:p-6;
+  @apply fixed right-0 h-dvh w-full max-w-lg overflow-auto bg-white text-left shadow-xl;
 
   &[data-exiting] {
     @apply animate-out slide-out-to-right-8 fade-out-85;
@@ -35,5 +35,5 @@
 }
 
 .react-aria-Dialog {
-  @apply focus:outline-hidden;
+  @apply px-4 pt-5 pb-4 focus:outline-hidden sm:p-6;
 }

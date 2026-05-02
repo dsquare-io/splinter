@@ -5,7 +5,7 @@ import { AddGroupMemberForm } from './AddGroupMemberForm.tsx';
 
 export function AddGroupMemberDialog(props: ComponentProps<typeof AddGroupMemberForm>) {
   return (
-    <Dialog className="max-h-145">
+    <Dialog>
       <DialogHeader
         title="Addd Group Member"
         description="Add your friends to share expenses in this group."

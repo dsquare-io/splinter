@@ -130,7 +130,7 @@ export function ParticipantsSelector() {
         <Popover
           crossOffset={16}
           triggerRef={triggerRef}
-          className="react-aria-Popover w-[min(464px,100vw)] overflow-y-auto"
+          className="react-aria-Popover w-[min(464px,100vw)]"
         >
           <ListBox
             className="react-aria-ListBox -mx-3 -my-4"

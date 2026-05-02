@@ -19,7 +19,7 @@ export function GroupSettingsDialog({ group }: GroupSettingsDialogProps) {
   );
 
   return (
-    <Dialog className="overflow-y-auto">
+    <Dialog>
       <DialogHeader title="Group Settings" />
       <GroupNameForm
         group_uid={group.uid}

@@ -7,11 +7,7 @@ type AddExpenseDialogProps = {
 
 export function AddExpenseDialog({ onOpenChange }: AddExpenseDialogProps) {
   return (
-    <Dialog
-      onOpenChange={onOpenChange}
-      className="flex max-h-none min-h-105 flex-col overflow-auto"
-      dialogClassName="grow"
-    >
+    <Dialog onOpenChange={onOpenChange}>
       <AddExpenseForm />
     </Dialog>
   );

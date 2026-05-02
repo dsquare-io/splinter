@@ -64,7 +64,7 @@ function AddExpenseFormInner() {
       />
       <Form
         control={form}
-        className="flex grow flex-col"
+        className="flex flex-col"
         action={ApiRoutes.EXPENSE}
         onSubmitSuccess={async () => {
           await queryClient.invalidateQueries({
@@ -82,10 +82,8 @@ function AddExpenseFormInner() {
           value="."
         />
 
-        <div className="grow">
-          {step === 'entry' && <ExpenseEntry />}
-          {step === 'shares' && <ExpenseShares />}
-        </div>
+        {step === 'entry' && <ExpenseEntry />}
+        {step === 'shares' && <ExpenseShares />}
 
         <div className="-mx-4 mt-4 flex justify-between px-4 pt-2 sm:-mx-6 sm:px-6">
           {step === 'entry' ? (

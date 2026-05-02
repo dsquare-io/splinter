@@ -26,7 +26,7 @@ export function ExpenseEntry() {
   const isMulti = (expenses?.length ?? 0) > 1;
 
   return (
-    <div className="grow space-y-4">
+    <div className="space-y-4">
       <ParticipantsSelector />
 
       <SelectFormInput

@@ -44,7 +44,7 @@ export function SingleExpenseShares() {
 
   return (
     <>
-      <div className="-mx-4 grid grid-cols-[1fr_auto] divide-y divide-neutral-100 overflow-y-auto sm:-mx-6">
+      <div className="-mx-4 grid grid-cols-[1fr_auto] divide-y divide-neutral-100 sm:-mx-6">
         <div className="px-4 sm:px-6">
           <Checkbox
             shape="circle"
