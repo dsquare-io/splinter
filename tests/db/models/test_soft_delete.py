@@ -31,3 +31,22 @@ class SoftDeleteModelTests(TestCase):
     def test_custom_manager_attrs(self):
         manager = SoftDeleteModelWithCustomManager.objects
         self.assertTrue(hasattr(manager, 'custom_method'))
+
+    def test_include_deleted_via_manager(self):
+        objs = [SoftDeleteModelWithDefaultManager.objects.create() for _ in range(3)]
+        objs[-1].delete()
+
+        pks = list(SoftDeleteModelWithDefaultManager.objects.include_deleted().values_list('pk', flat=True))
+        self.assertEqual(sorted(pks), sorted([o.pk for o in objs]))
+
+    def test_include_deleted_preserves_other_filters(self):
+        objs = [SoftDeleteModelWithDefaultManager.objects.create() for _ in range(3)]
+        objs[-1].delete()
+
+        target_pks = [o.pk for o in objs[:2]]
+        pks = list(
+            SoftDeleteModelWithDefaultManager.objects.filter(pk__in=target_pks)
+            .include_deleted()
+            .values_list('pk', flat=True)
+        )
+        self.assertEqual(sorted(pks), sorted(target_pks))

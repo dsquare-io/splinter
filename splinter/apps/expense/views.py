@@ -44,6 +44,9 @@ class RetrieveUpdateDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
         if self.request.method == 'PUT':
             qs = qs.filter(is_payment=False)
 
+        if self.request.method == 'GET':
+            qs = qs.include_deleted()
+
         return qs
 
     def perform_destroy(self, instance: Expense):

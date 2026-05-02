@@ -11,6 +11,15 @@ class SoftDeleteQuerySetMixin:
 
         return True, self.update(removed_at=timezone.now())
 
+    def include_deleted(self):
+        clone = self._clone()
+        clone.query.where.children = [
+            c
+            for c in clone.query.where.children
+            if not (hasattr(c, 'lhs') and hasattr(c.lhs, 'target') and c.lhs.target.column == 'removed_at')
+        ]
+        return clone
+
 
 class SoftDeleteManagerMixin:
     def get_queryset(self):
@@ -18,6 +27,9 @@ class SoftDeleteManagerMixin:
 
     def deleted(self):
         return super().get_queryset().filter(removed_at__isnull=False)
+
+    def include_deleted(self):
+        return super().get_queryset()
 
 
 class SoftDeleteModelBase(ModelBase):
