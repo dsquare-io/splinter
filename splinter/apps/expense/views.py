@@ -29,7 +29,7 @@ class CreatePaymentView(CreateAPIView):
     serializer_class = UpsertPaymentSerializer
 
 
-class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
+class RetrieveUpdateDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'expense_uid'
 
@@ -37,30 +37,31 @@ class RetrieveDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
         if self.request.method == 'PUT':
             return UpsertExpenseSerializer
 
-        return ExpenseSerializer
+        return ExpenseOrPaymentSerializer
 
     def get_queryset(self):
-        return Expense.objects.of_user(self.request.user).filter(is_payment=False)
+        qs = Expense.objects.of_user(self.request.user)
+        if self.request.method == 'PUT':
+            qs = qs.filter(is_payment=False)
 
-    def perform_destroy(self, instance):
-        DeleteExpenseOperation(self.request.user).execute(instance)
+        return qs
+
+    def perform_destroy(self, instance: Expense):
+        if instance.is_payment:
+            DeletePaymentOperation(self.request.user).execute(instance)
+        else:
+            DeleteExpenseOperation(self.request.user).execute(instance)
 
 
-class RetrieveDestroyPaymentView(RetrieveAPIView, DestroyAPIView):
+class UpdatePaymentView(GenericAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'payment_uid'
 
     def get_serializer_class(self):
-        if self.request.method == 'PUT':
-            return UpsertPaymentSerializer
-
-        return PaymentSerializer
+        return UpsertPaymentSerializer
 
     def get_queryset(self):
         return Expense.objects.of_user(self.request.user).filter(is_payment=True)
-
-    def perform_destroy(self, instance):
-        DeletePaymentOperation(self.request.user).execute(instance)
 
 
 class ListFriendExpenseView(ListAPIView):
