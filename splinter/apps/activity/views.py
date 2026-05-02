@@ -1,16 +1,40 @@
+from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.activity.models import Activity, ActivityAudience, Comment
 from splinter.apps.activity.serializers import ActivitySerializer, CommentSerializer
-from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView
+from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 
 
 class ListActivityView(ListAPIView):
     serializer_class = ActivitySerializer
 
+    def paginate_queryset(self, queryset):
+        page = super().paginate_queryset(queryset)
+        activity_ids = {a.activity_id for a in page}
+        ActivityAudience.objects.filter(
+            user=self.request.user, activity_id__in=activity_ids, delivered_at__isnull=True
+        ).update(delivered_at=timezone.now())
+        return page
+
     def get_queryset(self):
         return ActivityAudience.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+class RetrieveActivityView(RetrieveAPIView):
+    serializer_class = ActivitySerializer
+
+    def get_object(self):
+        audience = get_object_or_404(
+            ActivityAudience, user=self.request.user, activity__public_id=self.kwargs['activity_uid']
+        )
+
+        if audience.read_at is None:
+            audience.read_at = timezone.now()
+            audience.save(update_fields=['read_at'])
+
+        return audience
 
 
 class GenericActivityView(GenericAPIView):

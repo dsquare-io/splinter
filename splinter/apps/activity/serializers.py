@@ -1,4 +1,3 @@
-from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -25,7 +24,6 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
     template = serializers.CharField(read_only=True, source='activity.activity_type.template')
 
     is_read = serializers.SerializerMethodField()
-    is_delivered = serializers.SerializerMethodField()
     currency = SimpleCurrencySerializer(read_only=True)
 
     class Meta:
@@ -41,7 +39,6 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
             'verb',
             'template',
             'is_read',
-            'is_delivered',
             'outstanding_balance',
             'currency',
             'created_at',
@@ -57,10 +54,6 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
     @extend_schema_field(serializers.BooleanField)
     def get_is_read(self, audience: 'ActivityAudience'):
         return audience.read_at is not None
-
-    @extend_schema_field(serializers.BooleanField)
-    def get_is_delivered(self, audience: 'ActivityAudience'):
-        return audience.delivered_at is not None
 
 
 class CommentSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
