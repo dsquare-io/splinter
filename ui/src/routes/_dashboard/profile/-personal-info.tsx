@@ -1,7 +1,7 @@
 import { ApiRoutes } from '@/api-types';
-import { FieldError, Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
-import { Button, Input, Label } from '@/components/primitives';
+import { Button } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 
 export default function PersonalInfo() {
@@ -37,16 +37,12 @@ export default function PersonalInfo() {
           />
         </div>
 
-        <div>
+        <div className="text-sm">
+          <p className="mb-1 text-sm leading-relaxed font-bold text-gray-800">Email</p>
           <div className="flex items-center justify-between">
-            <Label>Email</Label>
-            {!currentUser.isVerified && <div className="text-sm text-red-600">Not verified</div>}
+            {currentUser.email!}
+            {!currentUser.isVerified && <div className="text-sm text-red-600">(Not Verified)</div>}
           </div>
-          <Input
-            type="email"
-            value={currentUser.email!}
-          />
-          <FieldError />
         </div>
       </div>
 
