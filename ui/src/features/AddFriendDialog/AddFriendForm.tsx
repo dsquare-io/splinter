@@ -1,5 +1,5 @@
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { Button, useDialog } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -47,7 +47,7 @@ export function AddFriendForm() {
         >
           Cancel
         </Button>
-        <Button type="submit">Invite Friend</Button>
+        <SubmitButton>Invite Friend</SubmitButton>
       </div>
     </Form>
   );

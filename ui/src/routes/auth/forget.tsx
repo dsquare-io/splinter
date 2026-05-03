@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
-import { Alert, Button } from '@/components/primitives';
+import { Alert } from '@/components/primitives';
 import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/forget')({
@@ -41,13 +41,7 @@ function RootComponent() {
             label="Email"
           />
 
-          <Button
-            className="w-full"
-            slot="submit"
-            type="submit"
-          >
-            Send verification email
-          </Button>
+          <SubmitButton className="w-full">Send verification email</SubmitButton>
 
           <Link
             className="text-brand-600 hover:text-brand-700 mb-1 inline-flex items-center gap-x-1.5 pb-4 text-sm font-medium"

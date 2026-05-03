@@ -2,9 +2,8 @@ import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { setHeaders } from '@/axios';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
-import { Button } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthLayout } from './-layout';
 
@@ -78,13 +77,7 @@ function RootComponent() {
           label="Confirm Password"
         />
 
-        <Button
-          className="w-full"
-          slot="submit"
-          type="submit"
-        >
-          Set Password
-        </Button>
+        <SubmitButton className="w-full">Set Password</SubmitButton>
       </Form>
     </AuthLayout>
   );

@@ -1,12 +1,16 @@
 import { useContext } from 'react';
 import { Heading, OverlayTriggerStateContext } from 'react-aria-components';
 
-import { ChevronLeftIcon } from '@heroicons/react/20/solid';
-import { BanknotesIcon, ReceiptPercentIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import { BanknotesIcon, ReceiptPercentIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { ApiRoutes } from '@/api-types';
-import { IconButton } from '@/components/primitives';
+import { urlWithArgs } from '@/api-types/url';
+import { axiosInstance } from '@/axios';
+import { DropdownMenu, IconButton } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useConfirmation } from '@/hooks/useConfirmation';
 
 const EXPENSE_CONFIG = {
   icon: ReceiptPercentIcon,
@@ -25,9 +29,28 @@ const PAYMENT_CONFIG = {
 export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
   const { close } = useContext(OverlayTriggerStateContext)!;
   const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
+  const confirm = useConfirmation();
+  const queryClient = useQueryClient();
 
   const config = expense?.type === 'payment' ? PAYMENT_CONFIG : EXPENSE_CONFIG;
   const Icon = config.icon;
+
+  async function handleDelete() {
+    await confirm({
+      title: 'Delete Expense',
+      actionLabel: 'Delete',
+      description: (
+        <>
+          Delete <span className="font-medium text-gray-800">{expense?.description}</span>?
+        </>
+      ),
+      callback: async () => {
+        await axiosInstance.delete(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId }));
+        await queryClient.invalidateQueries();
+        close();
+      },
+    });
+  }
 
   return (
     <div className="mb-6 flex items-center gap-x-4">
@@ -53,6 +76,26 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
           {expense?.description ?? ''}
         </Heading>
       </div>
+
+      <DropdownMenu
+        trigger={
+          <IconButton
+            variant="plain"
+            aria-label="More options"
+          >
+            <EllipsisVerticalIcon className="size-5" />
+          </IconButton>
+        }
+        actions={[
+          {
+            id: 'delete',
+            label: 'Delete',
+            icon: TrashIcon,
+            variant: 'danger',
+            onAction: handleDelete,
+          },
+        ]}
+      />
 
       <IconButton
         variant="plain"

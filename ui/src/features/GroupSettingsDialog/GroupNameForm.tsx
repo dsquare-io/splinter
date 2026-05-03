@@ -1,6 +1,6 @@
 import { ApiRoutes, urlWithArgs } from '@/api-types';
-import { FieldError, Form, TextFormField } from '@/components/form';
-import { Button, Input, Label, useDialog } from '@/components/primitives';
+import { FieldError, Form, FormRootErrors, SubmitButton, TextFormField } from '@/components/form';
+import { Input, Label, useDialog } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
@@ -21,24 +21,25 @@ export function GroupNameForm({ group_uid, groupName }: GroupNameFormProps) {
         queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })).then(close)
       }
     >
+      <FormRootErrors />
+
       <TextFormField
         required
         name="name"
       >
         <Label>Group Name</Label>
-        <div className="flex items-center -space-x-px">
+        <div className="relative flex items-stretch -space-x-px">
           <Input
             type="text"
             className="relative rounded-r-none hover:z-10 focus:z-10"
             placeholder="i.e., Trip, Homies"
           />
-          <Button
+          <SubmitButton
             className="rounded-l-none"
-            type="submit"
             variant="outlined"
           >
             Update
-          </Button>
+          </SubmitButton>
         </div>
         <FieldError />
       </TextFormField>

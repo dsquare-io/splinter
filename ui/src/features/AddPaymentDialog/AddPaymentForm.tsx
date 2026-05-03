@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/api-types';
-import { Form, HiddenField, WatchState } from '@/components/form';
+import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, Money, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -84,6 +84,8 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           value={group?.uid}
         />
       )}
+
+      <FormRootErrors />
 
       <RadioGroupFormInput
         name="paymentDir"
@@ -175,7 +177,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         >
           Cancel
         </Button>
-        <Button type="submit">Add Payment</Button>
+        <SubmitButton>Add Payment</SubmitButton>
       </div>
     </Form>
   );

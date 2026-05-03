@@ -1,5 +1,5 @@
 import { ApiRoutes, urlWithArgs, type ExtendedGroup, type SimpleUser } from '@/api-types';
-import { Form } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, useDialog } from '@/components/primitives';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -29,6 +29,8 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
         }
         className="space-y-4"
       >
+        <FormRootErrors />
+
         <SelectFormInput<SimpleUser>
           name="user"
           items={friendsExcludingMembers ?? []}
@@ -55,7 +57,7 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
           >
             Cancel
           </Button>
-          <Button type="submit">Add to Group</Button>
+          <SubmitButton>Add to Group</SubmitButton>
         </div>
       </Form>
     </>

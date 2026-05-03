@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls/index.js';
-import { Button } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthLayout } from './-layout';
 
@@ -50,13 +49,7 @@ function RootComponent() {
           Forget Password?
         </Link>
 
-        <Button
-          className="w-full"
-          slot="submit"
-          type="submit"
-        >
-          Login
-        </Button>
+        <SubmitButton className="w-full">Login</SubmitButton>
       </Form>
     </AuthLayout>
   );

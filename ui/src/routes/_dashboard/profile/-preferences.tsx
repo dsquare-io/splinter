@@ -1,7 +1,6 @@
 import { ApiRoutes, Currency } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { SelectFormInput } from '@/components/form-controls';
-import { Button } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function Preferences() {
@@ -32,12 +31,7 @@ export default function Preferences() {
         )}
       />
 
-      <Button
-        className="mt-8"
-        type="submit"
-      >
-        Update Preference
-      </Button>
+      <SubmitButton className="mt-8">Update Preference</SubmitButton>
     </Form>
   );
 }

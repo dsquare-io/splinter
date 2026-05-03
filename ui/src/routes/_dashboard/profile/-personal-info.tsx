@@ -1,7 +1,6 @@
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
-import { Button } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 
 export default function PersonalInfo() {
@@ -46,13 +45,7 @@ export default function PersonalInfo() {
         </div>
       </div>
 
-      <Button
-        className="mt-8"
-        slot="submit"
-        type="submit"
-      >
-        Update Profile
-      </Button>
+      <SubmitButton className="mt-8">Update Profile</SubmitButton>
     </Form>
   );
 }

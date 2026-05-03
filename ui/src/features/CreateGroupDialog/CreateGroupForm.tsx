@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Friend } from '@/api-types/components/schemas';
-import { Form } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { SelectFormInput, TextFormInput } from '@/components/form-controls';
 import { Avatar, Button, useDialog } from '@/components/primitives';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -31,6 +31,8 @@ export function CreateGroupForm() {
       }
       className="space-y-4"
     >
+      <FormRootErrors />
+
       <TextFormInput
         required
         name="name"
@@ -67,7 +69,7 @@ export function CreateGroupForm() {
         >
           Cancel
         </Button>
-        <Button type="submit">Create Group</Button>
+        <SubmitButton>Create Group</SubmitButton>
       </div>
     </Form>
   );

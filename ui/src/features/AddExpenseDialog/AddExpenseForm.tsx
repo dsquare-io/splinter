@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { CheckIcon, ChevronLeftIcon } from '@heroicons/react/20/solid';
+import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes } from '@/api-types';
-import { Form, HiddenField } from '@/components/form';
+import { Form, FormRootErrors, HiddenField, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
@@ -82,6 +82,9 @@ function AddExpenseFormInner() {
           value="."
         />
 
+        <div className="-mx-4">
+          <FormRootErrors />
+        </div>
         {step === 'entry' && <ExpenseEntry />}
         {step === 'shares' && <ExpenseShares />}
 
@@ -96,10 +99,7 @@ function AddExpenseFormInner() {
                 <AdjustmentsHorizontalIcon className="size-4" />
                 Customize splits
               </Button>
-              <Button type="submit">
-                <CheckIcon className="size-4" />
-                Add Expense
-              </Button>
+              <SubmitButton>Add Expense</SubmitButton>
             </>
           ) : (
             <Button

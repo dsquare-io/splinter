@@ -7,6 +7,7 @@ import {
 import { tv, VariantProps } from 'tailwind-variants';
 
 import { buttonBaseStyles } from './ButtonBase.tsx';
+import { Spinner } from './Spinner.tsx';
 
 type IconButtonProps = RACButtonProps & VariantProps<typeof iconButtonStyles>;
 
@@ -19,15 +20,27 @@ const iconButtonStyles = tv({
   },
 });
 
-export function IconButton({ color, variant, ...props }: IconButtonProps) {
+export function IconButton({
+  color,
+  variant,
+  isPending,
+  isDisabled,
+  children,
+  className,
+  ...props
+}: IconButtonProps) {
   if (['submit', 'reset'].includes(props.type!) && !props.slot) props.slot = props.type;
 
   return (
     <RACButton
       {...props}
-      className={composeRenderProps(props.className, (className, renderProps) =>
+      isPending={isPending}
+      isDisabled={isPending || isDisabled}
+      className={composeRenderProps(className, (className, renderProps) =>
         iconButtonStyles({ ...renderProps, variant, color, className })
       )}
-    />
+    >
+      {isPending ? <Spinner /> : children}
+    </RACButton>
   );
 }

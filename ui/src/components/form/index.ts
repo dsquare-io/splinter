@@ -9,4 +9,5 @@ export { SelectFormField } from './fields/SelectFormField';
 export { HiddenField } from './fields/HiddenField';
 export { NumberFormField } from './fields/NumberFormField';
 export { TextFormField } from './fields/TextFormField';
+export { SubmitButton } from './SubmitButton';
 export { WatchState } from './WatchState';

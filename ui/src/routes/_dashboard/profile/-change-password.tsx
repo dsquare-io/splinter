@@ -1,7 +1,6 @@
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls/index.js';
-import { Button } from '@/components/primitives';
 
 export default function ChangePassword() {
   return (
@@ -61,13 +60,7 @@ export default function ChangePassword() {
         label="Confirm Password"
       />
 
-      <Button
-        className="mt-8"
-        slot="submit"
-        type="submit"
-      >
-        Change Password
-      </Button>
+      <SubmitButton className="mt-8">Change Password</SubmitButton>
     </Form>
   );
 }

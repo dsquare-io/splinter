@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { Form, FormRootErrors } from '@/components/form';
+import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls/index.js';
-import { Alert, Button } from '@/components/primitives';
+import { Alert } from '@/components/primitives';
 import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/reset')({
@@ -81,13 +81,7 @@ function RootComponent() {
             label="Confirm Password"
           />
 
-          <Button
-            className="w-full"
-            slot="submit"
-            type="submit"
-          >
-            Reset Password
-          </Button>
+          <SubmitButton className="w-full">Reset Password</SubmitButton>
         </Form>
       )}
     </AuthLayout>
