@@ -72,6 +72,7 @@ function parseKey(key: string): ParsedKey {
 const transformerMap: Record<string, Transformer> = {
   del: (k) => [k, undefined],
   now: (k) => [k, new Date().toISOString()],
+  iso: (k, v) => [k, v ? new Date(v as string).toISOString() : new Date().toISOString()],
   to_dict: toDict,
 } satisfies Record<string, Transformer>;
 

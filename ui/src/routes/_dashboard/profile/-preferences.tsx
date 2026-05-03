@@ -1,13 +1,10 @@
-import { ApiRoutes, Currency } from '@/api-types';
+import { ApiRoutes } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
-import { SelectFormInput } from '@/components/form-controls';
+import { CurrencySelectFormInput } from '@/components/form-controls';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
 export default function Preferences() {
-  const { data: currencies } = useApiQuery(ApiRoutes.CURRENCY_LIST);
   const { data: userCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-
-  if (!currencies) return null;
 
   return (
     <Form
@@ -18,17 +15,10 @@ export default function Preferences() {
     >
       <FormRootErrors />
 
-      <SelectFormInput<Currency>
+      <CurrencySelectFormInput
         name="currency"
         label="Currency"
         placeholder="Select your currency..."
-        items={currencies}
-        textValuePropName="uid"
-        ItemComponent={({ item }) => (
-          <>
-            {item.country.flag} {item.uid}
-          </>
-        )}
       />
 
       <SubmitButton className="mt-8">Update Preference</SubmitButton>
