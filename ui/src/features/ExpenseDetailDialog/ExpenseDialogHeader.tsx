@@ -3,7 +3,6 @@ import { Heading, OverlayTriggerStateContext } from 'react-aria-components';
 
 import { ChevronLeftIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import { BanknotesIcon, ReceiptPercentIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { ApiRoutes } from '@/api-types';
 import { urlWithArgs } from '@/api-types/url';
@@ -11,6 +10,7 @@ import { axiosInstance } from '@/axios';
 import { DropdownMenu, IconButton } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useConfirmation } from '@/hooks/useConfirmation';
+import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 const EXPENSE_CONFIG = {
   icon: ReceiptPercentIcon,
@@ -30,7 +30,6 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
   const { close } = useContext(OverlayTriggerStateContext)!;
   const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
   const confirm = useConfirmation();
-  const queryClient = useQueryClient();
 
   const config = expense?.type === 'payment' ? PAYMENT_CONFIG : EXPENSE_CONFIG;
   const Icon = config.icon;
@@ -46,7 +45,7 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
       ),
       callback: async () => {
         await axiosInstance.delete(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId }));
-        await queryClient.invalidateQueries();
+        await invalidateQueriesForExpense(expense);
         close();
       },
     });

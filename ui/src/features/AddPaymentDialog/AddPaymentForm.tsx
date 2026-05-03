@@ -9,6 +9,7 @@ import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/compo
 import { Avatar, Button, Money, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
+import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
   group?: ExtendedGroup;
@@ -66,7 +67,8 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
       }}
       method="POST"
       action={ApiRoutes.PAYMENT}
-      onSubmitSuccess={() => {
+      onSubmitSuccess={async (response) => {
+        await invalidateQueriesForExpense({ uid: response.uid, group: group?.uid });
         close();
       }}
     >

@@ -8,7 +8,7 @@ import { ApiRoutes } from '@/api-types';
 import { Form, FormRootErrors, HiddenField, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
+import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import {
   ExpenseParticipantsProvider,
@@ -66,16 +66,14 @@ function AddExpenseFormInner() {
         control={form}
         className="flex flex-col"
         action={ApiRoutes.EXPENSE}
-        onSubmitSuccess={async () => {
-          await queryClient.invalidateQueries({
-            predicate: (query) => query.queryKey.includes('expenses'),
-          });
+        onSubmitSuccess={async (response, control) => {
+          await invalidateQueriesForExpense({ uid: response.uid, group: control.getValues('group') });
           close();
         }}
       >
         <HiddenField
           name="currency"
-          value={preferredCurrency?.uid}
+          value={preferredCurrency?.uid ?? ''}
         />
         <HiddenField
           name="datetime:now"
