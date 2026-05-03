@@ -72,6 +72,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
 
+    group = GroupSerializerField()
     paid_by = SimpleUserSerializer(read_only=True)
     created_by = SimpleUserSerializer(read_only=True)
     currency = SimpleCurrencySerializer()
@@ -88,6 +89,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'datetime',
             'description',
             'amount',
+            'group',
             'currency',
             'outstanding_balance',
             'expenses',
@@ -154,6 +156,7 @@ class PaymentSerializer(serializers.ModelSerializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
 
+    group = GroupSerializerField()
     created_by = SimpleUserSerializer(read_only=True)
     currency = SimpleCurrencySerializer()
 
@@ -169,6 +172,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             'datetime',
             'description',
             'amount',
+            'group',
             'currency',
             'created_by',
             'sender',

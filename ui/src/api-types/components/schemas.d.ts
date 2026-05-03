@@ -140,6 +140,7 @@ export interface Expense {
   description: string;
   /** Format: decimal */
   amount: string;
+  group: string;
   currency: SimpleCurrency;
   /**
    * Format: decimal
@@ -342,6 +343,7 @@ export interface Payment {
   description: string;
   /** Format: decimal */
   amount: string;
+  group: string;
   currency: SimpleCurrency;
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
