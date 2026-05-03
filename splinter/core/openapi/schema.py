@@ -43,15 +43,22 @@ class AutoSchema(AutoSchemaBase):
         'PATCH': {'PartialUpdate'},
         'DELETE': {'Destroy'},
     }
-    ALL_VERBS = set(itertools.chain.from_iterable(VERBS_BY_METHOD.values()))
+
+    @cached_property
+    def verbs_by_method(self) -> dict[str, set[str]]:
+        view_verbs = getattr(self.view, 'VERBS_BY_METHOD', {})
+        return {**self.VERBS_BY_METHOD, **view_verbs}
+
+    @cached_property
+    def all_verbs(self) -> set[str]:
+        return set(itertools.chain.from_iterable(self.verbs_by_method.values()))
 
     @cached_property
     def verbs_from_view(self) -> set[str]:
         view_class_name = type(self.view).__name__
+        found_verbs = {verb for verb in self.all_verbs if verb in view_class_name}
 
-        found_verbs = {verb for verb in self.ALL_VERBS if verb in view_class_name}
-
-        if 'Update' in found_verbs:
+        if 'Update' in found_verbs and 'PartialUpdate' in self.verbs_by_method['PATCH']:
             found_verbs.add('PartialUpdate')
 
         return found_verbs
@@ -66,7 +73,7 @@ class AutoSchema(AutoSchemaBase):
         return view_name
 
     def suggest_verb_from_view(self) -> str:
-        verbs = self.verbs_from_view.intersection(self.VERBS_BY_METHOD[self.method])
+        verbs = self.verbs_from_view.intersection(self.verbs_by_method[self.method])
 
         selected_verb = ''
         if verbs:

@@ -2,6 +2,8 @@ import fs from 'node:fs';
 
 import ts from 'typescript';
 
+const verbRegex = /^(list|create|partialUpdate|update|retrieve|destroy)/i;
+
 function extractPaths(filePath) {
   const program = ts.createProgram([filePath], {});
 
@@ -32,19 +34,42 @@ function extractPaths(filePath) {
 
       let routeName = '';
       const routeOperations = new Set();
-      const regex = '^(list|create|partialUpdate|update|retrieve|destroy)';
+
+      let commonResource = operationNames[0];
+      if (operationNames.length > 1) {
+        // Find a resource name via the longest common camelCase-word suffix across all operations.
+        // With multiple operations this reliably strips verbs (including non-standard ones).
+        const wordSplits = operationNames.map((n) => n.split(/(?=[A-Z])/));
+        let commonSuffixCount = 0;
+        const first = wordSplits[0];
+        for (let i = 1; i < first.length; i++) {
+          const candidate = first.slice(first.length - i).join('');
+          if (
+            wordSplits.every(
+              (words) => words.length > i && words.slice(words.length - i).join('') === candidate
+            )
+          ) {
+            commonSuffixCount = i;
+          } else {
+            break;
+          }
+        }
+        commonResource =
+          commonSuffixCount > 0 ? wordSplits[0].slice(wordSplits[0].length - commonSuffixCount).join('') : '';
+      }
 
       for (const operationName of operationNames) {
-        const m = operationName.match(new RegExp(regex, 'i'));
-
+        const m = operationName.match(verbRegex);
         if (m) {
           routeOperations.add(m[1].toLowerCase());
+        } else if (commonResource && operationName.endsWith(commonResource)) {
+          const verb = operationName.slice(0, operationName.length - commonResource.length).toLowerCase();
+          if (verb) routeOperations.add(verb);
         }
 
-        const newRouteName = operationName.replaceAll(new RegExp(regex, 'gi'), '');
-
-        if (newRouteName.length > routeName.length) {
-          routeName = newRouteName;
+        const resourceName = m ? operationName.replace(verbRegex, '') : commonResource;
+        if (resourceName.length > routeName.length) {
+          routeName = resourceName;
         }
       }
 

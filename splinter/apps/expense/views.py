@@ -32,6 +32,10 @@ class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'expense_uid'
 
+    VERBS_BY_METHOD = {
+        'PATCH': {'Restore'},
+    }
+
     def get_serializer_class(self):
         if self.request.method == 'PUT':
             return UpsertExpenseSerializer
