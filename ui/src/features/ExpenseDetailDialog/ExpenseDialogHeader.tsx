@@ -7,7 +7,7 @@ import { BanknotesIcon, ReceiptPercentIcon, TrashIcon, XMarkIcon } from '@heroic
 import { ApiRoutes } from '@/api-types';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
-import { DropdownMenu, IconButton } from '@/components/primitives';
+import { DropdownMenu, DropdownMenuItem, IconButton } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useConfirmation } from '@/hooks/useConfirmation';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
@@ -85,16 +85,16 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
             <EllipsisVerticalIcon className="size-5" />
           </IconButton>
         }
-        actions={[
-          {
-            id: 'delete',
-            label: 'Delete',
-            icon: TrashIcon,
-            variant: 'danger',
-            onAction: handleDelete,
-          },
-        ]}
-      />
+      >
+        <DropdownMenuItem
+          id="delete"
+          icon={TrashIcon}
+          variant="danger"
+          onAction={handleDelete}
+        >
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenu>
 
       <IconButton
         variant="plain"

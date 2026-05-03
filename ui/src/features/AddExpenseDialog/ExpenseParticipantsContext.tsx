@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer, type Dispatch, type ReactNode } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
@@ -44,12 +44,12 @@ interface ParticipantsContextValue {
   selected: Participant[];
   participants: Participant[];
   hasPreselected: boolean;
-  dispatch: React.Dispatch<ParticipantsAction>;
+  dispatch: Dispatch<ParticipantsAction>;
 }
 
 const ParticipantsContext = createContext<ParticipantsContextValue | null>(null);
 
-export function ExpenseParticipantsProvider({ children }: { children: React.ReactNode }) {
+export function ExpenseParticipantsProvider({ children }: { children: ReactNode }) {
   const { currentUser } = useAuth();
   const params = useParams({ strict: false }) as { friend?: string; group?: string };
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);

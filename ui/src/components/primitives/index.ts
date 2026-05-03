@@ -3,6 +3,7 @@ export { Avatar } from './Avatar';
 export { Button, IconButton } from './Button';
 export { Checkbox } from './Checkbox';
 export { Description } from './Description';
+export { DropdownMenu, DropdownMenuItem } from './DropdownMenu';
 export { DetailHeader } from './DetailHeader';
 export { Dialog, DialogHeader, useDialog } from './Dialog';
 export { EmptyState } from './EmptyState';

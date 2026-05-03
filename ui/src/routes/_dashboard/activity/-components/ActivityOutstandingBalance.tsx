@@ -13,11 +13,13 @@ export function ActivityOutstandingBalance({ balance, verb, currency }: Activity
   }
 
   const balanceNumber = +balance;
+  const isDelete = verb.startsWith('delete_');
+  const className = `mt-1 font-normal ${isDelete ? 'line-through' : ''}`;
 
   const isPayment = ['payment', 'update_payment', 'delete_payment'].includes(verb);
   if (isPayment) {
     return (
-      <p className="mt-1 font-normal text-green-700">
+      <p className={`${className} text-green-700`}>
         {balanceNumber > 0 ? 'You paid ' : 'You received '}
         <Money
           currency={currency}
@@ -28,7 +30,7 @@ export function ActivityOutstandingBalance({ balance, verb, currency }: Activity
   }
 
   return balanceNumber > 0 ? (
-    <p className="mt-1 font-normal text-green-700">
+    <p className={`${className} text-green-700`}>
       You received{' '}
       <Money
         currency={currency}
@@ -36,7 +38,7 @@ export function ActivityOutstandingBalance({ balance, verb, currency }: Activity
       />
     </p>
   ) : (
-    <p className="mt-1 font-normal text-red-600">
+    <p className={`${className} text-red-600`}>
       You borrowed{' '}
       <Money
         currency={currency}
