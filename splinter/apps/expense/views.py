@@ -9,8 +9,7 @@ from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, 
 from splinter.apps.expense.operations import DeleteExpenseOperation, DeletePaymentOperation
 from splinter.apps.expense.serializers import (
     ExpenseOrPaymentSerializer,
-    ExpenseSerializer,
-    PaymentSerializer,
+    RestoreExpenseSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
@@ -29,13 +28,16 @@ class CreatePaymentView(CreateAPIView):
     serializer_class = UpsertPaymentSerializer
 
 
-class RetrieveUpdateDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
+class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'expense_uid'
 
     def get_serializer_class(self):
         if self.request.method == 'PUT':
             return UpsertExpenseSerializer
+
+        if self.request.method == 'PATCH':
+            return RestoreExpenseSerializer
 
         return ExpenseOrPaymentSerializer
 
@@ -54,6 +56,9 @@ class RetrieveUpdateDestroyExpenseView(RetrieveAPIView, DestroyAPIView):
             DeletePaymentOperation(self.request.user).execute(instance)
         else:
             DeleteExpenseOperation(self.request.user).execute(instance)
+
+    def patch(self, request, *args, **kwargs):
+        self.get_object().restore()
 
 
 class UpdatePaymentView(GenericAPIView):

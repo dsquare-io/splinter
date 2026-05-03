@@ -385,3 +385,7 @@ class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializ
                 'amount': converted.amount,
             }
         )
+
+
+class RestoreExpenseSerializer(serializers.Serializer):
+    pass

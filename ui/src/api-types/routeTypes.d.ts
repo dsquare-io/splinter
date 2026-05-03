@@ -151,7 +151,8 @@ export interface paths {
     delete: operations['DestroyExpense'];
     options?: never;
     head?: never;
-    patch?: never;
+    /** Restore Expense */
+    patch: operations['RestoreExpense'];
     trace?: never;
   };
   '/api/friends': {
@@ -802,7 +803,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -914,7 +915,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -951,7 +952,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1007,7 +1008,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1128,6 +1129,67 @@ export interface operations {
       };
     };
   };
+  RestoreExpense: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        expense_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            root?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
   ListFriend: {
     parameters: {
       query?: {
@@ -1201,7 +1263,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1399,7 +1461,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1503,7 +1565,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1615,7 +1677,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1734,7 +1796,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1800,7 +1862,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1910,7 +1972,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -1976,7 +2038,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2127,7 +2189,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2224,7 +2286,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2281,7 +2343,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2345,7 +2407,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2437,7 +2499,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2492,7 +2554,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2584,7 +2646,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2675,7 +2737,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2729,7 +2791,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2784,7 +2846,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
@@ -2839,7 +2901,7 @@ export interface operations {
         content: {
           'application/json': {
             /** @description List of non-field errors */
-            ''?: string[];
+            root?: string[];
           } & {
             [key: string]: string[];
           };
