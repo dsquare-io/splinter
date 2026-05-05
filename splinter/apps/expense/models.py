@@ -98,7 +98,7 @@ class OutstandingBalance(TimestampedModel, SoftDeleteModel):
     def save(self, update_fields=None, **kwargs):
         if self.amount == 0:
             # If the amount is zero, mark that as deleted
-            # That will act as checkpoint for the next time we calculate outstanding balances
+            # That will act as a checkpoint for the next time we calculate outstanding balances
             self.removed_at = timezone.now()
             if update_fields:
                 update_fields = tuple(update_fields) + ('removed_at',)

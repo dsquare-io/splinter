@@ -29,7 +29,7 @@ class FriendSerializer(PrefetchQuerysetSerializerMixin, SimpleUserSerializer):
     )
 
     class Meta(SimpleUserSerializer.Meta):
-        fields = SimpleUserSerializer.Meta.fields + ('outstanding_balances', 'aggregated_outstanding_balance')
+        fields = SimpleUserSerializer.Meta.fields + ('email', 'outstanding_balances', 'aggregated_outstanding_balance')
 
     def prefetch_queryset(self, queryset=None):
         outstanding_balance_qs = self.prefetch_nested_queryset('outstanding_balances').filter(
