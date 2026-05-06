@@ -12,7 +12,7 @@ type GroupMembersSectionProps = {
   balanceByUsers: Record<string, GroupOutstandingBalance[]>;
 };
 
-export function GroupMembersSection({ group, balanceByUsers }: GroupMembersSectionProps) {
+export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectionProps) {
   const confirm = useConfirmation();
 
   async function removeMember(member: SimpleUser) {

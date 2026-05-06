@@ -195,6 +195,8 @@ export interface ForgetPassword {
 }
 
 export type Friend = SimpleUser & {
+  /** Format: email */
+  email?: string | null;
   /** @description Outstanding balances for current user. Only top 5 on list view */
   readonly outstandingBalances: FriendOutstandingBalance[];
   /** @description Aggregated outstanding balance for the current user */

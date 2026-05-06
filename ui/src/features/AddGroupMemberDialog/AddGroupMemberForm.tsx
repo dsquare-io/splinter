@@ -43,7 +43,6 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
               />
               <div className="flex-1">
                 <div>{item.name}</div>
-                {!item.isActive && <div className="text-xs text-gray-600">Inactive</div>}
               </div>
             </>
           )}

@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, DetailHeader } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
-import { GroupSettingsDialog } from '@/features/GroupSettingsDialog';
+import { GroupSettingDialog } from '@/features/GroupSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
 import { useAuth } from '@/hooks/useAuth.ts';
@@ -82,9 +82,9 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
             isDisabled={!group}
           >
             <Cog8ToothIcon />
-            Settings
+            <span className="hidden sm:block">Settings</span>
           </Button>
-          {group && <GroupSettingsDialog group={group} />}
+          {group && <GroupSettingDialog group={group} />}
         </DialogTrigger>
       </div>
     </DetailHeader>

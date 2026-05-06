@@ -3,7 +3,7 @@ import * as Accordion from '@radix-ui/react-accordion';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Money } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -34,7 +34,7 @@ export function GroupBalancesTab({ group_uid }: Props) {
     );
   }
 
-  if (error) return <ApiErrorAlert error={error} />;
+  if (error) return <ErrorAlert error={error} />;
 
   const balanceByUsers = Object.entries(
     groupBy(data.outstandingBalances ?? [], (balance) => balance.user.uid)

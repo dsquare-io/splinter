@@ -4,7 +4,7 @@ import { createFileRoute, Navigate, useNavigate } from '@tanstack/react-router';
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { axiosInstance } from '@/axios';
-import { ApiErrorAlert } from '@/components/ApiErrorAlert.js';
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { AuthLayout } from './-layout';
 
 export const Route = createFileRoute('/auth/verify')({
@@ -41,7 +41,7 @@ function RootComponent() {
       subtitle="Please wait we are verifying your email address"
       title="Verifying email"
     >
-      <ApiErrorAlert error={error} />
+      <ErrorAlert error={error} />
     </AuthLayout>
   );
 }

@@ -19,7 +19,7 @@ interface ApiErrorAlertProps {
   onRetry?: () => void;
 }
 
-export function ApiErrorAlert({ error, variant = 'banner', onRetry }: ApiErrorAlertProps) {
+export function ErrorAlert({ error, variant = 'banner', onRetry }: ApiErrorAlertProps) {
   if (!error) return null;
 
   if (variant === 'centered') {
@@ -43,7 +43,7 @@ export function ApiErrorAlert({ error, variant = 'banner', onRetry }: ApiErrorAl
   }
 
   return (
-    <div className="flex items-center gap-x-2 bg-red-50 px-4 py-2 text-sm text-red-700 sm:px-6 md:px-8">
+    <div className="flex items-center gap-x-2 rounded-md bg-red-50 px-4 py-2 text-sm text-red-700">
       <ExclamationCircleIcon className="size-4 shrink-0 text-red-500" />
       <span className="flex-1">{getErrorMessage(error)}</span>
       {onRetry && (

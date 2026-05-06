@@ -1,5 +1,5 @@
 import { ApiRoutes, SimpleGroup } from '@/api-types';
-import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { DeletedBanner } from './DeletedBanner.tsx';
@@ -51,7 +51,7 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
 
   if (error) {
     return (
-      <ApiErrorAlert
+      <ErrorAlert
         error={error}
         variant="centered"
       />

@@ -4,15 +4,15 @@ import groupBy from 'just-group-by';
 
 import type { ExtendedGroup } from '@/api-types';
 import { Dialog, DialogHeader } from '@/components/primitives';
-import { GroupActionsSection } from './GroupActionsSection';
-import { GroupMembersSection } from './GroupMembersSection';
+import { GroupActionSection } from './GroupActionSection.tsx';
+import { GroupMemberSection } from './GroupMemberSection.tsx';
 import { GroupNameForm } from './GroupNameForm';
 
-type GroupSettingsDialogProps = {
+type GroupSettingDialogProps = {
   group: ExtendedGroup;
 };
 
-export function GroupSettingsDialog({ group }: GroupSettingsDialogProps) {
+export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
   const balanceByUsers = useMemo(
     () => groupBy(group.outstandingBalances, (balance) => balance.user.uid),
     [group.outstandingBalances]
@@ -25,11 +25,11 @@ export function GroupSettingsDialog({ group }: GroupSettingsDialogProps) {
         group_uid={group.uid}
         groupName={group.name}
       />
-      <GroupMembersSection
+      <GroupMemberSection
         group={group}
         balanceByUsers={balanceByUsers}
       />
-      <GroupActionsSection
+      <GroupActionSection
         group={group}
         balanceByUsers={balanceByUsers}
       />

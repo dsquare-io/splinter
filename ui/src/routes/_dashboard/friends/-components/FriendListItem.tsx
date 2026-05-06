@@ -1,12 +1,19 @@
 import clx from 'clsx';
 
+import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 import { Link } from '@tanstack/react-router';
 
 import { Friend } from '@/api-types/components/schemas';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 
-export function FriendListItem({ name, uid, aggregatedOutstandingBalance, outstandingBalances }: Friend) {
+export function FriendListItem({
+  name,
+  uid,
+  isActive,
+  aggregatedOutstandingBalance,
+  outstandingBalances,
+}: Friend) {
   return (
     <Link
       to="/friends/$friend"
@@ -19,11 +26,17 @@ export function FriendListItem({ name, uid, aggregatedOutstandingBalance, outsta
       )}
     >
       <div className="flex items-center gap-x-3">
-        <Avatar
-          className="size-9"
-          fallback={name}
-        />
-        <div className="text-md flex-1 py-1">{name}</div>
+        {isActive ? (
+          <Avatar
+            className="size-9"
+            fallback={name}
+          />
+        ) : (
+          <div className="flex size-9 items-center justify-center rounded-full bg-amber-50 text-sm text-amber-400 ring-1 ring-amber-200">
+            <ExclamationTriangleIcon className="size-4 text-amber-400" />
+          </div>
+        )}
+        <div className="text-md flex flex-1 items-center gap-2 py-1">{name}</div>
         {+aggregatedOutstandingBalance.amount === 0 ? (
           <div className="text-xs text-gray-400">Settled up</div>
         ) : (

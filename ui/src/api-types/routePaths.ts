@@ -14,6 +14,7 @@ export const Paths = {
   FORGET_PASSWORD: '/api/user/forget',
   FRIEND_DETAIL: '/api/friends/{friend_uid}',
   FRIEND_EXPENSE_LIST: '/api/friends/{friend_uid}/expenses',
+  FRIEND_INVITATION: '/api/friends/{friend_uid}/invitations',
   FRIEND_LIST: '/api/friends',
   GROUP_DETAIL: '/api/groups/{group_uid}',
   GROUP_EXPENSE_LIST: '/api/groups/{group_uid}/expenses',

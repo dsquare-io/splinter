@@ -1,7 +1,7 @@
 import { ComponentProps } from 'react';
 
 import { ExpenseOrPayment } from '@/api-types/components/schemas';
-import { ApiErrorAlert } from '@/components/ApiErrorAlert.tsx';
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { ExpenseListSkeleton } from '@/components/layout/Skeleton.tsx';
 import { ExpenseList } from './ExpenseList.tsx';
 
@@ -19,7 +19,7 @@ export function ExpenseListPanel({
   ...props
 }: ExpenseListPanelProps) {
   if (isPending) return <ExpenseListSkeleton className={className} />;
-  if (error) return <ApiErrorAlert error={error} />;
+  if (error) return <ErrorAlert error={error} />;
 
   return (
     <ExpenseList

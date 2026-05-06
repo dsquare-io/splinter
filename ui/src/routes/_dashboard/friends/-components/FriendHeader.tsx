@@ -1,11 +1,12 @@
 import { DialogTrigger } from 'react-aria-components';
 
-import { BanknotesIcon } from '@heroicons/react/16/solid';
+import { BanknotesIcon, Cog8ToothIcon } from '@heroicons/react/16/solid';
 
 import { ApiRoutes } from '@/api-types';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, DetailHeader } from '@/components/primitives';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
+import { FriendSettingDialog } from '@/features/FriendSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
@@ -36,6 +37,11 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         ) : friend ? (
           <>
             <div className="mt-1 text-2xl font-semibold text-gray-900">{friend!.name}</div>
+            {!friend.isActive && (
+              <span className="mt-1 inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-500 ring-1 ring-gray-200 ring-inset">
+                Not yet joined
+              </span>
+            )}
             <OutstandingBalanceList balances={friend!.outstandingBalances} />
           </>
         ) : undefined}
@@ -51,6 +57,21 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
             Settle Up
           </Button>
           <AddPaymentDialog friend={friend} />
+        </DialogTrigger>
+
+        <div className="flex-1" />
+
+        <DialogTrigger>
+          <Button
+            variant="outlined"
+            className="bg-white"
+            size="small"
+            isDisabled={!friend}
+          >
+            <Cog8ToothIcon />
+            <span className="hidden sm:block">Settings</span>
+          </Button>
+          {friend && <FriendSettingDialog friend={friend} />}
         </DialogTrigger>
       </div>
     </DetailHeader>
