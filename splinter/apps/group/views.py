@@ -10,7 +10,6 @@ from splinter.apps.group.serializers import (
     CreateGroupSerializer,
     ExtendedGroupSerializer,
     GroupSerializer,
-    UpdateGroupMembershipSerializer,
 )
 from splinter.core.views import (
     CreateAPIView,
@@ -68,12 +67,8 @@ class DestroyGroupMembershipView(DestroyAPIView):
         super().perform_destroy(instance)
 
 
-class CreateUpdateGroupMembershipView(CreateAPIView, GenericAPIView):
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            return CreateGroupMembershipSerializer
-
-        return UpdateGroupMembershipSerializer
+class CreateGroupMembershipView(CreateAPIView, GenericAPIView):
+    serializer_class = CreateGroupMembershipSerializer
 
     @cached_property
     def group(self):
@@ -83,8 +78,3 @@ class CreateUpdateGroupMembershipView(CreateAPIView, GenericAPIView):
         context = super().get_serializer_context()
         context['group'] = self.group
         return context
-
-    def put(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()

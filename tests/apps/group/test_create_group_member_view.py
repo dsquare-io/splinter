@@ -55,6 +55,33 @@ class CreateGroupMemberViewTest(AuthenticatedAPITestCase):
             },
         )
 
+    @override_settings(GROUP_MAX_ALLOWED_MEMBERSHIPS=1)
+    def test_create__user_max_memberships_limit(self):
+        friend = UserFactory()
+        Friendship.objects.create(user1=self.user, user2=friend)
+
+        # give friend 1 existing membership (hits the limit)
+        GroupMembershipFactory(user=friend)
+
+        response = self.client.post(
+            f'/api/groups/{self.group.public_id}/members',
+            {'user': friend.username},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertDictEqual(
+            response.json(),
+            {
+                'user': [
+                    {
+                        'message': 'User already has maximum number of group memberships',
+                        'code': 'group_memberships_limit_error',
+                    }
+                ]
+            },
+        )
+
     @override_settings(GROUP_MAX_ALLOWED_MEMBERS=1)
     def test_create__max_limit(self):
         friend = UserFactory()

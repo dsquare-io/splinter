@@ -1,17 +1,14 @@
 from django.conf import settings
-from django.db import transaction
-from django.db.models import Q
+from django.db.models import Count, Q
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
-from splinter.apps.expense.models import OutstandingBalance
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
 from splinter.apps.expense.serializers import AggregatedOutstandingBalanceSerializer, OutstandingBalanceSerializer
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.models import User
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -36,6 +33,30 @@ class CreateGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('name', 'members')
+
+    def validate_members(self, members):
+        at_limit_ids = set(
+            GroupMembership.objects.filter(user__in=members)
+            .values('user_id')
+            .annotate(count=Count('id'))
+            .filter(count__gte=settings.GROUP_MAX_ALLOWED_MEMBERSHIPS)
+            .values_list('user_id', flat=True)
+        )
+        if at_limit_ids:
+            raise serializers.ValidationError(
+                [
+                    (
+                        ErrorDetail(
+                            f'User ({u.username}) already has maximum number of group memberships',
+                            'group_memberships_limit_error',
+                        )
+                        if u.pk in at_limit_ids
+                        else {}
+                    )
+                    for u in members
+                ]
+            )
+        return members
 
     def create(self, validated_data):
         members = validated_data.pop('members')
@@ -165,6 +186,7 @@ class ExtendedGroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerial
 class CreateGroupMembershipSerializer(serializers.ModelSerializer):
     default_error_messages = {
         'max_members': 'Group can have at most {max_members} members',
+        'max_memberships': 'User already has maximum number of group memberships',
     }
 
     user = FriendSerializerField()
@@ -185,70 +207,15 @@ class CreateGroupMembershipSerializer(serializers.ModelSerializer):
                 )
             )
 
-        attrs['group'] = group
-        return attrs
-
-
-class UpdateGroupMembershipSerializer(serializers.Serializer):
-    default_error_messages = {
-        'members': 'Members list cannot be empty',
-        'max_members': 'Group can have at most {max_members} members',
-        'non_friend': 'Cannot add non-friend user ({user}) to the group',
-        'no_remove_with_balance': 'Cannot remove user ({user}) with outstanding balance from the group',
-    }
-
-    members = serializers.ListField(child=UserSerializerField())
-
-    def validate_members(self, members: list['User']):
-        if not members:
-            raise serializers.ValidationError(self.error_messages['members'])
-
-        if len(members) > settings.GROUP_MAX_ALLOWED_MEMBERS:
+        if GroupMembership.objects.filter(user=attrs['user']).count() >= settings.GROUP_MAX_ALLOWED_MEMBERSHIPS:
             raise serializers.ValidationError(
-                ErrorDetail(
-                    self.error_messages['max_members'].format(max_members=settings.GROUP_MAX_ALLOWED_MEMBERS),
-                    'group_members_limit_error',
-                )
+                {
+                    'user': ErrorDetail(
+                        self.error_messages['max_memberships'],
+                        'group_memberships_limit_error',
+                    )
+                }
             )
 
-        return members
-
-    def validate(self, attrs):
-        group = self.context['group']
-
-        existing_members = set(group.members.values_list('pk', flat=True))
-        new_members = set(member.pk for member in attrs['members'])
-
-        to_add = new_members - existing_members
-        to_delete = existing_members - new_members
-
-        for user_id in to_add:
-            if not Friendship.objects.is_friend_with(self.context['request'].user.id, user_id):
-                username = User.objects.get(id=user_id).username
-                raise serializers.ValidationError({'members': self.error_messages['non_friend'].format(user=username)})
-
-        for user_id in to_delete:
-            if OutstandingBalance.objects.get_user_balance_in_group(user_id, group):
-                username = User.objects.get(id=user_id).username
-                raise serializers.ValidationError(
-                    {'members': self.error_messages['no_remove_with_balance'].format(user=username)}
-                )
-
-        return {
-            'to_add': to_add,
-            'to_delete': to_delete,
-        }
-
-    @transaction.atomic()
-    def create(self, validated_data):
-        group = self.context['group']
-        to_add = validated_data['to_add']
-        to_delete = validated_data['to_delete']
-
-        if to_add:
-            GroupMembership.objects.bulk_create([GroupMembership(group=group, user_id=user_id) for user_id in to_add])
-
-        if to_delete:
-            GroupMembership.objects.filter(group=group, user_id__in=to_delete).delete()
-
-        return group
+        attrs['group'] = group
+        return attrs

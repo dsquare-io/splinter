@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import serializers
 
 from splinter.apps.expense.prefetch import AggregatedOutstandingBalancePrefetch, OutstandingBalancePrefetch
@@ -62,6 +63,12 @@ class CreateFriendshipSerializer(CreateUserSerializer):
 
             if Friendship.objects.is_friend_with(self.context['request'].user, user):
                 raise serializers.ValidationError({'email': f'You are already friends with {user.email}'})
+
+        if (
+            Friendship.objects.get_user_friends(self.context['request'].user).count()
+            >= settings.FRIEND_MAX_ALLOWED_FRIENDS
+        ):
+            raise serializers.ValidationError({'email': 'You have reached the maximum number of friends'})
 
         attrs['user'] = user
         return attrs
