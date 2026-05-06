@@ -3,7 +3,7 @@ import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { useAuth } from '@/hooks/useAuth.ts';
 
-export default function PersonalInfo() {
+export function PersonalInfo() {
   const { currentUser, refetchProfile } = useAuth();
   if (!currentUser) return;
 

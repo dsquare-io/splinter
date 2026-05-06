@@ -4,18 +4,14 @@ import { useForm, useWatch } from 'react-hook-form';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { AdjustmentsHorizontalIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
-import { ApiRoutes } from '@/api-types';
+import { ApiRoutes, type SimpleUser } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import { ExpenseOptions } from './ExpenseOptions.tsx';
-import {
-  ExpenseParticipantsProvider,
-  Participant,
-  useParticipantsContext,
-} from './ExpenseParticipantsContext.tsx';
+import { ExpenseParticipantsProvider, useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ExpenseShares } from './ExpenseShares.tsx';
 
 type Step = 'entry' | 'shares' | 'options';
@@ -142,7 +138,7 @@ function AddExpenseFormInner() {
 function setDefaultShares(
   getValues: (name: string) => unknown,
   setValue: (name: string, value: unknown) => void,
-  participants: Participant[],
+  participants: SimpleUser[],
   expenseCount: number
 ) {
   for (let i = 0; i < expenseCount; i++) {

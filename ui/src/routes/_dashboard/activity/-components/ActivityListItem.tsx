@@ -11,7 +11,7 @@ type ActivityListItemProps = {
   activity: Activity;
 };
 
-export default function ActivityListItem({ activity }: ActivityListItemProps) {
+export function ActivityListItem({ activity }: ActivityListItemProps) {
   return (
     <Link
       to="/activity/$activity"

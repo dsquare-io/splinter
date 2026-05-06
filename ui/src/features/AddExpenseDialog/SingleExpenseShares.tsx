@@ -5,7 +5,7 @@ import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 import { NumberFormField, useScopedFieldName, WatchState } from '@/components/form';
-import { Avatar, Checkbox, Input } from '@/components/primitives';
+import { Avatar, Checkbox, Input, UserLabel } from '@/components/primitives';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 
 export function SingleExpenseShares() {
@@ -83,8 +83,10 @@ export function SingleExpenseShares() {
                       }}
                     >
                       <div className="flex items-center gap-x-2">
-                        <Avatar fallback={user.initials || user.name} />
-                        <div className="text-neutral-800">{user.name}</div>
+                        <Avatar fallback={user.name} />
+                        <div className="text-neutral-800">
+                          <UserLabel user={{ ...user, isActive: true }} />
+                        </div>
                       </div>
                     </Checkbox>
                   );

@@ -288,8 +288,7 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /** Update Group Membership */
-    put: operations['UpdateGroupMembership'];
+    put?: never;
     /** Create Group Membership */
     post: operations['CreateGroupMembership'];
     delete?: never;
@@ -618,8 +617,6 @@ export interface components {
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
     PaginatedExpenseOrPaymentList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentList;
-    PaginatedFriendList: import('./components/schemas.d.ts').PaginatedFriendList;
-    PaginatedGroupList: import('./components/schemas.d.ts').PaginatedGroupList;
     PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
     PatchedUser: import('./components/schemas.d.ts').PatchedUser;
     Payment: import('./components/schemas.d.ts').Payment;
@@ -631,7 +628,6 @@ export interface components {
     SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
-    UpdateGroupMembership: import('./components/schemas.d.ts').UpdateGroupMembership;
     UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
     UpsertPayment: import('./components/schemas.d.ts').UpsertPayment;
     User: import('./components/schemas.d.ts').User;
@@ -1211,10 +1207,6 @@ export interface operations {
   ListFriend: {
     parameters: {
       query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
         /** @description Search Query */
         q?: string;
       };
@@ -1229,7 +1221,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedFriendList'];
+          'application/json': components['schemas']['Friend'][];
         };
       };
       /** @description Unauthorized */
@@ -1518,12 +1510,7 @@ export interface operations {
   };
   ListGroup: {
     parameters: {
-      query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
-      };
+      query?: never;
       header?: never;
       path?: never;
       cookie?: never;
@@ -1535,7 +1522,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedGroupList'];
+          'application/json': components['schemas']['Group'][];
         };
       };
       /** @description Unauthorized */
@@ -1860,72 +1847,6 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['PaginatedExpenseOrPaymentList'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Resource Not Found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['NotFound'];
-        };
-      };
-    };
-  };
-  UpdateGroupMembership: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        group_uid: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateGroupMembership'];
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UpdateGroupMembership'];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            /** @description List of non-field errors */
-            ''?: string[];
-          } & {
-            [key: string]: string[];
-          };
         };
       };
       /** @description Unauthorized */

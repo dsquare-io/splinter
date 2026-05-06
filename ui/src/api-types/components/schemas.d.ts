@@ -288,38 +288,6 @@ export interface PaginatedExpenseOrPaymentList {
   results: ExpenseOrPayment[];
 }
 
-export interface PaginatedFriendList {
-  /** @example 123 */
-  count: number;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=400&limit=100
-   */
-  next?: string | null;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=200&limit=100
-   */
-  previous?: string | null;
-  results: Friend[];
-}
-
-export interface PaginatedGroupList {
-  /** @example 123 */
-  count: number;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=400&limit=100
-   */
-  next?: string | null;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=200&limit=100
-   */
-  previous?: string | null;
-  results: Group[];
-}
-
 export type PatchedExtendedGroup = SimpleGroup & {
   /** @description Outstanding balances for all group members */
   readonly outstandingBalances: GroupOutstandingBalance[];
@@ -392,10 +360,6 @@ export interface SimpleUser {
   readonly name: string;
   /** @description Indicates whether the user is active or not. */
   readonly isActive: boolean;
-}
-
-export interface UpdateGroupMembership {
-  members: string[];
 }
 
 export interface UpsertExpense {

@@ -1,23 +1,11 @@
 import { useWatch } from 'react-hook-form';
 
-import { SelectFormInput, TextFormInput } from '@/components/form-controls';
-import { Avatar, type SelectItemRenderProps } from '@/components/primitives';
+import { TextFormInput } from '@/components/form-controls';
+import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
-import { Participant, useParticipantsContext } from './ExpenseParticipantsContext.tsx';
+import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ParticipantsSelector } from './ParticipantsSelector.tsx';
-
-function ParticipantItem({ item }: SelectItemRenderProps<Participant>) {
-  return (
-    <>
-      <Avatar
-        className="size-7 bg-neutral-50"
-        fallback={item.initials || item.name}
-      />
-      {item.name}
-    </>
-  );
-}
 
 export function ExpenseEntry() {
   const { currentUser } = useAuth();
@@ -29,14 +17,13 @@ export function ExpenseEntry() {
     <div className="space-y-4">
       <ParticipantsSelector />
 
-      <SelectFormInput
+      <UserSelectFormInput
         name="paidBy"
         defaultValue={currentUser?.uid}
         required
         label="Paid By"
         placeholder="Search participants..."
         items={participants}
-        ItemComponent={ParticipantItem}
       />
 
       {isMulti && (

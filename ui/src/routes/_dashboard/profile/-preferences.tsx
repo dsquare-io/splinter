@@ -3,7 +3,7 @@ import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { CurrencySelectFormInput } from '@/components/form-controls';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
-export default function Preferences() {
+export function Preferences() {
   const { data: userCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
 
   return (

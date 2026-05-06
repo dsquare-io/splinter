@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router';
 
 import { Avatar, DetailHeader } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
-import ChangePassword from './-change-password.tsx';
-import PersonalInfo from './-personal-info.tsx';
-import Preferences from './-preferences.tsx';
+import { ChangePassword } from './-change-password.tsx';
+import { PersonalInfo } from './-personal-info.tsx';
+import { Preferences } from './-preferences.tsx';
 
 export const Route = createFileRoute('/_dashboard/profile/me')({
   component: RootComponent,

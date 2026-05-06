@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useReducer, type Dispatch, type R
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
+import { ApiRoutes, type SimpleUser } from '@/api-types';
 import { Friend, Group } from '@/api-types/components/schemas';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
@@ -12,8 +12,8 @@ export interface Participant {
   uid: string;
   urn: string;
   name: string;
-  initials?: string;
-  type: 'group' | 'friend' | 'user';
+  user?: SimpleUser;
+  type: 'group' | 'friend';
 }
 
 type ParticipantsAction =
@@ -27,14 +27,19 @@ function participantsReducer(state: Participant[], action: ParticipantsAction): 
     return [{ type: 'group', uid: action.data.uid, urn: action.data.urn, name: action.data.name }];
   }
   if (action.type === 'select_friend') {
+    const participant: Participant = {
+      type: 'friend',
+      uid: action.data.uid,
+      urn: action.data.urn,
+      name: action.data.name,
+      user: action.data,
+    };
+
     if (state[0]?.type === 'group') {
-      return [{ type: 'friend', uid: action.data.uid, urn: action.data.urn, name: action.data.name }];
+      return [participant];
     }
     if (!state.find((p) => p.urn === action.data.urn)) {
-      return [
-        ...state,
-        { type: 'friend', uid: action.data.uid, urn: action.data.urn, name: action.data.name },
-      ];
+      return [...state, participant];
     }
   }
   return state;
@@ -42,7 +47,7 @@ function participantsReducer(state: Participant[], action: ParticipantsAction): 
 
 interface ParticipantsContextValue {
   selected: Participant[];
-  participants: Participant[];
+  participants: SimpleUser[];
   hasPreselected: boolean;
   dispatch: Dispatch<ParticipantsAction>;
 }
@@ -59,12 +64,12 @@ export function ExpenseParticipantsProvider({ children }: { children: ReactNode 
   const hasPreselected = !!params.friend || !!params.group;
 
   useEffect(() => {
-    const friend = friends?.results?.find((f) => f.uid === params.friend);
-    const group = groups?.results?.find((g) => g.uid === params.group);
+    const friend = friends?.find((f) => f.uid === params.friend);
+    const group = groups?.find((g) => g.uid === params.group);
     if (friend) dispatch({ type: 'select_friend', data: friend });
     else if (group) dispatch({ type: 'select_group', data: group });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!friends?.results, !!groups?.results]);
+  }, [!!friends, !!groups]);
 
   const isGroup = selected[0]?.type === 'group';
   const { data: groupDetail } = useQuery(
@@ -73,26 +78,11 @@ export function ExpenseParticipantsProvider({ children }: { children: ReactNode 
     })
   );
 
-  const currentUserParticipant: Participant[] = currentUser
-    ? [
-        {
-          uid: currentUser.uid,
-          urn: currentUser.urn,
-          name: `Me (${currentUser.name})`,
-          initials: currentUser.name,
-          type: 'user',
-        },
-      ]
-    : [];
+  const currentUserParticipant: SimpleUser[] = currentUser ? [currentUser] : [];
 
-  const participants: Participant[] = isGroup
-    ? (groupDetail?.members?.map((m) => ({
-        uid: m.uid,
-        urn: m.urn,
-        name: m.name,
-        type: 'friend' as const,
-      })) ?? [])
-    : [...currentUserParticipant, ...selected];
+  const participants: SimpleUser[] = isGroup
+    ? (groupDetail?.members ?? [])
+    : [...currentUserParticipant, ...(selected.map((p) => p.user!) as SimpleUser[])];
 
   return (
     <ParticipantsContext.Provider value={{ selected, participants, hasPreselected, dispatch }}>

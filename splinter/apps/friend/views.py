@@ -10,6 +10,7 @@ from splinter.core.views import CreateAPIView, GenericAPIView, ListAPIView, Retr
 
 
 class ListCreateFriendView(ListAPIView, CreateAPIView):
+    pagination_class = None
     filter_backends = [TrigramSimilaritySearchBackend]
 
     def get_serializer_class(self):

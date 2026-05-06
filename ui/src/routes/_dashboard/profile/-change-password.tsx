@@ -2,7 +2,7 @@ import { ApiRoutes } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls/index.js';
 
-export default function ChangePassword() {
+export function ChangePassword() {
   return (
     <Form
       action={ApiRoutes.CHANGE_PASSWORD}

@@ -50,19 +50,19 @@ export function ParticipantsSelector() {
     }
   }, [selected, setValue]);
 
-  if (!groups?.results || !friends?.results) return null;
+  if (!groups || !friends) return null;
 
-  const allItems: (Friend | Group)[] = [...groups.results, ...friends.results];
+  const allItems: (Friend | Group)[] = [...groups, ...friends];
   const selectedUrns = selected.map((p) => p.urn);
 
   const filteredSections = [
     {
       name: 'Groups',
-      children: groups.results.filter((g) => g.name.toLowerCase().includes(inputValue.toLowerCase())),
+      children: groups.filter((g) => g.name.toLowerCase().includes(inputValue.toLowerCase())),
     },
     {
       name: 'Friends',
-      children: friends.results.filter((f) => f.name.toLowerCase().includes(inputValue.toLowerCase())),
+      children: friends.filter((f) => f.name.toLowerCase().includes(inputValue.toLowerCase())),
     },
   ].filter((s) => s.children.length > 0);
 
@@ -81,8 +81,8 @@ export function ParticipantsSelector() {
           const removedUrns = selectedUrns.filter((u) => !newUrns.includes(u));
 
           for (const urn of addedUrns) {
-            const friend = friends.results.find((f) => f.urn === urn);
-            const group = groups.results.find((g) => g.urn === urn);
+            const friend = friends.find((f) => f.urn === urn);
+            const group = groups.find((g) => g.urn === urn);
             if (friend) dispatch({ type: 'select_friend', data: friend });
             else if (group) dispatch({ type: 'select_group', data: group });
           }
