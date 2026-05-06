@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
-import { Avatar, DetailHeader } from '@/components/primitives';
+import { ArrowLeftStartOnRectangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+
+import { Avatar, Button, DetailHeader } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ChangePassword } from './-change-password.tsx';
 import { PersonalInfo } from './-personal-info.tsx';
@@ -11,7 +14,8 @@ export const Route = createFileRoute('/_dashboard/profile/me')({
 });
 
 function RootComponent() {
-  const { currentUser } = useAuth();
+  const { currentUser, setToken } = useAuth();
+  const { updateServiceWorker } = useRegisterSW();
 
   return (
     <div>
@@ -54,6 +58,33 @@ function RootComponent() {
           </div>
 
           <ChangePassword />
+        </section>
+
+        <section className="md:hidden px-4 py-8 sm:px-6 space-y-3">
+          <Button
+            variant="outlined"
+            color="default"
+            className="w-full"
+            onPress={async () => {
+              await updateServiceWorker(true);
+              window.location.reload();
+            }}
+          >
+            <ArrowPathIcon data-slot="icon" />
+            Refresh App
+          </Button>
+          <Button
+            variant="outlined"
+            color="danger"
+            className="w-full"
+            onPress={() => {
+              setToken();
+              window.location.href = '/auth/login';
+            }}
+          >
+            <ArrowLeftStartOnRectangleIcon data-slot="icon" />
+            Sign Out
+          </Button>
         </section>
       </div>
     </div>
