@@ -19,7 +19,7 @@ export function GroupList() {
     );
 
   return (
-    <div className="flex h-full flex-col -space-y-px overflow-y-auto">
+    <div className="flex flex-col -space-y-px">
       {isPending ? (
         Array.from({ length: 6 }).map((_, i) => <GroupListItemSkeleton key={i} />)
       ) : !groups?.length ? (

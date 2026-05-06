@@ -1,7 +1,6 @@
+import { ArrowLeftStartOnRectangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { createFileRoute } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
-
-import { ArrowLeftStartOnRectangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 
 import { Avatar, Button, DetailHeader } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
@@ -18,7 +17,7 @@ function RootComponent() {
   const { updateServiceWorker } = useRegisterSW();
 
   return (
-    <div>
+    <div className="h-full flex-col overflow-auto">
       <DetailHeader>
         <div className="mx-auto flex max-w-(--breakpoint-lg) items-center gap-x-5 px-4 sm:px-6 lg:px-8">
           <Avatar
@@ -60,7 +59,7 @@ function RootComponent() {
           <ChangePassword />
         </section>
 
-        <section className="md:hidden px-4 py-8 sm:px-6 space-y-3">
+        <section className="space-y-3 px-4 py-8 sm:px-6 md:hidden">
           <Button
             variant="outlined"
             color="default"

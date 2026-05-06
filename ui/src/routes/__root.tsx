@@ -67,14 +67,12 @@ function RootComponent() {
   }, [status]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-screen max-h-screen flex-col">
       <UpdateBanner />
       <TopLoader />
-      <div className="min-h-0 flex-1">
-        <ErrorBoundary>
-          <Outlet />
-        </ErrorBoundary>
-      </div>
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </div>
   );
 }

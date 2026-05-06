@@ -18,7 +18,7 @@ export function ActivityList() {
   }
 
   return (
-    <div className="flex h-full flex-col -space-y-px overflow-y-auto">
+    <div className="flex flex-col -space-y-px">
       {isPending ? (
         Array.from({ length: 8 }).map((_, i) => <ActivityListItemSkeleton key={i} />)
       ) : !data?.results?.length ? (

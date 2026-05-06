@@ -15,7 +15,7 @@ function DashboardLayout() {
 
   return (
     <div className="flex h-full flex-col md:contents">
-      <main className="flex-1 overflow-auto md:ms-60 md:h-full">
+      <main className="min-h-0 flex-1 md:ms-60">
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
