@@ -48,13 +48,13 @@ def handle_comment_save(instance: Comment, created: bool, **kwargs):
 
     original_activity = instance.activity
 
-    audience = list(original_activity.audience.values_list('pk', flat=True))
-    audience.append(original_activity.actor_id)
+    audience = set(original_activity.audience.values_list('pk', flat=True))
+    audience.add(original_activity.actor_id)
 
     CommentActivity.log(
         actor=instance.user_id,
         target=instance,
-        audience=audience,
+        audience=list(audience),
         group=original_activity.group_id,
-        action_object=original_activity,
+        action_object=original_activity.action_object,
     )

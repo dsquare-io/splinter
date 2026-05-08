@@ -173,9 +173,6 @@ class DeletePaymentOperation(ExpenseOperation[Expense]):
         expense.delete()
         return expense
 
-    def get_target(self, expense: Expense) -> Model:
-        return expense
-
 
 class RestoreExpenseOperation(ExpenseOperation[Expense]):
     activity_type = RestoreExpenseActivity
@@ -184,16 +181,10 @@ class RestoreExpenseOperation(ExpenseOperation[Expense]):
         expense.restore()
         return expense
 
-    def get_target(self, expense: Expense) -> Model:
-        return expense
-
 
 class RestorePaymentOperation(ExpenseOperation[Expense]):
     activity_type = RestorePaymentActivity
 
     def _execute(self, expense: Expense) -> Expense:
         expense.restore()
-        return expense
-
-    def get_target(self, expense: Expense) -> Model:
         return expense
