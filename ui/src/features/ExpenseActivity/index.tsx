@@ -1,11 +1,10 @@
-import { Label, TextArea, TextField } from 'react-aria-components';
-
-import { formatDistanceToNow } from 'date-fns';
-
 import { ApiRoutes } from '@/api-types';
-import { Avatar, Button, UserLabel } from '@/components/primitives';
+import { Avatar } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
+import { CommentForm } from './CommentForm.tsx';
+import { CommentItem } from './CommentItem.tsx';
+import { TimelineItem } from './TimelineItem.tsx';
 
 type ExpenseActivityProps = {
   expenseId: string;
@@ -13,72 +12,67 @@ type ExpenseActivityProps = {
 
 export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
   const { currentUser } = useAuth();
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
+  const { data: activities, isLoading } = useApiQuery(
+    ApiRoutes.ACTIVITY_LIST,
+    {},
+    { of: `urn:splinter:expense/${expenseId}`, order: 'asc' }
+  );
 
-  if (!expense) return null;
+  const items = activities?.results ?? [];
 
   return (
     <div>
-      <h3 className="mb-4 px-4 text-sm font-medium">Activity Log</h3>
+      <h3 className="mb-4 px-4 text-sm font-medium text-gray-900">Activity</h3>
 
-      <ul
-        role="list"
-        className="space-y-6"
-      >
-        <li className="relative flex gap-x-3 px-4">
-          <div className="absolute top-0 -bottom-6 left-4 flex w-6 justify-center">
-            <div className="w-px bg-gray-200"></div>
-          </div>
-          <div className="relative flex size-6 flex-none items-center justify-center bg-white">
-            <div className="h-1.5 w-1.5 rounded-full bg-gray-100 ring-1 ring-gray-300"></div>
-          </div>
-          <p className="flex-auto py-0.5 text-sm leading-5 text-gray-500">
-            <span className="font-medium text-gray-900">
-              <UserLabel user={expense.createdBy} />
-            </span>{' '}
-            {expense.type === 'payment' ? 'recorded this payment.' : 'created this expense.'}
-          </p>
-          {expense?.datetime && (
-            <time
-              dateTime={expense?.datetime}
-              className="flex-none py-0.5 text-xs leading-5 text-gray-500"
+      <ul role="list">
+        {isLoading &&
+          Array.from({ length: 3 }).map((_, i) => (
+            <li
+              key={i}
+              className="relative flex gap-x-3 px-4 py-3"
             >
-              {formatDistanceToNow(new Date(expense?.datetime), { addSuffix: true })}
-            </time>
-          )}
-        </li>
+              {i < 2 && <div className="absolute top-6 bottom-0 left-7 w-px bg-gray-100" />}
+              <div className="size-6 animate-pulse rounded-full bg-gray-200" />
+              <div className="flex flex-1 flex-col gap-1.5 py-0.5">
+                <div className="h-3 w-2/3 animate-pulse rounded bg-gray-200" />
+                <div className="h-2.5 w-1/3 animate-pulse rounded bg-gray-100" />
+              </div>
+            </li>
+          ))}
 
-        <li className="relative flex gap-x-3 px-4">
+        {items.map((activity) => {
+          const isComment = activity.verb === 'comment';
+
+          const content = isComment ? (
+            <CommentItem
+              activity={activity}
+              isOwnComment={activity.actor.uid === currentUser?.uid}
+            />
+          ) : (
+            <TimelineItem activity={activity} />
+          );
+
+          // Comment: className="gap-x-2 px-4 py-1.5"
+          return (
+            <li
+              className="relative flex gap-x-3 px-4 py-2"
+              key={activity.uid}
+            >
+              <div className="absolute top-2 -bottom-6 left-4 flex w-6 justify-center">
+                <div className="w-px bg-gray-200"></div>
+              </div>
+
+              {content}
+            </li>
+          );
+        })}
+
+        <li className="flex gap-x-3 px-4 pt-4 pb-2">
           <Avatar
             fallback={currentUser?.name}
-            className="size-6"
+            className="size-6 shrink-0 bg-white"
           />
-          <div className="relative flex-auto">
-            <TextField
-              name="comment"
-              className="focus-within:border-brand-500 focus-within:ring-brand-400/30 overflow-hidden rounded-lg border border-gray-300 pb-12 shadow-xs focus-within:ring-3"
-            >
-              <Label className="sr-only">Add your comment</Label>
-              <TextArea
-                id="comment"
-                name="comment"
-                rows={2}
-                placeholder="Add your comment..."
-                className="block w-full resize-none border-0 bg-transparent px-3 py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-hidden sm:text-sm sm:leading-6"
-              />
-            </TextField>
-
-            <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pr-2 pl-3">
-              <Button
-                // type="submit"
-                size="small"
-                className="bg-white"
-                variant="outlined"
-              >
-                Comment
-              </Button>
-            </div>
-          </div>
+          <CommentForm activityId={items?.[0]?.uid} />
         </li>
       </ul>
     </div>
