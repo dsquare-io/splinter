@@ -61,7 +61,17 @@ export default defineConfig(({ mode }) => {
         sentryVitePlugin({
           org: env.SENTRY_ORG,
           project: env.SENTRY_PROJECT,
+          url: env.SENTRY_URL,
           authToken: env.SENTRY_AUTH_TOKEN,
+          sourcemaps: {
+            // As you're enabling client source maps, you probably want to delete them after they're uploaded to Sentry.
+            // Set the appropriate glob pattern for your output folder - some glob examples below:
+            filesToDeleteAfterUpload: [
+              "./**/*.map",
+              ".*/**/public/**/*.map",
+              "./dist/**/client/**/*.map",
+            ],
+          },
         }),
     ],
     resolve: {
