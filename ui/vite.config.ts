@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackRouter } from '@tanstack/router-vite-plugin';
 import react from '@vitejs/plugin-react';
@@ -11,6 +12,9 @@ export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return {
+    build: {
+      sourcemap: true,
+    },
     plugins: [
       tanstackRouter(),
       react(),
@@ -53,6 +57,12 @@ export default defineConfig(({ mode }) => {
           enabled: true,
         },
       }),
+      env.SENTRY_AUTH_TOKEN &&
+        sentryVitePlugin({
+          org: env.SENTRY_ORG,
+          project: env.SENTRY_PROJECT,
+          authToken: env.SENTRY_AUTH_TOKEN,
+        }),
     ],
     resolve: {
       alias: {

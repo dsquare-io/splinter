@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable
 
-from sentry_sdk import Hub
+import sentry_sdk
 
 
 class SentryInstrumentation:
@@ -11,15 +11,7 @@ class SentryInstrumentation:
         self._span = None
 
     def __enter__(self):
-        parent = Hub.current.scope.span or Hub.current.scope.transaction
-        if parent is None:
-            self._span = Hub.current.start_transaction(op=self.name, name=self.description)
-        else:
-            self._span = parent.start_child(
-                op=self.name,
-                description=self.description,
-            )
-
+        self._span = sentry_sdk.start_span(op=self.name, name=self.description)
         return self._span.__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

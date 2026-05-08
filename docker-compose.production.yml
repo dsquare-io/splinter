@@ -28,6 +28,11 @@ services:
     build:
       context: .
       dockerfile: .github/Dockerfile
+      args:
+        - VITE_SENTRY_DSN=${SENTRY_DSN}
+        - SENTRY_ORG=${SENTRY_ORG}
+        - SENTRY_PROJECT=${SENTRY_PROJECT}
+        - SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
     environment:
       - ENVIRONMENT=production
       - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
@@ -47,6 +52,7 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - ENCRYPTION_KEY_${ENCRYPTION_KEY_HASH}=${ENCRYPTION_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
     expose:
       - 8000
     command: >
@@ -81,4 +87,5 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - ENCRYPTION_KEY_${ENCRYPTION_KEY_HASH}=${ENCRYPTION_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
     command: celery -A splinter:celery_app worker -l info
