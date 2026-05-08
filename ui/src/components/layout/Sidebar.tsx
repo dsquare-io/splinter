@@ -24,7 +24,7 @@ export function Sidebar(props: ComponentProps<'div'>) {
     <div
       {...props}
       className={clsx(
-        'fixed inset-y-0 z-30 hidden w-60 flex-col space-y-4 overflow-scroll border-e border-gray-200 bg-white px-3 py-4 md:flex',
+        'fixed inset-y-0 z-30 hidden w-60 flex-col space-y-4 border-e border-gray-200 bg-white px-3 py-4 md:flex',
         props.className
       )}
     >

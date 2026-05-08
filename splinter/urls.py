@@ -9,17 +9,20 @@ from django.views.static import serve
 from splinter.core.views import APIErrorView
 
 
-def serve_ui(request, path):
-    if path.startswith('api/'):
+def serve_ui(request, route = ''):
+    if route.startswith('api/'):
         raise Http404()
 
-    path = os.path.normpath(path).lstrip('/')
-    if os.path.isdir(os.path.join(settings.UI_ROOT, path)):
-        path = os.path.join(path, 'index.html')
+    route = os.path.normpath(route).lstrip('/')
+    if os.path.isdir(os.path.join(settings.UI_ROOT, route)):
+        route = os.path.join(route, 'index.html')
 
     try:
-        return serve(request, path, document_root=settings.UI_ROOT)
+        return serve(request, route, document_root=settings.UI_ROOT)
     except Http404:
+        if os.path.splitext(route)[1]:
+            raise
+
         return serve(request, 'index.html', document_root=settings.UI_ROOT)
 
 
@@ -41,8 +44,8 @@ if not settings.DEBUG:
     urlpatterns.extend(
         [
             path(f'{settings.STATIC_URL.strip('/')}/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
-            path('', serve_ui, {'path': ''}),
-            path('<path:path>', serve_ui),
+            path('', serve_ui),
+            path('<path:route>', serve_ui),
         ]
     )
 

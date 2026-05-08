@@ -4,6 +4,7 @@ import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { NotFound } from '@/components/NotFound.tsx';
 import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
 
 function TopLoader() {
@@ -79,4 +80,5 @@ function RootComponent() {
 
 export const Route = new RootRoute({
   component: RootComponent,
+  notFoundComponent: NotFound,
 });
