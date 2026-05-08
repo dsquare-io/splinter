@@ -16,13 +16,22 @@ const API_ERROR_MESSAGE = {
   STATUS_CODE_UNKNOWN: 'Oops, Something Went Wrong!',
 };
 
+export function flattenFieldErrors(errors: FieldErrors, prefix = ''): { key: string; message: string }[] {
+  return Object.entries(errors).flatMap(([key, err]) => {
+    if (!err) return [];
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    if (typeof err.type === 'string') return [{ key: fullKey, message: (err.message as string) ?? '' }];
+    return flattenFieldErrors(err as FieldErrors, fullKey);
+  });
+}
+
 /**
  * Parses django rest framework errors and transforms them into hook-form's FieldErrors type.
  *
  * possible improvement: exactly out the non drf specific error handling like network error
  * or some code level unhandled exception.
  */
-export function drfToFieldErrors(error: unknown) {
+export function translateServerError(error: unknown) {
   /**
    * parses drf error object to hook-form's FieldErrors type
    */
@@ -72,18 +81,18 @@ export function drfToFieldErrors(error: unknown) {
     };
   }
 
-  if (error.response && error.response.data) {
-    // got a response from the server with field errors
-    // so decorate errors on respective fields/form root
-    return handleObject(error.response.data);
-  }
-
   if (error.response) {
     // got a response but without any data.
     // so use status code to display the error message.
     let errorText = 'Something went wrong please try again';
 
     if (error.response.status === 400) {
+      if (error.response.data) {
+        // got a response from the server with field errors
+        // so decorate errors on respective fields/form root
+        return handleObject(error.response.data);
+      }
+
       errorText = API_ERROR_MESSAGE.STATUS_CODE_400;
     } else if (error.response.status === 401) {
       errorText = API_ERROR_MESSAGE.STATUS_CODE_401;
@@ -128,14 +137,23 @@ export function handleSubmissionError<TFieldValues extends FieldValues = FieldVa
   error: unknown,
   control: UseFormReturn<TFieldValues>
 ) {
-  const fieldErrors = drfToFieldErrors(error);
+  const fieldErrors = translateServerError(error);
   const values = control.getValues();
+  let hasNonFieldErrors = false;
 
   for (const [field, fieldError] of Object.entries(fieldErrors)) {
     if (field in values || field.startsWith('root.') || field === 'root') {
       control.setError(field as any, fieldError as any);
     } else {
-      control.setError(`root.${field}`, fieldError as any);
+      hasNonFieldErrors = true;
+      control.setError(`form.${field}`, fieldError as any);
     }
+  }
+
+  if (!fieldErrors.root && hasNonFieldErrors) {
+    control.setError('root', {
+      type: 'internal',
+      message: API_ERROR_MESSAGE.STATUS_CODE_400,
+    });
   }
 }

@@ -41,6 +41,7 @@ type AlertProps = Omit<ComponentProps<'div'>, 'children'> &
     title?: ReactNode;
     body?: ReactNode;
     dismissible?: boolean;
+    children?: ReactNode;
     onDismiss?: () => void;
   };
 
@@ -53,6 +54,7 @@ export function Alert({
   body,
   dismissible = true,
   onDismiss,
+  children,
   ...restProps
 }: AlertProps) {
   const iconElement = icon === false ? undefined : !icon ? IconsMap[color as keyof typeof IconsMap] : icon;
@@ -68,6 +70,7 @@ export function Alert({
         <div>
           {title && <div>{title}</div>}
           {body && <div>{body}</div>}
+          {children}
         </div>
       </div>
       {dismissible && (
