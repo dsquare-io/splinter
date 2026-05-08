@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 
 import { Link } from '@tanstack/react-router';
-import { formatDistanceToNow } from 'date-fns';
 
 import { Activity } from '@/api-types';
+import { ActivityVerbIcon } from '@/components/primitives';
+import { formatDistanceShort } from '@/utils/date';
 import { ActivityOutstandingBalance } from './ActivityOutstandingBalance.tsx';
-import { ActivityVerbIcon } from './ActivityVerbIcon.tsx';
 
 type ActivityListItemProps = {
   activity: Activity;
@@ -35,7 +35,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
         />
         {activity.createdAt && (
           <p className="mt-1 text-xs font-normal text-gray-400">
-            {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
+            {formatDistanceShort(new Date(activity.createdAt))}
           </p>
         )}
       </div>

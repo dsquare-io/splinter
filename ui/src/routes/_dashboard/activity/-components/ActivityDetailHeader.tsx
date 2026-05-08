@@ -1,10 +1,8 @@
-import { formatDistanceToNow } from 'date-fns';
-
 import { Activity } from '@/api-types';
-import { Avatar, DetailHeader, UserLabel } from '@/components/primitives';
+import { ActivityVerbIcon, Avatar, DetailHeader, UserLabel } from '@/components/primitives';
+import { formatDistanceLong } from '@/utils/date.ts';
 import { getVerbConfig } from '../-utils/verbConfig.ts';
 import { ActivityOutstandingBalance } from './ActivityOutstandingBalance.tsx';
-import { ActivityVerbIcon } from './ActivityVerbIcon.tsx';
 
 type Props = {
   activity: Activity;
@@ -38,9 +36,7 @@ export function ActivityDetailHeader({ activity }: Props) {
           />
           <span className="text-xs text-gray-500">
             <UserLabel user={activity.actor} />
-            {activity.createdAt && (
-              <> · {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}</>
-            )}
+            {activity.createdAt && <> · {formatDistanceLong(new Date(activity.createdAt))}</>}
           </span>
         </div>
       </div>

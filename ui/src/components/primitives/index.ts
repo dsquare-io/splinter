@@ -1,3 +1,4 @@
+export { ActivityVerbIcon } from './ActivityVerbIcon';
 export { Alert } from './Alert';
 export { Avatar } from './Avatar';
 export { Button, IconButton } from './Button';
