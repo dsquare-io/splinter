@@ -6,7 +6,12 @@ from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
-from splinter.apps.expense.operations import DeleteExpenseOperation, DeletePaymentOperation
+from splinter.apps.expense.operations import (
+    DeleteExpenseOperation,
+    DeletePaymentOperation,
+    RestoreExpenseOperation,
+    RestorePaymentOperation,
+)
 from splinter.apps.expense.serializers import (
     ExpenseOrPaymentSerializer,
     RestoreExpenseSerializer,
@@ -46,12 +51,9 @@ class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
         return ExpenseOrPaymentSerializer
 
     def get_queryset(self):
-        qs = Expense.objects.of_user(self.request.user)
+        qs = Expense.objects.of_user(self.request.user).include_deleted()
         if self.request.method == 'PUT':
             qs = qs.filter(is_payment=False)
-
-        if self.request.method == 'GET':
-            qs = qs.include_deleted()
 
         return qs
 
@@ -62,7 +64,12 @@ class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
             DeleteExpenseOperation(self.request.user).execute(instance)
 
     def patch(self, request, *args, **kwargs):
-        self.get_object().restore()
+        instance = self.get_object()
+
+        if instance.is_payment:
+            RestorePaymentOperation(self.request.user).execute(instance)
+        else:
+            RestoreExpenseOperation(self.request.user).execute(instance)
 
 
 class UpdatePaymentView(GenericAPIView):

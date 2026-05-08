@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 
 import {
+  ArrowUturnLeftIcon,
   BanknotesIcon,
   ChatBubbleLeftRightIcon,
   CheckCircleIcon,
@@ -58,6 +59,18 @@ const VERB_CONFIG: Record<string, VerbConfig> = {
     iconBg: 'bg-red-100',
     iconColor: 'text-red-600',
     label: 'Payment was removed',
+  },
+  restore_expense: {
+    icon: ArrowUturnLeftIcon,
+    iconBg: 'bg-violet-100',
+    iconColor: 'text-violet-600',
+    label: 'Expense was restored',
+  },
+  restore_activity: {
+    icon: ArrowUturnLeftIcon,
+    iconBg: 'bg-violet-100',
+    iconColor: 'text-violet-600',
+    label: 'Activity was restored',
   },
   comment: {
     icon: ChatBubbleLeftRightIcon,

@@ -2,6 +2,7 @@ import threading
 from collections import Counter, defaultdict
 from contextlib import ContextDecorator
 from decimal import Decimal
+from typing import Callable
 
 from django.db import transaction
 from django.db.models.signals import post_delete, post_save, pre_save
@@ -13,13 +14,13 @@ from splinter.apps.friend.models import Friendship
 
 class OutstandingBalanceCollector:
     def __init__(self):
-        self._currency_id: int | None = None
+        self._currency_id: str | None = None
         self._group_id: int | None = None
         self._payer_id: int | None = None
 
         self._user_balances: dict[tuple[int, int], Decimal] = defaultdict(Decimal)
 
-    def set_defaults(self, currency_id: int, group_id: int, payer_id: int) -> None:
+    def set_defaults(self, currency_id: str, group_id: int, payer_id: int) -> None:
         self._currency_id = currency_id
         self._group_id = group_id
         self._payer_id = payer_id
@@ -82,6 +83,12 @@ class ExpenseEventOrchestrator(ContextDecorator):
             group_id=parent.group_id,
             payer_id=parent.paid_by_id,
         )
+
+    def handle_expense_post_save(self, expense: Expense, created: bool):
+        if created:
+            return
+
+        self.set_expense(expense)
 
     def handle_expense_split_post_save(self, expense_split: ExpenseSplit, created: bool):
         amount_delta = 0
@@ -216,11 +223,21 @@ class ExpenseEventOrchestrator(ContextDecorator):
 _local = threading.local()
 
 
-def expense_event_orchestrator(f: callable = None):
+def expense_event_orchestrator(f: Callable = None):
     if f is None:
         return ExpenseEventOrchestrator()
 
     return ExpenseEventOrchestrator()(f)
+
+
+@receiver(post_save, sender=Expense)
+def handle_expense_post_save(instance: Expense, created: bool, **kwargs):
+    orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
+    if orchestrator is not None:
+        orchestrator.handle_expense_post_save(instance, created)
+    else:
+        with ExpenseEventOrchestrator() as orchestrator:
+            orchestrator.handle_expense_post_save(instance, created)
 
 
 @receiver(pre_save, sender=ExpenseSplit)

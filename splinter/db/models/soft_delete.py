@@ -77,6 +77,5 @@ class SoftDeleteModel(models.Model, metaclass=SoftDeleteModelBase):
         return self.removed_at is not None
 
     def restore(self, using=None):
-        using = using or router.db_for_write(self.__class__, instance=self)
         self.removed_at = None
-        self.__class__.objects.using(using).filter(pk=self.pk).update(removed_at=None)
+        self.save(using=using, update_fields=['removed_at'])

@@ -10,6 +10,8 @@ from splinter.apps.expense.activities import (
     CreatePaymentActivity,
     DeleteExpenseActivity,
     DeletePaymentActivity,
+    RestoreExpenseActivity,
+    RestorePaymentActivity,
 )
 from splinter.apps.expense.models import Expense, ExpenseSplit
 from splinter.apps.expense.orchestrator import expense_event_orchestrator
@@ -169,6 +171,28 @@ class DeletePaymentOperation(ExpenseOperation[Expense]):
 
     def _execute(self, expense: Expense) -> Expense:
         expense.delete()
+        return expense
+
+    def get_target(self, expense: Expense) -> Model:
+        return expense
+
+
+class RestoreExpenseOperation(ExpenseOperation[Expense]):
+    activity_type = RestoreExpenseActivity
+
+    def _execute(self, expense: Expense) -> Expense:
+        expense.restore()
+        return expense
+
+    def get_target(self, expense: Expense) -> Model:
+        return expense
+
+
+class RestorePaymentOperation(ExpenseOperation[Expense]):
+    activity_type = RestorePaymentActivity
+
+    def _execute(self, expense: Expense) -> Expense:
+        expense.restore()
         return expense
 
     def get_target(self, expense: Expense) -> Model:
