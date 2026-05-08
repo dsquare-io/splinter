@@ -1,7 +1,7 @@
 import inspect
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Protocol
+from typing import Optional, Protocol
 
 from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist
@@ -22,8 +22,12 @@ class ResourceName:
     model_name: str
     uid: str | None = None
 
-    def get_model(self) -> ResourceNameProtocol | Model:
+    def get_model(self) -> type[ResourceNameProtocol] | type[Model]:
         return apps.get_model(self.app_label, self.model_name)
+
+    def get_instance(self) -> Model | ResourceNameProtocol:
+        model_cls = self.get_model()
+        return model_cls._base_manager.get(**{model_cls.UID_FIELD: self.uid})
 
     def __str__(self) -> str:
         s = f'urn:splinter:{self.app_label}'
@@ -56,6 +60,16 @@ class ResourceName:
             app_label = model_name
 
         return cls(app_label=app_label, model_name=model_name, uid=uid)
+
+    @classmethod
+    def try_parse(cls, resource_name: str | None) -> Optional['ResourceName']:
+        if not resource_name:
+            return None
+
+        try:
+            return cls.parse(resource_name)
+        except ValueError:
+            return None
 
 
 @lru_cache(maxsize=None)

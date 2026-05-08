@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.functional import cached_property
 from rest_framework.generics import get_object_or_404
@@ -5,6 +7,7 @@ from rest_framework.generics import get_object_or_404
 from splinter.apps.activity.models import Activity, ActivityAudience, Comment
 from splinter.apps.activity.serializers import ActivitySerializer, CommentSerializer
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
+from splinter.db.urn import ResourceName
 
 
 class ListActivityView(ListAPIView):
@@ -19,7 +22,24 @@ class ListActivityView(ListAPIView):
         return page
 
     def get_queryset(self):
-        return ActivityAudience.objects.filter(user=self.request.user).order_by('-created_at')
+        qs = ActivityAudience.objects.filter(user=self.request.user)
+
+        is_chronological = self.request.GET.get('order') == 'asc'
+        qs = qs.order_by('created_at' if is_chronological else '-created_at')
+
+        object_urn = ResourceName.try_parse(self.request.GET.get('of'))
+        if object_urn:
+            try:
+                instance = object_urn.get_instance()
+            except ObjectDoesNotExist:
+                return qs.none()
+
+            qs = qs.filter(
+                activity__object_content_type=ContentType.objects.get_for_model(instance),
+                activity__object_id=instance.id,
+            )
+
+        return qs
 
 
 class RetrieveActivityView(RetrieveAPIView):
