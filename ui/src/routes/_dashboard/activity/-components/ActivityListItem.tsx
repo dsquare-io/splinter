@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 
 import { Activity } from '@/api-types';
 import { ActivityVerbIcon } from '@/components/primitives';
+import { ActivityDescription } from '@/features/ActivityDescription';
 import { formatDistanceShort } from '@/utils/date';
 import { ActivityOutstandingBalance } from './ActivityOutstandingBalance.tsx';
 
@@ -27,7 +28,7 @@ export function ActivityListItem({ activity }: ActivityListItemProps) {
         iconClassName="size-6"
       />
       <div className="grow text-sm text-gray-800">
-        <p>{activity.description}</p>
+        <ActivityDescription activity={activity} />
         <ActivityOutstandingBalance
           balance={activity.outstandingBalance}
           currency={activity.currency}
