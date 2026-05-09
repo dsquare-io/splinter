@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes, type ApiResponse } from '@/api-types';
+import { ExpenseActivity } from '@/features/ExpenseActivity';
 import { ExpenseDetail } from '@/features/ExpenseDetail';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
@@ -47,10 +48,14 @@ function RootComponent() {
 
       <div className="p-4">
         {expense_uid && (
-          <ExpenseDetail
-            expenseId={expense_uid}
-            group={activity?.group}
-          />
+          <>
+            <ExpenseDetail
+              expenseId={expense_uid}
+              group={activity?.group}
+            />
+            <hr className="my-6 border-gray-300" />
+            <ExpenseActivity expenseId={expense_uid} />
+          </>
         )}
       </div>
     </>
