@@ -1,4 +1,7 @@
+from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import JSONField
 from django.utils import timezone
 
 from splinter.apps.expense.managers import ExpenseManager, OutstandingBalanceManager
@@ -8,6 +11,7 @@ from splinter.db.models import PublicModel, SoftDeleteModel, StateAwareModel, Ti
 class Expense(TimestampedModel, SoftDeleteModel, StateAwareModel, PublicModel):
     datetime = models.DateTimeField()
     description = models.CharField(max_length=64)
+    version = models.PositiveSmallIntegerField(default=0)
 
     amount = models.DecimalField(max_digits=9, decimal_places=2)
     currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
@@ -77,6 +81,61 @@ class ExpenseParty(models.Model):
 
     def __str__(self):
         return f'{self.expense} - {self.friendship}'
+
+
+class ExpenseRevision(models.Model):
+    expense = models.ForeignKey('Expense', on_delete=models.CASCADE, related_name='revisions')
+    actor = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+
+    datetime = models.DateTimeField()
+    description = models.CharField(max_length=64)
+    version = models.PositiveSmallIntegerField()
+
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
+
+    group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='+', null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children', null=True, blank=True)
+
+    paid_by = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+    is_payment = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_revisions'
+        ordering = ('-created_at',)
+
+
+class ExpenseSplitRevision(models.Model):
+    expense = models.ForeignKey(ExpenseRevision, on_delete=models.CASCADE, related_name='splits')
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
+    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    share = models.PositiveSmallIntegerField(default=1)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_split_revisions'
+
+
+class ExpenseChangeLog(models.Model):
+    expense = models.ForeignKey('Expense', on_delete=models.CASCADE, related_name='changes')
+    activity = models.ForeignKey(
+        'activity.Activity', on_delete=models.SET_NULL, null=True, blank=True, related_name='+'
+    )
+
+    version = models.PositiveSmallIntegerField()
+    previous_revision = models.ForeignKey(ExpenseRevision, on_delete=models.CASCADE, related_name='+')
+
+    if settings.WITHIN_TEST_SUITE:
+        changes = JSONField(default=list)
+    else:
+        changes = ArrayField(models.CharField(max_length=1024), default=list)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_change_logs'
 
 
 class OutstandingBalance(TimestampedModel, SoftDeleteModel):

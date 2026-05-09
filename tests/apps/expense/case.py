@@ -4,7 +4,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from splinter.apps.currency.models import Currency
-from splinter.apps.expense.models import Expense, ExpenseSplit, OutstandingBalance
+from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit, OutstandingBalance
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
 from tests.apps.currency.factories import CurrencyFactory
@@ -91,6 +91,16 @@ class ExpenseTestCase(TestCase):
         instance = OutstandingBalance.objects.filter(**filters).first()
         if instance is not None:
             return instance.amount
+
+    def assertExpenseParties(self, expense: Expense, friends: list[User]):
+        parties = list(ExpenseParty.objects.filter(expense=expense))
+        self.assertEqual(len(parties), max(0, len(friends) - 1))  # -1 for paid_by
+
+        friend_ids = set(i.id for i in friends)
+
+        for party in parties:
+            self.assertEqual(party.friendship.user1_id, party.expense.paid_by_id)
+            self.assertIn(party.friendship.user2_id, friend_ids)
 
     def assertUserOutstandingBalance(self, amount_by_user: dict[User, int | None]) -> None:
         for i, (user, expected_amount) in enumerate(amount_by_user.items(), 1):

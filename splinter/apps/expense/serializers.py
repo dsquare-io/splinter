@@ -9,8 +9,9 @@ from rest_framework.exceptions import ErrorDetail
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
-from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation
+from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
+from splinter.apps.expense.utils import validate_description
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
@@ -64,8 +65,10 @@ class ChildExpenseSerializer(serializers.Serializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
-    description = serializers.CharField(max_length=64)
+    description = serializers.CharField(max_length=32)
     shares = ExpenseShareSerializer(many=True, allow_empty=False)
+
+    validate_description = staticmethod(validate_description)
 
 
 class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
@@ -93,6 +96,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'currency',
             'outstanding_balance',
             'expenses',
+            'version',
             'paid_by',
             'is_deleted',
             'created_by',
@@ -204,12 +208,15 @@ class ExpenseOrPaymentSerializer(PrefetchQuerysetSerializerMixin, PolymorphicSer
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
+    version = serializers.IntegerField(min_value=0, default=0)
 
     paid_by = UserSerializerField(required=False, default='CurrentUser')
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()
     expenses = ChildExpenseSerializer(many=True, allow_empty=False)
+
+    validate_description = staticmethod(validate_description)
 
     def validate_paid_by(self, value):
         if value:
@@ -269,9 +276,16 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
         return attrs
 
-    @transaction.atomic()
     def create(self, validated_data):
         return CreateExpenseOperation(self.context['request'].user).execute(validated_data)
+
+    def update(self, instance, validated_data):
+        if instance.version != validated_data['version']:
+            raise serializers.ValidationError(
+                'You are trying to update an expense which is updated by someone else. Please refresh and try again.'
+            )
+
+        return UpdateExpenseOperation(self.context['request'].user, instance).execute(validated_data)
 
 
 class UpsertPaymentSerializer(serializers.Serializer):

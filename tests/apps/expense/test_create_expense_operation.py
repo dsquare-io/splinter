@@ -2,8 +2,10 @@ from decimal import Decimal
 
 from splinter.apps.activity.models import Activity, ActivityAudience
 from splinter.apps.expense.activities import CreateExpenseActivity
+from splinter.apps.expense.models import ExpenseParty
 from splinter.apps.expense.operations import CreateExpenseOperation
 from tests.apps.expense.case import ExpenseTestCase
+from tests.apps.group.factories import GroupFactory
 from tests.apps.user.factories import UserFactory
 
 
@@ -106,3 +108,47 @@ class CreateExpenseOperationActivityTests(ExpenseTestCase):
 
         activity = Activity.objects.get(verb=CreateExpenseActivity.verb)
         self.assertIsNone(activity.group_id)
+
+
+class CreateExpenseOperationExpensePartyTests(ExpenseTestCase):
+    available_apps = (
+        'django.contrib.contenttypes',
+        'splinter.apps.activity',
+        'splinter.apps.currency',
+        'splinter.apps.expense',
+        'splinter.apps.friend',
+        'splinter.apps.group',
+        'splinter.apps.user',
+    )
+
+    def _execute(self, participants=None, **kwargs):
+        payer = UserFactory()
+        participants = participants or [UserFactory()]
+        shares = [{'user': payer, 'share': 1}] + [{'user': p, 'share': 1} for p in participants]
+        return CreateExpenseOperation(actor=payer).execute(
+            {
+                'datetime': '2024-01-01T00:00:00Z',
+                'currency': self.currency,
+                'paid_by': payer,
+                'expenses': [{'description': 'Test expense', 'amount': Decimal(100), 'shares': shares}],
+                **kwargs,
+            }
+        )
+
+    def test_personal_expense_auto_creates_expense_party(self):
+        expense = self._execute()
+        parties = ExpenseParty.objects.filter(expense=expense)
+        self.assertEqual(parties.count(), 1)
+        party = parties.select_related('friendship').first()
+        self.assertIn(expense.paid_by_id, {party.friendship.user1_id, party.friendship.user2_id})
+
+    def test_multiple_participants_create_one_party_each(self):
+        extra = UserFactory()
+        participant = UserFactory()
+        expense = self._execute(participants=[participant, extra])
+        self.assertExpenseParties(expense, [expense.paid_by, participant, extra])
+
+    def test_group_expense_has_no_expense_party(self):
+        group = GroupFactory()
+        expense = self._execute(group=group)
+        self.assertEqual(ExpenseParty.objects.filter(expense=expense).count(), 0)

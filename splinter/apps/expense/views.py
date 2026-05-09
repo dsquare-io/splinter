@@ -22,6 +22,7 @@ from splinter.apps.expense.serializers import (
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
+from splinter.core.mixins import UpdateModelMixin
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 
 
@@ -33,7 +34,7 @@ class CreatePaymentView(CreateAPIView):
     serializer_class = UpsertPaymentSerializer
 
 
-class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
+class RetrieveUpdateDestroyRestoreExpenseView(UpdateModelMixin, RetrieveAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'expense_uid'
 
@@ -56,6 +57,9 @@ class RetrieveUpdateDestroyRestoreExpenseView(RetrieveAPIView, DestroyAPIView):
             qs = qs.filter(is_payment=False)
 
         return qs
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
     def perform_destroy(self, instance: Expense):
         if instance.is_payment:

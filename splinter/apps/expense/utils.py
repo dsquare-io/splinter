@@ -1,5 +1,21 @@
 import decimal
+import re
 from collections.abc import Iterable
+
+FORBIDDEN_DESCRIPTION_CHARS_RE = re.compile(r'[^\w -(){}!@$%&*]')
+
+
+def validate_description(description: str) -> str:
+    if not description:
+        return ''
+
+    invalid_chars = set(FORBIDDEN_DESCRIPTION_CHARS_RE.findall(description))
+
+    if invalid_chars:
+        char_list = ", ".join(repr(c) for c in sorted(invalid_chars)[:5])
+        raise ValueError(f"Invalid chars: {char_list}")
+
+    return description
 
 
 def split_amount(
