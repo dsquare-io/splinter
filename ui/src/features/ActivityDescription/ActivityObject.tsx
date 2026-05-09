@@ -14,7 +14,7 @@ export function ActivityObject({ object }: ActivityObjectProps) {
     case 'user':
       return <span className="font-semibold">{currentUser?.uid === object.uid ? 'you' : object.value}</span>;
     case 'expense':
-      return <span className="font-medium">{object.value}</span>;
+      return <span className="font-semibold">{object.value}</span>;
     case 'activity:comment': {
       const trimmed = object.value.length > 32 ? `${object.value.slice(0, 32)}…` : object.value;
       return <span className="italic">"{trimmed}"</span>;

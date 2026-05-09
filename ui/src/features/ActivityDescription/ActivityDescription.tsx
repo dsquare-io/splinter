@@ -12,7 +12,7 @@ type ActivityDescriptionProps = {
 export function ActivityDescription({ activity }: ActivityDescriptionProps) {
   const nodes = renderTemplate(activity.template, {
     actor: (
-      <span className="font-semibold">
+      <span className="font-medium">
         <UserLabel user={activity.actor} />
       </span>
     ),
