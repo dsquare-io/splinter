@@ -1,7 +1,9 @@
-import { useWatch } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
+import { Money } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
@@ -9,9 +11,25 @@ import { ParticipantsSelector } from './ParticipantsSelector.tsx';
 
 export function ExpenseEntry() {
   const { currentUser } = useAuth();
-  const { participants } = useParticipantsContext();
+  const { participants, hasPreselected } = useParticipantsContext();
+  const { setValue } = useFormContext();
+
+  const currency = useWatch({ name: 'currency' }) as string | undefined;
+
   const expenses = useWatch({ name: 'expenses' });
-  const isMulti = (expenses?.length ?? 0) > 1;
+  const isSimple = (expenses?.length ?? 0) <= 1;
+
+  const descriptionValue = useWatch({ name: 'description' });
+  useEffect(() => {
+    if (isSimple) {
+      setValue('expenses.0.description', descriptionValue ?? '');
+    }
+  }, [descriptionValue, isSimple, setValue]);
+
+  const total = useMemo(
+    () => (expenses ?? []).reduce((sum: number, e: any) => sum + (Number(e?.amount) || 0), 0),
+    [expenses]
+  );
 
   return (
     <div className="space-y-4">
@@ -26,15 +44,28 @@ export function ExpenseEntry() {
         items={participants}
       />
 
-      {isMulti && (
-        <TextFormInput
-          name="description"
-          label="Description"
-          placeholder="e.g. Dinner at restaurant"
-        />
+      <TextFormInput
+        name="description"
+        label="Description"
+        required={isSimple}
+        maxLength={isSimple ? 32 : 64}
+        autoFocus={hasPreselected && isSimple}
+        placeholder={isSimple ? 'e.g. Dinner, Groceries' : 'e.g. Dinner at restaurant'}
+      />
+
+      {!isSimple && currency && (
+        <div className="flex items-center justify-between text-sm text-neutral-500">
+          <span>Total</span>
+          <Money
+            noColor
+            noTabularNums
+            value={total}
+            currency={currency}
+          />
+        </div>
       )}
 
-      <ExpenseInputList />
+      <ExpenseInputList isSimple={isSimple} />
     </div>
   );
 }
