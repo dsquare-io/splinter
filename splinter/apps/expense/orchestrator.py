@@ -205,7 +205,12 @@ class ExpenseEventOrchestrator(ContextDecorator):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        delattr(_local, 'orchestrator')
         if exc_val is not None:
+            return False
+
+        if self._root_expense is None:
+            # No expense related activity
             return False
 
         with transaction.atomic():
@@ -216,8 +221,6 @@ class ExpenseEventOrchestrator(ContextDecorator):
                 self.update_expense_parties()
 
             self._outstanding_balance.apply()
-
-        delattr(_local, 'orchestrator')
 
 
 _local = threading.local()

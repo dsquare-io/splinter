@@ -11,4 +11,4 @@ class ListGroupViewTest(AuthenticatedAPITestCase):
         response = self.client.get('/api/groups')
         self.assertEqual(response.status_code, 200)
 
-        self.assertEqual(len(response.json()['results']), 5)
+        self.assertEqual(len(response.json()), 5)

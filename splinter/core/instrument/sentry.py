@@ -11,7 +11,7 @@ class SentryInstrumentation:
         self._span = None
 
     def __enter__(self):
-        self._span = sentry_sdk.start_span(op=self.name, name=self.description)
+        self._span = sentry_sdk.start_span(op=self.name, description=self.description)
         return self._span.__enter__()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

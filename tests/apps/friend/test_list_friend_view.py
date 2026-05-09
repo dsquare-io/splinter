@@ -22,7 +22,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
     def test_list_friends(self):
         response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['results']), 5)
+        self.assertEqual(len(response.json()), 5)
 
     def test_list_only_logged_in_user_friends(self):
         user1 = UserFactory()
@@ -32,7 +32,7 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
 
         response = self.client.get('/api/friends')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()['results']), 5)
+        self.assertEqual(len(response.json()), 5)
 
     @unittest.skipIf(
         settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql',

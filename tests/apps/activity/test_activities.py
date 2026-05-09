@@ -6,7 +6,8 @@ from tests.apps.activity.factories import ActivityFactory, CommentFactory
 
 class ActivitiesTests(ActivityTestCase):
     def test_comment_activity(self):
-        activity = ActivityFactory()
+        action_object = ActivityFactory()
+        activity = ActivityFactory(action_object=action_object)
         comment = CommentFactory(activity=activity)
 
         comment_activities = list(Activity.objects.filter(verb=CommentActivity.verb))
@@ -15,5 +16,5 @@ class ActivitiesTests(ActivityTestCase):
         comment_activity = comment_activities[0]
         self.assertEqual(comment_activity.verb, 'comment')
         self.assertEqual(comment_activity.target, comment)
-        self.assertEqual(comment_activity.action_object, activity)
+        self.assertEqual(comment_activity.action_object, action_object)
         self.assertActivityAudience(comment_activity, [activity.actor, comment.user])

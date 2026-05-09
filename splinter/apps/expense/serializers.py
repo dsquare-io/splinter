@@ -317,7 +317,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        return CreatePaymentOperation(self.context['request'].user).execute(validated_data)
+        return CreatePaymentOperation(validated_data['sender']).execute(validated_data)
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):

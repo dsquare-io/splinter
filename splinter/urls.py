@@ -9,7 +9,7 @@ from django.views.static import serve
 from splinter.core.views import APIErrorView
 
 
-def serve_ui(request, route = ''):
+def serve_ui(request, route=''):
     if route.startswith('api/'):
         raise Http404()
 
