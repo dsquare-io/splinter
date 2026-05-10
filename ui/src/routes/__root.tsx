@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { NotFound } from '@/components/NotFound.tsx';
+import { Button } from '@/components/primitives';
 import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
 
 function TopLoader() {
@@ -20,6 +21,7 @@ function TopLoader() {
 }
 
 function UpdateBanner() {
+  const [isPending, setIsPending] = useState(false);
   const {
     needRefresh: [needRefresh],
     updateServiceWorker,
@@ -27,29 +29,38 @@ function UpdateBanner() {
 
   if (!needRefresh) return null;
 
+  const handleReload = async () => {
+    setIsPending(true);
+    await updateServiceWorker(true);
+  };
+
   return (
     <>
       {/* mobile: in flow, pushes content down */}
       <div className="bg-brand-600 z-50 w-full px-4 py-2.5 text-white shadow-md md:hidden">
         <div className="flex items-center justify-between gap-4">
           <span className="text-sm">New version available.</span>
-          <button
-            onClick={() => updateServiceWorker(true)}
-            className="text-brand-700 hover:bg-brand-50 rounded bg-white px-3 py-1 text-sm font-medium transition-colors"
+          <Button
+            variant="outlined"
+            color="brand"
+            isPending={isPending}
+            onClick={handleReload}
           >
             Reload
-          </button>
+          </Button>
         </div>
       </div>
       {/* desktop: fixed toast bottom-right */}
       <div className="bg-brand-700 fixed right-4 bottom-4 z-50 hidden items-center gap-4 rounded-lg px-4 py-3 text-white shadow-lg md:flex">
         <span className="text-sm">New version available.</span>
-        <button
-          onClick={() => updateServiceWorker(true)}
-          className="text-brand-700 hover:bg-brand-50 rounded bg-white px-3 py-1 text-sm font-medium transition-colors"
+        <Button
+          variant="outlined"
+          color="brand"
+          isPending={isPending}
+          onClick={handleReload}
         >
           Reload
-        </button>
+        </Button>
       </div>
     </>
   );

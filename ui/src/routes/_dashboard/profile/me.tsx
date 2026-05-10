@@ -66,7 +66,6 @@ function RootComponent() {
             className="w-full"
             onPress={async () => {
               await updateServiceWorker(true);
-              window.location.reload();
             }}
           >
             <ArrowPathIcon data-slot="icon" />
