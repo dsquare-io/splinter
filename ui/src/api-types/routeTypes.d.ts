@@ -156,6 +156,23 @@ export interface paths {
     patch: operations['RestoreExpense'];
     trace?: never;
   };
+  '/api/expenses/{expense_uid}/changelog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Expense Change Log */
+    get: operations['RetrieveExpenseChangeLog'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/friends': {
     parameters: {
       query?: never;
@@ -600,6 +617,7 @@ export interface components {
     EnableMfaDeviceResponse: import('./components/schemas.d.ts').EnableMfaDeviceResponse;
     Error: import('./components/schemas.d.ts').Error;
     Expense: import('./components/schemas.d.ts').Expense;
+    ExpenseChangeLog: import('./components/schemas.d.ts').ExpenseChangeLog;
     ExpenseOrPayment: import('./components/schemas.d.ts').ExpenseOrPayment;
     ExpenseShare: import('./components/schemas.d.ts').ExpenseShare;
     ExpenseTyped: import('./components/schemas.d.ts').ExpenseTyped;
@@ -1240,6 +1258,54 @@ export interface operations {
           } & {
             [key: string]: string[];
           };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  RetrieveExpenseChangeLog: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        expense_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ExpenseChangeLog'][];
         };
       };
       /** @description Unauthorized */

@@ -154,6 +154,12 @@ export interface Expense {
   readonly createdBy: SimpleUser;
 }
 
+export interface ExpenseChangeLog {
+  changes?: string[];
+  readonly activityId: string;
+  readonly references: Object_[];
+}
+
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 
 export interface ExpenseShare {

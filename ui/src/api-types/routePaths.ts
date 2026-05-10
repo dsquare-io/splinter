@@ -10,6 +10,7 @@ export const Paths = {
   CURRENCY_PREFERENCE: '/api/user/currency',
   ENABLE_MFA_DEVICE: '/api/mfa/enable/{device_type}',
   EXPENSE: '/api/expenses',
+  EXPENSE_CHANGE_LOG: '/api/expenses/{expense_uid}/changelog',
   EXPENSE_DETAIL: '/api/expenses/{expense_uid}',
   FORGET_PASSWORD: '/api/user/forget',
   FRIEND_DETAIL: '/api/friends/{friend_uid}',

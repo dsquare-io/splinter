@@ -1,5 +1,8 @@
-import { Activity } from '@/api-types/components/schemas';
+import { useMemo } from 'react';
+
+import { Activity, type ExpenseChangeLog, type Object_ } from '@/api-types/components/schemas';
 import { ActivityVerbIcon, UserLabel } from '@/components/primitives';
+import { Template } from '@/features/Template';
 import { formatDistanceShort } from '@/utils/date.ts';
 
 const VERB_LABEL: Record<string, string> = {
@@ -14,11 +17,21 @@ const VERB_LABEL: Record<string, string> = {
 };
 
 type TimelineItemProps = {
+  changeLog?: ExpenseChangeLog;
   activity: Activity;
 };
 
-export function TimelineItem({ activity }: TimelineItemProps) {
+export function TimelineItem({ activity, changeLog }: TimelineItemProps) {
   const label = VERB_LABEL[activity.verb] ?? 'performed an action';
+
+  const references = useMemo(() => {
+    const grouped: Record<string, Object_> = {};
+    changeLog?.references.forEach((ref) => {
+      grouped[ref.urn!] = ref;
+    });
+
+    return grouped;
+  }, [changeLog?.references]);
 
   return (
     <>
@@ -28,12 +41,26 @@ export function TimelineItem({ activity }: TimelineItemProps) {
         iconClassName="size-3.5"
       />
       <div className="flex min-w-0 flex-1 items-baseline justify-between gap-x-4 py-0.5">
-        <p className="text-sm leading-5 text-gray-600">
-          <span className="font-medium text-gray-900">
-            <UserLabel user={activity.actor} />
-          </span>{' '}
-          {label}.
-        </p>
+        <div>
+          <p className="text-sm leading-5 text-gray-600">
+            <span className="font-medium text-gray-900">
+              <UserLabel user={activity.actor} />
+            </span>{' '}
+            {label}.
+          </p>
+          {changeLog?.changes?.length && (
+            <ul className="text-xs text-gray-500">
+              {changeLog.changes.map((string, i) => (
+                <li key={i}>
+                  <Template
+                    string={string}
+                    references={references}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <time
           dateTime={activity.createdAt}
           title={new Date(activity.createdAt).toLocaleString()}

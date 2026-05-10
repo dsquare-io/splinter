@@ -1,4 +1,6 @@
-import { ApiRoutes } from '@/api-types';
+import { useMemo } from 'react';
+
+import { ApiRoutes, type ExpenseChangeLog } from '@/api-types';
 import { Avatar } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
@@ -17,6 +19,16 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
     {},
     { of: `urn:splinter:expense/${expenseId}`, order: 'asc' }
   );
+  const { data: expenseChangeLogs } = useApiQuery(ApiRoutes.EXPENSE_CHANGE_LOG, { expense_uid: expenseId });
+
+  const changeLogByActivity = useMemo(() => {
+    const grouped: Record<string, ExpenseChangeLog> = {};
+    expenseChangeLogs?.forEach((e) => {
+      grouped[e.activityId] = e;
+    });
+
+    return grouped;
+  }, [expenseChangeLogs]);
 
   const items = activities?.results ?? [];
 
@@ -49,10 +61,12 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
               isOwnComment={activity.actor.uid === currentUser?.uid}
             />
           ) : (
-            <TimelineItem activity={activity} />
+            <TimelineItem
+              activity={activity}
+              changeLog={changeLogByActivity[activity.urn]}
+            />
           );
 
-          // Comment: className="gap-x-2 px-4 py-1.5"
           return (
             <li
               className="relative flex gap-x-3 px-4 py-2"
