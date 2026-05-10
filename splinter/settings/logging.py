@@ -20,7 +20,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {'format': '[%(levelname)s] %(asctime)s %(module)s %(process)d %(thread)d %(message)s'},
+        'verbose': {'format': '[%(levelname)s] %(asctime)s %(name)s %(process)d %(thread)d %(message)s'},
         'simple': {'format': '[%(levelname)s] %(asctime)s - %(message)s'},
     },
     'filters': {
@@ -93,3 +93,12 @@ if SENTRY_DSN:
         ],
         traces_sampler=sentry_traces_sampler,
     )
+
+
+def configure_logging(settings: dict[str, Any]) -> None:
+    if settings['WITHIN_TEST_SUITE']:
+        settings['LOGGING']['loggers']['django.request'] = {
+            'handlers': ['console'],
+            'level': 'CRITICAL',
+            'propagate': False,
+        }
