@@ -79,7 +79,7 @@ function RootComponent() {
   }, [status]);
 
   return (
-    <div className="flex h-screen max-h-screen flex-col">
+    <div className="flex flex-col" style={{height: '100dvh'}}>
       <UpdateBanner />
       <TopLoader />
       <ErrorBoundary>

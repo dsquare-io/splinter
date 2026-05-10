@@ -83,3 +83,13 @@
 body {
   font-family: 'Figtree', sans-serif;
 }
+
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+
+  /* prevents rubber-band chaining */
+  overscroll-behavior-y: none;
+}
