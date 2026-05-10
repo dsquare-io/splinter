@@ -1,3 +1,6 @@
+import itertools
+import re
+from collections import defaultdict
 from functools import cached_property
 
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
@@ -5,7 +8,7 @@ from django.db.models.functions import RowNumber
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseParty
+from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseChangeLog, ExpenseParty
 from splinter.apps.expense.operations import (
     DeleteExpenseOperation,
     DeletePaymentOperation,
@@ -13,6 +16,7 @@ from splinter.apps.expense.operations import (
     RestorePaymentOperation,
 )
 from splinter.apps.expense.serializers import (
+    ExpenseChangeLogSerializer,
     ExpenseOrPaymentSerializer,
     RestoreExpenseSerializer,
     UpsertExpenseSerializer,
@@ -24,6 +28,7 @@ from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
+from splinter.db.urn import ResourceName
 
 
 class CreateExpenseView(CreateAPIView):
@@ -134,3 +139,40 @@ class RetrieveUserOutstandingBalanceView(GenericAPIView):
 
         qs = self.get_serializer().prefetch_queryset(qs)
         return self.get_serializer(list(qs)).data
+
+
+class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
+    serializer_class = ExpenseChangeLogSerializer
+    pagination_class = None
+
+    URN_RE = re.compile(r'\[\[(urn:[^]\[]+)]]')
+
+    def get_queryset(self):
+        expense = get_object_or_404(
+            Expense.objects.of_user(self.request.user).include_deleted(), public_id=self.kwargs['expense_uid']
+        )
+
+        return ExpenseChangeLog.objects.filter(expense=expense).order_by('-created_at')
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super().get_serializer(*args, **kwargs)
+
+        if not kwargs.get('many'):
+            return serializer
+
+        referenced_urn_by_pk: dict[int, list[ResourceName]] = defaultdict(list)
+
+        for entry in serializer.instance:
+            for change in entry.changes:
+                for match in self.URN_RE.findall(change):
+                    referenced_urn_by_pk[entry.pk].append(ResourceName.parse(match))
+
+        all_resource_references: list[ResourceName] = itertools.chain.from_iterable(referenced_urn_by_pk.values())
+        instances = ResourceName.bulk_get_instance(all_resource_references)
+
+        referenced_resources_by_pk = {
+            pk: [instances[rn] for rn in resources if rn in instances] for pk, resources in referenced_urn_by_pk.items()
+        }
+
+        serializer.context['referenced_resources'] = referenced_resources_by_pk
+        return serializer

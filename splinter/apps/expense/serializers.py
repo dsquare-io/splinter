@@ -8,7 +8,13 @@ from rest_framework.exceptions import ErrorDetail
 
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
-from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseSplit, OutstandingBalance
+from splinter.apps.expense.models import (
+    AggregatedOutstandingBalance,
+    Expense,
+    ExpenseChangeLog,
+    ExpenseSplit,
+    OutstandingBalance,
+)
 from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.expense.utils import validate_description
@@ -18,7 +24,7 @@ from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
-from splinter.core.serializers import PolymorphicSerializer
+from splinter.core.serializers import ObjectSerializer, PolymorphicSerializer
 
 ZERO_DECIMAL = Decimal(0)
 NEGATIVE_ONE_DECIMAL = Decimal(-1)
@@ -403,3 +409,24 @@ class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializ
 
 class RestoreExpenseSerializer(serializers.Serializer):
     pass
+
+
+class ExpenseChangeLogSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
+    activity_id = serializers.ReadOnlyField(source='activity.urn')
+    references = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ExpenseChangeLog
+        fields = ('changes', 'activity_id', 'references')
+
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset(queryset).prefetch_related('activity')
+
+    @extend_schema_field(ObjectSerializer(many=True))
+    def get_references(self, instance):
+        referenced_resources = self.context['referenced_resources']
+        resources = referenced_resources.get(instance.pk)
+        if not resources:
+            return []
+
+        return ObjectSerializer(instance=resources, many=True).data
