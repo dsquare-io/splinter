@@ -70,7 +70,7 @@ class BaseAccessTokenAuthentication(BaseAuthentication, metaclass=AccessTokenAut
             if isinstance(aud, str):
                 aud = ResourceName.parse(aud)
 
-            audience_models.add(aud.get_model())
+            audience_models.add(aud.get_model_cls())
 
         if not self.object_models.intersection(audience_models):
             raise AuthenticationFailed('Token not valid in current context', code='invalid_aud')

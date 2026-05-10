@@ -1,7 +1,8 @@
 import inspect
+from collections import defaultdict
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Optional, Protocol
+from typing import Collection, Optional, Protocol
 
 from django.apps import apps
 from django.core.exceptions import FieldDoesNotExist
@@ -22,11 +23,11 @@ class ResourceName:
     model_name: str
     uid: str | None = None
 
-    def get_model(self) -> type[ResourceNameProtocol] | type[Model]:
+    def get_model_cls(self) -> type[ResourceNameProtocol] | type[Model]:
         return apps.get_model(self.app_label, self.model_name)
 
     def get_instance(self) -> Model | ResourceNameProtocol:
-        model_cls = self.get_model()
+        model_cls = self.get_model_cls()
         return model_cls._base_manager.get(**{model_cls.UID_FIELD: self.uid})
 
     def __str__(self) -> str:
@@ -61,6 +62,9 @@ class ResourceName:
 
         return cls(app_label=app_label, model_name=model_name, uid=uid)
 
+    def __hash__(self):
+        return hash((self.app_label, self.model_name, self.uid))
+
     @classmethod
     def try_parse(cls, resource_name: str | None) -> Optional['ResourceName']:
         if not resource_name:
@@ -70,6 +74,23 @@ class ResourceName:
             return cls.parse(resource_name)
         except ValueError:
             return None
+
+    @classmethod
+    def bulk_get_instance(
+        cls, resource_names: Collection['ResourceName']
+    ) -> dict['ResourceName', Model | ResourceNameProtocol]:
+        instances: dict['ResourceName', Model | ResourceNameProtocol] = {}
+
+        grouped_by_model: dict[type[Model], list[ResourceName]] = defaultdict(list)
+        for resource_name in resource_names:
+            grouped_by_model[resource_name.get_model_cls()].append(resource_name)
+
+        for model_cls, names in grouped_by_model.items():
+            rn_by_uid = {u.uid: u for u in names}
+            for instance in model_cls._base_manager.filter(**{f'{model_cls.UID_FIELD}__in': list(rn_by_uid)}):
+                instances[rn_by_uid[getattr(instance, model_cls.UID_FIELD)]] = instance
+
+        return instances
 
 
 @lru_cache(maxsize=None)
@@ -104,11 +125,3 @@ class ResourceNameDecorator:
 def add_resource_name(sender, **kwargs):
     if inspect.isclass(sender) and issubclass(sender, Model):
         setattr(sender, 'urn', ResourceNameDecorator())
-
-
-def get_instance(resource_name: str) -> Model | ResourceNameProtocol:
-    rn = ResourceName.parse(resource_name)
-
-    model_class = apps.get_model(rn.app_label, rn.model_name)
-    check_urn_support(model_class)
-    return model_class.objects.get(**{model_class.UID_FIELD: rn.uid})
