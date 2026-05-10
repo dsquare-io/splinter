@@ -101,14 +101,13 @@ class AutoSchema(AutoSchemaBase):
         if self._is_create_operation():
             return getattr(self.view, 'create_response_serializer_class', None)
 
-        if not self._is_update_operation():  # Update operations don't return a body
-            return super().get_response_serializers()
+        if self._is_update_operation():
+            return getattr(self.view, 'update_response_serializer_class', None)
+
+        return super().get_response_serializers()
 
     def _get_response_bodies(self, *args, **kwargs):
         bodies = super()._get_response_bodies(*args, **kwargs)
-        if self._is_update_operation() and '200' in bodies:
-            bodies['204'] = bodies.pop('200')
-
         if uritemplate.variables(self.path):
             bodies['404'] = self._get_response_for_code(NotFoundSerializer, '404')
             bodies['404']['description'] = 'Resource Not Found'

@@ -20,7 +20,7 @@ class UpdateGroupViewTest(AuthenticatedAPITestCase):
             },
             format='json',
         )
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
         self.group.refresh_from_db()
         self.assertEqual(self.group.name, 'new name')

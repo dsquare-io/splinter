@@ -9,7 +9,7 @@ class UpdateCurrencyPreferenceViewTests(AuthenticatedAPITestCase):
         currency = CurrencyFactory()
 
         response = self.client.put('/api/user/currency', {'currency': currency.code}, format='json')
-        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/api/user/currency')
         self.assertEqual(response.status_code, 200)
