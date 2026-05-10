@@ -76,7 +76,7 @@ class ExpenseEventOrchestrator(ContextDecorator):
             if self._root_expense.pk == parent.pk:
                 return  # No-op
 
-            raise ValueError('Orchestrator is already set to a different expense')
+            raise ValueError('Orchestrator is already bound to an expense')
 
         self._root_expense = parent
         self._outstanding_balance.set_defaults(
@@ -164,6 +164,15 @@ class ExpenseEventOrchestrator(ContextDecorator):
             share_by_user[expense_split.user_id] += expense_split.share
             amount_by_user[expense_split.user_id] += expense_split.amount
 
+        if not share_by_user:
+            # While updating, if multi-item expense is converted to single-item expense,
+            # That cause `update_expense_splits` to trigger as a child expense is deleted
+            # A simple quick fix is to avoid updating ExpenseSplit if there is no
+            # child with ExpenseSplit.
+            # In real-world, ExpenseSplit for a given expense cannot be empty; as at-minimum
+            # payer is always there
+            return
+
         current_expense_splits = {
             expense_split.user_id: expense_split
             for expense_split in ExpenseSplit.objects.filter(expense=self._root_expense)
@@ -212,7 +221,7 @@ class ExpenseEventOrchestrator(ContextDecorator):
             return False
 
         if self._root_expense is None:
-            # No expense related activity
+            # No related activity
             return False
 
         with transaction.atomic():

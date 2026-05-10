@@ -92,6 +92,22 @@ class ExpenseTestCase(TestCase):
         if instance is not None:
             return instance.amount
 
+    def assertExpenseSplits(self, expense: Expense, shares: dict[int, int]) -> None:
+        splits = ExpenseSplit.objects.filter(expense=expense)
+
+        splits_by_user = {split.user_id: split.share for split in splits}
+        for user_id, share in shares.items():
+            self.assertIn(user_id, splits_by_user, f"User {user_id} should have a share of {share}")
+            self.assertEqual(
+                splits_by_user[user_id],
+                share,
+                f"User {user_id} shares should be {share} found {splits_by_user[user_id]}",
+            )
+
+        extra_users = set(splits_by_user.keys()) - set(shares.keys())
+        if extra_users:
+            raise AssertionError(f"Users {extra_users} should not have a share")
+
     def assertExpenseParties(self, expense: Expense, friends: list[User]):
         parties = list(ExpenseParty.objects.filter(expense=expense))
         self.assertEqual(len(parties), max(0, len(friends) - 1))  # -1 for paid_by

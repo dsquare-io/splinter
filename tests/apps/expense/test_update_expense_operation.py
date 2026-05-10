@@ -119,6 +119,50 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
             {(self.payer.id, Decimal('50.00')), (self.participant.id, Decimal('50.00'))},
         )
 
+    def test_single_to_single_removes_leftover_participant_split(self):
+        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
+
+        self._execute(
+            expense,
+            {
+                'datetime': expense.datetime,
+                'currency': self.currency,
+                'paid_by': self.payer,
+                'group': None,
+                'expenses': [
+                    {
+                        'description': expense.description,
+                        'amount': Decimal(100),
+                        'shares': [{'user': self.payer, 'share': 1}],
+                    }
+                ],
+            },
+        )
+
+        self.assertFalse(expense.splits.filter(user=self.participant).exists())
+
+    def test_single_to_single_update_shares(self):
+        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
+        self._single_to_single(expense)
+        self.assertExpenseSplits(expense, {self.payer.id: 1, self.participant.id: 1})
+
+    def test_single_to_single_outstanding_balance(self):
+        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 50,
+                self.participant.id: -50,
+            }
+        )
+
+        self._single_to_single(expense, amount=200)
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 100,
+                self.participant.id: -100,
+            }
+        )
+
     # Single → Multiple
 
     def test_single_to_multiple_creates_one_revision(self):
@@ -143,6 +187,28 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
 
         revision = ExpenseRevision.objects.get(expense=expense)
         self.assertEqual(revision.splits.count(), 2)
+
+    def test_single_to_multiple_update_root_shares(self):
+        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
+        self._single_to_multiple(expense)
+        self.assertExpenseSplits(expense, {self.payer.id: 2, self.participant.id: 2})
+
+    def test_single_to_multiple_outstanding_balance(self):
+        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 50,
+                self.participant.id: -50,
+            }
+        )
+
+        self._single_to_multiple(expense)
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 100,
+                self.participant.id: -100,
+            }
+        )
 
     # Multiple → Multiple
 
@@ -176,6 +242,49 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
                 old_child_splits[child.id],
             )
 
+    def test_multiple_to_multiple_updates_matched_child_in_place(self):
+        parent = self.create_multi_row_expense([60, 40], [self.payer, self.participant])
+        children = list(Expense.objects.filter(parent=parent))
+        child_ids = {c.id for c in children}
+
+        self._execute(
+            parent,
+            {
+                'datetime': parent.datetime,
+                'currency': self.currency,
+                'paid_by': self.payer,
+                'group': None,
+                'expenses': [
+                    {'description': children[0].description, 'amount': Decimal(70), 'shares': self._shares()},
+                    {'description': children[1].description, 'amount': Decimal(30), 'shares': self._shares()},
+                ],
+            },
+        )
+
+        self.assertEqual(Expense.objects.filter(id__in=child_ids).count(), 2)
+
+    def test_multiple_to_multiple_update_root_shares(self):
+        parent = self.create_multi_row_expense([60, 40], [self.payer, self.participant])
+        self._multiple_to_multiple(parent)
+        self.assertExpenseSplits(parent, {self.payer.id: 2, self.participant.id: 2})
+
+    def test_multiple_to_multiple_outstanding_balance(self):
+        parent = self.create_multi_row_expense([60, 40], [self.payer, self.participant])
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 50,
+                self.participant.id: -50,
+            }
+        )
+
+        self._multiple_to_multiple(parent)
+        self.assertUserOutstandingBalance(
+            {
+                self.payer.id: 100,
+                self.participant.id: -100,
+            }
+        )
+
     # Multiple → Single
 
     def test_multiple_to_single_creates_child_revisions(self):
@@ -200,48 +309,27 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
         self.assertFalse(Expense.objects.filter(id__in=old_child_ids).exists())
         self.assertEqual(ExpenseRevision.objects.filter(expense_id__in=old_child_ids).count(), len(old_child_ids))
 
-    def test_multiple_to_multiple_updates_matched_child_in_place(self):
+    def test_multiple_to_single_update_shares(self):
         parent = self.create_multi_row_expense([60, 40], [self.payer, self.participant])
-        children = list(Expense.objects.filter(parent=parent))
-        child_ids = {c.id for c in children}
+        self._multiple_to_single(parent)
+        self.assertExpenseSplits(parent, {self.payer.id: 1, self.participant.id: 1})
 
-        self._execute(
-            parent,
+    def test_multiple_to_single_outstanding_balance(self):
+        parent = self.create_multi_row_expense([60, 40], [self.payer, self.participant])
+        self.assertUserOutstandingBalance(
             {
-                'datetime': parent.datetime,
-                'currency': self.currency,
-                'paid_by': self.payer,
-                'group': None,
-                'expenses': [
-                    {'description': children[0].description, 'amount': Decimal(70), 'shares': self._shares()},
-                    {'description': children[1].description, 'amount': Decimal(30), 'shares': self._shares()},
-                ],
-            },
+                self.payer.id: 50,
+                self.participant.id: -50,
+            }
         )
 
-        self.assertEqual(Expense.objects.filter(id__in=child_ids).count(), 2)
-
-    def test_single_to_single_removes_leftover_participant_split(self):
-        expense = self.create_equal_split_expense(100, [self.payer, self.participant])
-
-        self._execute(
-            expense,
+        self._multiple_to_single(parent)
+        self.assertUserOutstandingBalance(
             {
-                'datetime': expense.datetime,
-                'currency': self.currency,
-                'paid_by': self.payer,
-                'group': None,
-                'expenses': [
-                    {
-                        'description': expense.description,
-                        'amount': Decimal(100),
-                        'shares': [{'user': self.payer, 'share': 1}],
-                    }
-                ],
-            },
+                self.payer.id: 100,
+                self.participant.id: -100,
+            }
         )
-
-        self.assertFalse(expense.splits.filter(user=self.participant).exists())
 
     # Rollback
 

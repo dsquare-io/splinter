@@ -200,7 +200,7 @@ class ExpenseRevisionOperation(ExpenseOperation[dict]):
         self._changes: list[str] = []
 
     def execute(self, data: dict) -> Expense:
-        with expense_event_orchestrator(), transaction.atomic():
+        with transaction.atomic(), expense_event_orchestrator():
             snapshot = self.take_snapshot(self.expense)
             expense = self._execute(data)
 
@@ -307,7 +307,7 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
             spec = new_specs[0]
             if old_children:
                 for child in old_children:
-                    self._changes.append(f"Item '{child.description}' removed")
+                    self._changes.append(f"Item '{child.description}' was removed")
                     child.delete()
 
             self._set_and_track(
