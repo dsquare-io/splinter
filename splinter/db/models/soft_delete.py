@@ -3,6 +3,8 @@ from django.db.models.base import ModelBase
 from django.db.models.signals import post_delete, pre_delete
 from django.utils import timezone
 
+from splinter.db.models.signals import post_restore, pre_restore
+
 
 class SoftDeleteQuerySetMixin:
     def delete(self, force=False):
@@ -68,6 +70,7 @@ class SoftDeleteModel(models.Model, metaclass=SoftDeleteModelBase):
         self.__class__.objects.using(using).filter(pk=self.pk).update(removed_at=self.removed_at)  # Skip *_save signals
 
         post_delete.send(sender=self.__class__, instance=self, using=using, origin=None)
+        return 1, {self.__class__._meta.label: 1}
 
     class Meta:
         abstract = True
@@ -77,5 +80,11 @@ class SoftDeleteModel(models.Model, metaclass=SoftDeleteModelBase):
         return self.removed_at is not None
 
     def restore(self, using=None):
+        using = using or router.db_for_write(self.__class__, instance=self)
+
+        pre_restore.send(sender=self.__class__, instance=self, using=using, origin=None)
+
         self.removed_at = None
-        self.save(using=using, update_fields=['removed_at'])
+        self.__class__.objects.using(using).filter(pk=self.pk).update(removed_at=self.removed_at)  # Skip *_save signals
+
+        post_restore.send(sender=self.__class__, instance=self, using=using, origin=None)

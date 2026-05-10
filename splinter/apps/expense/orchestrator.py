@@ -10,6 +10,7 @@ from django.dispatch import receiver
 
 from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit, OutstandingBalance
 from splinter.apps.friend.models import Friendship
+from splinter.db.models.signals import post_restore
 
 
 class OutstandingBalanceCollector:
@@ -84,12 +85,6 @@ class ExpenseEventOrchestrator(ContextDecorator):
             payer_id=parent.paid_by_id,
         )
 
-    def handle_expense_post_save(self, expense: Expense, created: bool):
-        if created:
-            return
-
-        self.set_expense(expense)
-
     def handle_expense_split_post_save(self, expense_split: ExpenseSplit, created: bool):
         amount_delta = 0
         if created:
@@ -123,6 +118,13 @@ class ExpenseEventOrchestrator(ContextDecorator):
         if expense.parent_id is None:
             for expense_split in ExpenseSplit.objects.filter(expense=expense):
                 self._outstanding_balance.add(expense_split.user_id, -expense_split.amount)
+
+    def handle_expense_post_restore(self, expense: Expense):
+        self.set_expense(expense)
+
+        if expense.parent_id is None:
+            for expense_split in ExpenseSplit.objects.filter(expense=expense):
+                self._outstanding_balance.add(expense_split.user_id, expense_split.amount)
 
     def update_expense_parties(self) -> None:
         to_create = []
@@ -233,16 +235,6 @@ def expense_event_orchestrator(f: Callable = None):
     return ExpenseEventOrchestrator()(f)
 
 
-@receiver(post_save, sender=Expense)
-def handle_expense_post_save(instance: Expense, created: bool, **kwargs):
-    orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
-    if orchestrator is not None:
-        orchestrator.handle_expense_post_save(instance, created)
-    else:
-        with ExpenseEventOrchestrator() as orchestrator:
-            orchestrator.handle_expense_post_save(instance, created)
-
-
 @receiver(pre_save, sender=ExpenseSplit)
 def keep_reference_of_dirty_fields(instance: ExpenseSplit, **kwargs):
     if instance.pk is not None:
@@ -277,3 +269,13 @@ def handle_expense_post_delete(instance: Expense, **kwargs):
     else:
         with ExpenseEventOrchestrator() as orchestrator:
             orchestrator.handle_expense_post_delete(instance)
+
+
+@receiver(post_restore, sender=Expense)
+def handle_expense_post_save(instance: Expense, **kwargs):
+    orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
+    if orchestrator is not None:
+        orchestrator.handle_expense_post_restore(instance)
+    else:
+        with ExpenseEventOrchestrator() as orchestrator:
+            orchestrator.handle_expense_post_restore(instance)
