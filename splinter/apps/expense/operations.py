@@ -351,14 +351,41 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
 
         return desc_map[matches[0]] if matches else None
 
+    @staticmethod
+    def _closest_expense_by_amount(amount: Decimal, expenses: list[Expense]) -> Expense | None:
+        for e in expenses:
+            if e.amount == amount:
+                return e
+        return None
+
     def _sync_children(self, parent: Expense, old_children: list[Expense], new_specs: list[dict]):
         remaining_old = {c.id: c for c in old_children}
+        single_old = (
+            Expense(
+                parent=parent,
+                description=parent.description,
+                amount=parent.amount,
+                currency=parent.currency,
+                created_by=parent.created_by,
+            )
+            if len(old_children) == 0
+            else None
+        )
+        single_fallback_used = False
 
         for spec in new_specs:
-            match = self._closest_expense(spec['description'], list(remaining_old.values()))
+            candidates = list(remaining_old.values())
+            match = self._closest_expense(spec['description'], candidates)
+
+            if match is None:
+                match = self._closest_expense_by_amount(spec['amount'], candidates)
+
+            if match is None and single_old and not single_fallback_used:
+                match = single_old
+                single_fallback_used = True
 
             if match:
-                remaining_old.pop(match.id)
+                remaining_old.pop(match.id, None)
                 self._set_and_track(
                     match, 'description', spec['description'], f"{match.description} renamed to {spec['description']}"
                 )
@@ -367,12 +394,16 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
                     match,
                     'amount',
                     spec['amount'],
-                    f"{spec['description']} amount changed from [[money:{match.currency.code};{match.amount}]] to [[money:{match.currency.code};{spec['amount']}]]",
+                    (
+                        f"{spec['description']} amount changed from [[money:{match.currency.code};{match.amount}]] to "
+                        f"[[money:{match.currency.code};{spec['amount']}]]"
+                    ),
                 )
 
                 match.datetime, match.currency, match.paid_by = parent.datetime, parent.currency, parent.paid_by
+                log_changes = match.pk is not None
                 match.save()
-                target = match
+                self._sync_shares(match, spec['shares'], spec['amount'], is_child=True, log_changes=log_changes)
             else:
                 self._changes.append(f"{spec['description']} was added")
                 target = Expense.objects.create(
@@ -385,14 +416,15 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
                     created_by=self.actor,
                     group=parent.group,
                 )
-
-            self._sync_shares(target, spec['shares'], spec['amount'], is_child=True)
+                self._sync_shares(target, spec['shares'], spec['amount'], is_child=True, log_changes=False)
 
         for orphaned in remaining_old.values():
             self._changes.append(f"{orphaned.description} was removed")
             orphaned.delete()
 
-    def _sync_shares(self, expense: Expense, share_specs: list[dict], total_amount: Decimal, is_child=False):
+    def _sync_shares(
+        self, expense: Expense, share_specs: list[dict], total_amount: Decimal, is_child=False, log_changes=True
+    ):
         sorted_specs = sorted(share_specs, key=lambda x: (x['share'], x['user'].username))
         shares_values = [s['share'] for s in sorted_specs]
         calculated_amounts = split_amount(total_amount, shares_values)
@@ -405,20 +437,21 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
             split = existing_splits.pop(user.id, None)
 
             if not split:
-                self._changes.append(f"[[{user.urn}]] was added{suffix}")
+                if log_changes:
+                    self._changes.append(f"[[{user.urn}]] was added{suffix}")
                 ExpenseSplit.objects.create(expense=expense, user=user, amount=calc_amt, share=spec['share'])
             else:
-                if split.share != spec['share']:
+                if log_changes and split.share != spec['share']:
                     self._changes.append(
                         f"[[{user.urn}]]'s share changed from {split.share} to {spec['share']}{suffix}"
                     )
-                    split.share = spec['share']
-
+                split.share = spec['share']
                 split.amount = calc_amt
                 split.save()
 
         for leftover in existing_splits.values():
-            self._changes.append(f"[[{leftover.user.urn}]] was removed{suffix}")
+            if log_changes:
+                self._changes.append(f"[[{leftover.user.urn}]] was removed{suffix}")
             leftover.delete()
 
     def _set_and_track(self, obj, field, new_val, log_message: str) -> bool:
