@@ -103,7 +103,7 @@ class ListFriendExpenseView(ListAPIView):
 
     def get_queryset(self):
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return Expense.objects.filter(Exists(party_qs), group__isnull=True)
+        return Expense.objects.filter(Exists(party_qs), group__isnull=True).order_by('-created_at')
 
 
 class ListGroupExpenseView(ListAPIView):
@@ -114,7 +114,7 @@ class ListGroupExpenseView(ListAPIView):
         return get_object_or_404(Group.objects.of(self.request.user), public_id=self.kwargs['group_uid'])
 
     def get_queryset(self):
-        return Expense.objects.filter(parent__isnull=True, group=self.group)
+        return Expense.objects.filter(parent__isnull=True, group=self.group).order_by('-created_at')
 
 
 class RetrieveUserOutstandingBalanceView(GenericAPIView):
