@@ -44,6 +44,7 @@ dev = [
     "coverage",
     "parameterized",
     "factory_boy",
+    "types-factory-boy",
 ]
 
 [project.scripts]
