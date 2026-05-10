@@ -1,13 +1,21 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Heading, OverlayTriggerStateContext } from 'react-aria-components';
 
 import { ChevronLeftIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
-import { BanknotesIcon, ReceiptPercentIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import {
+  BanknotesIcon,
+  PencilSquareIcon,
+  ReceiptPercentIcon,
+  TrashIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 
 import { ApiRoutes } from '@/api-types';
+import { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
 import { DropdownMenu, DropdownMenuItem, IconButton } from '@/components/primitives';
+import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useConfirmation } from '@/hooks/useConfirmation';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
@@ -30,9 +38,11 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
   const { close } = useContext(OverlayTriggerStateContext)!;
   const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
   const confirm = useConfirmation();
+  const [isEditing, setIsEditing] = useState(false);
 
   const config = expense?.type === 'payment' ? PAYMENT_CONFIG : EXPENSE_CONFIG;
   const Icon = config.icon;
+  const isExpense = expense?.type !== 'payment';
 
   async function handleDelete() {
     await confirm({
@@ -86,6 +96,15 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
           </IconButton>
         }
       >
+        {isExpense && (
+          <DropdownMenuItem
+            id="edit"
+            icon={PencilSquareIcon}
+            onAction={() => setIsEditing(true)}
+          >
+            Edit
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem
           id="delete"
           icon={TrashIcon}
@@ -104,6 +123,14 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
       >
         <XMarkIcon className="size-5" />
       </IconButton>
+
+      {isExpense && (
+        <ExpenseEditorDialog
+          isOpen={isEditing}
+          expense={expense as Expense}
+          onOpenChange={setIsEditing}
+        />
+      )}
     </div>
   );
 }

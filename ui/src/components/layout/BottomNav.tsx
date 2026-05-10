@@ -4,7 +4,7 @@ import { ArrowTrendingUpIcon, PlusIcon, UserIcon, UsersIcon } from '@heroicons/r
 import { Link } from '@tanstack/react-router';
 
 import { Avatar } from '@/components/primitives';
-import { AddExpenseDialog } from '@/features/AddExpenseDialog';
+import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useAuth } from '@/hooks/useAuth';
 
 export function BottomNav() {
@@ -37,7 +37,7 @@ export function BottomNav() {
             />
             <span className="absolute -inset-x-2.5 inset-y-0 z-10" />
           </Button>
-          <AddExpenseDialog />
+          <ExpenseEditorDialog />
         </DialogTrigger>
       </div>
 

@@ -1,10 +1,18 @@
-import { createContext, useContext, useEffect, useReducer, type Dispatch, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  type Dispatch,
+  type ReactNode,
+} from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 
 import { ApiRoutes, type SimpleUser } from '@/api-types';
-import { Friend, Group } from '@/api-types/components/schemas';
+import { Expense, Friend, Group } from '@/api-types/components/schemas';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 
@@ -49,23 +57,53 @@ interface ParticipantsContextValue {
   selected: Participant[];
   participants: SimpleUser[];
   hasPreselected: boolean;
+  groupLocked: boolean;
   dispatch: Dispatch<ParticipantsAction>;
 }
 
 const ParticipantsContext = createContext<ParticipantsContextValue | null>(null);
 
-export function ExpenseParticipantsProvider({ children }: { children: ReactNode }) {
+interface ProviderProps {
+  children: ReactNode;
+  initialExpense?: Expense;
+}
+
+export function ExpenseParticipantsProvider({ children, initialExpense }: ProviderProps) {
   const { currentUser } = useAuth();
   const params = useParams({ strict: false }) as { friend?: string; group?: string };
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
   const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   const [selected, dispatch] = useReducer(participantsReducer, [] as Participant[]);
+  const initialized = useRef(false);
+
   const hasPreselected = !!params.friend || !!params.group;
+  const groupLocked = !!initialExpense?.group;
 
   useEffect(() => {
+    if (initialized.current) return;
+    if (!groups || !friends) return;
+
+    if (initialExpense) {
+      initialized.current = true;
+      if (initialExpense.group) {
+        const group = groups.find((g) => g.uid === initialExpense.group);
+        if (group) dispatch({ type: 'select_group', data: group });
+      } else {
+        const sharedUserUids = new Set(initialExpense.expenses.flatMap((e) => e.shares.map((s) => s.user)));
+        sharedUserUids.delete(currentUser!.uid);
+        for (const uid of sharedUserUids) {
+          const friend = friends.find((f) => f.uid === uid);
+          if (friend) dispatch({ type: 'select_friend', data: friend });
+        }
+      }
+      return;
+    }
+
+    // URL-param pre-selection (create mode only)
     const friend = friends?.find((f) => f.uid === params.friend);
     const group = groups?.find((g) => g.uid === params.group);
+    if (friend || group) initialized.current = true;
     if (friend) dispatch({ type: 'select_friend', data: friend });
     else if (group) dispatch({ type: 'select_group', data: group });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +123,7 @@ export function ExpenseParticipantsProvider({ children }: { children: ReactNode 
     : [...currentUserParticipant, ...(selected.map((p) => p.user!) as SimpleUser[])];
 
   return (
-    <ParticipantsContext.Provider value={{ selected, participants, hasPreselected, dispatch }}>
+    <ParticipantsContext.Provider value={{ selected, participants, hasPreselected, groupLocked, dispatch }}>
       {children}
     </ParticipantsContext.Provider>
   );

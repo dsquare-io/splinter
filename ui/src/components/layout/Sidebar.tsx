@@ -13,7 +13,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 
 import { setHeaders } from '@/axios.ts';
 import { Avatar, Button } from '@/components/primitives';
-import { AddExpenseDialog } from '@/features/AddExpenseDialog';
+import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useAuth } from '@/hooks/useAuth.ts';
 
 export function Sidebar(props: ComponentProps<'div'>) {
@@ -57,7 +57,7 @@ export function Sidebar(props: ComponentProps<'div'>) {
           <PlusIcon />
           <div>Add Expense</div>
         </Button>
-        <AddExpenseDialog />
+        <ExpenseEditorDialog />
       </DialogTrigger>
 
       <div className="grow space-y-1">

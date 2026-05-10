@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { AdjustmentsHorizontalIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes, type SimpleUser } from '@/api-types';
+import type { Expense } from '@/api-types/components/schemas';
+import { urlWithArgs } from '@/api-types/url';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -16,15 +18,39 @@ import { ExpenseShares } from './ExpenseShares.tsx';
 
 type Step = 'entry' | 'shares' | 'options';
 
-export function AddExpenseForm() {
+interface Props {
+  expense?: Expense;
+}
+
+function buildDefaultValues(expense: Expense) {
+  const dt = new Date(expense.datetime);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const datetimeLocal = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+
+  return {
+    description: expense.description ?? '',
+    paidBy: expense.paidBy.uid,
+    currency: expense.currency.uid,
+    'datetime:iso': datetimeLocal,
+    group: expense.group || undefined,
+    version: expense.version,
+    expenses: expense.expenses.map((exp) => ({
+      description: exp.description,
+      amount: parseFloat(exp.amount),
+      'shares:to_dict__user__share': Object.fromEntries(exp.shares.map((s) => [s.user, s.share])),
+    })),
+  };
+}
+
+export function ExpenseEditorForm({ expense }: Props) {
   return (
-    <ExpenseParticipantsProvider>
-      <AddExpenseFormInner />
+    <ExpenseParticipantsProvider initialExpense={expense}>
+      <ExpenseEditorFormInner expense={expense} />
     </ExpenseParticipantsProvider>
   );
 }
 
-function AddExpenseFormInner() {
+function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
   const form = useForm();
@@ -37,7 +63,19 @@ function AddExpenseFormInner() {
   const participantIds = participants.map((p) => p.uid).join(',');
 
   useEffect(() => {
+    if (!expense) return;
+    form.reset(buildDefaultValues(expense));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const defaultSharesInitialized = useRef(false);
+  useEffect(() => {
     if (!participants.length || !expenseCount) return;
+    // In edit mode, skip the first fire so pre-populated shares aren't overwritten
+    if (expense && !defaultSharesInitialized.current) {
+      defaultSharesInitialized.current = true;
+      return;
+    }
     setDefaultShares(getValues, setValue, participants, expenseCount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantIds, expenseCount]);
@@ -50,11 +88,17 @@ function AddExpenseFormInner() {
   }, [preferredCurrency?.uid]);
 
   useEffect(() => {
+    if (expense) return;
     const now = new Date();
     const local = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     setValue('datetime:iso', local);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const isEdit = !!expense;
+  const action = isEdit
+    ? urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expense!.uid })
+    : ApiRoutes.EXPENSE;
 
   const goToShares = async () => {
     const valid = await trigger();
@@ -77,20 +121,21 @@ function AddExpenseFormInner() {
   return (
     <>
       <DialogHeader
-        title="Add Expense"
+        title={isEdit ? 'Edit Expense' : 'Add Expense'}
         description={description}
       />
       <Form
         control={form}
         className="flex flex-col"
-        action={ApiRoutes.EXPENSE}
+        action={action}
+        method={isEdit ? 'PUT' : 'POST'}
         onSubmitSuccess={async (response, control) => {
-          await invalidateQueriesForExpense({ uid: response.uid, group: control.getValues('group') });
+          await invalidateQueriesForExpense({ uid: response.data.uid, group: control.getValues('group') });
           close();
         }}
       >
-        <div className="-mx-4">
-          <FormRootErrors />
+        <div className="-mx-6">
+          <FormRootErrors className="rounded-none" />
         </div>
         {step === 'entry' && <ExpenseEntry />}
         {step === 'shares' && <ExpenseShares />}
@@ -117,7 +162,7 @@ function AddExpenseFormInner() {
                   Customize splits
                 </Button>
               </div>
-              <SubmitButton>Add Expense</SubmitButton>
+              <SubmitButton>{isEdit ? 'Save Changes' : 'Add Expense'}</SubmitButton>
             </>
           ) : (
             <Button

@@ -35,7 +35,7 @@ function ParticipantTag({ item }: SelectItemRenderProps<Friend | Group>) {
 
 export function ParticipantsSelector() {
   const { setValue } = useFormContext();
-  const { selected, hasPreselected, dispatch } = useParticipantsContext();
+  const { selected, hasPreselected, groupLocked, dispatch } = useParticipantsContext();
   const triggerRef = useRef<HTMLDivElement>(null);
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
   const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
@@ -49,6 +49,26 @@ export function ParticipantsSelector() {
       setValue('group', undefined);
     }
   }, [selected, setValue]);
+
+  if (groupLocked) {
+    return (
+      <div className="-mx-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-y border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6">
+        <span className="shrink-0 text-sm text-gray-600">With you and:</span>
+        {selected.map((p) => (
+          <span
+            key={p.urn}
+            className="inline-flex items-center gap-1 text-sm font-medium text-gray-800"
+          >
+            <Avatar
+              className="size-6 rounded-none bg-neutral-50"
+              fallback={p.name}
+            />
+            {p.name}
+          </span>
+        ))}
+      </div>
+    );
+  }
 
   if (!groups || !friends) return null;
 

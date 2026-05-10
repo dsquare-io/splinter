@@ -145,7 +145,8 @@ export interface paths {
     };
     /** Retrieve Expense */
     get: operations['RetrieveExpense'];
-    put?: never;
+    /** Update Expense */
+    put: operations['UpdateExpense'];
     post?: never;
     /** Destroy Expense */
     delete: operations['DestroyExpense'];
@@ -1096,6 +1097,72 @@ export interface operations {
       };
     };
   };
+  UpdateExpense: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        expense_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpsertExpense'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UpsertExpense'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
   DestroyExpense: {
     parameters: {
       query?: never;
@@ -1663,12 +1730,13 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
-      204: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
       };
       /** @description Bad Request */
       400: {
@@ -1775,12 +1843,13 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
-      204: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
       };
       /** @description Bad Request */
       400: {
@@ -2769,12 +2838,13 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
-      204: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
       };
       /** @description Bad Request */
       400: {
@@ -2823,12 +2893,13 @@ export interface operations {
       };
     };
     responses: {
-      /** @description No response body */
-      204: {
+      200: {
         headers: {
           [name: string]: unknown;
         };
-        content?: never;
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
       };
       /** @description Bad Request */
       400: {

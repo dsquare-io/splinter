@@ -148,6 +148,7 @@ export interface Expense {
    */
   readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
+  version?: number;
   readonly paidBy: SimpleUser;
   readonly isDeleted: boolean;
   readonly createdBy: SimpleUser;
@@ -366,6 +367,8 @@ export interface UpsertExpense {
   /** Format: date-time */
   datetime: string;
   description?: string;
+  /** @default 0 */
+  version: number;
   /** @default CurrentUser */
   paidBy: string;
   group?: string;
