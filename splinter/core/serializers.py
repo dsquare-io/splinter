@@ -4,6 +4,10 @@ from rest_framework import serializers
 from splinter.utils.strings import public_string
 
 
+class EmptySerializer(serializers.Serializer):
+    pass
+
+
 class ObjectSerializer(serializers.Serializer):
     uid = serializers.SerializerMethodField(read_only=True, allow_null=True)
     urn = serializers.SerializerMethodField(allow_null=True)

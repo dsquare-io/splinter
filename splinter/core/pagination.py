@@ -1,35 +1,53 @@
 import urllib.parse
 
-from rest_framework.pagination import LimitOffsetPagination as DrfLimitOffsetPagination
+from django.utils.encoding import force_str
+from rest_framework.pagination import CursorPagination as DrfCursorPagination
+from rest_framework.response import Response
 
 
-def strip_host(url: str) -> str:
-    (scheme, netloc, path, query, fragment) = urllib.parse.urlsplit(url)
-    return urllib.parse.urlunsplit(('', '', path, query, fragment))
+class CursorPagination(DrfCursorPagination):
+    def _extract_cursor(self, link):
+        if not link:
+            return None
+        params = urllib.parse.parse_qs(urllib.parse.urlsplit(link).query)
+        values = params.get(self.cursor_query_param, None)
+        return values[0] if values else None
 
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                'nextCursor': self._extract_cursor(self.get_next_link()),
+                'previousCursor': self._extract_cursor(self.get_previous_link()),
+                'results': data,
+            }
+        )
 
-class LimitOffsetPagination(DrfLimitOffsetPagination):
-    def get_next_link(self):
-        next_link = super().get_next_link()
-        if next_link:
-            next_link = strip_host(next_link)
+    def get_paginated_response_schema(self, schema):
+        return {
+            'type': 'object',
+            'required': ['results'],
+            'properties': {
+                'nextCursor': {'type': 'string', 'nullable': True},
+                'previousCursor': {'type': 'string', 'nullable': True},
+                'results': schema,
+            },
+        }
 
-        return next_link
-
-    def get_previous_link(self):
-        prev_link = super().get_previous_link()
-        if prev_link:
-            prev_link = strip_host(prev_link)
-
-        return prev_link
+    def get_ordering(self, request, queryset, view):
+        if hasattr(view, 'get_ordering'):
+            return view.get_ordering(request)
+        return super().get_ordering(request, queryset, view)
 
     def get_schema_operation_parameters(self, view):
-        parameters = super().get_schema_operation_parameters(view)
-
-        for parameter in parameters:
-            if parameter['name'] == 'limit':
-                parameter['schema']['default'] = self.default_limit
-            elif parameter['name'] == 'offset':
-                parameter['schema']['default'] = 0
-
+        parameters = [
+            {
+                'name': self.cursor_query_param,
+                'required': False,
+                'in': 'query',
+                'description': force_str(self.cursor_query_description),
+                'schema': {
+                    'type': 'string',
+                },
+            },
+        ]
         return parameters

@@ -248,50 +248,14 @@ export interface OutstandingBalance {
 }
 
 export interface PaginatedActivityList {
-  /** @example 123 */
-  count: number;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=400&limit=100
-   */
-  next?: string | null;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=200&limit=100
-   */
-  previous?: string | null;
+  nextCursor?: string | null;
+  previousCursor?: string | null;
   results: Activity[];
 }
 
-export interface PaginatedCommentList {
-  /** @example 123 */
-  count: number;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=400&limit=100
-   */
-  next?: string | null;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=200&limit=100
-   */
-  previous?: string | null;
-  results: Comment[];
-}
-
 export interface PaginatedExpenseOrPaymentList {
-  /** @example 123 */
-  count: number;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=400&limit=100
-   */
-  next?: string | null;
-  /**
-   * Format: uri
-   * @example http://api.example.org/accounts/?offset=200&limit=100
-   */
-  previous?: string | null;
+  nextCursor?: string | null;
+  previousCursor?: string | null;
   results: ExpenseOrPayment[];
 }
 

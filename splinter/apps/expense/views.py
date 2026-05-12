@@ -18,7 +18,6 @@ from splinter.apps.expense.operations import (
 from splinter.apps.expense.serializers import (
     ExpenseChangeLogSerializer,
     ExpenseOrPaymentSerializer,
-    RestoreExpenseSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
@@ -27,6 +26,8 @@ from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
+from splinter.core.pagination import CursorPagination
+from splinter.core.serializers import EmptySerializer
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from splinter.db.urn import ResourceName
 
@@ -52,7 +53,7 @@ class RetrieveUpdateDestroyRestoreExpenseView(UpdateModelMixin, RetrieveAPIView,
             return UpsertExpenseSerializer
 
         if self.request.method == 'PATCH':
-            return RestoreExpenseSerializer
+            return EmptySerializer
 
         return ExpenseOrPaymentSerializer
 
@@ -93,6 +94,7 @@ class UpdatePaymentView(GenericAPIView):
 
 
 class ListFriendExpenseView(ListAPIView):
+    pagination_class = CursorPagination
     serializer_class = ExpenseOrPaymentSerializer
 
     @cached_property
@@ -112,6 +114,7 @@ class ListFriendExpenseView(ListAPIView):
 
 
 class ListGroupExpenseView(ListAPIView):
+    pagination_class = CursorPagination
     serializer_class = ExpenseOrPaymentSerializer
 
     @cached_property
@@ -143,7 +146,6 @@ class RetrieveUserOutstandingBalanceView(GenericAPIView):
 
 class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
     serializer_class = ExpenseChangeLogSerializer
-    pagination_class = None
 
     URN_RE = re.compile(r'\[\[(urn:[^]\[]+)]]')
 

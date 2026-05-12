@@ -6,11 +6,11 @@ from splinter.apps.friend.models import Friendship
 from splinter.apps.friend.serializers import CreateFriendshipSerializer, FriendSerializer
 from splinter.apps.user.models import UserInvitation
 from splinter.core.filters import TrigramSimilaritySearchBackend
+from splinter.core.serializers import EmptySerializer
 from splinter.core.views import CreateAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 
 
 class ListCreateFriendView(ListAPIView, CreateAPIView):
-    pagination_class = None
     filter_backends = [TrigramSimilaritySearchBackend]
 
     def get_serializer_class(self):
@@ -54,6 +54,8 @@ class RetrieveDestroyFriendView(RetrieveAPIView, GenericFriendView):
 
 
 class CreateFriendInvitationView(GenericFriendView):
+    serializer_class = EmptySerializer
+
     def post(self, request, *args, **kwargs):
         friend = self.get_object()
         if friend.is_active:

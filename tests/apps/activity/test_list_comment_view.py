@@ -15,4 +15,4 @@ class ListCommentViewTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200)
 
         response_json = response.json()
-        self.assertEqual(response_json['count'], 5)
+        self.assertEqual(len(response_json), 5)

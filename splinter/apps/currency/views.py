@@ -5,7 +5,6 @@ from splinter.core.views import ListAPIView, RetrieveAPIView
 
 
 class ListCurrencyView(ListAPIView):
-    pagination_class = None
     permission_classes = ()
     authentication_classes = ()
     serializer_class = CurrencySerializer

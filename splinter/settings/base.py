@@ -29,3 +29,8 @@ TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 SITE_NAME = 'Splinter'
 
 WITHIN_TEST_SUITE = parse_bool(os.getenv('WITHIN_TEST_SUITE'), False)
+
+
+SILENCED_SYSTEM_CHECKS = [
+    "rest_framework.W001",
+]

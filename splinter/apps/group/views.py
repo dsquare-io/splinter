@@ -22,7 +22,6 @@ from splinter.core.views import (
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
-    pagination_class = None
     serializer_class = GroupSerializer
 
     def get_serializer_class(self):

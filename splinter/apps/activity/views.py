@@ -6,12 +6,17 @@ from rest_framework.generics import get_object_or_404
 
 from splinter.apps.activity.models import Activity, ActivityAudience, Comment
 from splinter.apps.activity.serializers import ActivitySerializer, CommentSerializer
+from splinter.core.pagination import CursorPagination
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from splinter.db.urn import ResourceName
 
 
 class ListActivityView(ListAPIView):
     serializer_class = ActivitySerializer
+    pagination_class = CursorPagination
+
+    def get_ordering(self, request):
+        return ('created_at',) if request.GET.get('order') == 'asc' else ('-created_at',)
 
     def paginate_queryset(self, queryset):
         page = super().paginate_queryset(queryset)
@@ -23,9 +28,6 @@ class ListActivityView(ListAPIView):
 
     def get_queryset(self):
         qs = ActivityAudience.objects.filter(user=self.request.user)
-
-        is_chronological = self.request.GET.get('order') == 'asc'
-        qs = qs.order_by('created_at' if is_chronological else '-created_at')
 
         object_urn = ResourceName.try_parse(self.request.GET.get('of'))
         if object_urn:

@@ -407,12 +407,8 @@ class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializ
         )
 
 
-class RestoreExpenseSerializer(serializers.Serializer):
-    pass
-
-
 class ExpenseChangeLogSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
-    activity_id = serializers.ReadOnlyField(source='activity.urn')
+    activity_id = serializers.CharField(source='activity.urn', read_only=True)
     references = serializers.SerializerMethodField()
 
     class Meta:

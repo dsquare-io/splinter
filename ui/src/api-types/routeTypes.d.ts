@@ -634,7 +634,6 @@ export interface components {
     Object: import('./components/schemas.d.ts').Object_;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
-    PaginatedCommentList: import('./components/schemas.d.ts').PaginatedCommentList;
     PaginatedExpenseOrPaymentList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentList;
     PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
     PatchedUser: import('./components/schemas.d.ts').PatchedUser;
@@ -665,10 +664,8 @@ export interface operations {
   ListActivity: {
     parameters: {
       query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
+        /** @description The pagination cursor value. */
+        cursor?: string;
       };
       header?: never;
       path?: never;
@@ -754,12 +751,7 @@ export interface operations {
   };
   ListComment: {
     parameters: {
-      query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
-      };
+      query?: never;
       header?: never;
       path: {
         activity_uid: string;
@@ -773,7 +765,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedCommentList'];
+          'application/json': components['schemas']['Comment'][];
         };
       };
       /** @description Unauthorized */
@@ -1530,10 +1522,8 @@ export interface operations {
   ListFriendExpense: {
     parameters: {
       query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
+        /** @description The pagination cursor value. */
+        cursor?: string;
       };
       header?: never;
       path: {
@@ -1963,10 +1953,8 @@ export interface operations {
   ListGroupExpense: {
     parameters: {
       query?: {
-        /** @description Number of results to return per page. */
-        limit?: number;
-        /** @description The initial index from which to return the results. */
-        offset?: number;
+        /** @description The pagination cursor value. */
+        cursor?: string;
       };
       header?: never;
       path: {

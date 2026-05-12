@@ -21,7 +21,7 @@ class ListActivityViewTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200)
 
         response_json = response.json()
-        self.assertEqual(response_json['count'], 5)
+        self.assertEqual(len(response_json['results']), 5)
 
 
 class ListActivityViewOrderingTests(AuthenticatedAPITestCase):
@@ -72,7 +72,7 @@ class ListActivityViewFilteringTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 200)
 
         data = response.json()
-        self.assertEqual(data['count'], 1)
+        self.assertEqual(len(data['results']), 1)
         self.assertEqual(data['results'][0]['uid'], str(self.matching_activity.public_id))
 
     def test_filter_by_object_urn_excludes_others(self):
@@ -86,14 +86,14 @@ class ListActivityViewFilteringTests(AuthenticatedAPITestCase):
         nonexistent_uid = 'urn:splinter:activity/00000000-0000-0000-0000-000000000000'
         response = self.client.get(f'/api/activities?of={nonexistent_uid}')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['count'], 0)
+        self.assertEqual(len(response.json()['results']), 0)
 
     def test_filter_by_invalid_urn_returns_all(self):
         response = self.client.get('/api/activities?of=not-a-valid-urn')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['count'], 2)
+        self.assertEqual(len(response.json()['results']), 2)
 
     def test_no_filter_returns_all(self):
         response = self.client.get('/api/activities')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['count'], 2)
+        self.assertEqual(len(response.json()['results']), 2)
