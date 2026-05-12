@@ -97,6 +97,9 @@ class ListFriendExpenseView(ListAPIView):
     pagination_class = CursorPagination
     serializer_class = ExpenseOrPaymentSerializer
 
+    def get_ordering(self, request):
+        return ('-created_at',)
+
     @cached_property
     def friend(self):
         return get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
@@ -116,6 +119,9 @@ class ListFriendExpenseView(ListAPIView):
 class ListGroupExpenseView(ListAPIView):
     pagination_class = CursorPagination
     serializer_class = ExpenseOrPaymentSerializer
+
+    def get_ordering(self, request):
+        return ('-created_at',)
 
     @cached_property
     def group(self):

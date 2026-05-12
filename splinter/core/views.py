@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.http.response import HttpResponseBase
 from rest_framework import status
@@ -68,6 +70,10 @@ class GenericAPIView(APIView, DrfGenericAPIView):
 
 
 class ListAPIView(ListModelMixin, GenericAPIView):
+    if TYPE_CHECKING:
+
+        def get_ordering(self, request): ...
+
     def get(self, *args, **kwargs):
         return self.list(*args, **kwargs)
 
