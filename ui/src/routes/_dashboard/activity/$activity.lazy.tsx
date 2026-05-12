@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
 import { createLazyFileRoute } from '@tanstack/react-router';
+import { type InfiniteData } from '@tanstack/react-query';
 
 import { ApiRoutes, type ApiResponse } from '@/api-types';
 import { ExpenseActivity } from '@/features/ExpenseActivity';
@@ -21,13 +22,16 @@ function RootComponent() {
 
   useEffect(() => {
     if (!activity) return;
-    queryClient.setQueriesData<ApiResponse<typeof ApiRoutes.ACTIVITY_LIST>>(
+    queryClient.setQueriesData<InfiniteData<ApiResponse<typeof ApiRoutes.ACTIVITY_LIST>>>(
       { queryKey: ['api', 'activities'], exact: true },
       (old) => {
         if (!old) return old;
         return {
           ...old,
-          results: old.results.map((a) => (a.uid === activity_uid ? { ...a, isRead: true } : a)),
+          pages: old.pages.map((page) => ({
+            ...page,
+            results: page.results?.map((a) => (a.uid === activity_uid ? { ...a, isRead: true } : a)),
+          })),
         };
       }
     );
