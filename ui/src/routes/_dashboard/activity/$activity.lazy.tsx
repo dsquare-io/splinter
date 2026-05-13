@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 
-import { createLazyFileRoute } from '@tanstack/react-router';
 import { type InfiniteData } from '@tanstack/react-query';
+import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes, type ApiResponse } from '@/api-types';
 import { ExpenseActivity } from '@/features/ExpenseActivity';

@@ -34,6 +34,8 @@ function refreshTokens(): Promise<Tokens> {
         setAccessToken(null);
         setRefreshToken(null);
         setHeaders(null);
+
+        window.location.href = '/auth/login';
         throw e;
       })
       .finally(() => {
@@ -46,23 +48,25 @@ function refreshTokens(): Promise<Tokens> {
 
 axiosInstance.interceptors.response.use(
   (res) => res,
-  async (err) => {
-    const originalRequest = err.config;
-
+  async (e) => {
+    const originalRequest = e.config;
     if (
-      err.response?.status !== 401 ||
-      originalRequest._retry ||
+      e.response?.status !== 401 ||
       originalRequest.url === ApiRoutes.REFRESH_ACCESS_TOKEN ||
-      !getRefreshToken()
+      originalRequest._retry
     ) {
-      throw err;
+      throw e;
     }
 
-    originalRequest._retry = true;
+    if (e.response?.data?.code === 'authn:token_expired' && getRefreshToken()) {
+      const { accessToken } = await refreshTokens();
 
-    const { accessToken } = await refreshTokens();
-    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-    return axiosInstance.request(originalRequest);
+      originalRequest._retry = true;
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+      return axiosInstance.request(originalRequest);
+    }
+
+    throw e;
   }
 );
 

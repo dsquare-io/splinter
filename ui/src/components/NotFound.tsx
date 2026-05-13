@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router';
 
-import Logo from '@/components/Logo.tsx';
+import { Logo } from '@/components/Logo.tsx';
 
 export function NotFound() {
   const router = useRouter();

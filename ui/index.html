@@ -119,6 +119,19 @@
           "
         ></span>
       </div>
+      <p
+        id="splash-slow"
+        style="
+          display: none;
+          position: absolute;
+          bottom: 3rem;
+          font-family: 'Figtree', sans-serif;
+          font-size: 0.8125rem;
+          color: #94a3b8;
+        "
+      >
+        Taking longer than usual…
+      </p>
       <style>
         @keyframes splash-dot {
           0%,
@@ -134,7 +147,10 @@
         }
       </style>
     </div>
-    <div id="root" style="height: 100dvh;"></div>
+    <div
+      id="root"
+      style="height: 100dvh"
+    ></div>
     <script
       type="module"
       src="/src/main.tsx"

@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react';
 
-export default function Logo(props: ComponentProps<'svg'>) {
+export function Logo(props: ComponentProps<'svg'>) {
   return (
     <svg
       width="24"

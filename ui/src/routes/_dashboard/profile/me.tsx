@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_dashboard/profile/me')({
 });
 
 function RootComponent() {
-  const { currentUser, setToken } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { updateServiceWorker } = useRegisterSW();
 
   return (
@@ -75,10 +75,7 @@ function RootComponent() {
             variant="outlined"
             color="danger"
             className="w-full"
-            onPress={() => {
-              setToken();
-              window.location.href = '/auth/login';
-            }}
+            onPress={() => logout({ redirect: true })}
           >
             <ArrowLeftStartOnRectangleIcon data-slot="icon" />
             Sign Out

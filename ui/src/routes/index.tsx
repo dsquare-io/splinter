@@ -9,7 +9,7 @@ export const Route = createFileRoute('/')({
 function IndexComponent() {
   const { status } = useAuth();
 
-  if (status === AuthStatus.VALIDATING) return;
+  if (status === AuthStatus.VALIDATING || status === AuthStatus.ERROR) return;
   if (status === AuthStatus.LOGGED_OUT) return <Navigate to="/auth/login" />;
   return <Navigate to="/friends" />;
 }

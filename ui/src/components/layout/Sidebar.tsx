@@ -9,16 +9,14 @@ import {
   UserIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 
-import { setHeaders } from '@/axios.ts';
 import { Avatar, Button } from '@/components/primitives';
 import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useAuth } from '@/hooks/useAuth.ts';
 
 export function Sidebar(props: ComponentProps<'div'>) {
-  const { setToken, currentUser } = useAuth();
-  const navigate = useNavigate();
+  const { logout, currentUser } = useAuth();
 
   return (
     <div
@@ -99,9 +97,7 @@ export function Sidebar(props: ComponentProps<'div'>) {
       <div className="space-y-1">
         <button
           onClick={() => {
-            setToken();
-            setHeaders();
-            return navigate({ to: '/auth/login' });
+            logout({ redirect: true });
           }}
           className="flex w-full items-center gap-x-3.5 rounded-md px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
         >

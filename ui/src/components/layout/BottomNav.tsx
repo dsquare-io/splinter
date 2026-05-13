@@ -11,7 +11,7 @@ export function BottomNav() {
   const { currentUser } = useAuth();
 
   return (
-    <div className="isolate fixed inset-x-0 bottom-0 z-20 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white pb-[calc(env(safe-area-inset-bottom)-10px)] md:hidden">
+    <div className="fixed inset-x-0 bottom-0 isolate z-20 flex w-full content-stretch justify-center border-t border-neutral-200 bg-white pb-[calc(env(safe-area-inset-bottom)-10px)] md:hidden">
       <Link
         to="/groups"
         className="[&.active]:border-brand-600 [&.active]:text-brand-600 -mt-px flex max-w-40 grow flex-col items-center border-t-2 border-transparent px-3 py-2.5 text-gray-400"

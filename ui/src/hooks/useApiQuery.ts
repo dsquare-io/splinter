@@ -1,4 +1,9 @@
-import { queryOptions, useInfiniteQuery, useQuery, type UndefinedInitialDataOptions } from '@tanstack/react-query';
+import {
+  queryOptions,
+  useInfiniteQuery,
+  useQuery,
+  type UndefinedInitialDataOptions,
+} from '@tanstack/react-query';
 
 import { ApiResponse, paths, urlWithArgs, type UrlArgs } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';

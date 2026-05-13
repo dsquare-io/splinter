@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
+import { isAxiosError } from 'axios';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { Logo } from '@/components/Logo.tsx';
 import { NotFound } from '@/components/NotFound.tsx';
 import { Button } from '@/components/primitives';
 import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
@@ -66,8 +69,9 @@ function UpdateBanner() {
   );
 }
 
-function RootComponent() {
-  const { status } = useAuth();
+function SplashController() {
+  const { status, authError, refetchProfile, logout } = useAuth();
+  const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
     if (status === AuthStatus.VALIDATING) return;
@@ -78,10 +82,56 @@ function RootComponent() {
     return () => clearTimeout(timer);
   }, [status]);
 
+  useEffect(() => {
+    if (status !== AuthStatus.VALIDATING) return;
+    const timer = setTimeout(() => {
+      const msg = document.getElementById('splash-slow');
+      if (msg) msg.style.display = 'block';
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [status]);
+
+  if (!authError) return null;
+
+  const isAuthError =
+    isAxiosError(authError) && (authError.response?.status === 401 || authError.response?.status === 403);
+
+  const handleRetry = async () => {
+    setIsPending(true);
+    await refetchProfile();
+    setIsPending(false);
+  };
+
   return (
-    <div className="flex flex-col" style={{height: '100dvh'}}>
+    <div className="flex flex-1 flex-col px-4">
+      <div className="flex flex-1 items-center justify-center">
+        <ErrorAlert
+          error={authError}
+          variant="card"
+          onRetry={isPending ? undefined : handleRetry}
+          onLogout={isAuthError ? () => logout({ redirect: true }) : undefined}
+        />
+      </div>
+      <div className="flex items-center justify-center gap-1.5 pb-8">
+        <Logo
+          width={28}
+          height={28}
+        />
+        <span className="text-brand-900 text-sm font-semibold tracking-tight">Splinter</span>
+      </div>
+    </div>
+  );
+}
+
+function RootComponent() {
+  return (
+    <div
+      className="flex flex-col"
+      style={{ height: '100dvh' }}
+    >
       <UpdateBanner />
       <TopLoader />
+      <SplashController />
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
