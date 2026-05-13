@@ -161,6 +161,7 @@ export interface ExpenseChangeLog {
 }
 
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
+export type ExpenseOrPaymentOrSettlement = ExpenseTyped | PaymentTyped | SettlementTyped;
 
 export interface ExpenseShare {
   user: string;
@@ -253,10 +254,10 @@ export interface PaginatedActivityList {
   results: Activity[];
 }
 
-export interface PaginatedExpenseOrPaymentList {
+export interface PaginatedExpenseOrPaymentOrSettlementList {
   nextCursor?: string | null;
   previousCursor?: string | null;
-  results: ExpenseOrPayment[];
+  results: ExpenseOrPaymentOrSettlement[];
 }
 
 export type PatchedExtendedGroup = SimpleGroup & {
@@ -312,6 +313,24 @@ export interface ResetPassword {
   token: string;
   password: string;
 }
+
+export interface Settlement {
+  /** Format: uuid */
+  readonly uid: string;
+  /** Format: date-time */
+  readonly createdAt: string;
+}
+
+export type SettlementTyped = {
+  type: SettlementTypedTypeEnum;
+} & Settlement & {
+    /**
+     * @description discriminator enum property added by openapi-typescript
+     * @enum {string}
+     */
+    type: 'settlement';
+  };
+export type SettlementTypedTypeEnum = 'settlement';
 
 export interface SimpleCurrency {
   uid: string;

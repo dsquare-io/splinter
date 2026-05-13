@@ -619,6 +619,7 @@ export interface components {
     Expense: import('./components/schemas.d.ts').Expense;
     ExpenseChangeLog: import('./components/schemas.d.ts').ExpenseChangeLog;
     ExpenseOrPayment: import('./components/schemas.d.ts').ExpenseOrPayment;
+    ExpenseOrPaymentOrSettlement: import('./components/schemas.d.ts').ExpenseOrPaymentOrSettlement;
     ExpenseShare: import('./components/schemas.d.ts').ExpenseShare;
     ExpenseTyped: import('./components/schemas.d.ts').ExpenseTyped;
     /** @enum {string} */
@@ -634,7 +635,7 @@ export interface components {
     Object: import('./components/schemas.d.ts').Object_;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
-    PaginatedExpenseOrPaymentList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentList;
+    PaginatedExpenseOrPaymentOrSettlementList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentOrSettlementList;
     PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
     PatchedUser: import('./components/schemas.d.ts').PatchedUser;
     Payment: import('./components/schemas.d.ts').Payment;
@@ -643,6 +644,10 @@ export interface components {
     PaymentTypedTypeEnum: import('./components/schemas.d.ts').PaymentTypedTypeEnum;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
+    Settlement: import('./components/schemas.d.ts').Settlement;
+    SettlementTyped: import('./components/schemas.d.ts').SettlementTyped;
+    /** @enum {string} */
+    SettlementTypedTypeEnum: import('./components/schemas.d.ts').SettlementTypedTypeEnum;
     SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
@@ -1538,7 +1543,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedExpenseOrPaymentList'];
+          'application/json': components['schemas']['PaginatedExpenseOrPaymentOrSettlementList'];
         };
       };
       /** @description Unauthorized */
@@ -1969,7 +1974,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['PaginatedExpenseOrPaymentList'];
+          'application/json': components['schemas']['PaginatedExpenseOrPaymentOrSettlementList'];
         };
       };
       /** @description Unauthorized */

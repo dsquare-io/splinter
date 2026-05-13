@@ -1,6 +1,7 @@
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components';
 
-import { GroupActivityTab } from './GroupActivityTab';
+import { ApiRoutes } from '@/api-types';
+import { ExpenseList } from '@/features/ExpenseList';
 import { GroupBalancesTab } from './GroupBalancesTab';
 
 export function GroupTabs({ group_uid }: { group_uid: string }) {
@@ -16,7 +17,12 @@ export function GroupTabs({ group_uid }: { group_uid: string }) {
         </TabList>
       </div>
       <TabPanel id="activity">
-        <GroupActivityTab group_uid={group_uid} />
+        <ExpenseList
+          apiPath={ApiRoutes.GROUP_EXPENSE_LIST}
+          args={{ group_uid }}
+          detailRoute="/groups/$group/$expense"
+          detailRouteParams={{ group: group_uid }}
+        />
       </TabPanel>
       <TabPanel id="balance">
         <GroupBalancesTab group_uid={group_uid} />

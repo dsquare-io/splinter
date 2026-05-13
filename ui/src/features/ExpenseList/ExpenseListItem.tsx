@@ -48,7 +48,7 @@ export function ExpenseListItem({ expense, detailRoute, detailRouteParams }: Exp
           />
         </>
       ) : (
-        <div className="text-gray-900">
+        <div className="text-gray-500 italic">
           <UserLabel user={expense.sender} />
           {' paid '}
           <UserLabel
@@ -58,6 +58,7 @@ export function ExpenseListItem({ expense, detailRoute, detailRouteParams }: Exp
           <Money
             currency={expense.currency}
             value={expense.amount}
+            noColor
           />
         </div>
       )}
