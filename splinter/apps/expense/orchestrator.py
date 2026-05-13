@@ -218,11 +218,11 @@ class ExpenseEventOrchestrator(ContextDecorator):
     def __exit__(self, exc_type, exc_val, exc_tb):
         delattr(_local, 'orchestrator')
         if exc_val is not None:
-            return False
+            return
 
         if self._root_expense is None:
             # No related activity
-            return False
+            return
 
         with transaction.atomic():
             if self._update_expense_splits:

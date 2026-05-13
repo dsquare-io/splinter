@@ -14,6 +14,7 @@ from splinter.apps.expense.models import (
     ExpenseChangeLog,
     ExpenseSplit,
     OutstandingBalance,
+    Settlement,
 )
 from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
@@ -198,6 +199,14 @@ class PaymentSerializer(serializers.ModelSerializer):
         return SimpleUserSerializer(sender).data
 
 
+class SettlementSerializer(serializers.ModelSerializer):
+    uid = serializers.UUIDField(source='public_id', read_only=True)
+
+    class Meta:
+        model = Settlement
+        fields = ('uid', 'created_at')
+
+
 class ExpenseOrPaymentSerializer(PrefetchQuerysetSerializerMixin, PolymorphicSerializer):
     serializer_mapping = {
         'expense': ExpenseSerializer,
@@ -209,6 +218,18 @@ class ExpenseOrPaymentSerializer(PrefetchQuerysetSerializerMixin, PolymorphicSer
 
     def prefetch_queryset(self, queryset=None):
         return ExpenseSerializer().prefetch_queryset(queryset=queryset)
+
+
+class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
+    serializer_mapping = {
+        **ExpenseOrPaymentSerializer.serializer_mapping,
+        'settlement': SettlementSerializer,
+    }
+
+    def get_discriminator(self, instance) -> str:
+        if isinstance(instance, Settlement):
+            return 'settlement'
+        return super().get_discriminator(instance)
 
 
 class UpsertExpenseSerializer(serializers.Serializer):

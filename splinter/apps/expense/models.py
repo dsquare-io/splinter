@@ -168,6 +168,38 @@ class OutstandingBalance(TimestampedModel, SoftDeleteModel):
         return f'user={self.user}, friend={self.friend} group={self.group}, amount={self.amount}'
 
 
+class Settlement(TimestampedModel, PublicModel):
+    # Exactly one of these must be set (enforced by CheckConstraint)
+    # friendship: bilateral — one record covers both users, user derived via friendship.user1/user2
+    # group_membership: per-user — user derived via group_membership.user
+    friendship = models.ForeignKey(
+        'friend.Friendship', null=True, blank=True, on_delete=models.CASCADE, related_name='+'
+    )
+    group_membership = models.ForeignKey(
+        'group.GroupMembership', null=True, blank=True, on_delete=models.CASCADE, related_name='+'
+    )
+
+    invalidated_at = models.DateTimeField(null=True, blank=True)
+    invalidated_by = models.ForeignKey('Expense', null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
+
+    class Meta:
+        db_table = 'expense_settlements'
+        ordering = ('-created_at',)
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(friendship__isnull=False, group_membership__isnull=True)
+                    | models.Q(friendship__isnull=True, group_membership__isnull=False)
+                ),
+                name='settlement_context_exclusive',
+            )
+        ]
+
+    @property
+    def is_valid(self) -> bool:
+        return self.invalidated_at is None
+
+
 class AggregatedOutstandingBalance(OutstandingBalance):
     class Meta:
         proxy = True

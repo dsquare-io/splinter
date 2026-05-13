@@ -2,13 +2,20 @@ import itertools
 import re
 from collections import defaultdict
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.expense.models import AggregatedOutstandingBalance, Expense, ExpenseChangeLog, ExpenseParty
+from splinter.apps.expense.models import (
+    AggregatedOutstandingBalance,
+    Expense,
+    ExpenseChangeLog,
+    ExpenseParty,
+    Settlement,
+)
 from splinter.apps.expense.operations import (
     DeleteExpenseOperation,
     DeletePaymentOperation,
@@ -17,13 +24,14 @@ from splinter.apps.expense.operations import (
 )
 from splinter.apps.expense.serializers import (
     ExpenseChangeLogSerializer,
+    ExpenseOrPaymentOrSettlementSerializer,
     ExpenseOrPaymentSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
 )
 from splinter.apps.friend.models import Friendship
-from splinter.apps.group.models import Group
+from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination
@@ -93,13 +101,45 @@ class UpdatePaymentView(GenericAPIView):
         return Expense.objects.of_user(self.request.user).filter(is_payment=True)
 
 
-class ListFriendExpenseView(ListAPIView):
+class GenericExpenseListView(ListAPIView):
     pagination_class = CursorPagination
-    serializer_class = ExpenseOrPaymentSerializer
+    serializer_class = ExpenseOrPaymentOrSettlementSerializer
+
+    if TYPE_CHECKING:
+        paginator: CursorPagination
 
     def get_ordering(self, request):
         return ('-created_at',)
 
+    def get_settlement_queryset(self):
+        return Settlement.objects.filter(invalidated_at__isnull=True).order_by('-created_at')
+
+    def get_queryset(self):
+        return Expense.objects.filter(parent__isnull=True)
+
+    def paginate_queryset(self, qs):
+        page: list[Expense] | None = super().paginate_queryset(qs)
+        if page:
+            page = self._merge_with_settlements(page)
+
+        return page
+
+    def _merge_with_settlements(self, page: list[Expense]) -> list[Expense | Settlement]:
+        dt1 = page[0].created_at
+        dt2 = page[-1].created_at
+
+        qs = self.get_settlement_queryset().filter(created_at__gte=dt2)
+        if self.paginator.has_previous:
+            qs = qs.filter(created_at__lte=dt1)
+
+        settlements = list(qs)
+        if not settlements:
+            return page
+
+        return sorted(page + settlements, key=lambda x: x.created_at, reverse=True)
+
+
+class ListFriendExpenseView(GenericExpenseListView):
     @cached_property
     def friend(self):
         return get_object_or_404(User.objects, username=self.kwargs['friend_uid'])
@@ -113,22 +153,22 @@ class ListFriendExpenseView(ListAPIView):
 
     def get_queryset(self):
         party_qs = ExpenseParty.objects.filter(expense=OuterRef('pk'), friendship=self.friendship)
-        return Expense.objects.filter(Exists(party_qs), group__isnull=True).order_by('-created_at')
+        return super().get_queryset().filter(Exists(party_qs), group__isnull=True).order_by('-created_at')
+
+    def get_settlement_queryset(self):
+        return super().get_settlement_queryset().filter(friendship=self.friendship)
 
 
-class ListGroupExpenseView(ListAPIView):
-    pagination_class = CursorPagination
-    serializer_class = ExpenseOrPaymentSerializer
-
-    def get_ordering(self, request):
-        return ('-created_at',)
-
+class ListGroupExpenseView(GenericExpenseListView):
     @cached_property
-    def group(self):
-        return get_object_or_404(Group.objects.of(self.request.user), public_id=self.kwargs['group_uid'])
+    def membership(self):
+        return get_object_or_404(GroupMembership, group__public_id=self.kwargs['group_uid'], user=self.request.user)
 
     def get_queryset(self):
-        return Expense.objects.filter(parent__isnull=True, group=self.group).order_by('-created_at')
+        return super().get_queryset().filter(group_id=self.membership.group_id)
+
+    def get_settlement_queryset(self):
+        return super().get_settlement_queryset().filter(group_membership=self.membership)
 
 
 class RetrieveUserOutstandingBalanceView(GenericAPIView):

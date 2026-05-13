@@ -13,10 +13,12 @@ from splinter.apps.expense.activities import (
     DeletePaymentActivity,
     RestoreExpenseActivity,
     RestorePaymentActivity,
+    SettleUpActivity,
     UpdateExpenseActivity,
 )
 from splinter.apps.expense.models import Expense, ExpenseChangeLog, ExpenseRevision, ExpenseSplit, ExpenseSplitRevision
 from splinter.apps.expense.orchestrator import expense_event_orchestrator
+from splinter.apps.expense.settlements import check_and_create_settlement
 from splinter.apps.expense.utils import split_amount
 
 if TYPE_CHECKING:
@@ -32,10 +34,13 @@ class ExpenseOperation[T]:
         self.actor = actor
 
     def execute(self, data: T) -> Expense:
-        with expense_event_orchestrator(), transaction.atomic():
-            expense = self._execute(data)
+        with transaction.atomic():
+            with expense_event_orchestrator():
+                expense = self._execute(data)
 
-        self.log_activity(expense)
+        with transaction.atomic():
+            self.log_activity(expense)
+
         return expense
 
     def log_activity(self, expense: Expense) -> 'Activity':
@@ -156,6 +161,16 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
         )
 
         return expense
+
+    def log_activity(self, expense: Expense) -> 'Activity':
+        activity = super().log_activity(expense)
+
+        settled = check_and_create_settlement(expense, activity.actor_id, activity.target_object_id)
+        if settled:
+            activity.verb = SettleUpActivity.verb
+            activity.save(update_fields=['verb'])
+
+        return activity
 
     def get_target(self, expense: Expense) -> Model:
         return ExpenseSplit.objects.get(expense=expense).user

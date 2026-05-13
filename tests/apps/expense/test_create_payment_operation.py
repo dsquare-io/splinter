@@ -1,9 +1,8 @@
 from decimal import Decimal
 
 from splinter.apps.activity.models import Activity, ActivityAudience
-from splinter.apps.expense.activities import CreatePaymentActivity
+from splinter.apps.expense.activities import CreatePaymentActivity, SettleUpActivity
 from splinter.apps.expense.operations import CreatePaymentOperation
-from tests.apps.currency.factories import CurrencyFactory
 from tests.apps.expense.case import ExpenseTestCase
 from tests.apps.user.factories import UserFactory
 
@@ -22,14 +21,13 @@ class CreatePaymentOperationActivityTests(ExpenseTestCase):
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
-        cls.actor = UserFactory()
         cls.sender = UserFactory()
         cls.receiver = UserFactory()
 
-    def _execute(self, amount=100, sender=None, receiver=None, **kwargs):
+    def _execute(self, amount=100.0, sender=None, receiver=None, **kwargs):
         sender = sender or self.sender
         receiver = receiver or self.receiver
-        return CreatePaymentOperation(actor=self.actor).execute(
+        return CreatePaymentOperation(actor=self.sender).execute(
             {
                 'sender': sender,
                 'receiver': receiver,
@@ -42,10 +40,14 @@ class CreatePaymentOperationActivityTests(ExpenseTestCase):
         )
 
     def test_activity_created(self):
-        self._execute(amount=100)
+        expense = self._execute(amount=100)
 
-        activities = list(Activity.objects.filter(verb=CreatePaymentActivity.verb))
+        activities = list(Activity.objects.all())
         self.assertEqual(len(activities), 1)
+        self.assertEqual(activities[0].verb, CreatePaymentActivity.verb)
+        self.assertEqual(activities[0].actor, self.sender)
+        self.assertEqual(activities[0].target, self.receiver)
+        self.assertEqual(activities[0].action_object, expense)
 
     def test_activity_verb(self):
         self._execute()
@@ -57,7 +59,7 @@ class CreatePaymentOperationActivityTests(ExpenseTestCase):
         self._execute()
 
         activity = Activity.objects.get(verb=CreatePaymentActivity.verb)
-        self.assertEqual(activity.actor, self.actor)
+        self.assertEqual(activity.actor, self.sender)
 
     def test_activity_target_is_receiver(self):
         self._execute()
@@ -100,3 +102,15 @@ class CreatePaymentOperationActivityTests(ExpenseTestCase):
 
         activity = Activity.objects.get(verb=CreatePaymentActivity.verb)
         self.assertIsNone(activity.group_id)
+
+    def test_settle_up(self):
+        self.create_equal_split_expense(100, [self.sender, self.receiver])
+        outstanding_balance = self.get_outstanding_balance(
+            user=self.receiver, friend=self.sender, currency=self.currency
+        )
+
+        self._execute(float(outstanding_balance))
+
+        activities = list(Activity.objects.all())
+        self.assertEqual(len(activities), 1)
+        self.assertEqual(activities[0].verb, SettleUpActivity.verb)
