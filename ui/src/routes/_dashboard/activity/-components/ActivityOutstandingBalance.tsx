@@ -1,5 +1,22 @@
+import { tv } from 'tailwind-variants';
+
 import { SimpleCurrency } from '@/api-types';
 import { Money } from '@/components/primitives';
+
+const PAYMENT_VERBS = new Set(['payment', 'update_payment', 'delete_payment', 'settle_up']);
+
+const balanceStyle = tv({
+  base: 'mt-1 font-normal',
+  variants: {
+    negative: {
+      true: 'text-red-600',
+      false: 'text-green-700',
+    },
+    deleted: {
+      true: 'line-through',
+    },
+  },
+});
 
 type ActivityOutstandingBalanceProps = {
   balance?: string | null;
@@ -7,42 +24,32 @@ type ActivityOutstandingBalanceProps = {
   currency: SimpleCurrency;
 };
 
-export function ActivityOutstandingBalance({ balance, verb, currency }: ActivityOutstandingBalanceProps) {
-  if (!balance) {
-    return null;
-  }
+export function ActivityOutstandingBalance({
+  balance: balanceProp,
+  verb,
+  currency,
+}: ActivityOutstandingBalanceProps) {
+  if (!balanceProp) return null;
 
-  const balanceNumber = +balance;
-  const isDelete = verb.startsWith('delete_');
-  const className = `mt-1 font-normal ${isDelete ? 'line-through' : ''}`;
+  const amount = +balanceProp;
+  const isPayment = PAYMENT_VERBS.has(verb);
+  const isPositive = amount > 0;
 
-  const isPayment = ['payment', 'update_payment', 'delete_payment'].includes(verb);
-  if (isPayment) {
-    return (
-      <p className={`${className} text-green-700`}>
-        {balanceNumber > 0 ? 'You paid ' : 'You received '}
-        <Money
-          currency={currency}
-          value={Math.abs(balanceNumber)}
-        />
-      </p>
-    );
-  }
+  const label = isPayment
+    ? isPositive
+      ? 'You paid'
+      : 'You received'
+    : isPositive
+      ? 'You received'
+      : 'You borrowed';
 
-  return balanceNumber > 0 ? (
-    <p className={`${className} text-green-700`}>
-      You received{' '}
+  return (
+    <p className={balanceStyle({ negative: isPayment === isPositive, deleted: verb.startsWith('delete_') })}>
+      {label}{' '}
       <Money
         currency={currency}
-        value={balanceNumber}
-      />
-    </p>
-  ) : (
-    <p className={`${className} text-red-600`}>
-      You borrowed{' '}
-      <Money
-        currency={currency}
-        value={balanceNumber}
+        value={amount}
+        noColor
       />
     </p>
   );
