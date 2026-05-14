@@ -1,3 +1,4 @@
+import re
 from decimal import Decimal
 
 from django.db import transaction
@@ -18,7 +19,6 @@ from splinter.apps.expense.models import (
 )
 from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
 from splinter.apps.expense.shortcuts import simplify_outstanding_balances
-from splinter.apps.expense.utils import validate_description
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
@@ -29,6 +29,20 @@ from splinter.core.serializers import ObjectSerializer, PolymorphicSerializer
 
 ZERO_DECIMAL = Decimal(0)
 NEGATIVE_ONE_DECIMAL = Decimal(-1)
+FORBIDDEN_DESCRIPTION_CHARS_RE = re.compile(r'(\[\[|]])')
+
+
+def validate_description(description: str) -> str:
+    if not description:
+        return ''
+
+    invalid_chars = set(FORBIDDEN_DESCRIPTION_CHARS_RE.findall(description))
+
+    if invalid_chars:
+        char_list = ", ".join(repr(c) for c in sorted(invalid_chars)[:5])
+        raise serializers.ValidationError(f"Description cannot contain {char_list}.")
+
+    return description
 
 
 class ExpenseShareListSerializer(serializers.ListSerializer):
@@ -59,9 +73,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
         read_only_fields = ('amount',)
         extra_kwargs = {
             'share': {'help_text': 'The share of the user in the expense', 'min_value': 1, 'default': 1},
-            'amount': {
-                'help_text': 'The amount of the user in the expense',
-            },
+            'amount': {'help_text': 'The amount of the user in the expense'},
         }
 
     def prefetch_queryset(self, queryset=None):

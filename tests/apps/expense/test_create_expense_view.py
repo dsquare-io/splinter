@@ -129,6 +129,76 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
             {'expenses': [{'shares': {'': [{'message': 'This list may not be empty.', 'code': 'empty'}]}}]},
         )
 
+    def test_valid_description_with_single_brackets(self):
+        payload = {
+            'datetime': '2024-03-16T08:23:00Z',
+            'description': 'Groceries [food]',
+            'paid_by': self.user.username,
+            'currency': self.currency.code,
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Groceries [food]',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                }
+            ],
+        }
+        response = self.client.post('/api/expenses', payload, format='json')
+        self.assertEqual(response.status_code, 201, response.json())
+
+    def test_double_open_bracket_rejected_in_parent_description(self):
+        payload = {
+            'datetime': '2024-03-16T08:23:00Z',
+            'description': 'Note [[template]] here',
+            'paid_by': self.user.username,
+            'currency': self.currency.code,
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Item A',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                },
+                {
+                    'amount': '100.00',
+                    'description': 'Item B',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                },
+            ],
+        }
+        response = self.client.post('/api/expenses', payload, format='json')
+        self.assertEqual(response.status_code, 400, response.json())
+
+        error = response.json()['description'][0]
+        self.assertEqual(error['code'], 'invalid')
+        self.assertIn('Description cannot contain', error['message'])
+        self.assertIn("'[['", error['message'])
+
+    def test_double_close_bracket_rejected_in_child_description(self):
+        payload = {
+            'datetime': '2024-03-16T08:23:00Z',
+            'description': 'Valid description',
+            'paid_by': self.user.username,
+            'currency': self.currency.code,
+            'expenses': [
+                {
+                    'amount': '100.00',
+                    'description': 'Bad tag]]',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                },
+                {
+                    'amount': '100.00',
+                    'description': 'Normal child',
+                    'shares': [{'user': user.username, 'share': 1} for user in self.participants],
+                },
+            ],
+        }
+        response = self.client.post('/api/expenses', payload, format='json')
+        self.assertEqual(response.status_code, 400, response.json())
+
+        error = response.json()['expenses'][0]['description'][0]
+        self.assertEqual(error['code'], 'invalid')
+        self.assertIn('Description cannot contain', error['message'])
+
     def test_create_multi_row(self):
         payload = {
             'datetime': '2024-03-16T08:23:00Z',
