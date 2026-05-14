@@ -2,8 +2,15 @@ import type { FieldErrors, FieldValues, UseFormReturn } from 'react-hook-form';
 
 import { isAxiosError } from 'axios';
 
+type DrfErrorObject = { message: string; code: string };
+type DrfErrorValue =
+  | DrfErrorObject[]
+  | string
+  | DrfErrors
+  | (DrfErrors | null)[];
+
 export type DrfErrors = {
-  [key: string]: { message: string; code: string }[] | string;
+  [key: string]: DrfErrorValue;
 };
 
 const API_ERROR_MESSAGE = {
@@ -27,44 +34,56 @@ export function flattenFieldErrors(errors: FieldErrors, prefix = ''): { key: str
 
 /**
  * Parses django rest framework errors and transforms them into hook-form's FieldErrors type.
- *
- * possible improvement: exactly out the non drf specific error handling like network error
- * or some code level unhandled exception.
  */
 export function translateServerError(error: unknown) {
-  /**
-   * parses drf error object to hook-form's FieldErrors type
-   */
-  function handleObject(err: DrfErrors) {
+  function isFieldErrorObject(v: unknown): v is DrfErrorObject {
+    return (
+      typeof v === 'object' &&
+      v !== null &&
+      typeof (v as any).message === 'string' &&
+      typeof (v as any).code === 'string'
+    );
+  }
+
+  function handleObject(err: DrfErrors, prefix = ''): FieldErrors {
     const formErrors: FieldErrors = {};
 
     for (const [fieldName, error] of Object.entries(err)) {
+      const key = prefix ? `${prefix}.${fieldName}` : fieldName || 'root';
+
       if (Array.isArray(error)) {
-        if (typeof error[0]?.message === 'string') {
-          formErrors[fieldName || 'root'] = {
+        const firstNonNull = error.find((e) => e !== null && e !== undefined);
+        if (firstNonNull === undefined) continue;
+
+        if (isFieldErrorObject(firstNonNull)) {
+          const errObjs = error as DrfErrorObject[];
+          formErrors[key] = {
             type: 'validate',
-            types: error.reduce(
-              (acc, e: any) => {
+            types: errObjs.reduce(
+              (acc, e) => {
                 acc[e.code] = e.message;
                 return acc;
               },
-              {} as Record<string, any>
+              {} as Record<string, string>
             ),
-            message: error[0].message,
+            message: errObjs[0].message,
           };
+        } else if (typeof firstNonNull === 'string') {
+          formErrors[key] = { type: 'validate', message: firstNonNull };
         } else {
-          throw new Error("shouldn't be here.");
+          (error as (DrfErrors | null)[]).forEach((item, index) => {
+            if (!item) return;
+            Object.assign(formErrors, handleObject(item, `${key}.${index}`));
+          });
         }
-      } else if (typeof error === 'object') {
-        formErrors[fieldName || 'root'] = {
-          type: 'validate',
-          message: (error as { message: string; code: string }).message,
-        };
+      } else if (typeof error === 'object' && error !== null) {
+        if (isFieldErrorObject(error)) {
+          formErrors[key] = { type: 'validate', message: error.message };
+        } else {
+          Object.assign(formErrors, handleObject(error as DrfErrors, key));
+        }
       } else {
-        formErrors[fieldName || 'root'] = {
-          type: 'validate',
-          message: error,
-        };
+        formErrors[key] = { type: 'validate', message: error };
       }
     }
 
