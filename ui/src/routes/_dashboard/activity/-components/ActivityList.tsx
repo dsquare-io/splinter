@@ -46,7 +46,7 @@ export function ActivityList() {
     >
       {sections.map(([month, items]) => (
         <ListBoxSection key={month}>
-          <Header className="sticky top-17 z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+          <Header className="sticky top-0 z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
             {format(new Date(month + '-01'), 'MMM yyyy')}
           </Header>
           <Collection items={items}>

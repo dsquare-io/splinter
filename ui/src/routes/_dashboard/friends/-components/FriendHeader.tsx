@@ -21,10 +21,10 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
       parentLabel="Friends"
     >
       {isPending ? (
-        <Skeleton className="size-16 rounded-full" />
+        <Skeleton className="size-16 rounded-full group-data-stuck:size-10" />
       ) : (
         <Avatar
-          className="size-16 bg-white"
+          className="size-16 bg-white transition-[width,height] duration-200 group-data-stuck:size-10"
           fallback={friend?.name || 'User'}
         />
       )}
@@ -37,42 +37,50 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         ) : friend ? (
           <>
             <div className="mt-1 text-2xl font-semibold text-gray-900">{friend!.name}</div>
-            {!friend.isActive && (
-              <span className="mt-1 inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-500 ring-1 ring-gray-200 ring-inset">
-                Not yet joined
-              </span>
-            )}
-            <OutstandingBalanceList balances={friend!.outstandingBalances} />
+            <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
+              <div className="overflow-hidden">
+                {!friend.isActive && (
+                  <span className="mt-1 inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-500 ring-1 ring-gray-200 ring-inset">
+                    Not yet joined
+                  </span>
+                )}
+                <OutstandingBalanceList balances={friend!.outstandingBalances} />
+              </div>
+            </div>
           </>
         ) : undefined}
       </div>
 
-      <div className="col-span-2 mt-6 flex items-center gap-x-2.5">
-        <DialogTrigger>
-          <Button
-            size="small"
-            isDisabled={!friend}
-          >
-            <BanknotesIcon />
-            Settle Up
-          </Button>
-          <AddPaymentDialog friend={friend} />
-        </DialogTrigger>
+      <div className="col-span-2 grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
+        <div className="overflow-hidden">
+          <div className="mt-6 flex items-center gap-x-2.5">
+            <DialogTrigger>
+              <Button
+                size="small"
+                isDisabled={!friend}
+              >
+                <BanknotesIcon />
+                Settle Up
+              </Button>
+              <AddPaymentDialog friend={friend} />
+            </DialogTrigger>
 
-        <div className="flex-1" />
+            <div className="flex-1" />
 
-        <DialogTrigger>
-          <Button
-            variant="outlined"
-            className="bg-white"
-            size="small"
-            isDisabled={!friend}
-          >
-            <Cog8ToothIcon />
-            <span className="hidden sm:block">Settings</span>
-          </Button>
-          {friend && <FriendSettingDialog friend={friend} />}
-        </DialogTrigger>
+            <DialogTrigger>
+              <Button
+                variant="outlined"
+                className="bg-white"
+                size="small"
+                isDisabled={!friend}
+              >
+                <Cog8ToothIcon />
+                <span className="hidden sm:block">Settings</span>
+              </Button>
+              {friend && <FriendSettingDialog friend={friend} />}
+            </DialogTrigger>
+          </div>
+        </div>
       </div>
     </DetailHeader>
   );

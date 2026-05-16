@@ -3,11 +3,7 @@ import type { FieldErrors, FieldValues, UseFormReturn } from 'react-hook-form';
 import { isAxiosError } from 'axios';
 
 type DrfErrorObject = { message: string; code: string };
-type DrfErrorValue =
-  | DrfErrorObject[]
-  | string
-  | DrfErrors
-  | (DrfErrors | null)[];
+type DrfErrorValue = DrfErrorObject[] | string | DrfErrors | (DrfErrors | null)[];
 
 export type DrfErrors = {
   [key: string]: DrfErrorValue;

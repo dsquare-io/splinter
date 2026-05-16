@@ -18,7 +18,12 @@ function RootComponent() {
       </ErrorBoundary>
 
       <GroupHeader group_uid={group_uid} />
-      <GroupTabs group_uid={group_uid} />
+      <div
+        data-scroll-root
+        className="min-h-0 flex-1 overflow-auto"
+      >
+        <GroupTabs group_uid={group_uid} />
+      </div>
     </>
   );
 }

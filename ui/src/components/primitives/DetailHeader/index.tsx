@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
+import { StickyHeader } from '../StickyHeader';
+
 type DetailHeaderProps = {
   children?: ReactNode;
   parentLink?: string;
@@ -11,7 +13,7 @@ type DetailHeaderProps = {
 
 export function DetailHeader({ children, parentLink, parentLabel }: DetailHeaderProps) {
   return (
-    <div className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 px-4 py-6 sm:px-6 md:px-8">
+    <StickyHeader className="grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 px-4">
       <div
         className="absolute inset-0 -z-10 overflow-hidden"
         aria-hidden="true"
@@ -40,6 +42,6 @@ export function DetailHeader({ children, parentLink, parentLabel }: DetailHeader
       )}
 
       {children}
-    </div>
+    </StickyHeader>
   );
 }

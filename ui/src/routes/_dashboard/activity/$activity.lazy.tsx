@@ -50,7 +50,10 @@ function RootComponent() {
     <>
       {activity && <ActivityDetailHeader activity={activity} />}
 
-      <div className="p-4">
+      <div
+        data-scroll-root
+        className="min-h-0 flex-1 overflow-auto p-4"
+      >
         {expense_uid && (
           <>
             <ExpenseDetail

@@ -12,4 +12,5 @@ export { Input } from './Input';
 export { Label } from './Label';
 export { Money } from './Money';
 export { SelectValue, SelectPopover, type SelectItemRenderProps } from './Select';
+export { StickyHeader } from './StickyHeader';
 export { UserLabel } from './UserLabel';

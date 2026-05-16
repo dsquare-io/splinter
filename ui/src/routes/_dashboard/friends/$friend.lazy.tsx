@@ -19,12 +19,17 @@ function RootComponent() {
       </ErrorBoundary>
 
       <FriendHeader friend_uid={friend_uid} />
-      <ExpenseList
-        apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}
-        args={{ friend_uid }}
-        detailRoute="/friends/$friend/$expense"
-        detailRouteParams={{ friend: friend_uid }}
-      />
+      <div
+        data-scroll-root
+        className="min-h-0 flex-1 overflow-auto"
+      >
+        <ExpenseList
+          apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}
+          args={{ friend_uid }}
+          detailRoute="/friends/$friend/$expense"
+          detailRouteParams={{ friend: friend_uid }}
+        />
+      </div>
     </>
   );
 }

@@ -17,17 +17,26 @@ function GroupListRouteComponent() {
   return (
     <>
       <div
+        data-scroll-group
         className={clsx(
-          'h-full overflow-auto bg-white',
+          'flex h-full flex-col bg-white',
           isRootLayout
             ? 'flex-col xl:inset-y-0 xl:left-60 xl:flex xl:w-96 xl:border-e xl:border-gray-200'
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
         <GroupListHeader />
-        <GroupList />
+        <div
+          data-scroll-root
+          className="min-h-0 flex-1 overflow-auto"
+        >
+          <GroupList />
+        </div>
       </div>
-      <div className={isRootLayout ? 'xl:ms-96' : 'h-full overflow-auto xl:ms-96'}>
+      <div
+        data-scroll-group
+        className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col overflow-auto xl:ms-96'}
+      >
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
