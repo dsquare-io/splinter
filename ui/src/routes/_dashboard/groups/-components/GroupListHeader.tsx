@@ -23,45 +23,47 @@ export function GroupListHeader() {
     <StickyHeader className="flex items-center gap-x-2">
       <div className="flex-1">
         <h2 className="text-lg font-medium text-gray-900">Groups</h2>
-        <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-          <div className="overflow-hidden">
-            {currencyPending ? (
-              <Skeleton className="mt-1 h-4 w-40" />
-            ) : groups ? (
-              <p className="text-sm text-gray-600">
-                {!aggregatedOutstandingBalance?.[preferredCurrency!.uid] ? (
-                  'You are all settled up'
-                ) : (
-                  <>
-                    Overall,{' '}
-                    {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
-                      ? 'you lent '
-                      : 'you borrowed '}
-                    <Money
-                      currency={preferredCurrency!}
-                      value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
-                    />
-                  </>
-                )}
-              </p>
-            ) : undefined}
-          </div>
+        <div
+          className="overflow-hidden"
+          style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 1rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+        >
+          {currencyPending ? (
+            <Skeleton className="mt-1 h-4 w-40" />
+          ) : groups ? (
+            <p className="text-sm text-gray-600">
+              {!aggregatedOutstandingBalance?.[preferredCurrency!.uid] ? (
+                'You are all settled up'
+              ) : (
+                <>
+                  Overall,{' '}
+                  {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
+                    ? 'you lent '
+                    : 'you borrowed '}
+                  <Money
+                    currency={preferredCurrency!}
+                    value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
+                  />
+                </>
+              )}
+            </p>
+          ) : undefined}
         </div>
       </div>
 
-      <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-        <div className="overflow-hidden">
-          <DialogTrigger>
-            <Button
-              size="large"
-              className="text-brand-600 whitespace-nowrap"
-              variant="plain"
-            >
-              Create Group
-            </Button>
-            <CreateGroupDialog />
-          </DialogTrigger>
-        </div>
+      <div
+        className="overflow-hidden"
+        style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 2.5rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+      >
+        <DialogTrigger>
+          <Button
+            size="large"
+            className="text-brand-600 whitespace-nowrap"
+            variant="plain"
+          >
+            Create Group
+          </Button>
+          <CreateGroupDialog />
+        </DialogTrigger>
       </div>
     </StickyHeader>
   );

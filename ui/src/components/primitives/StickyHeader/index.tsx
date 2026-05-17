@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 import { twMerge } from 'tailwind-merge';
+
+const STUCK_THRESHOLD = 30;
 
 type StickyHeaderProps = {
   children: ReactNode;
@@ -9,11 +11,12 @@ type StickyHeaderProps = {
 
 export function StickyHeader({ children, className }: StickyHeaderProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const [isStuck, setIsStuck] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = sentinelRef.current;
-    if (!el) return;
+    const header = headerRef.current;
+    if (!el || !header) return;
 
     // Inside a scroll root (DetailHeader): sentinel is a descendant of the scroll container
     // Outside a scroll root (list headers): sentinel is inside a scroll-group that contains the scroll root as a sibling
@@ -23,19 +26,19 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
 
     if (!container) return;
 
+    const update = (t: number) => {
+      header.style.setProperty('--stuck', String(t));
+      if (t >= 1) header.setAttribute('data-stuck', '');
+      else header.removeAttribute('data-stuck');
+    };
+
     const onScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = container!;
-      if (scrollTop > 0) {
-        setIsStuck(true);
-      } else if (scrollHeight > clientHeight) {
-        setIsStuck(false);
-      }
-      // scrollTop===0 && fits: browser clamped — stay stuck, handled by wheel/touch below
+      update(Math.min(container.scrollTop / STUCK_THRESHOLD, 1));
     };
 
     // Un-stick when user scrolls up at scrollTop===0 (no scroll event fires in that case)
     const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < 0 && container!.scrollTop === 0) setIsStuck(false);
+      if (e.deltaY < 0 && container.scrollTop === 0) update(0);
     };
 
     let touchStartY = 0;
@@ -43,7 +46,7 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
       touchStartY = e.touches[0].clientY;
     };
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches[0].clientY > touchStartY && container!.scrollTop === 0) setIsStuck(false);
+      if (e.touches[0].clientY > touchStartY && container.scrollTop === 0) update(0);
     };
 
     container.addEventListener('scroll', onScroll, { passive: true });
@@ -51,10 +54,10 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
     container.addEventListener('touchstart', onTouchStart, { passive: true });
     container.addEventListener('touchmove', onTouchMove, { passive: true });
     return () => {
-      container!.removeEventListener('scroll', onScroll);
-      container!.removeEventListener('wheel', onWheel);
-      container!.removeEventListener('touchstart', onTouchStart);
-      container!.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('scroll', onScroll);
+      container.removeEventListener('wheel', onWheel);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
     };
   }, []);
 
@@ -65,11 +68,9 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
         className="h-px"
       />
       <div
-        className={twMerge(
-          'group sticky top-0 z-10 bg-white py-6 pr-3 pl-6 transition-[padding] duration-200 data-stuck:py-3 md:pl-8',
-          className
-        )}
-        data-stuck={isStuck || undefined}
+        ref={headerRef}
+        className={twMerge('group sticky top-0 z-10 bg-white pr-3 pl-6 md:pl-8', className)}
+        style={{ '--stuck': '0', paddingBlock: 'calc(1.5rem - var(--stuck) * 0.75rem)' } as React.CSSProperties}
       >
         {children}
       </div>
