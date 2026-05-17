@@ -18,23 +18,28 @@ export function ActivityDetailHeader({ activity }: Props) {
     >
       <ActivityVerbIcon
         verb={activity.verb}
-        className="size-12 rounded-xl transition-[width,height] duration-200 group-data-stuck:size-8"
+        className="rounded-xl"
+        style={{ width: 'calc(3rem - var(--stuck, 0) * 1rem)', height: 'calc(3rem - var(--stuck, 0) * 1rem)' }}
         iconClassName="size-6 group-data-stuck:size-4"
       />
 
       <div className="min-w-0">
-        <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-          <div className="overflow-hidden">
-            <p className="text-xs tracking-wide text-gray-400">{label}</p>
-          </div>
+        <div
+          className="overflow-hidden"
+          style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 2rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+        >
+          <p className="text-xs tracking-wide text-gray-400">{label}</p>
         </div>
         <ActivityOutstandingBalance
           balance={activity.outstandingBalance}
           currency={activity.currency}
           verb={activity.verb}
         />
-        <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-          <div className="mt-2 flex items-center gap-x-2 overflow-hidden">
+        <div
+          className="overflow-hidden"
+          style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 3rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+        >
+          <div className="mt-2 flex items-center gap-x-2">
             <Avatar
               className="m-1 size-5 rounded-full"
               fallback={activity.actor.name}

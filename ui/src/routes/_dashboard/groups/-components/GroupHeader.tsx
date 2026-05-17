@@ -27,10 +27,11 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
       parentLabel="Groups"
     >
       {isPending ? (
-        <Skeleton className="size-16 rounded-lg group-data-stuck:size-10" />
+        <Skeleton className="size-16 rounded-lg" />
       ) : (
         <Avatar
-          className="size-16 rounded-lg bg-white transition-[width,height] duration-200 group-data-stuck:size-10"
+          className="rounded-lg bg-white"
+          style={{ width: 'calc(4rem - var(--stuck, 0) * 1.5rem)', height: 'calc(4rem - var(--stuck, 0) * 1.5rem)' }}
           fallback={group?.name || 'Group'}
         />
       )}
@@ -43,56 +44,58 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         ) : (
           <>
             <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
-            <div className="grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-              <div className="overflow-hidden">
-                <OutstandingBalanceList balances={myOutstandingBalances} />
-              </div>
+            <div
+              className="overflow-hidden"
+              style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 5rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+            >
+              <OutstandingBalanceList balances={myOutstandingBalances} />
             </div>
           </>
         )}
       </div>
 
-      <div className="col-span-2 grid grid-rows-[1fr] overflow-hidden transition-[grid-template-rows,opacity] duration-200 group-data-stuck:grid-rows-[0fr] group-data-stuck:opacity-0">
-        <div className="overflow-hidden">
-          <div className="mt-6 flex items-center gap-x-2.5">
-            <DialogTrigger>
-              <Button
-                size="small"
-                isDisabled={!group}
-              >
-                <BanknotesIcon />
-                Settle Up
-              </Button>
-              <AddPaymentDialog group={group} />
-            </DialogTrigger>
+      <div
+        className="col-span-2 overflow-hidden"
+        style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 4rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+      >
+        <div className="mt-6 flex items-center gap-x-2.5">
+          <DialogTrigger>
+            <Button
+              size="small"
+              isDisabled={!group}
+            >
+              <BanknotesIcon />
+              Settle Up
+            </Button>
+            <AddPaymentDialog group={group} />
+          </DialogTrigger>
 
-            <div className="flex-1" />
+          <div className="flex-1" />
 
-            <DialogTrigger>
-              <Button
-                variant="outlined"
-                className="bg-white"
-                size="small"
-                isDisabled={!group}
-              >
-                <UserPlusIcon />
-                Add Member
-              </Button>
-              <AddGroupMemberDialog group={group} />
-            </DialogTrigger>
-            <DialogTrigger>
-              <Button
-                variant="outlined"
-                className="bg-white"
-                size="small"
-                isDisabled={!group}
-              >
-                <Cog8ToothIcon />
-                <span className="hidden sm:block">Settings</span>
-              </Button>
-              {group && <GroupSettingDialog group={group} />}
-            </DialogTrigger>
-          </div>
+          <DialogTrigger>
+            <Button
+              variant="outlined"
+              className="bg-white"
+              size="small"
+              isDisabled={!group}
+            >
+              <UserPlusIcon />
+              Add Member
+            </Button>
+            <AddGroupMemberDialog group={group} />
+          </DialogTrigger>
+          <DialogTrigger>
+            <Button
+              variant="outlined"
+              className="bg-white"
+              size="small"
+              isDisabled={!group}
+            >
+              <Cog8ToothIcon />
+              <span className="hidden sm:block">Settings</span>
+            </Button>
+            {group && <GroupSettingDialog group={group} />}
+          </DialogTrigger>
         </div>
       </div>
     </DetailHeader>

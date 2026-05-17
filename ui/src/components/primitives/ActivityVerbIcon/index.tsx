@@ -40,14 +40,18 @@ type ActivityVerbIconProps = {
   verb: string;
   className?: string;
   iconClassName?: string;
+  style?: React.CSSProperties;
 };
 
-export function ActivityVerbIcon({ verb, className, iconClassName }: ActivityVerbIconProps) {
+export function ActivityVerbIcon({ verb, className, iconClassName, style }: ActivityVerbIconProps) {
   const config = ICON_CONFIG[verb] ?? FALLBACK_CONFIG;
   const Icon = config.icon;
 
   return (
-    <div className={`flex shrink-0 items-center justify-center ${config.iconBg} ${className ?? ''}`}>
+    <div
+      className={`flex shrink-0 items-center justify-center ${config.iconBg} ${className ?? ''}`}
+      style={style}
+    >
       <Icon className={`${config.iconColor} ${iconClassName ?? ''}`} />
     </div>
   );
