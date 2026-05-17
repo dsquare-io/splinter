@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { ShrinkLayout } from '@/components/primitives';
 import { GroupList } from './groups/-components/GroupList.tsx';
 import { GroupListHeader } from './groups/-components/GroupListHeader.tsx';
 
@@ -17,7 +18,6 @@ function GroupListRouteComponent() {
   return (
     <>
       <div
-        data-scroll-group
         className={clsx(
           'flex h-full flex-col bg-white',
           isRootLayout
@@ -25,18 +25,21 @@ function GroupListRouteComponent() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <GroupListHeader />
-        <div
-          data-scroll-root
-          className="min-h-0 flex-1 overflow-auto"
-        >
-          <GroupList />
-        </div>
+        <ShrinkLayout className="min-h-0 flex-1">
+          <ShrinkLayout.Header
+            className="bg-white"
+            range={[0, 50]}
+            paddingTop={[24, 12]}
+            paddingBottom={[24, 12]}
+          >
+            <GroupListHeader />
+          </ShrinkLayout.Header>
+          <ShrinkLayout.Content>
+            <GroupList />
+          </ShrinkLayout.Content>
+        </ShrinkLayout>
       </div>
-      <div
-        data-scroll-group
-        className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col overflow-auto xl:ms-96'}
-      >
+      <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>

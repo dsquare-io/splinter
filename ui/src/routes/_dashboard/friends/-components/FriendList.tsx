@@ -3,6 +3,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes } from '@/api-types';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
+import { ShrinkLayout } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';
@@ -32,9 +33,9 @@ export function FriendList() {
               key={letter}
               className="-space-y-px"
             >
-              <div className="sticky top-0 z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+              <ShrinkLayout.Sticky className="z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                 <h3 className="uppercase">{letter}</h3>
-              </div>
+              </ShrinkLayout.Sticky>
               <div className="-space-y-px">
                 {friends.map((friend) => (
                   <FriendListItem

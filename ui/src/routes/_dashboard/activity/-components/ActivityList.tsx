@@ -13,6 +13,7 @@ import groupBy from 'just-group-by';
 import { Paths } from '@/api-types/routePaths.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Spinner } from '@/components/primitives/Button/Spinner.tsx';
+import { ShrinkLayout } from '@/components/primitives/index.ts';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
 import { ActivityListItem } from './ActivityListItem.tsx';
 import { EmptyActivity } from './EmptyActivity.tsx';
@@ -46,8 +47,10 @@ export function ActivityList() {
     >
       {sections.map(([month, items]) => (
         <ListBoxSection key={month}>
-          <Header className="sticky top-0 z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
-            {format(new Date(month + '-01'), 'MMM yyyy')}
+          <Header className="contents">
+            <ShrinkLayout.Sticky className="z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+              {format(new Date(month + '-01'), 'MMM yyyy')}
+            </ShrinkLayout.Sticky>
           </Header>
           <Collection items={items}>
             {(activity) => (
