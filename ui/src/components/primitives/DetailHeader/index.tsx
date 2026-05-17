@@ -1,19 +1,31 @@
-import type { ReactNode } from 'react';
+import type { ComponentProps } from 'react';
 
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
 import { StickyHeader } from '../StickyHeader';
+import clsx from 'clsx';
 
 type DetailHeaderProps = {
-  children?: ReactNode;
   parentLink?: string;
   parentLabel?: string;
 };
 
-export function DetailHeader({ children, parentLink, parentLabel }: DetailHeaderProps) {
+export function DetailHeader({
+  children,
+  parentLink,
+  parentLabel,
+  className,
+  ...restProps
+}: DetailHeaderProps & ComponentProps<typeof StickyHeader>) {
   return (
-    <StickyHeader className="grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 px-4">
+    <StickyHeader
+      className={clsx(
+        className,
+        'grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 px-4'
+      )}
+      {...restProps}
+    >
       <div
         className="absolute inset-0 -z-10 overflow-hidden"
         aria-hidden="true"

@@ -20,7 +20,7 @@ function RootComponent() {
       <GroupHeader group_uid={group_uid} />
       <div
         data-scroll-root
-        className="min-h-0 flex-1 overflow-auto"
+        className="min-h-0 flex-1 overflow-auto pt-[256px]"
       >
         <GroupTabs group_uid={group_uid} />
       </div>

@@ -25,13 +25,17 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
     <DetailHeader
       parentLink="/groups"
       parentLabel="Groups"
+      className="fixed top-0 inset-x-0 z-10 "
     >
       {isPending ? (
         <Skeleton className="size-16 rounded-lg" />
       ) : (
         <Avatar
-          className="rounded-lg bg-white"
-          style={{ width: 'calc(4rem - var(--stuck, 0) * 1.5rem)', height: 'calc(4rem - var(--stuck, 0) * 1.5rem)' }}
+          className="rounded-lg bg-white transition-[maxHeight,opacity] will-change-[maxHeight,opacity]"
+          style={{
+            width: 'calc(4rem - var(--stuck, 0) * 1.5rem)',
+            height: 'calc(4rem - var(--stuck, 0) * 1.5rem)',
+          }}
           fallback={group?.name || 'Group'}
         />
       )}
@@ -45,8 +49,11 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
           <>
             <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
             <div
-              className="overflow-hidden"
-              style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 5rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
+              className="overflow-hidden transition-[maxHeight,opacity] will-change-[maxHeight,opacity]"
+              style={{
+                maxHeight: 'calc((1 - var(--stuck, 0)) * 5rem)',
+                opacity: 'calc(1 - var(--stuck, 0))',
+              }}
             >
               <OutstandingBalanceList balances={myOutstandingBalances} />
             </div>
