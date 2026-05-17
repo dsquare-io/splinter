@@ -1,16 +1,18 @@
+;
+/* eslint-disable react-hooks/refs */
+/* eslint-disable react-hooks/refs */
+/* eslint-disable react-hooks/refs */
 /* eslint-disable react-hooks/refs */
 import { createContext, useContext, useEffect, useRef, type ComponentPropsWithoutRef } from 'react';
 
-import {
-  motion,
-  motionValue,
-  useMotionValue,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from 'framer-motion';
-import { twMerge } from 'tailwind-merge';
+
+
+import { motion, motionValue, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion';
+import { twMerge } from 'tailwind-merge'; // ---- Context ----
+
+
+
+
 
 // ---- Context ----
 
@@ -191,13 +193,18 @@ function ShrinkLayoutHeader({ className, children, range, ...rest }: ShrinkLayou
 
 // ---- ShrinkLayout.Content ----
 
-function ShrinkLayoutContent({ className, style, children, ...props }: ComponentPropsWithoutRef<'div'>) {
+function ShrinkLayoutContent({
+  className,
+  style,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<typeof motion.div>) {
   const { headerHeight } = useShrinkLayoutContext();
 
   return (
     <motion.div
       className={className}
-      style={{ paddingTop: headerHeight, ...(style as object) } as React.CSSProperties}
+      style={{ paddingTop: headerHeight, ...style }}
       {...props}
     >
       {children}
@@ -211,7 +218,7 @@ function ShrinkLayoutSticky({ className, style, children, ...props }: ComponentP
   return (
     <div
       className={twMerge('sticky', className)}
-      style={{ top: 'var(--shrink-layout-header-height)', ...(style as object) }}
+      style={{ top: 'var(--shrink-layout-header-height)', ...style }}
       {...props}
     >
       {children}
@@ -237,13 +244,13 @@ type ShrinkLayoutAnimateProps = {
 
 function ShrinkLayoutAnimate({ range, className, style, children, ...rest }: ShrinkLayoutAnimateProps) {
   const animProps: Record<string, [number, number]> = {};
-  const divProps: Record<string, unknown> = {};
+  const divProps: ComponentPropsWithoutRef<typeof motion.div> = {};
 
   for (const [key, value] of Object.entries(rest)) {
     if (isAnimProp(value)) {
       animProps[key] = value;
     } else {
-      divProps[key] = value;
+      divProps[key as keyof typeof divProps] = value;
     }
   }
 
@@ -253,7 +260,7 @@ function ShrinkLayoutAnimate({ range, className, style, children, ...rest }: Shr
     <motion.div
       className={className}
       style={{ ...animatedStyle, ...(style as object) } as React.CSSProperties}
-      {...(divProps as ComponentPropsWithoutRef<'div'>)}
+      {...divProps}
     >
       {children}
     </motion.div>
@@ -262,7 +269,7 @@ function ShrinkLayoutAnimate({ range, className, style, children, ...rest }: Shr
 
 // ---- ShrinkLayout.Hide ----
 
-interface ShrinkLayoutHideProps extends ComponentPropsWithoutRef<'div'> {
+interface ShrinkLayoutHideProps extends ComponentPropsWithoutRef<typeof motion.div> {
   range: [number, number];
 }
 
@@ -273,7 +280,7 @@ function ShrinkLayoutHide({ range, className, style, children, ...props }: Shrin
     <motion.div
       ref={ref as React.RefObject<HTMLDivElement>}
       className={className}
-      style={{ ...hideStyle, ...(style as object) } as React.CSSProperties}
+      style={{ ...hideStyle, ...style }}
       {...props}
     >
       {children}
