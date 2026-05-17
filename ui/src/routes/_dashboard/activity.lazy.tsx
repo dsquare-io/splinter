@@ -24,8 +24,13 @@ function ActivityLayout() {
         )}
       >
         <ShrinkLayout className="min-h-0 flex-1">
-          <ShrinkLayout.Header className="bg-white" range={[0, 50]} paddingTop={[24, 12]} paddingBottom={[24, 12]}>
-            <div className="bg-white pr-3 pl-6 md:pl-8">
+          <ShrinkLayout.Header
+            className="bg-white"
+            range={[0, 76]}
+            paddingTop={[24, 12]}
+            paddingBottom={[24, 12]}
+          >
+            <div className="pr-3 pl-6 md:pl-8">
               <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
             </div>
           </ShrinkLayout.Header>

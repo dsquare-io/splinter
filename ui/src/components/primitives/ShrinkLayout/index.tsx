@@ -171,7 +171,7 @@ function ShrinkLayoutHeader({ className, children, range, ...rest }: ShrinkLayou
         }
       }
     });
-    observer.observe(el);
+    observer.observe(el, { box: 'border-box' });
     return () => observer.disconnect();
   }, [scrollY, headerHeight, currentHeaderHeight]);
 
