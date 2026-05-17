@@ -1,18 +1,16 @@
-;
-/* eslint-disable react-hooks/refs */
-/* eslint-disable react-hooks/refs */
-/* eslint-disable react-hooks/refs */
 /* eslint-disable react-hooks/refs */
 import { createContext, useContext, useEffect, useRef, type ComponentPropsWithoutRef } from 'react';
 
-
-
-import { motion, motionValue, useMotionValue, useMotionValueEvent, useScroll, useTransform, type MotionValue } from 'framer-motion';
-import { twMerge } from 'tailwind-merge'; // ---- Context ----
-
-
-
-
+import {
+  motion,
+  motionValue,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
 
 // ---- Context ----
 
