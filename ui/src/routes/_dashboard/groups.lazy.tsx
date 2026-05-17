@@ -1,11 +1,16 @@
 import clsx from 'clsx';
 
+
+
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
+
+
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { ShrinkLayout } from '@/components/primitives';
 import { GroupList } from './groups/-components/GroupList.tsx';
 import { GroupListHeader } from './groups/-components/GroupListHeader.tsx';
+
 
 export const Route = createLazyFileRoute('/_dashboard/groups')({
   component: GroupListRouteComponent,
@@ -26,7 +31,12 @@ function GroupListRouteComponent() {
         )}
       >
         <ShrinkLayout className="min-h-0 flex-1">
-          <ShrinkLayout.Header>
+          <ShrinkLayout.Header
+            className="bg-white"
+            range={[0, 50]}
+            paddingTop={[24, 12]}
+            paddingBottom={[24, 12]}
+          >
             <GroupListHeader />
           </ShrinkLayout.Header>
           <ShrinkLayout.Content>

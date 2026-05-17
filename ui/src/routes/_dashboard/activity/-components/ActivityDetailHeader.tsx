@@ -15,7 +15,7 @@ export function ActivityDetailHeader({ activity }: Props) {
   const label = getVerbConfig(activity.verb).label;
 
   return (
-    <div className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4 py-5">
+    <div className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4">
       <div
         className="absolute inset-0 -z-10 overflow-hidden"
         aria-hidden="true"

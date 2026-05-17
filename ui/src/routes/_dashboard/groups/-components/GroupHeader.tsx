@@ -24,7 +24,12 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
     group?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
 
   return (
-    <div className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4 py-5">
+    <ShrinkLayout.Header
+      range={[0, 200]}
+      paddingTop={[20, 10]}
+      paddingBottom={[20, 10]}
+      className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4"
+    >
       <div
         className="absolute inset-0 -z-10 overflow-hidden"
         aria-hidden="true"
@@ -54,7 +59,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         <Skeleton className="size-16 rounded-lg" />
       ) : (
         <ShrinkLayout.Animate
-          range={[0, 80]}
+          range={[0, 200]}
           width={[64, 40]}
           height={[64, 40]}
         >
@@ -74,7 +79,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         ) : (
           <>
             <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
-            <ShrinkLayout.Hide range={[0, 60]}>
+            <ShrinkLayout.Hide range={[0, 200]}>
               <OutstandingBalanceList balances={myOutstandingBalances} />
             </ShrinkLayout.Hide>
           </>
@@ -82,7 +87,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
       </div>
 
       <ShrinkLayout.Hide
-        range={[0, 60]}
+        range={[0, 200]}
         className="col-span-2"
       >
         <div className="mt-4 flex items-center gap-x-2.5">
@@ -125,6 +130,6 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
           </DialogTrigger>
         </div>
       </ShrinkLayout.Hide>
-    </div>
+    </ShrinkLayout.Header>
   );
 }

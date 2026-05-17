@@ -50,7 +50,7 @@ function RootComponent() {
   return (
     <ShrinkLayout className="min-h-0 flex-1">
       {activity && (
-        <ShrinkLayout.Header>
+        <ShrinkLayout.Header className="bg-white" range={[0, 80]} paddingTop={[20, 10]} paddingBottom={[20, 10]}>
           <ActivityDetailHeader activity={activity} />
         </ShrinkLayout.Header>
       )}

@@ -20,9 +20,7 @@ function RootComponent() {
       </ErrorBoundary>
 
       <ShrinkLayout className="min-h-0 flex-1">
-        <ShrinkLayout.Header>
-          <FriendHeader friend_uid={friend_uid} />
-        </ShrinkLayout.Header>
+        <FriendHeader friend_uid={friend_uid} />
         <ShrinkLayout.Content>
           <ExpenseList
             apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}

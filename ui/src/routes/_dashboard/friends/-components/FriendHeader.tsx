@@ -18,7 +18,12 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
   useRedirectOn404(error, '/friends');
 
   return (
-    <div className="relative grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4 py-5">
+    <ShrinkLayout.Header
+      range={[0, 100]}
+      paddingTop={[20, 10]}
+      paddingBottom={[20, 10]}
+      className="grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4"
+    >
       <div
         className="absolute inset-0 -z-10 overflow-hidden"
         aria-hidden="true"
@@ -48,7 +53,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         <Skeleton className="size-16 rounded-full" />
       ) : (
         <ShrinkLayout.Animate
-          range={[0, 80]}
+          range={[0, 100]}
           width={[64, 40]}
           height={[64, 40]}
         >
@@ -68,7 +73,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         ) : friend ? (
           <>
             <div className="mt-1 text-2xl font-semibold text-gray-900">{friend.name}</div>
-            <ShrinkLayout.Hide range={[0, 60]}>
+            <ShrinkLayout.Hide range={[0, 100]}>
               {!friend.isActive && (
                 <span className="mt-1 inline-flex items-center rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-500 ring-1 ring-gray-200 ring-inset">
                   Not yet joined
@@ -81,7 +86,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
       </div>
 
       <ShrinkLayout.Hide
-        range={[0, 60]}
+        range={[0, 100]}
         className="col-span-2"
       >
         <div className="mt-6 flex items-center gap-x-2.5">
@@ -112,6 +117,6 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
           </DialogTrigger>
         </div>
       </ShrinkLayout.Hide>
-    </div>
+    </ShrinkLayout.Header>
   );
 }

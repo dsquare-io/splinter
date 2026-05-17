@@ -139,15 +139,31 @@ function ShrinkLayoutRoot({ className, children, ...props }: ComponentPropsWitho
 
 // ---- ShrinkLayout.Header ----
 
-function ShrinkLayoutHeader({ className, children, ...props }: ComponentPropsWithoutRef<'div'>) {
+type ShrinkLayoutHeaderProps = {
+  range?: [number, number];
+  className?: string;
+  children?: React.ReactNode;
+  [key: string]: unknown;
+};
+
+function ShrinkLayoutHeader({ className, children, range, ...rest }: ShrinkLayoutHeaderProps) {
   const { scrollY, headerHeight, currentHeaderHeight } = useShrinkLayoutContext();
   const innerRef = useRef<HTMLDivElement>(null);
+
+  const animProps: Record<string, [number, number]> = {};
+  const divProps: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(rest)) {
+    if (isAnimProp(value)) animProps[key] = value;
+    else divProps[key] = value;
+  }
+
+  const animatedStyle = useScrollAnimate({ range: range ?? [0, 1], ...animProps });
 
   useEffect(() => {
     const el = innerRef.current;
     if (!el) return;
     const observer = new ResizeObserver(([entry]) => {
-      const h = entry.contentRect.height;
+      const h = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height;
       if (h > 0) {
         currentHeaderHeight.set(h);
         if (scrollY.get() === 0) {
@@ -160,16 +176,15 @@ function ShrinkLayoutHeader({ className, children, ...props }: ComponentPropsWit
   }, [scrollY, headerHeight, currentHeaderHeight]);
 
   return (
-    <div
-      className={twMerge('sticky top-0 z-10 h-0', className)}
-      {...props}
-    >
-      <div
-        ref={innerRef}
-        className="absolute inset-x-0 top-0"
+    <div className="sticky top-0 z-10 h-0">
+      <motion.div
+        ref={innerRef as React.RefObject<HTMLDivElement>}
+        className={twMerge('absolute inset-x-0 top-0', className)}
+        style={animatedStyle as React.CSSProperties}
+        {...(divProps as object)}
       >
         {children}
-      </div>
+      </motion.div>
     </div>
   );
 }

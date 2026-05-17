@@ -1,11 +1,16 @@
 import clsx from 'clsx';
 
+
+
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
+
+
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
 import { ShrinkLayout } from '@/components/primitives';
 import { FriendList } from './friends/-components/FriendList.tsx';
 import { FriendListHeader } from './friends/-components/FriendListHeader.tsx';
+
 
 export const Route = createLazyFileRoute('/_dashboard/friends')({
   component: FriendsLayout,
@@ -26,7 +31,12 @@ function FriendsLayout() {
         )}
       >
         <ShrinkLayout className="min-h-0 flex-1">
-          <ShrinkLayout.Header>
+          <ShrinkLayout.Header
+            className="bg-white"
+            range={[0, 50]}
+            paddingTop={[24, 12]}
+            paddingBottom={[24, 12]}
+          >
             <FriendListHeader />
           </ShrinkLayout.Header>
           <ShrinkLayout.Content>

@@ -20,7 +20,7 @@ export function GroupListHeader() {
   );
 
   return (
-    <div className="flex items-center gap-x-2 bg-white py-6 pr-3 pl-6 md:pl-8">
+    <div className="flex items-center gap-x-2 bg-white pr-3 pl-6 md:pl-8">
       <div className="flex-1">
         <h2 className="text-lg font-medium text-gray-900">Groups</h2>
         <ShrinkLayout.Hide range={[0, 50]}>

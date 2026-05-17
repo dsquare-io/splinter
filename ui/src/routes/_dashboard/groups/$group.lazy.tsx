@@ -19,9 +19,7 @@ function RootComponent() {
       </ErrorBoundary>
 
       <ShrinkLayout className="min-h-0 flex-1">
-        <ShrinkLayout.Header>
-          <GroupHeader group_uid={group_uid} />
-        </ShrinkLayout.Header>
+        <GroupHeader group_uid={group_uid} />
         <ShrinkLayout.Content>
           <GroupTabs group_uid={group_uid} />
         </ShrinkLayout.Content>
