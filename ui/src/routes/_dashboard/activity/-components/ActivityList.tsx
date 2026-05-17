@@ -7,12 +7,8 @@ import {
   ListBoxSection,
 } from 'react-aria-components';
 
-
-
 import { format } from 'date-fns';
 import groupBy from 'just-group-by';
-
-
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
@@ -21,7 +17,6 @@ import { ShrinkLayout } from '@/components/primitives/index.ts';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
 import { ActivityListItem } from './ActivityListItem.tsx';
 import { EmptyActivity } from './EmptyActivity.tsx';
-
 
 export function ActivityList() {
   const { data, isPending, error, fetchNextPage, isFetchingNextPage, hasNextPage } = useInfiniteApiQuery(

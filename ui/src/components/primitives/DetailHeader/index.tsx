@@ -1,10 +1,10 @@
+import clsx from 'clsx';
 import type { ComponentProps } from 'react';
 
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
 import { StickyHeader } from '../StickyHeader';
-import clsx from 'clsx';
 
 type DetailHeaderProps = {
   parentLink?: string;

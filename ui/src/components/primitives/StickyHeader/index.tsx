@@ -70,7 +70,9 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
       <div
         ref={headerRef}
         className={twMerge('group sticky top-0 z-10 bg-white pr-3 pl-6 md:pl-8', className)}
-        style={{ '--stuck': '0', paddingBlock: 'calc(1.5rem - var(--stuck) * 0.75rem)' } as React.CSSProperties}
+        style={
+          { '--stuck': '0', paddingBlock: 'calc(1.5rem - var(--stuck) * 0.75rem)' } as React.CSSProperties
+        }
       >
         {children}
       </div>

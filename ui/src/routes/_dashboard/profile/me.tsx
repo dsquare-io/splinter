@@ -3,11 +3,11 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { Avatar, Button } from '@/components/primitives';
+import { DetailHeader } from '@/components/primitives/DetailHeader';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ChangePassword } from './-change-password.tsx';
 import { PersonalInfo } from './-personal-info.tsx';
 import { Preferences } from './-preferences.tsx';
-import { DetailHeader } from '@/components/primitives/DetailHeader';
 
 export const Route = createFileRoute('/_dashboard/profile/me')({
   component: RootComponent,

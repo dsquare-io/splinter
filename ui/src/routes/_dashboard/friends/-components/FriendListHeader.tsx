@@ -26,7 +26,7 @@ export function FriendListHeader() {
       range={[0, 50]}
       paddingTop={[24, 12]}
       paddingBottom={[24, 12]}
-      className="bg-white flex items-center gap-x-2 pr-3 pl-6 md:pl-8"
+      className="flex items-center gap-x-2 bg-white pr-3 pl-6 md:pl-8"
     >
       <div className="flex-1">
         <h2 className="text-lg font-medium text-gray-900">Friends</h2>

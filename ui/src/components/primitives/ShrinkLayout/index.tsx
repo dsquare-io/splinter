@@ -16,7 +16,7 @@ import { twMerge } from 'tailwind-merge';
 
 interface ShrinkLayoutContextValue {
   scrollY: MotionValue<number>;
-  headerHeight: MotionValue<number>;      // frozen at scroll=0; drives Content paddingTop
+  headerHeight: MotionValue<number>; // frozen at scroll=0; drives Content paddingTop
   currentHeaderHeight: MotionValue<number>; // live animated height; drives CSS var for Sticky
 }
 
@@ -36,7 +36,10 @@ export function useScrollY(): MotionValue<number> {
 
 type ScrollAnimateConfig = { range: [number, number] } & Record<string, [number, number]>;
 
-export function useScrollAnimate({ range, ...props }: ScrollAnimateConfig): Record<string, MotionValue<number>> {
+export function useScrollAnimate({
+  range,
+  ...props
+}: ScrollAnimateConfig): Record<string, MotionValue<number>> {
   const scrollY = useScrollY();
   const configRef = useRef({ range, props });
   configRef.current = { range, props };
@@ -48,10 +51,7 @@ export function useScrollAnimate({ range, ...props }: ScrollAnimateConfig): Reco
     const initial = scrollY.get();
     const progress = to !== from ? Math.max(0, Math.min(1, (initial - from) / (to - from))) : 0;
     styleRef.current = Object.fromEntries(
-      Object.entries(props).map(([key, [start, end]]) => [
-        key,
-        motionValue(start + (end - start) * progress),
-      ]),
+      Object.entries(props).map(([key, [start, end]]) => [key, motionValue(start + (end - start) * progress)])
     );
   }
 
@@ -103,7 +103,7 @@ export function useHideOnScroll(range: [number, number]) {
     });
     observer.observe(el);
     return () => observer.disconnect();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
@@ -222,7 +222,9 @@ function ShrinkLayoutSticky({ className, style, children, ...props }: ComponentP
 // ---- ShrinkLayout.Animate ----
 
 function isAnimProp(value: unknown): value is [number, number] {
-  return Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number';
+  return (
+    Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
+  );
 }
 
 type ShrinkLayoutAnimateProps = {
