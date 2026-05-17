@@ -7,7 +7,7 @@ import { GroupBalancesTab } from './GroupBalancesTab';
 export function GroupTabs({ group_uid }: { group_uid: string }) {
   return (
     <Tabs className="react-aria-Tabs">
-      <div className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/70 backdrop-blur-sm">
+      <div className="sticky z-10 border-b border-gray-200 bg-gray-50/70 backdrop-blur-sm" style={{ top: 'var(--shrink-layout-header-height, 0px)' }}>
         <TabList
           aria-label="Tabs"
           className="react-aria-TabList -mb-px flex cursor-default space-x-2"

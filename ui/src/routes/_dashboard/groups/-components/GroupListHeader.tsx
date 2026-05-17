@@ -2,7 +2,7 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
-import { Button, Money, StickyHeader } from '@/components/primitives';
+import { Button, Money, ShrinkLayout } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
@@ -20,13 +20,10 @@ export function GroupListHeader() {
   );
 
   return (
-    <StickyHeader className="flex items-center gap-x-2">
+    <div className="flex items-center gap-x-2 bg-white py-6 pr-3 pl-6 md:pl-8">
       <div className="flex-1">
         <h2 className="text-lg font-medium text-gray-900">Groups</h2>
-        <div
-          className="overflow-hidden"
-          style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 1rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
-        >
+        <ShrinkLayout.Hide range={[0, 50]}>
           {currencyPending ? (
             <Skeleton className="mt-1 h-4 w-40" />
           ) : groups ? (
@@ -47,13 +44,10 @@ export function GroupListHeader() {
               )}
             </p>
           ) : undefined}
-        </div>
+        </ShrinkLayout.Hide>
       </div>
 
-      <div
-        className="overflow-hidden"
-        style={{ maxHeight: 'calc((1 - var(--stuck, 0)) * 2.5rem)', opacity: 'calc(1 - var(--stuck, 0))' }}
-      >
+      <ShrinkLayout.Hide range={[0, 50]}>
         <DialogTrigger>
           <Button
             size="large"
@@ -64,7 +58,7 @@ export function GroupListHeader() {
           </Button>
           <CreateGroupDialog />
         </DialogTrigger>
-      </div>
-    </StickyHeader>
+      </ShrinkLayout.Hide>
+    </div>
   );
 }

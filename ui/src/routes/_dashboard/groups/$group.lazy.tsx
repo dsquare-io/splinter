@@ -1,6 +1,7 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { ShrinkLayout } from '@/components/primitives';
 import { GroupHeader } from './-components/GroupHeader';
 import { GroupTabs } from './-components/GroupTabs';
 
@@ -17,13 +18,14 @@ function RootComponent() {
         <Outlet />
       </ErrorBoundary>
 
-      <GroupHeader group_uid={group_uid} />
-      <div
-        data-scroll-root
-        className="min-h-0 flex-1 overflow-auto pt-[256px]"
-      >
-        <GroupTabs group_uid={group_uid} />
-      </div>
+      <ShrinkLayout className="min-h-0 flex-1">
+        <ShrinkLayout.Header>
+          <GroupHeader group_uid={group_uid} />
+        </ShrinkLayout.Header>
+        <ShrinkLayout.Content>
+          <GroupTabs group_uid={group_uid} />
+        </ShrinkLayout.Content>
+      </ShrinkLayout>
     </>
   );
 }

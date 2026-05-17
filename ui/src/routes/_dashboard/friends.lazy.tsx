@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
+import { ShrinkLayout } from '@/components/primitives';
 import { FriendList } from './friends/-components/FriendList.tsx';
 import { FriendListHeader } from './friends/-components/FriendListHeader.tsx';
 
@@ -17,7 +18,6 @@ function FriendsLayout() {
   return (
     <>
       <div
-        data-scroll-group
         className={clsx(
           'flex h-full flex-col bg-white',
           isRootLayout
@@ -25,18 +25,16 @@ function FriendsLayout() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <FriendListHeader />
-        <div
-          data-scroll-root
-          className="min-h-0 flex-1 overflow-auto"
-        >
-          <FriendList />
-        </div>
+        <ShrinkLayout className="min-h-0 flex-1">
+          <ShrinkLayout.Header>
+            <FriendListHeader />
+          </ShrinkLayout.Header>
+          <ShrinkLayout.Content>
+            <FriendList />
+          </ShrinkLayout.Content>
+        </ShrinkLayout>
       </div>
-      <div
-        data-scroll-group
-        className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col overflow-auto xl:ms-96'}
-      >
+      <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>

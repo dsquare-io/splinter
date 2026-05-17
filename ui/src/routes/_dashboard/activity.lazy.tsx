@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { StickyHeader } from '@/components/primitives';
+import { ShrinkLayout } from '@/components/primitives';
 import { ActivityList } from './activity/-components/ActivityList.tsx';
 
 export const Route = createLazyFileRoute('/_dashboard/activity')({
@@ -16,7 +16,6 @@ function ActivityLayout() {
   return (
     <>
       <div
-        data-scroll-group
         className={clsx(
           'flex h-full flex-col bg-white',
           isRootLayout
@@ -24,21 +23,18 @@ function ActivityLayout() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <StickyHeader>
-          <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
-        </StickyHeader>
-
-        <div
-          data-scroll-root
-          className="min-h-0 flex-1 overflow-auto"
-        >
-          <ActivityList />
-        </div>
+        <ShrinkLayout className="min-h-0 flex-1">
+          <ShrinkLayout.Header>
+            <div className="bg-white py-6 pr-3 pl-6 md:pl-8">
+              <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
+            </div>
+          </ShrinkLayout.Header>
+          <ShrinkLayout.Content>
+            <ActivityList />
+          </ShrinkLayout.Content>
+        </ShrinkLayout>
       </div>
-      <div
-        data-scroll-group
-        className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col overflow-auto xl:ms-96'}
-      >
+      <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
