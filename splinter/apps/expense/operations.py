@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from django.db import transaction
-from django.db.models import Model
+from django.utils import timezone
 
 from splinter.apps.activity.activities import ActivityType
 from splinter.apps.expense.activities import (
@@ -43,7 +43,7 @@ class ExpenseOperation[T]:
 
         return expense
 
-    def log_activity(self, expense: Expense) -> 'Activity':
+    def _build_log_activity_params(self, expense: Expense):
         splits = ExpenseSplit.objects.filter(expense=expense).values_list('user_id', 'amount')
         audience = {}
         for user_id, amount in splits:
@@ -60,16 +60,21 @@ class ExpenseOperation[T]:
                 'currency_id': expense.currency_id,
             }
 
-        return self.activity_type.log(
-            actor=self.actor,
-            target=self.get_target(expense),
-            audience=audience,
-            group=expense.group_id,
-            action_object=expense,
-        )
+        # Mark activity for actor as read
+        audience.setdefault(self.actor.id, {})['read_at'] = timezone.now()
 
-    def get_target(self, expense: Expense) -> Model | None:
-        return None
+        return {
+            'actor': self.actor,
+            'target': None,
+            'audience': audience,
+            'group': expense.group_id,
+            'action_object': expense,
+        }
+
+    def log_activity(self, expense: Expense) -> 'Activity':
+        return self.activity_type.log(
+            **self._build_log_activity_params(expense),
+        )
 
     def _execute(self, data: T) -> Expense:
         raise NotImplementedError()
@@ -162,6 +167,12 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
 
         return expense
 
+    def _build_log_activity_params(self, expense: Expense) -> dict:
+        params = super()._build_log_activity_params(expense)
+        params['actor'] = expense.paid_by
+        params['target'] = ExpenseSplit.objects.get(expense=expense).user
+        return params
+
     def log_activity(self, expense: Expense) -> 'Activity':
         activity = super().log_activity(expense)
 
@@ -171,9 +182,6 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
             activity.save(update_fields=['verb'])
 
         return activity
-
-    def get_target(self, expense: Expense) -> Model:
-        return ExpenseSplit.objects.get(expense=expense).user
 
 
 class DeleteExpenseOperation(ExpenseOperation[Expense]):

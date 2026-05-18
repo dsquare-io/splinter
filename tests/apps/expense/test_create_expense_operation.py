@@ -109,6 +109,24 @@ class CreateExpenseOperationActivityTests(ExpenseTestCase):
         activity = Activity.objects.get(verb=CreateExpenseActivity.verb)
         self.assertIsNone(activity.group_id)
 
+    def test_actor_audience_read_at_set_when_actor_is_participant(self):
+        # actor is in splits → existing audience entry gets read_at
+        self._execute(payer=self.actor, participants=[self.participant])
+
+        activity = Activity.objects.get(verb=CreateExpenseActivity.verb)
+        actor_audience = ActivityAudience.objects.get(activity=activity, user=self.actor)
+        self.assertIsNotNone(actor_audience.read_at)
+
+    def test_non_actor_audience_read_at_not_set(self):
+        # payer/participant (not actor) should not have read_at set
+        self._execute(payer=self.payer, participants=[self.participant])
+
+        activity = Activity.objects.get(verb=CreateExpenseActivity.verb)
+        payer_audience = ActivityAudience.objects.get(activity=activity, user=self.payer)
+        self.assertIsNone(payer_audience.read_at)
+        participant_audience = ActivityAudience.objects.get(activity=activity, user=self.participant)
+        self.assertIsNone(participant_audience.read_at)
+
 
 class CreateExpenseOperationExpensePartyTests(ExpenseTestCase):
     available_apps = (
