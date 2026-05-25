@@ -72,8 +72,8 @@ axiosInstance.interceptors.response.use(
 
 export function setHeaders(accessToken?: string | null) {
   if (accessToken) {
-    axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    axiosInstance.defaults.headers.Authorization = `Bearer ${accessToken}`;
   } else {
-    axiosInstance.defaults.headers.common.Authorization = null;
+    axiosInstance.defaults.headers.Authorization = null;
   }
 }
