@@ -109,17 +109,30 @@ class CheckAndCreateSettlementGroupSettledTests(ExpenseTestCase):
     def test_returns_true(self):
         self.assertTrue(check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk))
 
-    def test_creates_group_membership_settlement(self):
+    def test_creates_two_settlements(self):
         check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk)
-        s = Settlement.objects.get()
-        self.assertIsNotNone(s.group_membership)
-        self.assertIsNone(s.friendship)
+        self.assertEqual(Settlement.objects.count(), 2)
 
-    def test_settlement_linked_to_sender_membership(self):
+    def test_settlements_linked_to_group_memberships_not_friendship(self):
         check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk)
-        s = Settlement.objects.get()
-        self.assertEqual(s.group_membership.user_id, self.receiver.pk)
-        self.assertEqual(s.group_membership.group, self.group)
+        for s in Settlement.objects.all():
+            self.assertIsNotNone(s.group_membership)
+            self.assertIsNone(s.friendship)
+
+    def test_sender_settlement_linked_to_sender_membership(self):
+        check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk)
+        user_ids = set(Settlement.objects.values_list('group_membership__user_id', flat=True))
+        self.assertIn(self.sender.pk, user_ids)
+
+    def test_receiver_settlement_linked_to_receiver_membership(self):
+        check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk)
+        user_ids = set(Settlement.objects.values_list('group_membership__user_id', flat=True))
+        self.assertIn(self.receiver.pk, user_ids)
+
+    def test_both_settlements_in_same_group(self):
+        check_and_create_settlement(self.payment, self.receiver.pk, self.sender.pk)
+        group_ids = set(Settlement.objects.values_list('group_membership__group_id', flat=True))
+        self.assertEqual(group_ids, {self.group.pk})
 
     def test_returns_false_when_not_settled(self):
         partial = self.create_payment(20, self.receiver, self.sender, group=self.group)

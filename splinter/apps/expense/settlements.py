@@ -17,8 +17,12 @@ def check_and_create_settlement(expense: Expense, sender_id: int, receiver_id: i
         return False
 
     if expense.group_id:
-        membership = GroupMembership.objects.get(group_id=expense.group_id, user_id=sender_id)
-        Settlement.objects.create(group_membership=membership)
+        Settlement.objects.create(
+            group_membership=GroupMembership.objects.get(group_id=expense.group_id, user_id=sender_id)
+        )
+        Settlement.objects.create(
+            group_membership=GroupMembership.objects.get(group_id=expense.group_id, user_id=receiver_id)
+        )
     else:
         party = ExpenseParty.objects.filter(expense=expense).select_related('friendship').first()
         if party:

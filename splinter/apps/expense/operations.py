@@ -275,7 +275,7 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
     activity_type = UpdateExpenseActivity
 
     def _execute(self, data: dict) -> Expense:
-        assert (self.expense.group is None) == (data['group'] is None), "Group change forbidden"
+        assert (self.expense.group is None) == (data.get('group') is None), "Group change forbidden"
 
         self._changes = []
         parent = self.expense
