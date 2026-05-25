@@ -1,7 +1,7 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { GroupHeader } from './-components/GroupHeader';
 import { GroupTabs } from './-components/GroupTabs';
 
@@ -18,12 +18,12 @@ function RootComponent() {
         <Outlet />
       </ErrorBoundary>
 
-      <ShrinkLayout className="min-h-0 flex-1">
+      <ScrollScene className="min-h-0 flex-1">
         <GroupHeader group_uid={group_uid} />
-        <ShrinkLayout.Content>
+        <ScrollScene.Content>
           <GroupTabs group_uid={group_uid} />
-        </ShrinkLayout.Content>
-      </ShrinkLayout>
+        </ScrollScene.Content>
+      </ScrollScene>
     </>
   );
 }

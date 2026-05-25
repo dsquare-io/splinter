@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { Avatar, Button } from '@/components/primitives';
-import { DetailHeader } from '@/components/primitives/DetailHeader';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ChangePassword } from './-change-password.tsx';
 import { PersonalInfo } from './-personal-info.tsx';
@@ -18,21 +18,34 @@ function RootComponent() {
   const { updateServiceWorker } = useRegisterSW();
 
   return (
-    <div className="h-full flex-col overflow-auto">
-      <DetailHeader>
-        <div className="mx-auto flex max-w-(--breakpoint-lg) items-center gap-x-5 px-4 sm:px-6 lg:px-8">
+    <ScrollScene className="h-full">
+      <ScrollScene.Header
+        range={[0, 100]}
+        paddingTop={[24, 10]}
+        paddingBottom={[24, 10]}
+        variant="primary"
+        className="grid grid-cols-[auto_1fr] items-center gap-x-5 border-b border-gray-900/5 bg-white px-4 sm:px-6 md:px-8"
+      >
+        <ScrollScene.Animate
+          range={[0, 100]}
+          width={[64, 40]}
+          height={[64, 40]}
+        >
           <Avatar
-            className="size-16 bg-white"
+            className="size-full bg-white"
             fallback={currentUser?.name}
           />
-          <div>
-            <div className="text-xl font-bold text-gray-900 sm:text-2xl">{currentUser?.name}</div>
-            <div className="text-sm font-medium text-gray-600">{currentUser?.email}</div>
-          </div>
-        </div>
-      </DetailHeader>
+        </ScrollScene.Animate>
 
-      <div className="@container mx-auto max-w-(--breakpoint-lg) divide-y divide-neutral-200">
+        <div>
+          <div className="text-xl font-bold text-gray-900 sm:text-2xl">{currentUser?.name}</div>
+          <ScrollScene.Hide range={[0, 100]}>
+            <div className="text-sm font-medium text-gray-600">{currentUser?.email}</div>
+          </ScrollScene.Hide>
+        </div>
+      </ScrollScene.Header>
+
+      <ScrollScene.Content className="@container mx-auto max-w-(--breakpoint-lg) divide-y divide-neutral-200">
         <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8 @3xl:grid-cols-3">
           <div>
             <h1 className="text-lg leading-6 font-medium text-gray-900">Personal Info</h1>
@@ -82,7 +95,7 @@ function RootComponent() {
             Sign Out
           </Button>
         </section>
-      </div>
-    </div>
+      </ScrollScene.Content>
+    </ScrollScene>
   );
 }

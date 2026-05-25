@@ -4,7 +4,7 @@ import { type InfiniteData } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes, type ApiResponse } from '@/api-types';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { ExpenseActivity } from '@/features/ExpenseActivity';
 import { ExpenseDetail } from '@/features/ExpenseDetail';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -48,18 +48,9 @@ function RootComponent() {
   }, [activity]);
 
   return (
-    <ShrinkLayout className="min-h-0 flex-1">
-      {activity && (
-        <ShrinkLayout.Header
-          className="bg-white"
-          range={[0, 80]}
-          paddingTop={[20, 10]}
-          paddingBottom={[20, 10]}
-        >
-          <ActivityDetailHeader activity={activity} />
-        </ShrinkLayout.Header>
-      )}
-      <ShrinkLayout.Content className="p-4">
+    <ScrollScene className="min-h-0 flex-1">
+      {activity && <ActivityDetailHeader activity={activity} />}
+      <ScrollScene.Content className="p-4">
         {expense_uid && (
           <>
             <ExpenseDetail
@@ -70,7 +61,7 @@ function RootComponent() {
             <ExpenseActivity expenseId={expense_uid} />
           </>
         )}
-      </ShrinkLayout.Content>
-    </ShrinkLayout>
+      </ScrollScene.Content>
+    </ScrollScene>
   );
 }

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { FriendList } from './friends/-components/FriendList.tsx';
 import { FriendListHeader } from './friends/-components/FriendListHeader.tsx';
 
@@ -25,12 +25,12 @@ function FriendsLayout() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <ShrinkLayout className="min-h-0 flex-1">
+        <ScrollScene className="min-h-0 flex-1">
           <FriendListHeader />
-          <ShrinkLayout.Content>
+          <ScrollScene.Content>
             <FriendList />
-          </ShrinkLayout.Content>
-        </ShrinkLayout>
+          </ScrollScene.Content>
+        </ScrollScene>
       </div>
       <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>

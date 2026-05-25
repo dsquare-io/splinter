@@ -2,7 +2,7 @@ import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { ExpenseList } from '@/features/ExpenseList';
 import { FriendHeader } from './-components/FriendHeader.tsx';
 
@@ -19,17 +19,17 @@ function RootComponent() {
         <Outlet />
       </ErrorBoundary>
 
-      <ShrinkLayout className="min-h-0 flex-1">
+      <ScrollScene className="min-h-0 flex-1">
         <FriendHeader friend_uid={friend_uid} />
-        <ShrinkLayout.Content>
+        <ScrollScene.Content>
           <ExpenseList
             apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}
             args={{ friend_uid }}
             detailRoute="/friends/$friend/$expense"
             detailRouteParams={{ friend: friend_uid }}
           />
-        </ShrinkLayout.Content>
-      </ShrinkLayout>
+        </ScrollScene.Content>
+      </ScrollScene>
     </>
   );
 }

@@ -11,6 +11,7 @@ const VERB_LABEL: Record<string, string> = {
   delete_expense: 'deleted this expense',
   restore_expense: 'restored this expense',
   payment: 'recorded this payment',
+  settle_up: 'recorded this payment',
   update_payment: 'updated this payment',
   delete_payment: 'deleted this payment',
   restore_payment: 'restored this payment',

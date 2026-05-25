@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { GroupList } from './groups/-components/GroupList.tsx';
 import { GroupListHeader } from './groups/-components/GroupListHeader.tsx';
 
@@ -25,19 +25,12 @@ function GroupListRouteComponent() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <ShrinkLayout className="min-h-0 flex-1">
-          <ShrinkLayout.Header
-            className="bg-white"
-            range={[0, 50]}
-            paddingTop={[24, 12]}
-            paddingBottom={[24, 12]}
-          >
-            <GroupListHeader />
-          </ShrinkLayout.Header>
-          <ShrinkLayout.Content>
+        <ScrollScene className="min-h-0 flex-1">
+          <GroupListHeader />
+          <ScrollScene.Content>
             <GroupList />
-          </ShrinkLayout.Content>
-        </ShrinkLayout>
+          </ScrollScene.Content>
+        </ScrollScene>
       </div>
       <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>

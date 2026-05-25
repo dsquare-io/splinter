@@ -83,7 +83,7 @@ export function ExpenseList<Path extends ExpenseListPath>({
     >
       {sections.map(([month, items]) => (
         <ListBoxSection key={month}>
-          <Header className="sticky top-0 bg-gray-50/70 pt-4 pb-2 text-sm text-neutral-500 backdrop-blur-sm">
+          <Header className="bg-gray-50/70 pt-4 pb-2 text-sm text-neutral-500">
             {format(new Date(month + '-01'), 'MMM yyyy')}
           </Header>
           <Collection items={items}>

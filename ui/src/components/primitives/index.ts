@@ -1,4 +1,5 @@
 export { ActivityVerbIcon } from './ActivityVerbIcon';
+export { ScrollScene } from './ScrollScene';
 export { Alert } from './Alert';
 export { Avatar } from './Avatar';
 export { Button, IconButton } from './Button';
@@ -11,5 +12,4 @@ export { Input } from './Input';
 export { Label } from './Label';
 export { Money } from './Money';
 export { SelectValue, SelectPopover, type SelectItemRenderProps } from './Select';
-export { ShrinkLayout } from './ShrinkLayout';
 export { UserLabel } from './UserLabel';

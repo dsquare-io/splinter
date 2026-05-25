@@ -2,7 +2,8 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
-import { Button, Money, ShrinkLayout } from '@/components/primitives';
+import { Button, Money } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { AddFriendModal } from '@/features/AddFriendDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 
@@ -22,15 +23,15 @@ export function FriendListHeader() {
   );
 
   return (
-    <ShrinkLayout.Header
+    <ScrollScene.Header
       range={[0, 50]}
       paddingTop={[24, 12]}
       paddingBottom={[24, 12]}
-      className="flex items-center gap-x-2 bg-white pr-3 pl-6 md:pl-8"
+      className="flex items-center gap-x-2 pr-3 pl-6 md:pl-8"
     >
       <div className="flex-1">
         <h2 className="text-lg font-medium text-gray-900">Friends</h2>
-        <ShrinkLayout.Hide range={[0, 50]}>
+        <ScrollScene.Hide range={[0, 50]}>
           {isCurrencyPending ? (
             <Skeleton className="mt-1 h-4 w-40" />
           ) : friends ? (
@@ -51,10 +52,10 @@ export function FriendListHeader() {
               )}
             </p>
           ) : undefined}
-        </ShrinkLayout.Hide>
+        </ScrollScene.Hide>
       </div>
 
-      <ShrinkLayout.Hide range={[0, 50]}>
+      <ScrollScene.Hide range={[0, 50]}>
         <DialogTrigger>
           <Button
             size="large"
@@ -65,7 +66,7 @@ export function FriendListHeader() {
           </Button>
           <AddFriendModal />
         </DialogTrigger>
-      </ShrinkLayout.Hide>
-    </ShrinkLayout.Header>
+      </ScrollScene.Hide>
+    </ScrollScene.Header>
   );
 }

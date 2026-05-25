@@ -10,11 +10,11 @@ import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { EmptyBalances } from './EmptyBalances.tsx';
 
-interface Props {
+type GroupBalancesTabProps = {
   group_uid: string;
-}
+};
 
-export function GroupBalancesTab({ group_uid }: Props) {
+export function GroupBalancesTab({ group_uid }: GroupBalancesTabProps) {
   const { data, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   const { currentUser } = useAuth();
 

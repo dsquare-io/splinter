@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ShrinkLayout } from '@/components/primitives';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { ActivityList } from './activity/-components/ActivityList.tsx';
 
 export const Route = createLazyFileRoute('/_dashboard/activity')({
@@ -23,9 +23,8 @@ function ActivityLayout() {
             : 'fixed inset-y-0 left-60 hidden w-96 border-r border-gray-200 xl:flex xl:flex-col'
         )}
       >
-        <ShrinkLayout className="min-h-0 flex-1">
-          <ShrinkLayout.Header
-            className="bg-white"
+        <ScrollScene className="min-h-0 flex-1">
+          <ScrollScene.Header
             range={[0, 76]}
             paddingTop={[24, 12]}
             paddingBottom={[24, 12]}
@@ -33,11 +32,11 @@ function ActivityLayout() {
             <div className="pr-3 pl-6 md:pl-8">
               <h2 className="text-lg font-medium text-gray-900">Recent Activity</h2>
             </div>
-          </ShrinkLayout.Header>
-          <ShrinkLayout.Content>
+          </ScrollScene.Header>
+          <ScrollScene.Content>
             <ActivityList />
-          </ShrinkLayout.Content>
-        </ShrinkLayout>
+          </ScrollScene.Content>
+        </ScrollScene>
       </div>
       <div className={isRootLayout ? 'xl:ms-96' : 'flex h-full flex-col xl:ms-96'}>
         <ErrorBoundary>

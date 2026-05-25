@@ -3,6 +3,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes } from '@/api-types';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { GroupListItemSkeleton } from '@/components/layout/Skeleton.tsx';
+import { ScrollScene } from '@/components/primitives/ScrollScene';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { EmptyGroups } from './EmptyGroups';
 import { GroupListItem } from './GroupListItem';
@@ -32,9 +33,9 @@ export function GroupList() {
               key={letter}
               className="-space-y-px"
             >
-              <div className="sticky top-0 z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+              <ScrollScene.Sticky className="z-10 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                 <h3 className="uppercase">{letter}</h3>
-              </div>
+              </ScrollScene.Sticky>
               <div className="-space-y-px">
                 {groups.map((group) => (
                   <GroupListItem
