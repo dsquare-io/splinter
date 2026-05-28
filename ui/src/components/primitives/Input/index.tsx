@@ -15,16 +15,19 @@ const inputStyles = tv({
 
 export function Input({
   inpRef,
+  isGrouped,
   ...props
-}: InputProps & { inpRef?: RefAttributes<HTMLInputElement>['ref'] }) {
+}: InputProps & { inpRef?: RefAttributes<HTMLInputElement>['ref']; isGrouped?: boolean }) {
   return (
     <RACInput
       ref={inpRef}
+      data-slot={isGrouped ? 'input-group-control' : undefined}
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
         inputStyles({
           ...renderProps,
           isFocusWithin: renderProps.isFocused,
+          isGrouped,
           className,
         })
       )}

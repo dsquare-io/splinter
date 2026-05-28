@@ -9,6 +9,7 @@ export { DropdownMenu, DropdownMenuItem } from './DropdownMenu';
 export { Dialog, DialogHeader, useDialog } from './Dialog';
 export { EmptyState } from './EmptyState';
 export { Input } from './Input';
+export { InputGroup, InputGroupAddon, InputGroupButton } from './InputGroup';
 export { Label } from './Label';
 export { Money } from './Money';
 export { SelectValue, SelectPopover, type SelectItemRenderProps } from './Select';
