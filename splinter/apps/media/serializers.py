@@ -1,7 +1,7 @@
 import os
 
 from drf_spectacular.utils import extend_schema_field
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.exceptions import APIException, UnsupportedMediaType
 
 from splinter.apps.media.models import MediaFile
@@ -12,7 +12,7 @@ MAX_ATTACHMENTS = 10
 
 
 class RequestEntityTooLarge(APIException):
-    status_code = 413
+    status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
     default_detail = 'File size exceeds the 10 MB limit.'
     default_code = 'file_too_large'
 
@@ -20,53 +20,6 @@ class RequestEntityTooLarge(APIException):
 def _file_ext(filename: str) -> str:
     _, ext = os.path.splitext(filename)
     return ext.lower()
-
-
-class PresignedUrlRequestSerializer(serializers.Serializer):
-    filename = serializers.CharField(max_length=255)
-    content_type = serializers.CharField(max_length=127)
-    file_size = serializers.IntegerField(min_value=1)
-
-    def validate_content_type(self, value):
-        if value not in ACCEPTED_MIME_TYPES:
-            raise UnsupportedMediaType(value)
-        return value
-
-    def validate_file_size(self, value):
-        if value > MAX_FILE_SIZE:
-            raise RequestEntityTooLarge()
-        return value
-
-
-class AttachmentAliasInputSerializer(serializers.Serializer):
-    alias = serializers.CharField(max_length=32)
-    original_filename = serializers.CharField(max_length=255)
-    content_type = serializers.CharField(max_length=127)
-    file_size = serializers.IntegerField(min_value=1)
-
-    def validate(self, attrs):
-        from splinter.apps.media.storage import PrivateS3Boto3Storage
-
-        ext = _file_ext(attrs['original_filename'])
-        key = f'uploads/{attrs["alias"]}{ext}'
-        if not PrivateS3Boto3Storage().exists(key):
-            raise serializers.ValidationError({'alias': 'No file found in S3 for this alias.'})
-        attrs['_s3_key'] = key
-        return attrs
-
-
-def register_file(alias: str, original_filename: str, content_type: str, file_size: int, uploaded_by, _s3_key: str = None) -> MediaFile:
-    if _s3_key is None:
-        ext = _file_ext(original_filename)
-        _s3_key = f'uploads/{alias}{ext}'
-    return MediaFile.objects.create(
-        file=_s3_key,
-        alias=alias,
-        original_filename=original_filename,
-        content_type=content_type,
-        file_size=file_size,
-        uploaded_by=uploaded_by,
-    )
 
 
 class MediaFileSerializer(serializers.ModelSerializer):
@@ -86,9 +39,3 @@ class MediaFileSerializer(serializers.ModelSerializer):
 
 class MediaUrlSerializer(serializers.Serializer):
     url = serializers.URLField()
-
-
-class PresignedUrlResponseSerializer(serializers.Serializer):
-    url = serializers.URLField()
-    fields = serializers.DictField(child=serializers.CharField())
-    alias = serializers.CharField()

@@ -25,15 +25,8 @@ export interface PendingAttachment {
   status: AttachmentStatus;
   progress: number;
   error?: string;
-  alias?: string;
+  uid?: string;
   previewUrl?: string;
-}
-
-export interface AttachmentAlias {
-  alias: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
 }
 
 export interface UseAttachmentsReturn {
@@ -42,7 +35,7 @@ export interface UseAttachmentsReturn {
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
   removeExisting: (uid: string) => void;
-  getAttachmentAliases: () => AttachmentAlias[];
+  getAttachmentUids: () => string[];
   initialize: (attachments: MediaFile[]) => void;
   deletedUids: string[];
   validationError: string | null;
@@ -63,33 +56,6 @@ async function convertHeic(file: File): Promise<File> {
     return new File([resultBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
   }
   return file;
-}
-
-function uploadToS3(
-  url: string,
-  fields: Record<string, string>,
-  file: File,
-  onProgress: (pct: number) => void
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    for (const [key, value] of Object.entries(fields)) {
-      formData.append(key, value);
-    }
-    formData.append('file', file);
-
-    const xhr = new XMLHttpRequest();
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) resolve();
-      else reject(new Error(`S3 upload failed: ${xhr.status}`));
-    };
-    xhr.onerror = () => reject(new Error('Upload network error'));
-    xhr.open('POST', url);
-    xhr.send(formData);
-  });
 }
 
 export function useAttachments(): UseAttachmentsReturn {
@@ -143,18 +109,19 @@ export function useAttachments(): UseAttachmentsReturn {
         const previewUrl = isImage && !isHeic ? URL.createObjectURL(file) : undefined;
         if (previewUrl) previewUrls.current.set(localId, previewUrl);
 
-        const attachment: PendingAttachment = {
-          localId,
-          file,
-          filename: file.name,
-          contentType: file.type || 'image/heic',
-          fileSize: file.size,
-          status: 'uploading',
-          progress: 0,
-          previewUrl,
-        };
-
-        setPendingAttachments((prev) => [...prev, attachment]);
+        setPendingAttachments((prev) => [
+          ...prev,
+          {
+            localId,
+            file,
+            filename: file.name,
+            contentType: file.type || 'image/heic',
+            fileSize: file.size,
+            status: 'uploading',
+            progress: 0,
+            previewUrl,
+          },
+        ]);
 
         void (async () => {
           try {
@@ -166,25 +133,17 @@ export function useAttachments(): UseAttachmentsReturn {
               updatePending(localId, { previewUrl: url, contentType: prepared.type });
             }
 
-            const presignedRes = await axiosInstance.post(ApiRoutes.PRESIGNED_UPLOAD_URL, {
-              filename: prepared.name,
-              contentType: prepared.type,
-              fileSize: prepared.size,
+            const formData = new FormData();
+            formData.append('file', prepared, prepared.name);
+
+            const res = await axiosInstance.post<MediaFile>(ApiRoutes.PRESIGNED_UPLOAD_URL, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+              onUploadProgress: (e) => {
+                if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
+              },
             });
 
-            const { alias, url, fields } = presignedRes.data as {
-              alias: string;
-              url: string;
-              fields: Record<string, string>;
-            };
-
-            await uploadToS3(url, fields, prepared, (pct) => updatePending(localId, { progress: pct }));
-
-            updatePending(localId, {
-              status: 'registered',
-              alias,
-              progress: 100,
-            });
+            updatePending(localId, { status: 'registered', uid: res.data.uid, progress: 100 });
           } catch (err) {
             updatePending(localId, {
               status: 'error',
@@ -211,16 +170,8 @@ export function useAttachments(): UseAttachmentsReturn {
     setDeletedUids((prev) => [...prev, uid]);
   }, []);
 
-  const getAttachmentAliases = useCallback(
-    (): AttachmentAlias[] =>
-      pendingAttachments
-        .filter((a) => a.status === 'registered' && a.alias)
-        .map((a) => ({
-          alias: a.alias!,
-          originalFilename: a.filename,
-          contentType: a.contentType,
-          fileSize: a.fileSize,
-        })),
+  const getAttachmentUids = useCallback(
+    () => pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!),
     [pendingAttachments]
   );
 
@@ -235,7 +186,7 @@ export function useAttachments(): UseAttachmentsReturn {
     addFiles,
     removePending,
     removeExisting,
-    getAttachmentAliases,
+    getAttachmentUids,
     initialize,
     deletedUids,
     validationError,

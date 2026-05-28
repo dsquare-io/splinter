@@ -26,7 +26,7 @@ from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
 from splinter.apps.media.models import MediaFile
-from splinter.apps.media.serializers import AttachmentAliasInputSerializer, MediaFileSerializer, register_file
+from splinter.apps.media.serializers import MediaFileSerializer
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -312,7 +312,6 @@ class UpsertExpenseSerializer(serializers.Serializer):
     currency = CurrencySerializerField()
     expenses = ChildExpenseSerializer(many=True, allow_empty=False)
     attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
-    attachment_aliases = AttachmentAliasInputSerializer(many=True, required=False, default=list)
 
     validate_description = staticmethod(validate_description)
 
@@ -376,12 +375,12 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         actor = self.context['request'].user
-        new_aliases = validated_data.pop('attachment_aliases', [])
-        validated_data.pop('attachment_uids', None)
+        desired_uids = validated_data.pop('attachment_uids', [])
         expense = CreateExpenseOperation(actor).execute(validated_data)
-        if new_aliases:
-            new_files = [register_file(**a, uploaded_by=actor) for a in new_aliases]
-            _link_attachments(expense, new_files, actor)
+        if desired_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(expense, new_files, actor)
         return expense
 
     def update(self, instance, validated_data):
@@ -391,19 +390,21 @@ class UpsertExpenseSerializer(serializers.Serializer):
             )
         actor = self.context['request'].user
         desired_uids = set(validated_data.pop('attachment_uids', []))
-        new_aliases = validated_data.pop('attachment_aliases', [])
         expense = UpdateExpenseOperation(actor, instance).execute(validated_data)
 
         ct = ContentType.objects.get_for_model(Expense)
         current_files = list(MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk))
+        current_uids = {f.public_id for f in current_files}
 
         to_remove = [f for f in current_files if f.public_id not in desired_uids]
         if to_remove:
             _unlink_attachments(expense, to_remove, actor)
 
-        if new_aliases:
-            new_files = [register_file(**a, uploaded_by=actor) for a in new_aliases]
-            _link_attachments(expense, new_files, actor)
+        new_uids = desired_uids - current_uids
+        if new_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=new_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(expense, new_files, actor)
 
         return expense
 
@@ -418,7 +419,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
-    attachment_aliases = AttachmentAliasInputSerializer(many=True, required=False, default=list)
+    attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
 
     def validate(self, attrs):
         errors: dict = {}
@@ -453,11 +454,12 @@ class UpsertPaymentSerializer(serializers.Serializer):
     @transaction.atomic()
     def create(self, validated_data):
         actor = self.context['request'].user
-        new_aliases = validated_data.pop('attachment_aliases', [])
+        desired_uids = validated_data.pop('attachment_uids', [])
         payment = CreatePaymentOperation(actor).execute(validated_data)
-        if new_aliases:
-            new_files = [register_file(**a, uploaded_by=actor) for a in new_aliases]
-            _link_attachments(payment, new_files, actor)
+        if desired_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(payment, new_files, actor)
         return payment
 
 

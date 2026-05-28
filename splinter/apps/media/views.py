@@ -1,49 +1,53 @@
 import secrets
 
-import boto3
-from django.conf import settings
 from drf_spectacular.utils import extend_schema
-from rest_framework.exceptions import ValidationError
+from rest_framework import status
+from rest_framework.exceptions import UnsupportedMediaType, ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 
 from splinter.apps.media.models import MediaFile
 from splinter.apps.media.serializers import (
+    MAX_FILE_SIZE,
+    ACCEPTED_MIME_TYPES,
+    MediaFileSerializer,
     MediaUrlSerializer,
-    PresignedUrlRequestSerializer,
-    PresignedUrlResponseSerializer,
+    RequestEntityTooLarge,
     _file_ext,
 )
+from splinter.apps.media.storage import PrivateS3Boto3Storage
 from splinter.core.views import APIView
 
 
-class PresignedUploadUrlView(APIView):
-    @extend_schema(request=PresignedUrlRequestSerializer, responses={200: PresignedUrlResponseSerializer})
+class UploadMediaFileView(APIView):
+    parser_classes = [MultiPartParser]
+
+    @extend_schema(responses={201: MediaFileSerializer})
     def post(self, request, *args, **kwargs):
-        serializer = PresignedUrlRequestSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        file = request.FILES.get('file')
+        if not file:
+            raise ValidationError('No file provided.')
+
+        if file.content_type not in ACCEPTED_MIME_TYPES:
+            raise UnsupportedMediaType(file.content_type)
+        if file.size > MAX_FILE_SIZE:
+            raise RequestEntityTooLarge()
 
         alias = secrets.token_hex(16)
-        ext = _file_ext(data['filename'])
-        key = f'uploads/{alias}{ext}'
+        key = f'uploads/{alias}{_file_ext(file.name)}'
 
-        client = boto3.client(
-            's3',
-            region_name=settings.AWS_S3_REGION_NAME,
-            endpoint_url=getattr(settings, 'AWS_S3_PRESIGNED_ENDPOINT_URL', None),
+        PrivateS3Boto3Storage().save(key, file)
+
+        media_file = MediaFile.objects.create(
+            file=key,
+            alias=alias,
+            original_filename=file.name,
+            content_type=file.content_type,
+            file_size=file.size,
+            uploaded_by=request.user,
         )
-        presigned = client.generate_presigned_post(
-            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-            Key=key,
-            Fields={'Content-Type': data['content_type']},
-            Conditions=[
-                ['content-length-range', 1, data['file_size']],
-                {'Content-Type': data['content_type']},
-            ],
-            ExpiresIn=300,
-        )
-        return Response({**presigned, 'alias': alias})
+        return Response(MediaFileSerializer(media_file).data, status=status.HTTP_201_CREATED)
 
 
 class RetrieveMediaUrlView(APIView):
