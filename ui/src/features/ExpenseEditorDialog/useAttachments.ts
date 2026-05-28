@@ -1,0 +1,220 @@
+import { useCallback, useRef, useState } from 'react';
+
+import { ApiRoutes } from '@/api-types';
+import type { AttachedFile } from '@/api-types/components/schemas';
+import { urlWithArgs } from '@/api-types/url';
+import { axiosInstance } from '@/axios';
+
+export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
+export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+export type AttachmentStatus = 'uploading' | 'registered' | 'error';
+
+export interface PendingAttachment {
+  localId: string;
+  file: File;
+  filename: string;
+  contentType: string;
+  fileSize: number;
+  status: AttachmentStatus;
+  progress: number;
+  error?: string;
+  uid?: string;
+  previewUrl?: string;
+}
+
+export interface UseAttachmentsReturn {
+  pendingAttachments: PendingAttachment[];
+  existingAttachments: AttachedFile[];
+  addFiles: (files: FileList | File[]) => void;
+  removePending: (localId: string) => void;
+  removeExisting: (uid: string) => void;
+  attachToExpense: (expenseUid: string) => Promise<void>;
+  initialize: (attachments: AttachedFile[]) => void;
+  deletedUids: string[];
+  validationError: string | null;
+  clearValidationError: () => void;
+}
+
+async function convertHeic(file: File): Promise<File> {
+  const lower = file.name.toLowerCase();
+  if (file.type === 'image/heic' || file.type === 'image/heif' || lower.endsWith('.heic') || lower.endsWith('.heif')) {
+    const heic2any = (await import('heic2any')).default;
+    const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+    const resultBlob = Array.isArray(blob) ? blob[0] : blob;
+    return new File([resultBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+  }
+  return file;
+}
+
+function uploadToS3(
+  url: string,
+  fields: Record<string, string>,
+  file: File,
+  onProgress: (pct: number) => void,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(fields)) {
+      formData.append(key, value);
+    }
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else reject(new Error(`S3 upload failed: ${xhr.status}`));
+    };
+    xhr.onerror = () => reject(new Error('Upload network error'));
+    xhr.open('POST', url);
+    xhr.send(formData);
+  });
+}
+
+export function useAttachments(): UseAttachmentsReturn {
+  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<AttachedFile[]>([]);
+  const [deletedUids, setDeletedUids] = useState<string[]>([]);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const previewUrls = useRef<Map<string, string>>(new Map());
+
+  const updatePending = useCallback((localId: string, updates: Partial<PendingAttachment>) => {
+    setPendingAttachments((prev) => prev.map((a) => (a.localId === localId ? { ...a, ...updates } : a)));
+  }, []);
+
+  const addFiles = useCallback(
+    (files: FileList | File[]) => {
+      const fileArray = Array.from(files);
+
+      for (const file of fileArray) {
+        const lower = file.name.toLowerCase();
+        const effectiveMime =
+          file.type || (lower.endsWith('.heic') || lower.endsWith('.heif') ? 'image/heic' : '');
+
+        if (!ACCEPTED_TYPES.includes(effectiveMime)) {
+          setValidationError(`${file.name}: unsupported file type`);
+          return;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+          setValidationError(`${file.name}: file exceeds 10 MB limit`);
+          return;
+        }
+      }
+
+      const currentCount =
+        existingAttachments.length + pendingAttachments.filter((a) => a.status !== 'error').length;
+      if (currentCount + fileArray.length > 10) {
+        setValidationError('Maximum 10 attachments per expense');
+        return;
+      }
+
+      setValidationError(null);
+
+      for (const file of fileArray) {
+        const localId = crypto.randomUUID();
+        const isImage = /\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name) || file.type.startsWith('image/');
+        const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+        if (previewUrl) previewUrls.current.set(localId, previewUrl);
+
+        const attachment: PendingAttachment = {
+          localId,
+          file,
+          filename: file.name,
+          contentType: file.type || 'image/heic',
+          fileSize: file.size,
+          status: 'uploading',
+          progress: 0,
+          previewUrl,
+        };
+
+        setPendingAttachments((prev) => [...prev, attachment]);
+
+        void (async () => {
+          try {
+            const prepared = await convertHeic(file);
+
+            const presignedRes = await axiosInstance.post(ApiRoutes.PRESIGNED_UPLOAD_URL, {
+              filename: prepared.name,
+              content_type: prepared.type,
+              file_size: prepared.size,
+            });
+
+            const { alias, url, fields } = presignedRes.data as {
+              alias: string;
+              url: string;
+              fields: Record<string, string>;
+            };
+
+            await uploadToS3(url, fields, prepared, (pct) => updatePending(localId, { progress: pct }));
+
+            const registerRes = await axiosInstance.post(ApiRoutes.REGISTER_FILE, {
+              alias,
+              original_filename: prepared.name,
+              content_type: prepared.type,
+              file_size: prepared.size,
+            });
+
+            updatePending(localId, {
+              status: 'registered',
+              uid: (registerRes.data as { uid: string }).uid,
+              progress: 100,
+            });
+          } catch (err) {
+            updatePending(localId, {
+              status: 'error',
+              error: err instanceof Error ? err.message : 'Upload failed',
+            });
+          }
+        })();
+      }
+    },
+    [existingAttachments.length, pendingAttachments, updatePending],
+  );
+
+  const removePending = useCallback((localId: string) => {
+    const url = previewUrls.current.get(localId);
+    if (url) {
+      URL.revokeObjectURL(url);
+      previewUrls.current.delete(localId);
+    }
+    setPendingAttachments((prev) => prev.filter((a) => a.localId !== localId));
+  }, []);
+
+  const removeExisting = useCallback((uid: string) => {
+    setExistingAttachments((prev) => prev.filter((a) => a.uid !== uid));
+    setDeletedUids((prev) => [...prev, uid]);
+  }, []);
+
+  const attachToExpense = useCallback(
+    async (expenseUid: string) => {
+      const registeredUids = pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!);
+      if (registeredUids.length > 0) {
+        await axiosInstance.post(urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_LIST, { expense_uid: expenseUid }), {
+          files: registeredUids,
+        });
+      }
+    },
+    [pendingAttachments],
+  );
+
+  const initialize = useCallback((attachments: AttachedFile[]) => {
+    setExistingAttachments(attachments);
+    setDeletedUids([]);
+  }, []);
+
+  return {
+    pendingAttachments,
+    existingAttachments,
+    addFiles,
+    removePending,
+    removeExisting,
+    attachToExpense,
+    initialize,
+    deletedUids,
+    validationError,
+    clearValidationError: () => setValidationError(null),
+  };
+}
