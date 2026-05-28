@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-
 import { DocumentIcon } from '@heroicons/react/20/solid';
 
 import { ApiRoutes } from '@/api-types';
@@ -9,6 +7,7 @@ import { axiosInstance } from '@/axios';
 
 interface Props {
   expenseId: string;
+  attachments: AttachedFile[];
 }
 
 async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise<string> {
@@ -19,7 +18,7 @@ async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise
 }
 
 function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachment: AttachedFile }) {
-  const isImage = attachment.content_type.startsWith('image/');
+  const isImage = attachment.content_type?.startsWith('image/') ?? false;
 
   const open = async () => {
     const url = await fetchSignedUrl(expenseId, attachment.uid);
@@ -52,25 +51,8 @@ function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachme
   );
 }
 
-export function ExpenseAttachments({ expenseId }: Props) {
-  const [attachments, setAttachments] = useState<AttachedFile[] | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    axiosInstance
-      .get<AttachedFile[]>(urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_LIST, { expense_uid: expenseId }))
-      .then((res) => {
-        if (!cancelled) setAttachments(res.data);
-      })
-      .catch(() => {
-        if (!cancelled) setAttachments([]);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [expenseId]);
-
-  if (!attachments || attachments.length === 0) return null;
+export function ExpenseAttachments({ expenseId, attachments }: Props) {
+  if (!attachments.length) return null;
 
   return (
     <div className="mt-4">

@@ -148,7 +148,7 @@ export interface Expense {
                  */
     readonly outstandingBalance: string;
     readonly expenses: ChildExpense[];
-    readonly attachments?: AttachedFile[];
+    readonly attachments: string;
     version?: number;
     readonly paidBy: SimpleUser;
     readonly isDeleted: boolean;
@@ -365,6 +365,7 @@ export interface UpsertExpense {
     /** @description ISO 4217 Currency Code */
     currency: string;
     expenses: ChildExpense[];
+    attachmentUids?: string[];
 }
 
 export interface UpsertPayment {
@@ -405,29 +406,4 @@ export interface UserOutstandingBalance {
     amount: string;
     readonly paid: AggregatedOutstandingBalance;
     readonly borrowed: AggregatedOutstandingBalance;
-}
-
-export interface MediaFile {
-    /** Format: uuid */
-    readonly uid: string;
-    readonly original_filename: string;
-    readonly content_type: string;
-    readonly file_size: number;
-    readonly processed: boolean;
-    readonly thumbnail_key?: string | null;
-}
-
-export interface AttachedFile extends MediaFile {
-    readonly signed_url?: string | null;
-}
-
-export interface PresignedUrlResponse {
-    alias: string;
-    url: string;
-    fields: Record<string, string>;
-}
-
-export interface AttachmentSignedUrl {
-    url: string;
-    expires_at: string;
 }

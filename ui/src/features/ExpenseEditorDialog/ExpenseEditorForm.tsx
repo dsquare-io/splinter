@@ -11,7 +11,6 @@ import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
-import { axiosInstance } from '@/axios';
 import { AttachmentsContext } from './AttachmentsContext.tsx';
 import { useAttachmentsContext } from './AttachmentsContext.tsx';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
@@ -68,7 +67,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { attachToExpense, deletedUids } = useAttachmentsContext();
+  const { getAttachmentUids, existingAttachments } = useAttachmentsContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;
   const [step, setStep] = useState<Step>('entry');
@@ -145,16 +144,13 @@ function ExpenseEditorFormInner({ expense }: Props) {
         className="flex flex-col"
         action={action}
         method={isEdit ? 'PUT' : 'POST'}
+        transformData={(data) => {
+          const keepUids = existingAttachments.map((a) => a.uid);
+          const newUids = getAttachmentUids();
+          return { ...data, attachment_uids: [...keepUids, ...newUids] };
+        }}
         onSubmitSuccess={async (response, control) => {
           const expenseUid = response.data.uid as string;
-          await Promise.all([
-            attachToExpense(expenseUid),
-            ...deletedUids.map((uid) =>
-              axiosInstance.delete(
-                urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_DETAIL, { expense_uid: expenseUid, attachment_uid: uid }),
-              ),
-            ),
-          ]);
           await invalidateQueriesForExpense({ uid: expenseUid, group: control.getValues('group') });
           close();
         }}

@@ -1,14 +1,17 @@
 import re
 from decimal import Decimal
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Prefetch
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
+from splinter.apps.expense.activities import AttachExpenseFileActivity, DetachExpenseFileActivity
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
     Expense,
@@ -22,6 +25,8 @@ from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
+from splinter.apps.media.models import MediaFile
+from splinter.apps.media.serializers import MediaFileSerializer
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -147,11 +152,8 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             Prefetch('children', queryset=child_queryset),
         )
 
+    @extend_schema_field(MediaFileSerializer(many=True))
     def get_attachments(self, expense: Expense):
-        from django.contrib.contenttypes.models import ContentType
-        from splinter.apps.media.models import MediaFile
-        from splinter.apps.media.serializers import MediaFileSerializer
-
         ct = ContentType.objects.get_for_model(Expense)
         qs = MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
         return MediaFileSerializer(qs, many=True).data
@@ -255,6 +257,42 @@ class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
         return super().get_discriminator(instance)
 
 
+def _get_expense_audience(actor, expense):
+    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
+    user_ids.add(expense.paid_by_id)
+    audience = {uid: {} for uid in user_ids}
+    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
+    return audience
+
+
+def _link_attachments(expense, files, actor):
+    ct = ContentType.objects.get_for_model(Expense)
+    for f in files:
+        f.content_type_fk = ct
+        f.object_id = expense.pk
+        f.save(update_fields=['content_type_fk', 'object_id'])
+    for f in files:
+        AttachExpenseFileActivity.log(
+            actor=actor,
+            target=expense,
+            action_object=f,
+            audience=_get_expense_audience(actor, expense),
+            group=expense.group_id,
+        )
+
+
+def _unlink_attachments(expense, files, actor):
+    for f in files:
+        f.delete()
+        DetachExpenseFileActivity.log(
+            actor=actor,
+            target=expense,
+            action_object=f,
+            audience=_get_expense_audience(actor, expense),
+            group=expense.group_id,
+        )
+
+
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
@@ -265,8 +303,12 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     expenses = ChildExpenseSerializer(many=True, allow_empty=False)
+    attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
 
     validate_description = staticmethod(validate_description)
+
+    def validate_attachment_uids(self, uids):
+        return uids
 
     def validate_paid_by(self, value):
         if value:
@@ -327,15 +369,39 @@ class UpsertExpenseSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        return CreateExpenseOperation(self.context['request'].user).execute(validated_data)
+        actor = self.context['request'].user
+        desired_uids = validated_data.pop('attachment_uids', [])
+        expense = CreateExpenseOperation(actor).execute(validated_data)
+        if desired_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(expense, new_files, actor)
+        return expense
 
     def update(self, instance, validated_data):
         if instance.version != validated_data['version']:
             raise serializers.ValidationError(
                 'You are trying to update an expense which is updated by someone else. Please refresh and try again.'
             )
+        actor = self.context['request'].user
+        desired_uids = set(validated_data.pop('attachment_uids', []))
+        expense = UpdateExpenseOperation(actor, instance).execute(validated_data)
 
-        return UpdateExpenseOperation(self.context['request'].user, instance).execute(validated_data)
+        ct = ContentType.objects.get_for_model(Expense)
+        current_files = list(MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk))
+        current_uids = {f.public_id for f in current_files}
+
+        to_remove = [f for f in current_files if f.public_id not in desired_uids]
+        if to_remove:
+            _unlink_attachments(expense, to_remove, actor)
+
+        new_uids = desired_uids - current_uids
+        if new_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=new_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(expense, new_files, actor)
+
+        return expense
 
 
 class UpsertPaymentSerializer(serializers.Serializer):

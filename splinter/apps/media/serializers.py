@@ -81,16 +81,3 @@ class MediaFileSerializer(serializers.ModelSerializer):
         return None
 
 
-class AttachFilesSerializer(serializers.Serializer):
-    uids = serializers.ListField(child=serializers.UUIDField(), min_length=1, max_length=MAX_ATTACHMENTS)
-
-    def validate_uids(self, uids):
-        files = list(
-            MediaFile.objects.attachable().filter(
-                public_id__in=uids,
-                uploaded_by=self.context['request'].user,
-            )
-        )
-        if len(files) != len(uids):
-            raise serializers.ValidationError('One or more file UIDs are not attachable or do not belong to you.')
-        return files

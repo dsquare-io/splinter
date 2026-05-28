@@ -10,8 +10,6 @@ export const Paths = {
   CURRENCY_PREFERENCE: '/api/user/currency',
   ENABLE_MFA_DEVICE: '/api/mfa/enable/{device_type}',
   EXPENSE: '/api/expenses',
-  EXPENSE_ATTACHMENT_DETAIL: '/api/expenses/{expense_uid}/attachments/{attachment_uid}',
-  EXPENSE_ATTACHMENT_LIST: '/api/expenses/{expense_uid}/attachments',
   EXPENSE_ATTACHMENT_URL: '/api/expenses/{expense_uid}/attachments/{attachment_uid}/url',
   EXPENSE_CHANGE_LOG: '/api/expenses/{expense_uid}/changelog',
   EXPENSE_DETAIL: '/api/expenses/{expense_uid}',

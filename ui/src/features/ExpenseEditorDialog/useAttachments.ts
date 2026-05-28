@@ -2,7 +2,6 @@ import { useCallback, useRef, useState } from 'react';
 
 import { ApiRoutes } from '@/api-types';
 import type { AttachedFile } from '@/api-types/components/schemas';
-import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
 
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
@@ -29,7 +28,7 @@ export interface UseAttachmentsReturn {
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
   removeExisting: (uid: string) => void;
-  attachToExpense: (expenseUid: string) => Promise<void>;
+  getAttachmentUids: () => string[];
   initialize: (attachments: AttachedFile[]) => void;
   deletedUids: string[];
   validationError: string | null;
@@ -196,15 +195,8 @@ export function useAttachments(): UseAttachmentsReturn {
     setDeletedUids((prev) => [...prev, uid]);
   }, []);
 
-  const attachToExpense = useCallback(
-    async (expenseUid: string) => {
-      const registeredUids = pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!);
-      if (registeredUids.length > 0) {
-        await axiosInstance.post(urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_LIST, { expense_uid: expenseUid }), {
-          files: registeredUids,
-        });
-      }
-    },
+  const getAttachmentUids = useCallback(
+    () => pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!),
     [pendingAttachments],
   );
 
@@ -219,7 +211,7 @@ export function useAttachments(): UseAttachmentsReturn {
     addFiles,
     removePending,
     removeExisting,
-    attachToExpense,
+    getAttachmentUids,
     initialize,
     deletedUids,
     validationError,
