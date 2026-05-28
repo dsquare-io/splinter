@@ -649,6 +649,7 @@ export interface components {
         AccessToken: import("./components/schemas.d.ts").AccessToken;
         Activity: import("./components/schemas.d.ts").Activity;
         AggregatedOutstandingBalance: import("./components/schemas.d.ts").AggregatedOutstandingBalance;
+        AttachmentSignedUrl: import("./components/schemas.d.ts").AttachmentSignedUrl;
         AuthTokenData: import("./components/schemas.d.ts").AuthTokenData;
         AuthenticateUser: import("./components/schemas.d.ts").AuthenticateUser;
         AvailableDevice: import("./components/schemas.d.ts").AvailableDevice;
@@ -681,6 +682,7 @@ export interface components {
         FriendOutstandingBalance: import("./components/schemas.d.ts").FriendOutstandingBalance;
         Group: import("./components/schemas.d.ts").Group;
         GroupOutstandingBalance: import("./components/schemas.d.ts").GroupOutstandingBalance;
+        MediaFile: import("./components/schemas.d.ts").MediaFile;
         MfaToken: import("./components/schemas.d.ts").MfaToken;
         NotFound: import("./components/schemas.d.ts").NotFound;
         Object: import("./components/schemas.d.ts").Object_;
@@ -693,7 +695,10 @@ export interface components {
         PaymentTyped: import("./components/schemas.d.ts").PaymentTyped;
         /** @enum {string} */
         PaymentTypedTypeEnum: import("./components/schemas.d.ts").PaymentTypedTypeEnum;
+        PresignedUrlRequest: import("./components/schemas.d.ts").PresignedUrlRequest;
+        PresignedUrlResponse: import("./components/schemas.d.ts").PresignedUrlResponse;
         RefreshAccessToken: import("./components/schemas.d.ts").RefreshAccessToken;
+        RegisterFile: import("./components/schemas.d.ts").RegisterFile;
         ResetPassword: import("./components/schemas.d.ts").ResetPassword;
         Settlement: import("./components/schemas.d.ts").Settlement;
         SettlementTyped: import("./components/schemas.d.ts").SettlementTyped;
@@ -1349,12 +1354,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AttachmentSignedUrl"];
+                };
             };
             /** @description Unauthorized */
             401: {
@@ -1440,14 +1446,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterFile"];
+            };
+        };
         responses: {
-            /** @description No response body */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaFile"];
+                };
             };
             /** @description Bad Request */
             400: {
@@ -1490,14 +1501,19 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresignedUrlRequest"];
+            };
+        };
         responses: {
-            /** @description No response body */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PresignedUrlResponse"];
+                };
             };
             /** @description Bad Request */
             400: {

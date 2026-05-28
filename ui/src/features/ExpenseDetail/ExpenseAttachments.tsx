@@ -1,13 +1,13 @@
 import { DocumentIcon } from '@heroicons/react/20/solid';
 
 import { ApiRoutes } from '@/api-types';
-import type { AttachedFile, AttachmentSignedUrl } from '@/api-types/components/schemas';
+import type { AttachmentSignedUrl, MediaFile } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
 
 interface Props {
   expenseId: string;
-  attachments: AttachedFile[];
+  attachments: MediaFile[];
 }
 
 async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise<string> {
@@ -17,8 +17,8 @@ async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise
   return res.data.url;
 }
 
-function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachment: AttachedFile }) {
-  const isImage = attachment.content_type?.startsWith('image/') ?? false;
+function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachment: MediaFile }) {
+  const isImage = attachment.contentType?.startsWith('image/') ?? false;
 
   const open = async () => {
     const url = await fetchSignedUrl(expenseId, attachment.uid);
@@ -30,13 +30,13 @@ function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachme
       type="button"
       onClick={open}
       className="group relative flex flex-col items-center gap-1"
-      title={attachment.original_filename}
+      title={attachment.originalFilename}
     >
       <div className="relative h-16 w-16 rounded-lg border border-gray-200 bg-gray-100 transition group-hover:border-gray-300">
-        {isImage && attachment.signed_url ? (
+        {isImage && attachment.signedUrl ? (
           <img
-            src={attachment.signed_url}
-            alt={attachment.original_filename}
+            src={attachment.signedUrl}
+            alt={attachment.originalFilename}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -46,7 +46,7 @@ function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachme
         )}
         <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
       </div>
-      <span className="w-16 truncate text-center text-xs text-gray-500">{attachment.original_filename}</span>
+      <span className="w-16 truncate text-center text-xs text-gray-500">{attachment.originalFilename}</span>
     </button>
   );
 }

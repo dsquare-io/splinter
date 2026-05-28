@@ -147,7 +147,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         transformData={(data) => {
           const keepUids = existingAttachments.map((a) => a.uid);
           const newUids = getAttachmentUids();
-          return { ...data, attachment_uids: [...keepUids, ...newUids] };
+          return { ...data, attachmentUids: [...keepUids, ...newUids] };
         }}
         onSubmitSuccess={async (response, control) => {
           const expenseUid = response.data.uid as string;

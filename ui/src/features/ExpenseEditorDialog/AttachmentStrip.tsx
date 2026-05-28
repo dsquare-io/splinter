@@ -4,13 +4,13 @@ import { DocumentIcon, PaperClipIcon, XMarkIcon } from '@heroicons/react/20/soli
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import type { AttachedFile } from '@/api-types/components/schemas.d.ts';
+import type { MediaFile } from '@/api-types/components/schemas.d.ts';
 import type { PendingAttachment } from './useAttachments.ts';
 import { ACCEPTED_TYPES } from './useAttachments.ts';
 
 interface Props {
   pendingAttachments: PendingAttachment[];
-  existingAttachments: AttachedFile[];
+  existingAttachments: MediaFile[];
   onAddFiles: (files: FileList) => void;
   onRemovePending: (localId: string) => void;
   onRemoveExisting: (uid: string) => void;
@@ -120,18 +120,18 @@ export function AttachmentStrip({
         <div className="flex gap-3 overflow-x-auto pt-1.5 pb-1">
           <AnimatePresence>
             {existingAttachments.map((a) => {
-              const isImage = a.content_type.startsWith('image/');
+              const isImage = a.contentType?.startsWith('image/') ?? false;
               return (
                 <AttachmentChip
                   key={a.uid}
                   status="existing"
-                  label={a.original_filename}
+                  label={a.originalFilename}
                   onRemove={() => onRemoveExisting(a.uid)}
                   thumbnail={
-                    isImage && a.signed_url ? (
+                    isImage && a.signedUrl ? (
                       <img
-                        src={a.signed_url}
-                        alt={a.original_filename}
+                        src={a.signedUrl}
+                        alt={a.originalFilename}
                         className="h-full w-full object-cover"
                       />
                     ) : (

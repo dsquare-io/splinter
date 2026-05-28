@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { ApiRoutes } from '@/api-types';
-import type { AttachedFile } from '@/api-types/components/schemas';
+import type { MediaFile } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
 
 export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
@@ -24,12 +24,12 @@ export interface PendingAttachment {
 
 export interface UseAttachmentsReturn {
   pendingAttachments: PendingAttachment[];
-  existingAttachments: AttachedFile[];
+  existingAttachments: MediaFile[];
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
   removeExisting: (uid: string) => void;
   getAttachmentUids: () => string[];
-  initialize: (attachments: AttachedFile[]) => void;
+  initialize: (attachments: MediaFile[]) => void;
   deletedUids: string[];
   validationError: string | null;
   clearValidationError: () => void;
@@ -75,7 +75,7 @@ function uploadToS3(
 
 export function useAttachments(): UseAttachmentsReturn {
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
-  const [existingAttachments, setExistingAttachments] = useState<AttachedFile[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<MediaFile[]>([]);
   const [deletedUids, setDeletedUids] = useState<string[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
   const previewUrls = useRef<Map<string, string>>(new Map());
@@ -145,8 +145,8 @@ export function useAttachments(): UseAttachmentsReturn {
 
             const presignedRes = await axiosInstance.post(ApiRoutes.PRESIGNED_UPLOAD_URL, {
               filename: prepared.name,
-              content_type: prepared.type,
-              file_size: prepared.size,
+              contentType: prepared.type,
+              fileSize: prepared.size,
             });
 
             const { alias, url, fields } = presignedRes.data as {
@@ -159,9 +159,9 @@ export function useAttachments(): UseAttachmentsReturn {
 
             const registerRes = await axiosInstance.post(ApiRoutes.REGISTER_FILE, {
               alias,
-              original_filename: prepared.name,
-              content_type: prepared.type,
-              file_size: prepared.size,
+              originalFilename: prepared.name,
+              contentType: prepared.type,
+              fileSize: prepared.size,
             });
 
             updatePending(localId, {
@@ -200,7 +200,7 @@ export function useAttachments(): UseAttachmentsReturn {
     [pendingAttachments],
   );
 
-  const initialize = useCallback((attachments: AttachedFile[]) => {
+  const initialize = useCallback((attachments: MediaFile[]) => {
     setExistingAttachments(attachments);
     setDeletedUids([]);
   }, []);

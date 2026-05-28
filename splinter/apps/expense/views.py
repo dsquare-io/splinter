@@ -35,9 +35,11 @@ from splinter.apps.expense.serializers import (
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
 )
+from drf_spectacular.utils import extend_schema
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.media.models import MediaFile
+from splinter.apps.media.serializers import AttachmentSignedUrlSerializer
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination
@@ -238,6 +240,7 @@ def _get_attachment_queryset(expense):
 
 
 class RetrieveExpenseAttachmentUrlView(APIView):
+    @extend_schema(responses={200: AttachmentSignedUrlSerializer})
     def get(self, request, *args, **kwargs):
         expense = get_object_or_404(
             Expense.objects.of_user(request.user),

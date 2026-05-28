@@ -2,12 +2,14 @@ import secrets
 
 import boto3
 from django.conf import settings
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.response import Response
 
 from splinter.apps.media.serializers import (
     MediaFileSerializer,
     PresignedUrlRequestSerializer,
+    PresignedUrlResponseSerializer,
     RegisterFileSerializer,
     _file_ext,
 )
@@ -15,6 +17,7 @@ from splinter.core.views import APIView
 
 
 class PresignedUploadUrlView(APIView):
+    @extend_schema(request=PresignedUrlRequestSerializer, responses={200: PresignedUrlResponseSerializer})
     def post(self, request, *args, **kwargs):
         serializer = PresignedUrlRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -43,6 +46,7 @@ class PresignedUploadUrlView(APIView):
 
 
 class RegisterFileView(APIView):
+    @extend_schema(request=RegisterFileSerializer, responses={201: MediaFileSerializer})
     def post(self, request, *args, **kwargs):
         serializer = RegisterFileSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)

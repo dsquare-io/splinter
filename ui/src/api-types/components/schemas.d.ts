@@ -30,6 +30,11 @@ export interface AggregatedOutstandingBalance {
     readonly balances: OutstandingBalance[];
 }
 
+export interface AttachmentSignedUrl {
+    /** Format: uri */
+    url: string;
+}
+
 export interface AuthTokenData {
     accessToken: string;
     refreshToken: string;
@@ -148,7 +153,7 @@ export interface Expense {
                  */
     readonly outstandingBalance: string;
     readonly expenses: ChildExpense[];
-    readonly attachments: string;
+    readonly attachments: MediaFile[];
     version?: number;
     readonly paidBy: SimpleUser;
     readonly isDeleted: boolean;
@@ -225,6 +230,17 @@ export type GroupOutstandingBalance = OutstandingBalance & {
     readonly user: SimpleUser;
     readonly friend: SimpleUser;
 };
+
+export interface MediaFile {
+    /** Format: uuid */
+    readonly uid: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
+    processed?: boolean;
+    /** Format: uri */
+    readonly signedUrl: string | null;
+}
 
 export interface MfaToken {
     token: string;
@@ -305,8 +321,30 @@ export type PaymentTyped = {
 };
 export type PaymentTypedTypeEnum = "payment";
 
+export interface PresignedUrlRequest {
+    filename: string;
+    contentType: string;
+    fileSize: number;
+}
+
+export interface PresignedUrlResponse {
+    /** Format: uri */
+    url: string;
+    fields: {
+        [key: string]: string;
+    };
+    alias: string;
+}
+
 export interface RefreshAccessToken {
     refreshToken: string;
+}
+
+export interface RegisterFile {
+    alias: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
 }
 
 export interface ResetPassword {

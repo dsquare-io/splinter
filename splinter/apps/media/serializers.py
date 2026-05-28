@@ -1,5 +1,6 @@
 import os
 
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import APIException, UnsupportedMediaType
 
@@ -75,9 +76,20 @@ class MediaFileSerializer(serializers.ModelSerializer):
         model = MediaFile
         fields = ('uid', 'original_filename', 'content_type', 'file_size', 'processed', 'signed_url')
 
+    @extend_schema_field(serializers.URLField(allow_null=True))
     def get_signed_url(self, obj):
         if obj.file:
             return obj.file.url
         return None
+
+
+class AttachmentSignedUrlSerializer(serializers.Serializer):
+    url = serializers.URLField()
+
+
+class PresignedUrlResponseSerializer(serializers.Serializer):
+    url = serializers.URLField()
+    fields = serializers.DictField(child=serializers.CharField())
+    alias = serializers.CharField()
 
 
