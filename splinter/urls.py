@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/', include('splinter.apps.authn.urls')),
     path('api/', include('splinter.apps.currency.urls')),
     path('api/', include('splinter.apps.expense.urls')),
+    path('api/', include('splinter.apps.media.urls')),
     path('api/', include('splinter.apps.friend.urls')),
     path('api/', include('splinter.apps.group.urls')),
     path('api/', include('splinter.apps.mfa.urls')),

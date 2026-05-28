@@ -4,16 +4,22 @@ from collections import defaultdict
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
+from django.utils import timezone
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
     Expense,
     ExpenseChangeLog,
     ExpenseParty,
+    ExpenseSplit,
     Settlement,
 )
 from splinter.apps.expense.operations import (
@@ -30,13 +36,16 @@ from splinter.apps.expense.serializers import (
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
 )
+from splinter.apps.expense.activities import AttachExpenseFileActivity, DetachExpenseFileActivity
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
+from splinter.apps.media.models import MediaFile
+from splinter.apps.media.serializers import AttachFilesSerializer, MAX_ATTACHMENTS, MediaFileSerializer
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination
 from splinter.core.serializers import EmptySerializer
-from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
+from splinter.core.views import APIView, CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from splinter.db.urn import ResourceName
 
 
@@ -224,3 +233,92 @@ class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
 
         serializer.context['referenced_resources'] = referenced_resources_by_pk
         return serializer
+
+
+def _get_expense_audience(actor, expense):
+    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
+    user_ids.add(expense.paid_by_id)
+    audience = {uid: {} for uid in user_ids}
+    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
+    return audience
+
+
+def _get_attachment_queryset(expense):
+    ct = ContentType.objects.get_for_model(Expense)
+    return MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
+
+
+class ListCreateExpenseAttachmentView(APIView):
+    def _get_expense(self):
+        return get_object_or_404(
+            Expense.objects.of_user(self.request.user),
+            public_id=self.kwargs['expense_uid'],
+        )
+
+    def get(self, request, *args, **kwargs):
+        expense = self._get_expense()
+        attachments = _get_attachment_queryset(expense)
+        return Response(MediaFileSerializer(attachments, many=True).data)
+
+    def post(self, request, *args, **kwargs):
+        expense = self._get_expense()
+
+        serializer = AttachFilesSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        files = serializer.validated_data['uids']
+
+        existing_count = _get_attachment_queryset(expense).count()
+        if existing_count + len(files) > MAX_ATTACHMENTS:
+            raise ValidationError({'uids': f'Expense already has the maximum of {MAX_ATTACHMENTS} attachments.'})
+
+        ct = ContentType.objects.get_for_model(Expense)
+        for f in files:
+            f.content_type_fk = ct
+            f.object_id = expense.pk
+            f.save(update_fields=['content_type_fk', 'object_id'])
+
+        for f in files:
+            AttachExpenseFileActivity.log(
+                actor=request.user,
+                target=expense,
+                action_object=f,
+                audience=_get_expense_audience(request.user, expense),
+                group=expense.group_id,
+            )
+
+        return Response(MediaFileSerializer(files, many=True).data, status=status.HTTP_201_CREATED)
+
+
+class DestroyExpenseAttachmentView(APIView):
+    def delete(self, request, *args, **kwargs):
+        expense = get_object_or_404(
+            Expense.objects.of_user(request.user),
+            public_id=self.kwargs['expense_uid'],
+        )
+        attachment = get_object_or_404(
+            _get_attachment_queryset(expense),
+            public_id=self.kwargs['attachment_uid'],
+        )
+        attachment.delete()
+        DetachExpenseFileActivity.log(
+            actor=request.user,
+            target=expense,
+            action_object=attachment,
+            audience=_get_expense_audience(request.user, expense),
+            group=expense.group_id,
+        )
+
+
+class RetrieveExpenseAttachmentUrlView(APIView):
+    def get(self, request, *args, **kwargs):
+        expense = get_object_or_404(
+            Expense.objects.of_user(request.user),
+            public_id=self.kwargs['expense_uid'],
+        )
+        attachment = get_object_or_404(
+            _get_attachment_queryset(expense),
+            public_id=self.kwargs['attachment_uid'],
+        )
+        if not attachment.file:
+            raise ValidationError('File not available.')
+        return Response({'url': attachment.file.url})

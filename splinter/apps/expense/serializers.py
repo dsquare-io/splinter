@@ -101,6 +101,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
 
     expenses = serializers.SerializerMethodField()
     outstanding_balance = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -115,6 +116,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'currency',
             'outstanding_balance',
             'expenses',
+            'attachments',
             'version',
             'paid_by',
             'is_deleted',
@@ -144,6 +146,15 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'created_by',
             Prefetch('children', queryset=child_queryset),
         )
+
+    def get_attachments(self, expense: Expense):
+        from django.contrib.contenttypes.models import ContentType
+        from splinter.apps.media.models import MediaFile
+        from splinter.apps.media.serializers import MediaFileSerializer
+
+        ct = ContentType.objects.get_for_model(Expense)
+        qs = MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
+        return MediaFileSerializer(qs, many=True).data
 
     @extend_schema_field(
         serializers.DecimalField(
