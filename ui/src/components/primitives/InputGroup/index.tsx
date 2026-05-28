@@ -22,9 +22,9 @@ export function InputGroupAddon({
   function handleClick(e: MouseEvent<HTMLDivElement>) {
     onClick?.(e);
     if ((e.target as HTMLElement).closest('[data-slot=input-group-button]')) return;
-    const input = e.currentTarget.closest('[data-slot=input-group]')?.querySelector<HTMLInputElement>(
-      '[data-slot=input-group-control]'
-    );
+    const input = e.currentTarget
+      .closest('[data-slot=input-group]')
+      ?.querySelector<HTMLInputElement>('[data-slot=input-group-control]');
     input?.focus();
   }
 
@@ -45,10 +45,7 @@ export function InputGroupAddon({
   );
 }
 
-export function InputGroupButton({
-  onMouseDown,
-  ...props
-}: ComponentProps<'button'>) {
+export function InputGroupButton({ onMouseDown, ...props }: ComponentProps<'button'>) {
   return (
     <button
       type="button"

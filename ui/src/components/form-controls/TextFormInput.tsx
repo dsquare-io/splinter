@@ -1,10 +1,16 @@
-import type { ComponentProps, ReactNode } from 'react';
-import { useState } from 'react';
+import { useState, type ComponentProps, type ReactNode } from 'react';
 
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/16/solid';
 
 import { FieldError, TextFormField } from '@/components/form';
-import { Description, Input, InputGroup, InputGroupAddon, InputGroupButton, Label } from '@/components/primitives';
+import {
+  Description,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  Label,
+} from '@/components/primitives';
 
 type TextFormInputProps = ComponentProps<typeof TextFormField> &
   Pick<ComponentProps<typeof Input>, 'type' | 'autoComplete' | 'placeholder'> & {
