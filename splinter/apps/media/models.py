@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from splinter.apps.media.managers import MediaFileManager
 from splinter.apps.media.storage import PrivateS3Boto3Storage
@@ -40,3 +42,10 @@ class MediaFile(TimestampedModel, SoftDeleteModel, PublicModel):
 
     def __str__(self):
         return self.original_filename
+
+
+@receiver(post_save, sender=MediaFile)
+def _trigger_post_processing(sender, instance, **kwargs):
+    if instance.object_id and not instance.processed:
+        from splinter.apps.media.tasks import process_media_file
+        process_media_file.delay(instance.pk)
