@@ -5,8 +5,7 @@ import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import type { MediaFile } from '@/api-types/components/schemas.d.ts';
-import type { PendingAttachment } from './useAttachments.ts';
-import { ACCEPTED_TYPES } from './useAttachments.ts';
+import { ACCEPTED_TYPES, type PendingAttachment } from './useAttachments.ts';
 
 interface Props {
   pendingAttachments: PendingAttachment[];
@@ -90,7 +89,7 @@ function AttachmentChip({
       <button
         type="button"
         onClick={onRemove}
-        className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-800"
+        className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-gray-600 text-white hover:bg-gray-800"
         aria-label={`Remove ${label}`}
       >
         <XMarkIcon className="size-3" />
@@ -112,7 +111,8 @@ export function AttachmentStrip({
   const inputRef = useRef<HTMLInputElement>(null);
   const hasItems = existingAttachments.length > 0 || pendingAttachments.length > 0;
 
-  const accept = ACCEPTED_TYPES.filter((t) => t !== 'image/heic' && t !== 'image/heif').join(',') + ',.heic,.heif';
+  const accept =
+    ACCEPTED_TYPES.filter((t) => t !== 'image/heic' && t !== 'image/heif').join(',') + ',.heic,.heif';
 
   return (
     <div className="space-y-2">

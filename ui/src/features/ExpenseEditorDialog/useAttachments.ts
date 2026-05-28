@@ -4,7 +4,14 @@ import { ApiRoutes } from '@/api-types';
 import type { MediaFile } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
 
-export const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'application/pdf'];
+export const ACCEPTED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+  'application/pdf',
+];
 export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export type AttachmentStatus = 'uploading' | 'registered' | 'error';
@@ -37,7 +44,12 @@ export interface UseAttachmentsReturn {
 
 async function convertHeic(file: File): Promise<File> {
   const lower = file.name.toLowerCase();
-  if (file.type === 'image/heic' || file.type === 'image/heif' || lower.endsWith('.heic') || lower.endsWith('.heif')) {
+  if (
+    file.type === 'image/heic' ||
+    file.type === 'image/heif' ||
+    lower.endsWith('.heic') ||
+    lower.endsWith('.heif')
+  ) {
     const heic2any = (await import('heic2any')).default;
     const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
     const resultBlob = Array.isArray(blob) ? blob[0] : blob;
@@ -50,7 +62,7 @@ function uploadToS3(
   url: string,
   fields: Record<string, string>,
   file: File,
-  onProgress: (pct: number) => void,
+  onProgress: (pct: number) => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
@@ -115,7 +127,11 @@ export function useAttachments(): UseAttachmentsReturn {
       for (const file of fileArray) {
         const localId = crypto.randomUUID();
         const lower = file.name.toLowerCase();
-        const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || lower.endsWith('.heic') || lower.endsWith('.heif');
+        const isHeic =
+          file.type === 'image/heic' ||
+          file.type === 'image/heif' ||
+          lower.endsWith('.heic') ||
+          lower.endsWith('.heif');
         const isImage = /\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name) || file.type.startsWith('image/');
         const previewUrl = isImage && !isHeic ? URL.createObjectURL(file) : undefined;
         if (previewUrl) previewUrls.current.set(localId, previewUrl);
@@ -178,7 +194,7 @@ export function useAttachments(): UseAttachmentsReturn {
         })();
       }
     },
-    [existingAttachments.length, pendingAttachments, updatePending],
+    [existingAttachments.length, pendingAttachments, updatePending]
   );
 
   const removePending = useCallback((localId: string) => {
@@ -197,7 +213,7 @@ export function useAttachments(): UseAttachmentsReturn {
 
   const getAttachmentUids = useCallback(
     () => pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!),
-    [pendingAttachments],
+    [pendingAttachments]
   );
 
   const initialize = useCallback((attachments: MediaFile[]) => {

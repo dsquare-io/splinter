@@ -12,7 +12,7 @@ interface Props {
 
 async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise<string> {
   const res = await axiosInstance.get<AttachmentSignedUrl>(
-    urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_URL, { expense_uid: expenseId, attachment_uid: attachmentUid }),
+    urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_URL, { expense_uid: expenseId, attachment_uid: attachmentUid })
   );
   return res.data.url;
 }
@@ -56,7 +56,7 @@ export function ExpenseAttachments({ expenseId, attachments }: Props) {
 
   return (
     <div className="mt-4">
-      <h3 className="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400">Attachments</h3>
+      <h3 className="mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase">Attachments</h3>
       <div className="flex flex-wrap gap-3">
         {attachments.map((a) => (
           <AttachmentTile
