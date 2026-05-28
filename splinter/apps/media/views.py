@@ -24,7 +24,11 @@ class PresignedUploadUrlView(APIView):
         ext = _file_ext(data['filename'])
         key = f'uploads/{alias}{ext}'
 
-        client = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME)
+        client = boto3.client(
+            's3',
+            region_name=settings.AWS_S3_REGION_NAME,
+            endpoint_url=getattr(settings, 'AWS_S3_PRESIGNED_ENDPOINT_URL', None),
+        )
         presigned = client.generate_presigned_post(
             Bucket=settings.AWS_STORAGE_BUCKET_NAME,
             Key=key,

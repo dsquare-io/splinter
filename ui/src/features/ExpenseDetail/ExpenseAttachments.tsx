@@ -33,7 +33,7 @@ function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachme
       className="group relative flex flex-col items-center gap-1"
       title={attachment.original_filename}
     >
-      <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200 bg-gray-100 transition group-hover:border-gray-300">
+      <div className="relative h-16 w-16 rounded-lg border border-gray-200 bg-gray-100 transition group-hover:border-gray-300">
         {isImage && attachment.signed_url ? (
           <img
             src={attachment.signed_url}

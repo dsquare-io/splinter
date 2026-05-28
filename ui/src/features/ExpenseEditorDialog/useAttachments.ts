@@ -115,8 +115,10 @@ export function useAttachments(): UseAttachmentsReturn {
 
       for (const file of fileArray) {
         const localId = crypto.randomUUID();
+        const lower = file.name.toLowerCase();
+        const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || lower.endsWith('.heic') || lower.endsWith('.heif');
         const isImage = /\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name) || file.type.startsWith('image/');
-        const previewUrl = isImage ? URL.createObjectURL(file) : undefined;
+        const previewUrl = isImage && !isHeic ? URL.createObjectURL(file) : undefined;
         if (previewUrl) previewUrls.current.set(localId, previewUrl);
 
         const attachment: PendingAttachment = {
@@ -135,6 +137,12 @@ export function useAttachments(): UseAttachmentsReturn {
         void (async () => {
           try {
             const prepared = await convertHeic(file);
+
+            if (isHeic) {
+              const url = URL.createObjectURL(prepared);
+              previewUrls.current.set(localId, url);
+              updatePending(localId, { previewUrl: url, contentType: prepared.type });
+            }
 
             const presignedRes = await axiosInstance.post(ApiRoutes.PRESIGNED_UPLOAD_URL, {
               filename: prepared.name,

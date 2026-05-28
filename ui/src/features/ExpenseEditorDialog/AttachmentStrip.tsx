@@ -74,7 +74,7 @@ function AttachmentChip({
       transition={{ duration: 0.15 }}
       className="relative flex-shrink-0"
     >
-      <div className="relative h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+      <div className="relative h-14 w-14 rounded-lg border border-gray-200 bg-gray-100">
         {thumbnail}
         {status === 'uploading' && progress !== undefined && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -117,7 +117,7 @@ export function AttachmentStrip({
   return (
     <div className="space-y-2">
       {hasItems && (
-        <div className="flex gap-3 overflow-x-auto pb-1">
+        <div className="flex gap-3 overflow-x-auto pt-1.5 pb-1">
           <AnimatePresence>
             {existingAttachments.map((a) => {
               const isImage = a.content_type.startsWith('image/');
