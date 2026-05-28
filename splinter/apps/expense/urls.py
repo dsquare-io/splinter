@@ -14,6 +14,10 @@ urlpatterns = [
         'expenses/<uuid:expense_uid>/attachments/<uuid:attachment_uid>/url',
         views.RetrieveExpenseAttachmentUrlView.as_view(),
     ),
+    path(
+        'payments/<uuid:payment_uid>/attachments/<uuid:attachment_uid>/url',
+        views.RetrievePaymentAttachmentUrlView.as_view(),
+    ),
     # Friend/Group Expense
     path('friends/<str:friend_uid>/expenses', views.ListFriendExpenseView.as_view()),
     path('groups/<uuid:group_uid>/expenses', views.ListGroupExpenseView.as_view()),

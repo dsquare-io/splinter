@@ -253,3 +253,19 @@ class RetrieveExpenseAttachmentUrlView(APIView):
         if not attachment.file:
             raise ValidationError('File not available.')
         return Response({'url': attachment.file.url})
+
+
+class RetrievePaymentAttachmentUrlView(APIView):
+    @extend_schema(responses={200: AttachmentSignedUrlSerializer})
+    def get(self, request, *args, **kwargs):
+        payment = get_object_or_404(
+            Expense.objects.of_user(request.user).filter(is_payment=True),
+            public_id=self.kwargs['payment_uid'],
+        )
+        attachment = get_object_or_404(
+            _get_attachment_queryset(payment),
+            public_id=self.kwargs['attachment_uid'],
+        )
+        if not attachment.file:
+            raise ValidationError('File not available.')
+        return Response({'url': attachment.file.url})

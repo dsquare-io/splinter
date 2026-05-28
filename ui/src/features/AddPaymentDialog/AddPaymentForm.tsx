@@ -10,6 +10,8 @@ import { Avatar, Button, Money, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
+import { AttachmentStrip } from '@/features/ExpenseEditorDialog/AttachmentStrip.tsx';
+import { useAttachments } from '@/features/ExpenseEditorDialog/useAttachments.ts';
 
 type AddPaymentContentProps = {
   group?: ExtendedGroup;
@@ -21,6 +23,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const formControl = useForm();
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const attachments = useAttachments();
 
   useEffect(() => {
     if (friend?.aggregatedOutstandingBalance) {
@@ -54,6 +57,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         delete data?.friend;
         return {
           ...data,
+          attachmentUids: attachments.getAttachmentUids(),
           ...(paymentDir === 'in'
             ? {
                 receiver: currentUser?.uid,
@@ -168,6 +172,16 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
             formControl.setValue('val', Math.abs(val));
           }
         }}
+      />
+
+      <AttachmentStrip
+        pendingAttachments={attachments.pendingAttachments}
+        existingAttachments={attachments.existingAttachments}
+        validationError={attachments.validationError}
+        onAddFiles={attachments.addFiles}
+        onRemovePending={attachments.removePending}
+        onRemoveExisting={attachments.removeExisting}
+        onClearError={attachments.clearValidationError}
       />
 
       <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">

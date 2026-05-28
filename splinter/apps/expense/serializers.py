@@ -198,6 +198,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     sender = SimpleUserSerializer(source='paid_by', read_only=True)
     receiver = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -213,6 +214,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             'created_by',
             'sender',
             'receiver',
+            'attachments',
             'is_deleted',
         )
 
@@ -222,6 +224,12 @@ class PaymentSerializer(serializers.ModelSerializer):
         sender = splits[0].user
 
         return SimpleUserSerializer(sender).data
+
+    @extend_schema_field(MediaFileSerializer(many=True))
+    def get_attachments(self, expense: Expense):
+        ct = ContentType.objects.get_for_model(Expense)
+        qs = MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
+        return MediaFileSerializer(qs, many=True).data
 
 
 class SettlementSerializer(serializers.ModelSerializer):
@@ -414,6 +422,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
+    attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
 
     def validate(self, attrs):
         errors: dict = {}
@@ -447,7 +456,14 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        return CreatePaymentOperation(self.context['request'].user).execute(validated_data)
+        actor = self.context['request'].user
+        desired_uids = validated_data.pop('attachment_uids', [])
+        payment = CreatePaymentOperation(actor).execute(validated_data)
+        if desired_uids:
+            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
+            if new_files:
+                _link_attachments(payment, new_files, actor)
+        return payment
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):

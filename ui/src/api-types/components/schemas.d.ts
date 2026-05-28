@@ -308,6 +308,7 @@ export interface Payment {
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
   readonly isDeleted: boolean;
+  readonly attachments: MediaFile[];
 }
 
 export type PaymentTyped = {

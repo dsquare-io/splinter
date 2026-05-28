@@ -28,6 +28,7 @@ export const Paths = {
   MFA_STATIC_CODE_LIST: '/api/mfa/static',
   PASSWORD_LOGIN: '/api/authn/password',
   PAYMENT: '/api/payments',
+  PAYMENT_ATTACHMENT_URL: '/api/payments/{payment_uid}/attachments/{attachment_uid}/url',
   PRESIGNED_UPLOAD_URL: '/api/files/presigned-url',
   PROFILE: '/api/user/profile',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
