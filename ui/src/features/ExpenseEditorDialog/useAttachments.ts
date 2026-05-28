@@ -25,8 +25,15 @@ export interface PendingAttachment {
   status: AttachmentStatus;
   progress: number;
   error?: string;
-  uid?: string;
+  alias?: string;
   previewUrl?: string;
+}
+
+export interface AttachmentAlias {
+  alias: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
 }
 
 export interface UseAttachmentsReturn {
@@ -35,7 +42,7 @@ export interface UseAttachmentsReturn {
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
   removeExisting: (uid: string) => void;
-  getAttachmentUids: () => string[];
+  getAttachmentAliases: () => AttachmentAlias[];
   initialize: (attachments: MediaFile[]) => void;
   deletedUids: string[];
   validationError: string | null;
@@ -173,16 +180,9 @@ export function useAttachments(): UseAttachmentsReturn {
 
             await uploadToS3(url, fields, prepared, (pct) => updatePending(localId, { progress: pct }));
 
-            const registerRes = await axiosInstance.post(ApiRoutes.REGISTER_FILE, {
-              alias,
-              originalFilename: prepared.name,
-              contentType: prepared.type,
-              fileSize: prepared.size,
-            });
-
             updatePending(localId, {
               status: 'registered',
-              uid: (registerRes.data as { uid: string }).uid,
+              alias,
               progress: 100,
             });
           } catch (err) {
@@ -211,8 +211,16 @@ export function useAttachments(): UseAttachmentsReturn {
     setDeletedUids((prev) => [...prev, uid]);
   }, []);
 
-  const getAttachmentUids = useCallback(
-    () => pendingAttachments.filter((a) => a.status === 'registered' && a.uid).map((a) => a.uid!),
+  const getAttachmentAliases = useCallback(
+    (): AttachmentAlias[] =>
+      pendingAttachments
+        .filter((a) => a.status === 'registered' && a.alias)
+        .map((a) => ({
+          alias: a.alias!,
+          originalFilename: a.filename,
+          contentType: a.contentType,
+          fileSize: a.fileSize,
+        })),
     [pendingAttachments]
   );
 
@@ -227,7 +235,7 @@ export function useAttachments(): UseAttachmentsReturn {
     addFiles,
     removePending,
     removeExisting,
-    getAttachmentUids,
+    getAttachmentAliases,
     initialize,
     deletedUids,
     validationError,

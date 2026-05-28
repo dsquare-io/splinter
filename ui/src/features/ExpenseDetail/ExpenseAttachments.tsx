@@ -1,27 +1,26 @@
 import { DocumentIcon } from '@heroicons/react/20/solid';
 
 import { ApiRoutes } from '@/api-types';
-import type { AttachmentSignedUrl, MediaFile } from '@/api-types/components/schemas';
+import type { MediaFile, MediaUrl } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
 
 interface Props {
-  expenseId: string;
   attachments: MediaFile[];
 }
 
-async function fetchSignedUrl(expenseId: string, attachmentUid: string): Promise<string> {
-  const res = await axiosInstance.get<AttachmentSignedUrl>(
-    urlWithArgs(ApiRoutes.EXPENSE_ATTACHMENT_URL, { expense_uid: expenseId, attachment_uid: attachmentUid })
+async function fetchMediaUrl(mediaUid: string): Promise<string> {
+  const res = await axiosInstance.get<MediaUrl>(
+    urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid })
   );
   return res.data.url;
 }
 
-function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachment: MediaFile }) {
+function AttachmentTile({ attachment }: { attachment: MediaFile }) {
   const isImage = attachment.contentType?.startsWith('image/') ?? false;
 
   const open = async () => {
-    const url = await fetchSignedUrl(expenseId, attachment.uid);
+    const url = await fetchMediaUrl(attachment.uid);
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -51,7 +50,7 @@ function AttachmentTile({ expenseId, attachment }: { expenseId: string; attachme
   );
 }
 
-export function ExpenseAttachments({ expenseId, attachments }: Props) {
+export function ExpenseAttachments({ attachments }: Props) {
   if (!attachments.length) return null;
 
   return (
@@ -61,7 +60,6 @@ export function ExpenseAttachments({ expenseId, attachments }: Props) {
         {attachments.map((a) => (
           <AttachmentTile
             key={a.uid}
-            expenseId={expenseId}
             attachment={a}
           />
         ))}

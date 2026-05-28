@@ -38,7 +38,7 @@ class PresignedUrlRequestSerializer(serializers.Serializer):
         return value
 
 
-class RegisterFileSerializer(serializers.Serializer):
+class AttachmentAliasInputSerializer(serializers.Serializer):
     alias = serializers.CharField(max_length=32)
     original_filename = serializers.CharField(max_length=255)
     content_type = serializers.CharField(max_length=127)
@@ -47,25 +47,26 @@ class RegisterFileSerializer(serializers.Serializer):
     def validate(self, attrs):
         from splinter.apps.media.storage import PrivateS3Boto3Storage
 
-        alias = attrs['alias']
         ext = _file_ext(attrs['original_filename'])
-        key = f'uploads/{alias}{ext}'
-
+        key = f'uploads/{attrs["alias"]}{ext}'
         if not PrivateS3Boto3Storage().exists(key):
             raise serializers.ValidationError({'alias': 'No file found in S3 for this alias.'})
-
         attrs['_s3_key'] = key
         return attrs
 
-    def create(self, validated_data):
-        return MediaFile.objects.create(
-            file=validated_data['_s3_key'],
-            alias=validated_data['alias'],
-            original_filename=validated_data['original_filename'],
-            content_type=validated_data['content_type'],
-            file_size=validated_data['file_size'],
-            uploaded_by=self.context['request'].user,
-        )
+
+def register_file(alias: str, original_filename: str, content_type: str, file_size: int, uploaded_by, _s3_key: str = None) -> MediaFile:
+    if _s3_key is None:
+        ext = _file_ext(original_filename)
+        _s3_key = f'uploads/{alias}{ext}'
+    return MediaFile.objects.create(
+        file=_s3_key,
+        alias=alias,
+        original_filename=original_filename,
+        content_type=content_type,
+        file_size=file_size,
+        uploaded_by=uploaded_by,
+    )
 
 
 class MediaFileSerializer(serializers.ModelSerializer):
@@ -83,7 +84,7 @@ class MediaFileSerializer(serializers.ModelSerializer):
         return None
 
 
-class AttachmentSignedUrlSerializer(serializers.Serializer):
+class MediaUrlSerializer(serializers.Serializer):
     url = serializers.URLField()
 
 
@@ -91,5 +92,3 @@ class PresignedUrlResponseSerializer(serializers.Serializer):
     url = serializers.URLField()
     fields = serializers.DictField(child=serializers.CharField())
     alias = serializers.CharField()
-
-

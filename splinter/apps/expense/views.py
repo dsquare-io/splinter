@@ -4,12 +4,10 @@ from collections import defaultdict
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
@@ -18,7 +16,6 @@ from splinter.apps.expense.models import (
     Expense,
     ExpenseChangeLog,
     ExpenseParty,
-    ExpenseSplit,
     Settlement,
 )
 from splinter.apps.expense.operations import (
@@ -35,16 +32,13 @@ from splinter.apps.expense.serializers import (
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
 )
-from drf_spectacular.utils import extend_schema
 from splinter.apps.friend.models import Friendship
-from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.media.models import MediaFile
-from splinter.apps.media.serializers import AttachmentSignedUrlSerializer
+from splinter.apps.group.models import GroupMembership
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination
 from splinter.core.serializers import EmptySerializer
-from splinter.core.views import APIView, CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
+from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from splinter.db.urn import ResourceName
 
 
@@ -233,39 +227,3 @@ class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
         serializer.context['referenced_resources'] = referenced_resources_by_pk
         return serializer
 
-
-def _get_attachment_queryset(expense):
-    ct = ContentType.objects.get_for_model(Expense)
-    return MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
-
-
-class RetrieveExpenseAttachmentUrlView(APIView):
-    @extend_schema(responses={200: AttachmentSignedUrlSerializer})
-    def get(self, request, *args, **kwargs):
-        expense = get_object_or_404(
-            Expense.objects.of_user(request.user),
-            public_id=self.kwargs['expense_uid'],
-        )
-        attachment = get_object_or_404(
-            _get_attachment_queryset(expense),
-            public_id=self.kwargs['attachment_uid'],
-        )
-        if not attachment.file:
-            raise ValidationError('File not available.')
-        return Response({'url': attachment.file.url})
-
-
-class RetrievePaymentAttachmentUrlView(APIView):
-    @extend_schema(responses={200: AttachmentSignedUrlSerializer})
-    def get(self, request, *args, **kwargs):
-        payment = get_object_or_404(
-            Expense.objects.of_user(request.user).filter(is_payment=True),
-            public_id=self.kwargs['payment_uid'],
-        )
-        attachment = get_object_or_404(
-            _get_attachment_queryset(payment),
-            public_id=self.kwargs['attachment_uid'],
-        )
-        if not attachment.file:
-            raise ValidationError('File not available.')
-        return Response({'url': attachment.file.url})

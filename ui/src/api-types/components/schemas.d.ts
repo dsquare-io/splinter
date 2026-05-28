@@ -1,448 +1,450 @@
 export interface AccessToken {
-  accessToken: string;
-  /** Format: date-time */
-  expiresAt: string;
+    accessToken: string;
+    /** Format: date-time */
+    expiresAt: string;
 }
 
 export interface Activity {
-  /** Format: uuid */
-  readonly uid: string;
-  readonly urn: string;
-  readonly actor: SimpleUser;
-  readonly group: SimpleGroup;
-  readonly target: Object_;
-  readonly object: Object_;
-  readonly description: string;
-  readonly verb: string;
-  readonly template: string;
-  readonly isRead: boolean;
-  /** Format: decimal */
-  outstandingBalance?: string | null;
-  readonly currency: SimpleCurrency;
-  /** Format: date-time */
-  readonly createdAt: string;
+    /** Format: uuid */
+    readonly uid: string;
+    readonly urn: string;
+    readonly actor: SimpleUser;
+    readonly group: SimpleGroup;
+    readonly target: Object_;
+    readonly object: Object_;
+    readonly description: string;
+    readonly verb: string;
+    readonly template: string;
+    readonly isRead: boolean;
+    /** Format: decimal */
+    outstandingBalance?: string | null;
+    readonly currency: SimpleCurrency;
+    /** Format: date-time */
+    readonly createdAt: string;
 }
 
 export interface AggregatedOutstandingBalance {
-  readonly currency: SimpleCurrency;
-  /** Format: decimal */
-  amount: string;
-  readonly balances: OutstandingBalance[];
+    readonly currency: SimpleCurrency;
+    /** Format: decimal */
+    amount: string;
+    readonly balances: OutstandingBalance[];
 }
 
-export interface AttachmentSignedUrl {
-  /** Format: uri */
-  url: string;
+export interface AttachmentAliasInput {
+    alias: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
 }
 
 export interface AuthTokenData {
-  accessToken: string;
-  refreshToken: string;
-  /** Format: date-time */
-  expiresAt: string;
+    accessToken: string;
+    refreshToken: string;
+    /** Format: date-time */
+    expiresAt: string;
 }
 
 export interface AuthenticateUser {
-  username: string;
-  password: string;
+    username: string;
+    password: string;
 }
 
 export interface AvailableDevice {
-  type: string;
-  name: string;
+    type: string;
+    name: string;
 }
 
 export interface ChallengeMfaDeviceResponse {
-  message: string | null;
+    message: string | null;
 }
 
 export interface ChangePassword {
-  oldPassword: string;
-  password: string;
+    oldPassword: string;
+    password: string;
 }
 
 export interface ChildExpense {
-  /** Format: uuid */
-  readonly uid: string;
-  readonly urn: string;
-  /** Format: decimal */
-  amount: string;
-  description: string;
-  shares: ExpenseShare[];
+    /** Format: uuid */
+    readonly uid: string;
+    readonly urn: string;
+    /** Format: decimal */
+    amount: string;
+    description: string;
+    shares: ExpenseShare[];
 }
 
 export interface Comment {
-  /** Format: uuid */
-  readonly uid: string;
-  readonly urn: string;
-  readonly user: SimpleUser;
-  content: string;
-  /** Format: date-time */
-  readonly createdAt: string;
+    /** Format: uuid */
+    readonly uid: string;
+    readonly urn: string;
+    readonly user: SimpleUser;
+    content: string;
+    /** Format: date-time */
+    readonly createdAt: string;
 }
 
 export interface Country {
-  uid: string;
-  readonly urn: string;
-  name: string;
-  flag: string;
+    uid: string;
+    readonly urn: string;
+    name: string;
+    flag: string;
 }
 
 export type CreateFriendship = CreateUser;
 
 export interface CreateGroup {
-  name: string;
-  members: string[];
+    name: string;
+    members: string[];
 }
 
 export interface CreateGroupMembership {
-  user: string;
+    user: string;
 }
 
 export interface CreateUser {
-  /** Format: email */
-  email: string;
-  name: string;
+    /** Format: email */
+    email: string;
+    name: string;
 }
 
 export type Currency = SimpleCurrency & {
-  readonly country: Country;
+    readonly country: Country;
 };
 
 export interface Device {
-  id: number;
-  type: string;
-  name: string;
+    id: number;
+    type: string;
+    name: string;
 }
 
 export interface EmailVerification {
-  token: string;
+    token: string;
 }
 
 export interface EnableMfaDeviceRequest {
-  params?: {
-    [key: string]: unknown;
-  } | null;
+    params?: {
+        [key: string]: unknown;
+    } | null;
 }
 
 export interface EnableMfaDeviceResponse {
-  /** Format: uri */
-  configUrl: string | null;
+    /** Format: uri */
+    configUrl: string | null;
 }
 
 export interface Error {
-  message: string;
-  /** @description Short code describing the error */
-  code: string;
+    message: string;
+    /** @description Short code describing the error */
+    code: string;
 }
 
 export interface Expense {
-  /** Format: uuid */
-  readonly uid: string;
-  readonly urn: string;
-  /** Format: date-time */
-  datetime: string;
-  description: string;
-  /** Format: decimal */
-  amount: string;
-  group: string;
-  currency: SimpleCurrency;
-  /**
-   * Format: decimal
-   * @description The outstanding balance of current user in this expense document
-   */
-  readonly outstandingBalance: string;
-  readonly expenses: ChildExpense[];
-  readonly attachments: MediaFile[];
-  version?: number;
-  readonly paidBy: SimpleUser;
-  readonly isDeleted: boolean;
-  readonly createdBy: SimpleUser;
+    /** Format: uuid */
+    readonly uid: string;
+    readonly urn: string;
+    /** Format: date-time */
+    datetime: string;
+    description: string;
+    /** Format: decimal */
+    amount: string;
+    group: string;
+    currency: SimpleCurrency;
+    /**
+                 * Format: decimal
+                 * @description The outstanding balance of current user in this expense document
+                 */
+    readonly outstandingBalance: string;
+    readonly expenses: ChildExpense[];
+    readonly attachments: MediaFile[];
+    version?: number;
+    readonly paidBy: SimpleUser;
+    readonly isDeleted: boolean;
+    readonly createdBy: SimpleUser;
 }
 
 export interface ExpenseChangeLog {
-  changes?: string[];
-  readonly activityId: string;
-  readonly references: Object_[];
+    changes?: string[];
+    readonly activityId: string;
+    readonly references: Object_[];
 }
 
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 export type ExpenseOrPaymentOrSettlement = ExpenseTyped | PaymentTyped | SettlementTyped;
 
 export interface ExpenseShare {
-  user: string;
-  readonly userProfile: SimpleUser;
-  /**
-   * @description The share of the user in the expense
-   * @default 1
-   */
-  share: number;
-  /**
-   * Format: decimal
-   * @description The amount of the user in the expense
-   */
-  readonly amount: string;
+    user: string;
+    readonly userProfile: SimpleUser;
+    /**
+                 * @description The share of the user in the expense
+                 * @default 1
+                 */
+    share: number;
+    /**
+                 * Format: decimal
+                 * @description The amount of the user in the expense
+                 */
+    readonly amount: string;
 }
 
 export type ExpenseTyped = {
-  type: ExpenseTypedTypeEnum;
+    type: ExpenseTypedTypeEnum;
 } & Expense & {
     /**
      * @description discriminator enum property added by openapi-typescript
      * @enum {string}
      */
-    type: 'expense';
-  };
-export type ExpenseTypedTypeEnum = 'expense';
+    type: "expense";
+};
+export type ExpenseTypedTypeEnum = "expense";
 export type ExtendedGroup = SimpleGroup & {
-  /** @description Outstanding balances for all group members */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
-  readonly createdBy: SimpleUser;
-  readonly members: SimpleUser[];
+    /** @description Outstanding balances for all group members */
+    readonly outstandingBalances: GroupOutstandingBalance[];
+    /** @description Aggregated outstanding balance for the current user */
+    readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+    readonly createdBy: SimpleUser;
+    readonly members: SimpleUser[];
 };
 
 export interface ForgetPassword {
-  /** Format: email */
-  email: string;
+    /** Format: email */
+    email: string;
 }
 
 export type Friend = SimpleUser & {
-  /** Format: email */
-  email?: string | null;
-  /** @description Outstanding balances for current user. Only top 5 on list view */
-  readonly outstandingBalances: FriendOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+    /** Format: email */
+    email?: string | null;
+    /** @description Outstanding balances for current user. Only top 5 on list view */
+    readonly outstandingBalances: FriendOutstandingBalance[];
+    /** @description Aggregated outstanding balance for the current user */
+    readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
 };
 export type FriendOutstandingBalance = OutstandingBalance & {
-  readonly group: SimpleGroup;
-  readonly friend: SimpleUser;
+    readonly group: SimpleGroup;
+    readonly friend: SimpleUser;
 };
 export type Group = SimpleGroup & {
-  /** @description Top 5 Outstanding balances for current user */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+    /** @description Top 5 Outstanding balances for current user */
+    readonly outstandingBalances: GroupOutstandingBalance[];
+    /** @description Aggregated outstanding balance for the current user */
+    readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
 };
 export type GroupOutstandingBalance = OutstandingBalance & {
-  readonly user: SimpleUser;
-  readonly friend: SimpleUser;
+    readonly user: SimpleUser;
+    readonly friend: SimpleUser;
 };
 
 export interface MediaFile {
-  /** Format: uuid */
-  readonly uid: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
-  processed?: boolean;
-  /** Format: uri */
-  readonly signedUrl: string | null;
+    /** Format: uuid */
+    readonly uid: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
+    processed?: boolean;
+    /** Format: uri */
+    readonly signedUrl: string | null;
+}
+
+export interface MediaUrl {
+    /** Format: uri */
+    url: string;
 }
 
 export interface MfaToken {
-  token: string;
+    token: string;
 }
 
 export interface NotFound {
-  detail: string;
+    detail: string;
 }
 
 export interface Object_ {
-  /** @description Unique identifier of object */
-  readonly uid: string | null;
-  /** @description Unique resource name of object */
-  readonly urn: string | null;
-  /** @description String representation of object */
-  readonly value: string;
+    /** @description Unique identifier of object */
+    readonly uid: string | null;
+    /** @description Unique resource name of object */
+    readonly urn: string | null;
+    /** @description String representation of object */
+    readonly value: string;
 }
 
 export interface OutstandingBalance {
-  /** Format: decimal */
-  amount: string;
-  readonly currency: SimpleCurrency;
+    /** Format: decimal */
+    amount: string;
+    readonly currency: SimpleCurrency;
 }
 
 export interface PaginatedActivityList {
-  nextCursor?: string | null;
-  previousCursor?: string | null;
-  results: Activity[];
+    nextCursor?: string | null;
+    previousCursor?: string | null;
+    results: Activity[];
 }
 
 export interface PaginatedExpenseOrPaymentOrSettlementList {
-  nextCursor?: string | null;
-  previousCursor?: string | null;
-  results: ExpenseOrPaymentOrSettlement[];
+    nextCursor?: string | null;
+    previousCursor?: string | null;
+    results: ExpenseOrPaymentOrSettlement[];
 }
 
 export type PatchedExtendedGroup = SimpleGroup & {
-  /** @description Outstanding balances for all group members */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
-  readonly createdBy: SimpleUser;
-  readonly members: SimpleUser[];
+    /** @description Outstanding balances for all group members */
+    readonly outstandingBalances: GroupOutstandingBalance[];
+    /** @description Aggregated outstanding balance for the current user */
+    readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+    readonly createdBy: SimpleUser;
+    readonly members: SimpleUser[];
 };
 export type PatchedUser = SimpleUser & {
-  firstName?: string;
-  lastName?: string;
-  /** Format: email */
-  email?: string | null;
-  readonly isVerified: boolean;
+    firstName?: string;
+    lastName?: string;
+    /** Format: email */
+    email?: string | null;
+    readonly isVerified: boolean;
 };
 
 export interface Payment {
-  /** Format: uuid */
-  readonly uid: string;
-  readonly urn: string;
-  /** Format: date-time */
-  datetime: string;
-  description: string;
-  /** Format: decimal */
-  amount: string;
-  group: string;
-  currency: SimpleCurrency;
-  readonly createdBy: SimpleUser;
-  readonly sender: SimpleUser;
-  readonly receiver: SimpleUser;
-  readonly isDeleted: boolean;
-  readonly attachments: MediaFile[];
+    /** Format: uuid */
+    readonly uid: string;
+    readonly urn: string;
+    /** Format: date-time */
+    datetime: string;
+    description: string;
+    /** Format: decimal */
+    amount: string;
+    group: string;
+    currency: SimpleCurrency;
+    readonly createdBy: SimpleUser;
+    readonly sender: SimpleUser;
+    readonly receiver: SimpleUser;
+    readonly attachments: MediaFile[];
+    readonly isDeleted: boolean;
 }
 
 export type PaymentTyped = {
-  type: PaymentTypedTypeEnum;
+    type: PaymentTypedTypeEnum;
 } & Payment & {
     /**
      * @description discriminator enum property added by openapi-typescript
      * @enum {string}
      */
-    type: 'payment';
-  };
-export type PaymentTypedTypeEnum = 'payment';
+    type: "payment";
+};
+export type PaymentTypedTypeEnum = "payment";
 
 export interface PresignedUrlRequest {
-  filename: string;
-  contentType: string;
-  fileSize: number;
+    filename: string;
+    contentType: string;
+    fileSize: number;
 }
 
 export interface PresignedUrlResponse {
-  /** Format: uri */
-  url: string;
-  fields: {
-    [key: string]: string;
-  };
-  alias: string;
+    /** Format: uri */
+    url: string;
+    fields: {
+        [key: string]: string;
+    };
+    alias: string;
 }
 
 export interface RefreshAccessToken {
-  refreshToken: string;
-}
-
-export interface RegisterFile {
-  alias: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
+    refreshToken: string;
 }
 
 export interface ResetPassword {
-  uid: string;
-  token: string;
-  password: string;
+    uid: string;
+    token: string;
+    password: string;
 }
 
 export interface Settlement {
-  /** Format: uuid */
-  readonly uid: string;
-  /** Format: date-time */
-  readonly createdAt: string;
+    /** Format: uuid */
+    readonly uid: string;
+    /** Format: date-time */
+    readonly createdAt: string;
 }
 
 export type SettlementTyped = {
-  type: SettlementTypedTypeEnum;
+    type: SettlementTypedTypeEnum;
 } & Settlement & {
     /**
      * @description discriminator enum property added by openapi-typescript
      * @enum {string}
      */
-    type: 'settlement';
-  };
-export type SettlementTypedTypeEnum = 'settlement';
+    type: "settlement";
+};
+export type SettlementTypedTypeEnum = "settlement";
 
 export interface SimpleCurrency {
-  uid: string;
-  readonly urn: string;
-  symbol?: string | null;
+    uid: string;
+    readonly urn: string;
+    symbol?: string | null;
 }
 
 export interface SimpleGroup {
-  readonly uid: string;
-  readonly urn: string;
-  name: string;
+    readonly uid: string;
+    readonly urn: string;
+    name: string;
 }
 
 export interface SimpleUser {
-  uid: string;
-  readonly urn: string;
-  readonly name: string;
-  /** @description Indicates whether the user is active or not. */
-  readonly isActive: boolean;
+    uid: string;
+    readonly urn: string;
+    readonly name: string;
+    /** @description Indicates whether the user is active or not. */
+    readonly isActive: boolean;
 }
 
 export interface UpsertExpense {
-  /** Format: date-time */
-  datetime: string;
-  description?: string;
-  /** @default 0 */
-  version: number;
-  /** @default CurrentUser */
-  paidBy: string;
-  group?: string;
-  /** @description ISO 4217 Currency Code */
-  currency: string;
-  expenses: ChildExpense[];
-  attachmentUids?: string[];
+    /** Format: date-time */
+    datetime: string;
+    description?: string;
+    /** @default 0 */
+    version: number;
+    /** @default CurrentUser */
+    paidBy: string;
+    group?: string;
+    /** @description ISO 4217 Currency Code */
+    currency: string;
+    expenses: ChildExpense[];
+    attachmentUids?: string[];
+    attachmentAliases?: AttachmentAliasInput[];
 }
 
 export interface UpsertPayment {
-  sender: string;
-  receiver: string;
-  /** Format: date-time */
-  datetime: string;
-  description?: string;
-  group?: string;
-  /** @description ISO 4217 Currency Code */
-  currency: string;
-  /** Format: decimal */
-  amount: string;
+    sender: string;
+    receiver: string;
+    /** Format: date-time */
+    datetime: string;
+    description?: string;
+    group?: string;
+    /** @description ISO 4217 Currency Code */
+    currency: string;
+    /** Format: decimal */
+    amount: string;
+    attachmentAliases?: AttachmentAliasInput[];
 }
 
 export type User = SimpleUser & {
-  firstName?: string;
-  lastName?: string;
-  /** Format: email */
-  email?: string | null;
-  readonly isVerified: boolean;
+    firstName?: string;
+    lastName?: string;
+    /** Format: email */
+    email?: string | null;
+    readonly isVerified: boolean;
 };
 
 export interface UserCurrency {
-  /** @description ISO 4217 Currency Code */
-  currency: string;
+    /** @description ISO 4217 Currency Code */
+    currency: string;
 }
 
 export interface UserDeviceInfo {
-  availableDevices: AvailableDevice[];
-  configuredDevices: Device[];
-  authenticationMethods: Device[];
+    availableDevices: AvailableDevice[];
+    configuredDevices: Device[];
+    authenticationMethods: Device[];
 }
 
 export interface UserOutstandingBalance {
-  readonly currency: SimpleCurrency;
-  /** Format: decimal */
-  amount: string;
-  readonly paid: AggregatedOutstandingBalance;
-  readonly borrowed: AggregatedOutstandingBalance;
+    readonly currency: SimpleCurrency;
+    /** Format: decimal */
+    amount: string;
+    readonly paid: AggregatedOutstandingBalance;
+    readonly borrowed: AggregatedOutstandingBalance;
 }

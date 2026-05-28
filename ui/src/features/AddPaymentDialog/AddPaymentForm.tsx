@@ -57,7 +57,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         delete data?.friend;
         return {
           ...data,
-          attachmentUids: attachments.getAttachmentUids(),
+          attachmentAliases: attachments.getAttachmentAliases(),
           ...(paymentDir === 'in'
             ? {
                 receiver: currentUser?.uid,

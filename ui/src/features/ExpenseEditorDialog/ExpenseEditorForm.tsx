@@ -66,7 +66,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { getAttachmentUids, existingAttachments } = useAttachmentsContext();
+  const { getAttachmentAliases, existingAttachments } = useAttachmentsContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;
   const [step, setStep] = useState<Step>('entry');
@@ -145,8 +145,8 @@ function ExpenseEditorFormInner({ expense }: Props) {
         method={isEdit ? 'PUT' : 'POST'}
         transformData={(data) => {
           const keepUids = existingAttachments.map((a) => a.uid);
-          const newUids = getAttachmentUids();
-          return { ...data, attachmentUids: [...keepUids, ...newUids] };
+          const newAliases = getAttachmentAliases();
+          return { ...data, attachmentUids: keepUids, attachmentAliases: newAliases };
         }}
         onSubmitSuccess={async (response, control) => {
           const expenseUid = response.data.uid as string;

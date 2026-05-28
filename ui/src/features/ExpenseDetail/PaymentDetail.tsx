@@ -1,26 +1,26 @@
+import { DocumentIcon } from '@heroicons/react/20/solid';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
 import { ApiRoutes, PaymentTyped, SimpleGroup } from '@/api-types';
+import type { MediaFile, MediaUrl } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
-import type { AttachmentSignedUrl, MediaFile } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
 import { GroupBadge } from './GroupBadge.tsx';
-import { DocumentIcon } from '@heroicons/react/20/solid';
 
-async function fetchPaymentAttachmentUrl(paymentId: string, attachmentUid: string): Promise<string> {
-  const res = await axiosInstance.get<AttachmentSignedUrl>(
-    urlWithArgs(ApiRoutes.PAYMENT_ATTACHMENT_URL, { payment_uid: paymentId, attachment_uid: attachmentUid })
+async function fetchMediaUrl(mediaUid: string): Promise<string> {
+  const res = await axiosInstance.get<MediaUrl>(
+    urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid })
   );
   return res.data.url;
 }
 
-function PaymentAttachmentTile({ paymentId, attachment }: { paymentId: string; attachment: MediaFile }) {
+function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
   const isImage = attachment.contentType?.startsWith('image/') ?? false;
 
   const open = async () => {
-    const url = await fetchPaymentAttachmentUrl(paymentId, attachment.uid);
+    const url = await fetchMediaUrl(attachment.uid);
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -104,7 +104,6 @@ export function PaymentDetail({ payment, group }: { payment: PaymentTyped; group
             {payment.attachments.map((a) => (
               <PaymentAttachmentTile
                 key={a.uid}
-                paymentId={payment.uid}
                 attachment={a}
               />
             ))}

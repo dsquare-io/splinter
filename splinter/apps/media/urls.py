@@ -3,6 +3,6 @@ from django.urls import path
 from splinter.apps.media import views
 
 urlpatterns = [
-    path('files/presigned-url', views.PresignedUploadUrlView.as_view()),
-    path('files', views.RegisterFileView.as_view()),
+    path('media/upload', views.PresignedUploadUrlView.as_view()),
+    path('media/<uuid:media_uid>/url', views.RetrieveMediaUrlView.as_view()),
 ]
