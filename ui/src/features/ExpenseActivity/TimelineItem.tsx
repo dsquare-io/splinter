@@ -49,9 +49,9 @@ export function TimelineItem({ activity, changeLog }: TimelineItemProps) {
             </span>{' '}
             {label}.
           </p>
-          {changeLog?.changes?.length && (
+          {(changeLog?.changes?.length ?? 0) > 0 && (
             <ul className="text-xs text-gray-500">
-              {changeLog.changes.map((string, i) => (
+              {changeLog?.changes?.map((string, i) => (
                 <li key={i}>
                   <Template
                     string={string}
