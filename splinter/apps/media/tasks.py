@@ -2,12 +2,11 @@ import io
 import logging
 from datetime import datetime, timedelta, timezone
 
-import boto3
 from celery import shared_task
 from django.conf import settings
 from django.utils import timezone as django_timezone
 
-from splinter.apps.media.utils import _file_ext
+from splinter.apps.media.utils import _file_ext, s3_client
 
 logger = logging.getLogger(__name__)
 
@@ -17,19 +16,19 @@ def cleanup_orphan_media_files():
     from splinter.apps.media.models import MediaFile
 
     bucket = getattr(settings, 'AWS_STORAGE_BUCKET_NAME', None)
-    s3_client = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME) if bucket else None
+    client = s3_client() if bucket else None
 
     # Stage 1: delete DB orphans + their S3 objects
     for orphan in MediaFile.objects.orphans():
-        if s3_client:
+        if client:
             for key in filter(None, [orphan.file.name if orphan.file else None, orphan.thumbnail_key]):
                 try:
-                    s3_client.delete_object(Bucket=bucket, Key=key)
+                    client.delete_object(Bucket=bucket, Key=key)
                 except Exception:
                     logger.exception('Failed to delete S3 key %s for MediaFile %s', key, orphan.pk)
         orphan.delete(force=True)
 
-    if not s3_client:
+    if not client:
         return
 
     # Stage 2: sweep uploads/ prefix for unregistered keys older than 24 h
@@ -38,7 +37,7 @@ def cleanup_orphan_media_files():
         MediaFile.objects.include_deleted().values_list('alias', flat=True)
     )
 
-    paginator = s3_client.get_paginator('list_objects_v2')
+    paginator = client.get_paginator('list_objects_v2')
     for page in paginator.paginate(Bucket=bucket, Prefix='uploads/'):
         for obj in page.get('Contents', []):
             if obj['LastModified'] >= cutoff:
@@ -47,7 +46,7 @@ def cleanup_orphan_media_files():
             stem = key[len('uploads/'):].split('.')[0]
             if stem not in registered_aliases:
                 try:
-                    s3_client.delete_object(Bucket=bucket, Key=key)
+                    client.delete_object(Bucket=bucket, Key=key)
                 except Exception:
                     logger.exception('Failed to delete orphan S3 key %s', key)
 
@@ -68,7 +67,7 @@ def process_media_file(media_file_pk):
     if not bucket:
         return
 
-    s3_client = boto3.client('s3', region_name=settings.AWS_S3_REGION_NAME)
+    client = s3_client()
     old_key = media_file.file.name
     now = django_timezone.now()
 
@@ -77,12 +76,12 @@ def process_media_file(media_file_pk):
 
     try:
         # Step 1: move uploads/ → attachments/
-        s3_client.copy_object(
+        client.copy_object(
             Bucket=bucket,
             CopySource={'Bucket': bucket, 'Key': old_key},
             Key=new_key,
         )
-        s3_client.delete_object(Bucket=bucket, Key=old_key)
+        client.delete_object(Bucket=bucket, Key=old_key)
 
         content_type = media_file.content_type
         active_key = new_key
@@ -91,7 +90,7 @@ def process_media_file(media_file_pk):
         if content_type in ('image/jpeg', 'image/png', 'image/webp', 'image/heic'):
             from PIL import Image
 
-            raw = s3_client.get_object(Bucket=bucket, Key=new_key)['Body'].read()
+            raw = client.get_object(Bucket=bucket, Key=new_key)['Body'].read()
             img = Image.open(io.BytesIO(raw)).convert('RGB')
 
             # Cap longer side at 2048px
@@ -116,10 +115,10 @@ def process_media_file(media_file_pk):
             buf = io.BytesIO()
             img.save(buf, format=out_format, quality=85)
             buf.seek(0)
-            s3_client.put_object(Bucket=bucket, Key=out_key, Body=buf, ContentType=content_type)
+            client.put_object(Bucket=bucket, Key=out_key, Body=buf, ContentType=content_type)
 
             if out_key != new_key:
-                s3_client.delete_object(Bucket=bucket, Key=new_key)
+                client.delete_object(Bucket=bucket, Key=new_key)
             active_key = out_key
 
             # Thumbnail: 200×200 square crop
@@ -137,7 +136,7 @@ def process_media_file(media_file_pk):
             thumb_buf = io.BytesIO()
             thumb.save(thumb_buf, format='JPEG', quality=85)
             thumb_buf.seek(0)
-            s3_client.put_object(Bucket=bucket, Key=thumb_key, Body=thumb_buf, ContentType='image/jpeg')
+            client.put_object(Bucket=bucket, Key=thumb_key, Body=thumb_buf, ContentType='image/jpeg')
             media_file.thumbnail_key = thumb_key
 
         media_file.file.name = active_key

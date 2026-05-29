@@ -332,6 +332,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/media/{media_uid}/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve Media Thumbnail */
+        get: operations["RetrieveMediaThumbnail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/media/{media_uid}/url": {
         parameters: {
             query?: never;
@@ -358,8 +375,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Presigned Upload Url */
-        post: operations["PresignedUploadUrl"];
+        /** Upload Media File */
+        post: operations["UploadMediaFile"];
         delete?: never;
         options?: never;
         head?: never;
@@ -632,7 +649,6 @@ export interface components {
         AccessToken: import("./components/schemas.d.ts").AccessToken;
         Activity: import("./components/schemas.d.ts").Activity;
         AggregatedOutstandingBalance: import("./components/schemas.d.ts").AggregatedOutstandingBalance;
-        AttachmentAliasInput: import("./components/schemas.d.ts").AttachmentAliasInput;
         AuthTokenData: import("./components/schemas.d.ts").AuthTokenData;
         AuthenticateUser: import("./components/schemas.d.ts").AuthenticateUser;
         AvailableDevice: import("./components/schemas.d.ts").AvailableDevice;
@@ -653,6 +669,7 @@ export interface components {
         Error: import("./components/schemas.d.ts").Error;
         Expense: import("./components/schemas.d.ts").Expense;
         ExpenseChangeLog: import("./components/schemas.d.ts").ExpenseChangeLog;
+        ExpenseFileAttachmentMixin: import("./components/schemas.d.ts").ExpenseFileAttachmentMixin;
         ExpenseOrPayment: import("./components/schemas.d.ts").ExpenseOrPayment;
         ExpenseOrPaymentOrSettlement: import("./components/schemas.d.ts").ExpenseOrPaymentOrSettlement;
         ExpenseShare: import("./components/schemas.d.ts").ExpenseShare;
@@ -660,6 +677,7 @@ export interface components {
         /** @enum {string} */
         ExpenseTypedTypeEnum: import("./components/schemas.d.ts").ExpenseTypedTypeEnum;
         ExtendedGroup: import("./components/schemas.d.ts").ExtendedGroup;
+        FileAttachmentMixin: import("./components/schemas.d.ts").FileAttachmentMixin;
         ForgetPassword: import("./components/schemas.d.ts").ForgetPassword;
         Friend: import("./components/schemas.d.ts").Friend;
         FriendOutstandingBalance: import("./components/schemas.d.ts").FriendOutstandingBalance;
@@ -679,8 +697,6 @@ export interface components {
         PaymentTyped: import("./components/schemas.d.ts").PaymentTyped;
         /** @enum {string} */
         PaymentTypedTypeEnum: import("./components/schemas.d.ts").PaymentTypedTypeEnum;
-        PresignedUrlRequest: import("./components/schemas.d.ts").PresignedUrlRequest;
-        PresignedUrlResponse: import("./components/schemas.d.ts").PresignedUrlResponse;
         RefreshAccessToken: import("./components/schemas.d.ts").RefreshAccessToken;
         ResetPassword: import("./components/schemas.d.ts").ResetPassword;
         Settlement: import("./components/schemas.d.ts").Settlement;
@@ -1055,7 +1071,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "application/json": components["schemas"]["UpsertExpense"];
             };
@@ -1160,7 +1176,7 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "application/json": components["schemas"]["UpsertExpense"];
             };
@@ -2159,6 +2175,53 @@ export interface operations {
             };
         };
     };
+    RetrieveMediaThumbnail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                media_uid: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Request Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+            /** @description Resource Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotFound"];
+                };
+            };
+        };
+    };
     RetrieveMediaUrl: {
         parameters: {
             query?: never;
@@ -2207,25 +2270,21 @@ export interface operations {
             };
         };
     };
-    PresignedUploadUrl: {
+    UploadMediaFile: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PresignedUrlRequest"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["PresignedUrlResponse"];
+                    "application/json": components["schemas"]["MediaFile"];
                 };
             };
             /** @description Bad Request */
@@ -2702,7 +2761,7 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody: {
+        requestBody?: {
             content: {
                 "application/json": components["schemas"]["UpsertPayment"];
             };

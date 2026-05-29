@@ -30,13 +30,6 @@ export interface AggregatedOutstandingBalance {
     readonly balances: OutstandingBalance[];
 }
 
-export interface AttachmentAliasInput {
-    alias: string;
-    originalFilename: string;
-    contentType: string;
-    fileSize: number;
-}
-
 export interface AuthTokenData {
     accessToken: string;
     refreshToken: string;
@@ -168,6 +161,7 @@ export interface ExpenseChangeLog {
     readonly references: Object_[];
 }
 
+export type ExpenseFileAttachmentMixin = FileAttachmentMixin;
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 export type ExpenseOrPaymentOrSettlement = ExpenseTyped | PaymentTyped | SettlementTyped;
 
@@ -204,6 +198,10 @@ export type ExtendedGroup = SimpleGroup & {
     readonly createdBy: SimpleUser;
     readonly members: SimpleUser[];
 };
+
+export interface FileAttachmentMixin {
+    attachmentUids?: string[];
+}
 
 export interface ForgetPassword {
     /** Format: email */
@@ -242,6 +240,8 @@ export interface MediaFile {
     processed?: boolean;
     /** Format: uri */
     readonly signedUrl: string | null;
+    /** Format: uri */
+    readonly thumbnailUrl: string | null;
 }
 
 export interface MediaUrl {
@@ -329,21 +329,6 @@ export type PaymentTyped = {
 };
 export type PaymentTypedTypeEnum = "payment";
 
-export interface PresignedUrlRequest {
-    filename: string;
-    contentType: string;
-    fileSize: number;
-}
-
-export interface PresignedUrlResponse {
-    /** Format: uri */
-    url: string;
-    fields: {
-        [key: string]: string;
-    };
-    alias: string;
-}
-
 export interface RefreshAccessToken {
     refreshToken: string;
 }
@@ -392,7 +377,7 @@ export interface SimpleUser {
     readonly isActive: boolean;
 }
 
-export interface UpsertExpense {
+export type UpsertExpense = ExpenseFileAttachmentMixin & {
     /** Format: date-time */
     datetime: string;
     description?: string;
@@ -404,11 +389,8 @@ export interface UpsertExpense {
     /** @description ISO 4217 Currency Code */
     currency: string;
     expenses: ChildExpense[];
-    attachmentUids?: string[];
-    attachmentAliases?: AttachmentAliasInput[];
-}
-
-export interface UpsertPayment {
+};
+export type UpsertPayment = ExpenseFileAttachmentMixin & {
     sender: string;
     receiver: string;
     /** Format: date-time */
@@ -419,9 +401,7 @@ export interface UpsertPayment {
     currency: string;
     /** Format: decimal */
     amount: string;
-    attachmentAliases?: AttachmentAliasInput[];
-}
-
+};
 export type User = SimpleUser & {
     firstName?: string;
     lastName?: string;

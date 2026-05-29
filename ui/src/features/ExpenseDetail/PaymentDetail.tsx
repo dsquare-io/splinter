@@ -6,8 +6,10 @@ import { ApiRoutes, PaymentTyped, SimpleGroup } from '@/api-types';
 import type { MediaFile, MediaUrl } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
+import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
 import { GroupBadge } from './GroupBadge.tsx';
+
 
 async function fetchMediaUrl(mediaUid: string): Promise<string> {
   const res = await axiosInstance.get<MediaUrl>(
@@ -16,9 +18,13 @@ async function fetchMediaUrl(mediaUid: string): Promise<string> {
   return res.data.url;
 }
 
-function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
-  const isImage = attachment.contentType?.startsWith('image/') ?? false;
+const fallbackIcon = (
+  <div className="flex h-full w-full items-center justify-center">
+    <DocumentIcon className="size-7 text-gray-400" />
+  </div>
+);
 
+function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
   const open = async () => {
     const url = await fetchMediaUrl(attachment.uid);
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -32,16 +38,15 @@ function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
       title={attachment.originalFilename}
     >
       <div className="relative h-16 w-16 rounded-lg border border-gray-200 bg-gray-100 transition group-hover:border-gray-300">
-        {isImage && attachment.signedUrl ? (
-          <img
-            src={attachment.signedUrl}
+        {attachment.thumbnailUrl ? (
+          <ThumbnailImage
+            src={attachment.thumbnailUrl}
             alt={attachment.originalFilename}
             className="h-full w-full object-cover"
+            fallback={fallbackIcon}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <DocumentIcon className="size-7 text-gray-400" />
-          </div>
+          fallbackIcon
         )}
         <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
       </div>

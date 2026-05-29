@@ -1,8 +1,10 @@
 import secrets
 
+from django.conf import settings
+from django.http import StreamingHttpResponse
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.exceptions import UnsupportedMediaType, ValidationError
+from rest_framework.exceptions import NotFound, UnsupportedMediaType, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
@@ -15,7 +17,7 @@ from splinter.apps.media.serializers import (
     MediaUrlSerializer,
     RequestEntityTooLarge,
 )
-from splinter.apps.media.utils import _file_ext
+from splinter.apps.media.utils import _file_ext, s3_client
 from splinter.apps.media.storage import PrivateS3Boto3Storage
 from splinter.core.views import APIView
 
@@ -60,3 +62,26 @@ class RetrieveMediaUrlView(APIView):
         if not attachment.file:
             raise ValidationError('File not available.')
         return Response({'url': attachment.file.url})
+
+
+class RetrieveMediaThumbnailView(APIView):
+    def get(self, request, *args, **kwargs):
+        attachment = get_object_or_404(
+            MediaFile.objects.filter(content_type_fk__isnull=False),
+            public_id=self.kwargs['media_uid'],
+        )
+        if not attachment.thumbnail_key:
+            raise NotFound('Thumbnail not available.')
+
+        bucket = getattr(settings, 'AWS_STORAGE_BUCKET_NAME', None)
+        if not bucket:
+            raise NotFound('Thumbnail not available.')
+
+        s3_obj = s3_client().get_object(Bucket=bucket, Key=attachment.thumbnail_key)
+
+        response = StreamingHttpResponse(
+            s3_obj['Body'].iter_chunks(),
+            content_type='image/jpeg',
+        )
+        response['Cache-Control'] = 'max-age=31536000, immutable'
+        return response

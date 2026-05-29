@@ -1,6 +1,7 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers, status
 from rest_framework.exceptions import APIException
+from rest_framework.reverse import reverse
 
 from splinter.apps.media.models import MediaFile
 
@@ -18,16 +19,28 @@ class RequestEntityTooLarge(APIException):
 class MediaFileSerializer(serializers.ModelSerializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     signed_url = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = MediaFile
-        fields = ('uid', 'original_filename', 'content_type', 'file_size', 'processed', 'signed_url')
+        fields = ('uid', 'original_filename', 'content_type', 'file_size', 'processed', 'signed_url', 'thumbnail_url')
 
     @extend_schema_field(serializers.URLField(allow_null=True))
     def get_signed_url(self, obj):
         if obj.file:
             return obj.file.url
         return None
+
+    @extend_schema_field(serializers.URLField(allow_null=True))
+    def get_thumbnail_url(self, obj):
+        if not obj.thumbnail_key:
+            return None
+        request = self.context.get('request')
+        return reverse(
+            'media-thumbnail',
+            kwargs={'media_uid': obj.public_id},
+            request=request,
+        )
 
 
 class MediaUrlSerializer(serializers.Serializer):

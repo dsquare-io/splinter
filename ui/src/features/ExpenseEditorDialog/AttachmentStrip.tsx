@@ -4,6 +4,7 @@ import { DocumentIcon, PaperClipIcon, XMarkIcon } from '@heroicons/react/20/soli
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { useAttachmentsContext } from '@/features/ExpenseEditorDialog/AttachmentsContext.tsx';
 import { ACCEPTED_TYPES, type PendingAttachment } from './useAttachments.ts';
 
@@ -110,30 +111,32 @@ export function AttachmentStrip() {
       {hasItems && (
         <div className="flex gap-3 overflow-x-auto pt-1.5 pb-1">
           <AnimatePresence>
-            {existingAttachments.map((a) => {
-              const isImage = a.contentType?.startsWith('image/') ?? false;
-              return (
-                <AttachmentChip
-                  key={a.uid}
-                  status="existing"
-                  label={a.originalFilename}
-                  onRemove={() => removeExisting(a.uid)}
-                  thumbnail={
-                    isImage && a.signedUrl ? (
-                      <img
-                        src={a.signedUrl}
-                        alt={a.originalFilename}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <DocumentIcon className="size-6 text-gray-400" />
-                      </div>
-                    )
-                  }
-                />
-              );
-            })}
+            {existingAttachments.map((a) => (
+              <AttachmentChip
+                key={a.uid}
+                status="existing"
+                label={a.originalFilename}
+                onRemove={() => removeExisting(a.uid)}
+                thumbnail={
+                  a.thumbnailUrl ? (
+                    <ThumbnailImage
+                      src={a.thumbnailUrl}
+                      alt={a.originalFilename}
+                      className="h-full w-full object-cover"
+                      fallback={
+                        <div className="flex h-full w-full items-center justify-center">
+                          <DocumentIcon className="size-6 text-gray-400" />
+                        </div>
+                      }
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <DocumentIcon className="size-6 text-gray-400" />
+                    </div>
+                  )
+                }
+              />
+            ))}
 
             {pendingAttachments.map((a) => {
               const isImage = a.contentType.startsWith('image/');

@@ -136,7 +136,7 @@ export function useAttachments(): UseAttachmentsReturn {
             const formData = new FormData();
             formData.append('file', prepared, prepared.name);
 
-            const res = await axiosInstance.post<MediaFile>(ApiRoutes.PRESIGNED_UPLOAD_URL, formData, {
+            const res = await axiosInstance.post<MediaFile>(ApiRoutes.UPLOAD_MEDIA_FILE, formData, {
               headers: { 'Content-Type': 'multipart/form-data' },
               onUploadProgress: (e) => {
                 if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
