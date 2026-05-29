@@ -7,6 +7,8 @@ from celery import shared_task
 from django.conf import settings
 from django.utils import timezone as django_timezone
 
+from splinter.apps.media.utils import _file_ext
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,7 +72,7 @@ def process_media_file(media_file_pk):
     old_key = media_file.file.name
     now = django_timezone.now()
 
-    ext = _key_ext(old_key)
+    ext = _file_ext(old_key)
     new_key = f'attachments/{now.year}/{now.month:02d}/{media_file.alias}{ext}'
 
     try:
@@ -144,8 +146,3 @@ def process_media_file(media_file_pk):
 
     except Exception:
         logger.exception('Failed to process MediaFile pk=%s', media_file_pk)
-
-
-def _key_ext(key: str) -> str:
-    idx = key.rfind('.')
-    return key[idx:] if idx != -1 else ''

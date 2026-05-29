@@ -4,7 +4,6 @@ from django.contrib.contenttypes.models import ContentType
 
 from splinter.apps.expense.models import Expense
 from splinter.apps.friend.models import Friendship
-from splinter.apps.media.models import MediaFile
 from tests.apps.expense.case import ExpenseTestCase
 from tests.apps.media.factories import MediaFileFactory
 from tests.apps.user.factories import UserFactory
@@ -166,7 +165,8 @@ class UpdateExpenseWithAttachmentsTests(ExpenseTestCase, AuthenticatedAPITestCas
         self.assertNotIn(str(removed.public_id), returned_uids)
 
         removed.refresh_from_db()
-        self.assertIsNotNone(removed.removed_at)
+        self.assertIsNone(removed.content_type_fk)
+        self.assertIsNone(removed.object_id)
 
     @patch('splinter.apps.media.tasks.process_media_file')
     def test_update_empty_uids_removes_all(self, _mock_task):
