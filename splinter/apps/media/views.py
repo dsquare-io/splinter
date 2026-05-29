@@ -14,8 +14,8 @@ from splinter.apps.media.serializers import (
     MediaFileSerializer,
     MediaUrlSerializer,
     RequestEntityTooLarge,
-    _file_ext,
 )
+from splinter.apps.media.utils import _file_ext
 from splinter.apps.media.storage import PrivateS3Boto3Storage
 from splinter.core.views import APIView
 

@@ -1,8 +1,6 @@
-import os
-
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers, status
-from rest_framework.exceptions import APIException, UnsupportedMediaType
+from rest_framework.exceptions import APIException
 
 from splinter.apps.media.models import MediaFile
 
@@ -15,11 +13,6 @@ class RequestEntityTooLarge(APIException):
     status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
     default_detail = 'File size exceeds the 10 MB limit.'
     default_code = 'file_too_large'
-
-
-def _file_ext(filename: str) -> str:
-    _, ext = os.path.splitext(filename)
-    return ext.lower()
 
 
 class MediaFileSerializer(serializers.ModelSerializer):

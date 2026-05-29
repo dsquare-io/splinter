@@ -21,8 +21,8 @@ class UploadMediaFileViewTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, 201, response.json())
         data = response.json()
         self.assertIn('uid', data)
-        self.assertIn('original_filename', data)
-        self.assertEqual(data['content_type'], 'image/jpeg')
+        self.assertIn('originalFilename', data)
+        self.assertEqual(data['contentType'], 'image/jpeg')
         self.assertFalse(data['processed'])
 
     @patch('splinter.apps.media.views.PrivateS3Boto3Storage')
