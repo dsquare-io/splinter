@@ -25,6 +25,7 @@ from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
+from splinter.apps.media.mixins import FileAttachmentMixin
 from splinter.apps.media.models import MediaFile
 from splinter.apps.media.serializers import MediaFileSerializer
 from splinter.apps.user.fields import UserSerializerField
@@ -273,35 +274,33 @@ def _get_expense_audience(actor, expense):
     return audience
 
 
-def _link_attachments(expense, files, actor):
-    ct = ContentType.objects.get_for_model(Expense)
-    for f in files:
-        f.content_type_fk = ct
-        f.object_id = expense.pk
-        f.save(update_fields=['content_type_fk', 'object_id'])
-    for f in files:
-        AttachExpenseFileActivity.log(
-            actor=actor,
-            target=expense,
-            action_object=f,
-            audience=_get_expense_audience(actor, expense),
-            group=expense.group_id,
-        )
+class ExpenseFileAttachmentMixin(FileAttachmentMixin):
+    def on_attach(self, obj, files):
+        actor = self.context['request'].user
+        audience = _get_expense_audience(actor, obj)
+        for f in files:
+            AttachExpenseFileActivity.log(
+                actor=actor,
+                target=obj,
+                action_object=f,
+                audience=audience,
+                group=obj.group_id,
+            )
+
+    def on_detach(self, obj, files):
+        actor = self.context['request'].user
+        audience = _get_expense_audience(actor, obj)
+        for f in files:
+            DetachExpenseFileActivity.log(
+                actor=actor,
+                target=obj,
+                action_object=f,
+                audience=audience,
+                group=obj.group_id,
+            )
 
 
-def _unlink_attachments(expense, files, actor):
-    for f in files:
-        f.delete()
-        DetachExpenseFileActivity.log(
-            actor=actor,
-            target=expense,
-            action_object=f,
-            audience=_get_expense_audience(actor, expense),
-            group=expense.group_id,
-        )
-
-
-class UpsertExpenseSerializer(serializers.Serializer):
+class UpsertExpenseSerializer(ExpenseFileAttachmentMixin, serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
     version = serializers.IntegerField(min_value=0, default=0)
@@ -311,7 +310,6 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     expenses = ChildExpenseSerializer(many=True, allow_empty=False)
-    attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
 
     validate_description = staticmethod(validate_description)
 
@@ -373,43 +371,20 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
         return attrs
 
-    def create(self, validated_data):
+    def perform_create(self, validated_data):
         actor = self.context['request'].user
-        desired_uids = validated_data.pop('attachment_uids', [])
-        expense = CreateExpenseOperation(actor).execute(validated_data)
-        if desired_uids:
-            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
-            if new_files:
-                _link_attachments(expense, new_files, actor)
-        return expense
+        return CreateExpenseOperation(actor).execute(validated_data)
 
-    def update(self, instance, validated_data):
+    def perform_update(self, instance, validated_data):
         if instance.version != validated_data['version']:
             raise serializers.ValidationError(
                 'You are trying to update an expense which is updated by someone else. Please refresh and try again.'
             )
         actor = self.context['request'].user
-        desired_uids = set(validated_data.pop('attachment_uids', []))
-        expense = UpdateExpenseOperation(actor, instance).execute(validated_data)
-
-        ct = ContentType.objects.get_for_model(Expense)
-        current_files = list(MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk))
-        current_uids = {f.public_id for f in current_files}
-
-        to_remove = [f for f in current_files if f.public_id not in desired_uids]
-        if to_remove:
-            _unlink_attachments(expense, to_remove, actor)
-
-        new_uids = desired_uids - current_uids
-        if new_uids:
-            new_files = list(MediaFile.objects.attachable().filter(public_id__in=new_uids, uploaded_by=actor))
-            if new_files:
-                _link_attachments(expense, new_files, actor)
-
-        return expense
+        return UpdateExpenseOperation(actor, instance).execute(validated_data)
 
 
-class UpsertPaymentSerializer(serializers.Serializer):
+class UpsertPaymentSerializer(ExpenseFileAttachmentMixin, serializers.Serializer):
     sender = FriendSerializerField(include_self=True)
     receiver = FriendSerializerField(include_self=True)
 
@@ -419,7 +394,6 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
-    attachment_uids = serializers.ListField(child=serializers.UUIDField(), required=False, default=list)
 
     def validate(self, attrs):
         errors: dict = {}
@@ -451,16 +425,13 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
         return attrs
 
+    def perform_create(self, validated_data):
+        actor = self.context['request'].user
+        return CreatePaymentOperation(actor).execute(validated_data)
+
     @transaction.atomic()
     def create(self, validated_data):
-        actor = self.context['request'].user
-        desired_uids = validated_data.pop('attachment_uids', [])
-        payment = CreatePaymentOperation(actor).execute(validated_data)
-        if desired_uids:
-            new_files = list(MediaFile.objects.attachable().filter(public_id__in=desired_uids, uploaded_by=actor))
-            if new_files:
-                _link_attachments(payment, new_files, actor)
-        return payment
+        return super().create(validated_data)
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):

@@ -103,8 +103,6 @@ class CleanupOrphanMediaFilesTests(TestCase):
     @patch('splinter.apps.media.tasks.boto3.client')
     def test_attached_file_not_deleted(self, mock_boto_client):
         """A file with content_type_fk set (attached) must NOT be deleted."""
-        import uuid
-
         from django.contrib.contenttypes.models import ContentType
 
         from splinter.apps.media.models import MediaFile
@@ -120,7 +118,7 @@ class CleanupOrphanMediaFilesTests(TestCase):
         with patch('splinter.apps.media.tasks.process_media_file'):
             attached = MediaFileFactory(
                 content_type_fk=ct,
-                object_id=uuid.uuid4(),
+                object_id=1,
             )
         # Push created_at into the past — orphans() additionally requires content_type_fk=null,
         # so this file should still be safe.

@@ -50,5 +50,5 @@ class ListFriendViewTest(AuthenticatedAPITestCase):
         response = self.client.get('/api/friends?q=user')
         self.assertEqual(response.status_code, 200)
 
-        for user, search_result in zip(users, response.json()['results']):
+        for user, search_result in zip(users, response.json()):
             self.assertEqual(search_result['uid'], user.username)

@@ -191,10 +191,10 @@ class UpdateExpenseWithAttachmentsTests(ExpenseTestCase, AuthenticatedAPITestCas
 
 
 # ---------------------------------------------------------------------------
-# Signed URL — GET /api/expenses/{expense_uid}/attachments/{uid}/url
+# Signed URL — GET /api/media/{uid}/url
 # ---------------------------------------------------------------------------
 
-class RetrieveExpenseAttachmentUrlTests(ExpenseTestCase, AuthenticatedAPITestCase):
+class RetrieveMediaUrlTests(ExpenseTestCase, AuthenticatedAPITestCase):
 
     @classmethod
     def setUpTestData(cls):
@@ -204,7 +204,7 @@ class RetrieveExpenseAttachmentUrlTests(ExpenseTestCase, AuthenticatedAPITestCas
         cls.expense = cls.create_equal_split_expense(100, [cls.user, cls.friend])
 
     def _url(self, attachment):
-        return f'/api/expenses/{self.expense.public_id}/attachments/{attachment.public_id}/url'
+        return f'/api/media/{attachment.public_id}/url'
 
     @patch('splinter.apps.media.storage.PrivateS3Boto3Storage.url', return_value='https://s3.example.com/presigned')
     def test_get_signed_url(self, _mock_url):
@@ -217,12 +217,18 @@ class RetrieveExpenseAttachmentUrlTests(ExpenseTestCase, AuthenticatedAPITestCas
         self.assertIn('url', data)
         self.assertEqual(data['url'], 'https://s3.example.com/presigned')
 
-    def test_get_signed_url_non_participant_returns_404(self):
+    @patch('splinter.apps.media.storage.PrivateS3Boto3Storage.url', return_value='https://s3.example.com/presigned')
+    def test_get_signed_url_non_participant_returns_200(self, _mock_url):
         attachment = _attach_file(_make_attachable_file(self.user), self.expense)
 
         self.outsider.require_mfa = False
         self.client.force_authenticate(self.outsider)
         response = self.client.get(self._url(attachment))
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_signed_url_unattached_file_returns_404(self):
+        unattached = _make_attachable_file(self.user)
+        response = self.client.get(self._url(unattached))
         self.assertEqual(response.status_code, 404)
 
 

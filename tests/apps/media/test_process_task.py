@@ -1,5 +1,4 @@
 import io
-import uuid
 from unittest.mock import MagicMock, call, patch
 
 from django.contrib.contenttypes.models import ContentType
@@ -57,7 +56,7 @@ class ProcessMediaFileTests(TestCase):
         """Create a MediaFile, suppressing the post_save signal's task call."""
         extra = {}
         if with_object_id:
-            extra['object_id'] = uuid.uuid4()
+            extra['object_id'] = 1
             extra['content_type_fk'] = self._ct()
         extra['content_type'] = content_type
         extra['processed'] = processed
@@ -282,7 +281,6 @@ class ProcessMediaFileTests(TestCase):
         mock_s3 = MagicMock()
         mock_boto_client.return_value = mock_s3
 
-        # Use a UUID that definitely doesn't exist
-        process_media_file(uuid.uuid4())
+        process_media_file(999999)
 
         mock_boto_client.assert_not_called()
