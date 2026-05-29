@@ -6,15 +6,12 @@ import { ApiRoutes, PaymentTyped, SimpleGroup } from '@/api-types';
 import type { MediaFile, MediaUrl } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
-import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
+import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { GroupBadge } from './GroupBadge.tsx';
 
-
 async function fetchMediaUrl(mediaUid: string): Promise<string> {
-  const res = await axiosInstance.get<MediaUrl>(
-    urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid })
-  );
+  const res = await axiosInstance.get<MediaUrl>(urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid }));
   return res.data.url;
 }
 

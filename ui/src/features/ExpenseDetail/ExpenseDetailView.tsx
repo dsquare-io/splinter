@@ -57,9 +57,7 @@ export function ExpenseDetailView({ expense, expenseId, group }: ExpenseDetailVi
         )}
       </div>
 
-      <ExpenseAttachments
-        attachments={expense.attachments ?? []}
-      />
+      <ExpenseAttachments attachments={expense.attachments ?? []} />
     </>
   );
 }

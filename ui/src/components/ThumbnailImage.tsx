@@ -36,5 +36,11 @@ export function ThumbnailImage({ src, alt, className, fallback = null }: Props) 
   }, [src]);
 
   if (error || (!blobUrl && !error)) return <>{fallback}</>;
-  return <img src={blobUrl!} alt={alt} className={className} />;
+  return (
+    <img
+      src={blobUrl!}
+      alt={alt}
+      className={className}
+    />
+  );
 }

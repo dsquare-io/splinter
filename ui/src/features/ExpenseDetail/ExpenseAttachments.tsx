@@ -6,15 +6,12 @@ import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
 import { ThumbnailImage } from '@/components/ThumbnailImage';
 
-
 interface Props {
   attachments: MediaFile[];
 }
 
 async function fetchMediaUrl(mediaUid: string): Promise<string> {
-  const res = await axiosInstance.get<MediaUrl>(
-    urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid })
-  );
+  const res = await axiosInstance.get<MediaUrl>(urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid }));
   return res.data.url;
 }
 
