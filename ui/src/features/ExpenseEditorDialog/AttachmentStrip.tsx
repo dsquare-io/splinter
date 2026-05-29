@@ -4,18 +4,8 @@ import { DocumentIcon, PaperClipIcon, XMarkIcon } from '@heroicons/react/20/soli
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import type { MediaFile } from '@/api-types/components/schemas.d.ts';
+import { useAttachmentsContext } from '@/features/ExpenseEditorDialog/AttachmentsContext.tsx';
 import { ACCEPTED_TYPES, type PendingAttachment } from './useAttachments.ts';
-
-interface Props {
-  pendingAttachments: PendingAttachment[];
-  existingAttachments: MediaFile[];
-  onAddFiles: (files: FileList) => void;
-  onRemovePending: (localId: string) => void;
-  onRemoveExisting: (uid: string) => void;
-  validationError: string | null;
-  onClearError: () => void;
-}
 
 function ProgressRing({ progress }: { progress: number }) {
   const r = 16;
@@ -99,15 +89,16 @@ function AttachmentChip({
   );
 }
 
-export function AttachmentStrip({
-  pendingAttachments,
-  existingAttachments,
-  onAddFiles,
-  onRemovePending,
-  onRemoveExisting,
-  validationError,
-  onClearError,
-}: Props) {
+export function AttachmentStrip() {
+  const {
+    pendingAttachments,
+    existingAttachments,
+    addFiles,
+    removePending,
+    removeExisting,
+    validationError,
+    clearValidationError,
+  } = useAttachmentsContext();
   const inputRef = useRef<HTMLInputElement>(null);
   const hasItems = existingAttachments.length > 0 || pendingAttachments.length > 0;
 
@@ -126,7 +117,7 @@ export function AttachmentStrip({
                   key={a.uid}
                   status="existing"
                   label={a.originalFilename}
-                  onRemove={() => onRemoveExisting(a.uid)}
+                  onRemove={() => removeExisting(a.uid)}
                   thumbnail={
                     isImage && a.signedUrl ? (
                       <img
@@ -152,7 +143,7 @@ export function AttachmentStrip({
                   status={a.status}
                   label={a.filename}
                   progress={a.progress}
-                  onRemove={() => onRemovePending(a.localId)}
+                  onRemove={() => removePending(a.localId)}
                   thumbnail={
                     isImage && a.previewUrl ? (
                       <img
@@ -182,7 +173,7 @@ export function AttachmentStrip({
         capture="environment"
         onChange={(e) => {
           if (e.target.files?.length) {
-            onAddFiles(e.target.files);
+            addFiles(e.target.files);
             e.target.value = '';
           }
         }}
@@ -191,7 +182,7 @@ export function AttachmentStrip({
       <button
         type="button"
         onClick={() => {
-          onClearError();
+          clearValidationError();
           inputRef.current?.click();
         }}
         className="flex items-center gap-x-1.5 text-sm text-neutral-500 hover:text-neutral-700"

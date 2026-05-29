@@ -5,7 +5,6 @@ import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { Money } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
-import { useAttachmentsContext } from './AttachmentsContext.tsx';
 import { AttachmentStrip } from './AttachmentStrip.tsx';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
@@ -15,7 +14,6 @@ export function ExpenseEntry() {
   const { currentUser } = useAuth();
   const { participants, hasPreselected } = useParticipantsContext();
   const { setValue } = useFormContext();
-  const attachments = useAttachmentsContext();
 
   const currency = useWatch({ name: 'currency' }) as string | undefined;
 
@@ -70,15 +68,7 @@ export function ExpenseEntry() {
 
       <ExpenseInputList isSimple={isSimple} />
 
-      <AttachmentStrip
-        pendingAttachments={attachments.pendingAttachments}
-        existingAttachments={attachments.existingAttachments}
-        onAddFiles={attachments.addFiles}
-        onRemovePending={attachments.removePending}
-        onRemoveExisting={attachments.removeExisting}
-        validationError={attachments.validationError}
-        onClearError={attachments.clearValidationError}
-      />
+      <AttachmentStrip />
     </div>
   );
 }

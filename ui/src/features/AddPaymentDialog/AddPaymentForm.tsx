@@ -7,11 +7,11 @@ import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/a
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, Money, useDialog } from '@/components/primitives';
+import { AttachmentStrip } from '@/features/ExpenseEditorDialog/AttachmentStrip.tsx';
+import { useAttachments } from '@/features/ExpenseEditorDialog/useAttachments.ts';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
-import { AttachmentStrip } from '@/features/ExpenseEditorDialog/AttachmentStrip.tsx';
-import { useAttachments } from '@/features/ExpenseEditorDialog/useAttachments.ts';
 
 type AddPaymentContentProps = {
   group?: ExtendedGroup;
@@ -174,15 +174,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         }}
       />
 
-      <AttachmentStrip
-        pendingAttachments={attachments.pendingAttachments}
-        existingAttachments={attachments.existingAttachments}
-        validationError={attachments.validationError}
-        onAddFiles={attachments.addFiles}
-        onRemovePending={attachments.removePending}
-        onRemoveExisting={attachments.removeExisting}
-        onClearError={attachments.clearValidationError}
-      />
+      <AttachmentStrip />
 
       <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
         <Button
