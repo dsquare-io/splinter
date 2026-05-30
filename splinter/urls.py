@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/', include('splinter.apps.friend.urls')),
     path('api/', include('splinter.apps.group.urls')),
     path('api/', include('splinter.apps.mfa.urls')),
+    path('api/', include('splinter.apps.parsing.urls')),
     path('api/', include('splinter.apps.user.urls')),
 ]
 

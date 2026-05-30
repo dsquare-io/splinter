@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'splinter.apps.group',
     'splinter.apps.media',
     'splinter.apps.mfa',
+    'splinter.apps.parsing',
     'splinter.apps.user',
 ]
 
