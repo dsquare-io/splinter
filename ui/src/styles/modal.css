@@ -8,6 +8,10 @@
   &[data-exiting] {
     @apply animate-out fade-out;
   }
+
+  &.react-aria-ModalOverlay--fullscreen {
+    @apply max-sm:items-start;
+  }
 }
 
 .react-aria-Modal {
@@ -19,6 +23,18 @@
 
   &[data-entering] {
     @apply animate-in slide-in-from-bottom sm:zoom-in-95 sm:slide-in-from-bottom-0;
+  }
+
+  &.react-aria-Modal--fullscreen {
+    @apply max-sm:flex max-sm:h-[calc(100dvh-var(--keyboard-height,0px))] max-sm:flex-col max-sm:rounded-none;
+
+    &[data-exiting] {
+      @apply max-sm:animate-out max-sm:slide-out-to-bottom-4;
+    }
+
+    &[data-entering] {
+      @apply max-sm:animate-in max-sm:slide-in-from-bottom-4;
+    }
   }
 }
 
@@ -36,4 +52,8 @@
 
 .react-aria-Dialog {
   @apply px-4 pt-5 pb-4 focus:outline-hidden sm:p-6;
+
+  &.react-aria-Dialog--fullscreen {
+    @apply max-sm:min-h-0 max-sm:flex-1 max-sm:overflow-y-auto;
+  }
 }

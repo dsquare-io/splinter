@@ -111,7 +111,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
 
   const description =
     step === 'entry'
-      ? 'Split costs with friends or a group, equally or customized.'
+      ? 'Split costs with friends or a group.'
       : step === 'options'
         ? 'Set the currency and date for this expense.'
         : expenseCount === 1
@@ -141,7 +141,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         {step === 'shares' && <ExpenseShares />}
         {step === 'options' && <ExpenseOptions />}
 
-        <div className="-mx-4 mt-4 flex justify-between px-4 pt-2 sm:-mx-6 sm:px-6">
+        <div className="sticky -bottom-4 -mx-4 mt-4 -mb-4 flex justify-between border-t border-neutral-200 bg-white px-4 pt-3 pb-7 sm:static sm:-mx-6 sm:mb-0 sm:border-0 sm:px-6 sm:pt-2 sm:pb-0">
           {step === 'entry' ? (
             <>
               <div className="flex gap-2">
