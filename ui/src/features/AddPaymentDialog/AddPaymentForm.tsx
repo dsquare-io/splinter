@@ -7,6 +7,8 @@ import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/a
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, Money, useDialog } from '@/components/primitives';
+import { AttachmentStrip } from '@/features/ExpenseEditorDialog/AttachmentStrip.tsx';
+import { useAttachments } from '@/features/ExpenseEditorDialog/useAttachments.ts';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
@@ -21,6 +23,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const formControl = useForm();
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const attachments = useAttachments();
 
   useEffect(() => {
     if (friend?.aggregatedOutstandingBalance) {
@@ -54,6 +57,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         delete data?.friend;
         return {
           ...data,
+          attachmentUids: attachments.getAttachmentUids(),
           ...(paymentDir === 'in'
             ? {
                 receiver: currentUser?.uid,
@@ -169,6 +173,8 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           }
         }}
       />
+
+      <AttachmentStrip />
 
       <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
         <Button

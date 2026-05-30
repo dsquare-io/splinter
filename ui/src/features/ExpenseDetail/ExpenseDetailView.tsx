@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 
 import { ExpenseTyped, SimpleGroup } from '@/api-types';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
+import { ExpenseAttachments } from './ExpenseAttachments.tsx';
 import { ExpenseItems } from './ExpenseItems.tsx';
 import { ExpenseItemShares } from './ExpenseItemShares.tsx';
 import { GroupBadge } from './GroupBadge.tsx';
@@ -55,6 +56,8 @@ export function ExpenseDetailView({ expense, expenseId, group }: ExpenseDetailVi
           />
         )}
       </div>
+
+      <ExpenseAttachments attachments={expense.attachments ?? []} />
     </>
   );
 }

@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'splinter.apps.expense',
     'splinter.apps.friend',
     'splinter.apps.group',
+    'splinter.apps.media',
     'splinter.apps.mfa',
     'splinter.apps.user',
 ]
@@ -47,3 +48,5 @@ CURRENCY_DEFAULT_USER_PREFERENCE = 'PKR'
 GROUP_MAX_ALLOWED_MEMBERS = 64
 GROUP_MAX_ALLOWED_MEMBERSHIPS = 64
 FRIEND_MAX_ALLOWED_FRIENDS = 64
+
+MEDIA_GARBAGE_COLLECTION_DELTA = timedelta(hours=1)
