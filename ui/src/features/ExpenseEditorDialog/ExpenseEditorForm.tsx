@@ -11,10 +11,12 @@ import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
+import { AttachmentsContext, useAttachmentsContext } from './AttachmentsContext.tsx';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import { ExpenseOptions } from './ExpenseOptions.tsx';
 import { ExpenseParticipantsProvider, useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ExpenseShares } from './ExpenseShares.tsx';
+import { useAttachments } from './useAttachments.ts';
 
 type Step = 'entry' | 'shares' | 'options';
 
@@ -43,9 +45,20 @@ function buildDefaultValues(expense: Expense) {
 }
 
 export function ExpenseEditorForm({ expense }: Props) {
+  const attachments = useAttachments();
+
+  useEffect(() => {
+    if (expense?.attachments) {
+      attachments.initialize(expense.attachments);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ExpenseParticipantsProvider initialExpense={expense}>
-      <ExpenseEditorFormInner expense={expense} />
+      <AttachmentsContext.Provider value={attachments}>
+        <ExpenseEditorFormInner expense={expense} />
+      </AttachmentsContext.Provider>
     </ExpenseParticipantsProvider>
   );
 }
@@ -53,6 +66,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { getAttachmentUids, existingAttachments } = useAttachmentsContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;
   const [step, setStep] = useState<Step>('entry');
@@ -129,8 +143,14 @@ function ExpenseEditorFormInner({ expense }: Props) {
         className="flex flex-1 flex-col"
         action={action}
         method={isEdit ? 'PUT' : 'POST'}
+        transformData={(data) => {
+          const keepUids = existingAttachments.map((a) => a.uid);
+          const newUids = getAttachmentUids();
+          return { ...data, attachmentUids: [...keepUids, ...newUids] };
+        }}
         onSubmitSuccess={async (response, control) => {
-          await invalidateQueriesForExpense({ uid: response.data.uid, group: control.getValues('group') });
+          const expenseUid = response.data.uid as string;
+          await invalidateQueriesForExpense({ uid: expenseUid, group: control.getValues('group') });
           close();
         }}
       >

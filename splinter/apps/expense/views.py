@@ -7,7 +7,9 @@ from typing import TYPE_CHECKING
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
+from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
@@ -31,7 +33,7 @@ from splinter.apps.expense.serializers import (
     UserOutstandingBalanceSerializer,
 )
 from splinter.apps.friend.models import Friendship
-from splinter.apps.group.models import Group, GroupMembership
+from splinter.apps.group.models import GroupMembership
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination
@@ -224,3 +226,4 @@ class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
 
         serializer.context['referenced_resources'] = referenced_resources_by_pk
         return serializer
+

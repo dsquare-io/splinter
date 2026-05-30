@@ -148,6 +148,7 @@ export interface Expense {
    */
   readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
+  readonly attachments: MediaFile[];
   version?: number;
   readonly paidBy: SimpleUser;
   readonly isDeleted: boolean;
@@ -160,6 +161,7 @@ export interface ExpenseChangeLog {
   readonly references: Object_[];
 }
 
+export type ExpenseFileAttachmentMixin = FileAttachmentMixin;
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 export type ExpenseOrPaymentOrSettlement = ExpenseTyped | PaymentTyped | SettlementTyped;
 
@@ -197,6 +199,10 @@ export type ExtendedGroup = SimpleGroup & {
   readonly members: SimpleUser[];
 };
 
+export interface FileAttachmentMixin {
+  attachmentUids?: string[];
+}
+
 export interface ForgetPassword {
   /** Format: email */
   email: string;
@@ -224,6 +230,24 @@ export type GroupOutstandingBalance = OutstandingBalance & {
   readonly user: SimpleUser;
   readonly friend: SimpleUser;
 };
+
+export interface MediaFile {
+  /** Format: uuid */
+  readonly uid: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+  processed?: boolean;
+  /** Format: uri */
+  readonly signedUrl: string | null;
+  /** Format: uri */
+  readonly thumbnailUrl: string | null;
+}
+
+export interface MediaUrl {
+  /** Format: uri */
+  url: string;
+}
 
 export interface MfaToken {
   token: string;
@@ -290,6 +314,7 @@ export interface Payment {
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
+  readonly attachments: MediaFile[];
   readonly isDeleted: boolean;
 }
 
@@ -352,7 +377,7 @@ export interface SimpleUser {
   readonly isActive: boolean;
 }
 
-export interface UpsertExpense {
+export type UpsertExpense = ExpenseFileAttachmentMixin & {
   /** Format: date-time */
   datetime: string;
   description?: string;
@@ -364,9 +389,8 @@ export interface UpsertExpense {
   /** @description ISO 4217 Currency Code */
   currency: string;
   expenses: ChildExpense[];
-}
-
-export interface UpsertPayment {
+};
+export type UpsertPayment = ExpenseFileAttachmentMixin & {
   sender: string;
   receiver: string;
   /** Format: date-time */
@@ -377,8 +401,7 @@ export interface UpsertPayment {
   currency: string;
   /** Format: decimal */
   amount: string;
-}
-
+};
 export type User = SimpleUser & {
   firstName?: string;
   lastName?: string;

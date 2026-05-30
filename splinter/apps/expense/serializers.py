@@ -1,14 +1,17 @@
 import re
 from decimal import Decimal
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Prefetch
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
+from splinter.apps.expense.activities import AttachExpenseFileActivity, DetachExpenseFileActivity
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
     Expense,
@@ -22,6 +25,9 @@ from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
+from splinter.apps.media.mixins import FileAttachmentMixin
+from splinter.apps.media.models import MediaFile
+from splinter.apps.media.serializers import MediaFileSerializer
 from splinter.apps.user.fields import UserSerializerField
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -101,6 +107,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
 
     expenses = serializers.SerializerMethodField()
     outstanding_balance = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -115,6 +122,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'currency',
             'outstanding_balance',
             'expenses',
+            'attachments',
             'version',
             'paid_by',
             'is_deleted',
@@ -144,6 +152,12 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'created_by',
             Prefetch('children', queryset=child_queryset),
         )
+
+    @extend_schema_field(MediaFileSerializer(many=True))
+    def get_attachments(self, expense: Expense):
+        ct = ContentType.objects.get_for_model(Expense)
+        qs = MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
+        return MediaFileSerializer(qs, many=True).data
 
     @extend_schema_field(
         serializers.DecimalField(
@@ -185,6 +199,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     sender = SimpleUserSerializer(source='paid_by', read_only=True)
     receiver = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -200,6 +215,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             'created_by',
             'sender',
             'receiver',
+            'attachments',
             'is_deleted',
         )
 
@@ -209,6 +225,12 @@ class PaymentSerializer(serializers.ModelSerializer):
         sender = splits[0].user
 
         return SimpleUserSerializer(sender).data
+
+    @extend_schema_field(MediaFileSerializer(many=True))
+    def get_attachments(self, expense: Expense):
+        ct = ContentType.objects.get_for_model(Expense)
+        qs = MediaFile.objects.filter(content_type_fk=ct, object_id=expense.pk)
+        return MediaFileSerializer(qs, many=True).data
 
 
 class SettlementSerializer(serializers.ModelSerializer):
@@ -244,7 +266,41 @@ class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
         return super().get_discriminator(instance)
 
 
-class UpsertExpenseSerializer(serializers.Serializer):
+def _get_expense_audience(actor, expense):
+    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
+    user_ids.add(expense.paid_by_id)
+    audience = {uid: {} for uid in user_ids}
+    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
+    return audience
+
+
+class ExpenseFileAttachmentMixin(FileAttachmentMixin):
+    def on_attach(self, obj, files):
+        actor = self.context['request'].user
+        audience = _get_expense_audience(actor, obj)
+        for f in files:
+            AttachExpenseFileActivity.log(
+                actor=actor,
+                target=obj,
+                action_object=f,
+                audience=audience,
+                group=obj.group_id,
+            )
+
+    def on_detach(self, obj, files):
+        actor = self.context['request'].user
+        audience = _get_expense_audience(actor, obj)
+        for f in files:
+            DetachExpenseFileActivity.log(
+                actor=actor,
+                target=obj,
+                action_object=f,
+                audience=audience,
+                group=obj.group_id,
+            )
+
+
+class UpsertExpenseSerializer(ExpenseFileAttachmentMixin, serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
     version = serializers.IntegerField(min_value=0, default=0)
@@ -315,19 +371,20 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
         return attrs
 
-    def create(self, validated_data):
-        return CreateExpenseOperation(self.context['request'].user).execute(validated_data)
+    def perform_create(self, validated_data):
+        actor = self.context['request'].user
+        return CreateExpenseOperation(actor).execute(validated_data)
 
-    def update(self, instance, validated_data):
+    def perform_update(self, instance, validated_data):
         if instance.version != validated_data['version']:
             raise serializers.ValidationError(
                 'You are trying to update an expense which is updated by someone else. Please refresh and try again.'
             )
+        actor = self.context['request'].user
+        return UpdateExpenseOperation(actor, instance).execute(validated_data)
 
-        return UpdateExpenseOperation(self.context['request'].user, instance).execute(validated_data)
 
-
-class UpsertPaymentSerializer(serializers.Serializer):
+class UpsertPaymentSerializer(ExpenseFileAttachmentMixin, serializers.Serializer):
     sender = FriendSerializerField(include_self=True)
     receiver = FriendSerializerField(include_self=True)
 
@@ -368,9 +425,13 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
         return attrs
 
+    def perform_create(self, validated_data):
+        actor = self.context['request'].user
+        return CreatePaymentOperation(actor).execute(validated_data)
+
     @transaction.atomic()
     def create(self, validated_data):
-        return CreatePaymentOperation(self.context['request'].user).execute(validated_data)
+        return super().create(validated_data)
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):

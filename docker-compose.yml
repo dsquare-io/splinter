@@ -1,6 +1,7 @@
 volumes:
   postgresql:
   node_modules:
+  minio_data:
 
 services:
   database:
@@ -41,11 +42,17 @@ services:
       - PUBLIC_DOMAIN=localhost:5173
       - CELERY_TASK_ALWAYS_EAGER=True
       - REDIS_HOST=splinter-cache.local
+      - AWS_S3_ENDPOINT_URL=http://splinter-minio.local:9000
+      - AWS_S3_PRESIGNED_ENDPOINT_URL=http://localhost:9000
+      - AWS_S3_REGION_NAME=us-east-1
+      - AWS_STORAGE_BUCKET_NAME=splinter-media
+      - AWS_ACCESS_KEY_ID=splinter
+      - AWS_SECRET_ACCESS_KEY=splinter123
       - POSTGRES_HOSTNAME=splinter-database.local
       - POSTGRES_USERNAME=splinter
       - POSTGRES_PASSWORD=splinter
     command: >
-      bash -c "
+      sh -c "
         splinter migrate &&
         splinter runserver 0.0.0.0:8000
       "
@@ -55,6 +62,40 @@ services:
     volumes:
       - .:/app
       - ./emails/:/tmp/splinter-emails/
+
+  minio:
+    container_name: splinter-minio
+    hostname: splinter-minio.local
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=splinter
+      - MINIO_ROOT_PASSWORD=splinter123
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio-init:
+    container_name: splinter-minio-init
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        mc alias set local http://splinter-minio.local:9000 splinter splinter123 &&
+        mc mb --ignore-existing local/splinter-media &&
+        mc anonymous set download local/splinter-media &&
+        printf '{\"CORSRules\":[{\"AllowedHeaders\":[\"*\"],\"AllowedMethods\":[\"GET\",\"PUT\",\"POST\",\"DELETE\",\"HEAD\"],\"AllowedOrigins\":[\"*\"],\"ExposeHeaders\":[\"ETag\"]}]}' > /tmp/cors.json &&
+        mc cors set local/splinter-media /tmp/cors.json
+      "
 
   ui:
     container_name: splinter-ui

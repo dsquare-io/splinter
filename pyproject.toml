@@ -33,7 +33,12 @@ dependencies = [
     "django-redis",
     "user-agents",
     "drf-spectacular",
-    "pyjwt[crypto]"
+    "pyjwt[crypto]",
+    "Pillow",
+    "django-storages[s3]",
+    "instructor",
+    "pydantic",
+    "openai"
 ]
 dynamic = ["version"]
 
