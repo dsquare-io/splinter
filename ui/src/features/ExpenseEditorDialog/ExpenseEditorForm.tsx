@@ -126,7 +126,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
       />
       <Form
         control={form}
-        className="flex flex-col"
+        className="flex flex-1 flex-col"
         action={action}
         method={isEdit ? 'PUT' : 'POST'}
         onSubmitSuccess={async (response, control) => {
@@ -141,7 +141,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         {step === 'shares' && <ExpenseShares />}
         {step === 'options' && <ExpenseOptions />}
 
-        <div className="sticky -bottom-4 -mx-4 mt-4 -mb-4 flex justify-between border-t border-neutral-200 bg-white px-4 pt-3 pb-7 sm:static sm:-mx-6 sm:mb-0 sm:border-0 sm:px-6 sm:pt-2 sm:pb-0">
+        <div className="sticky -bottom-4 -mx-4 mt-auto -mb-4 flex justify-between border-t border-neutral-200 bg-white px-4 pt-3 pb-7 sm:static sm:-mx-6 sm:mt-4 sm:mb-0 sm:border-0 sm:px-6 sm:pt-2 sm:pb-0">
           {step === 'entry' ? (
             <>
               <div className="flex gap-2">
