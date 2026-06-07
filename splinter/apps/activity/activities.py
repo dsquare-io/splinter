@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Union
 from django.db.models import Model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from splinter.apps.activity.models import Activity, Comment
 
@@ -48,13 +49,14 @@ def handle_comment_save(instance: Comment, created: bool, **kwargs):
 
     original_activity = instance.activity
 
-    audience = set(original_activity.audience.values_list('pk', flat=True))
-    audience.add(original_activity.actor_id)
+    audience = {user_id: {} for user_id in original_activity.audience.values_list('pk', flat=True)}
+    audience.setdefault(original_activity.actor_id, {})
+    audience.setdefault(instance.user_id, {})['read_at'] = timezone.now()
 
     CommentActivity.log(
         actor=instance.user_id,
         target=instance,
-        audience=list(audience),
+        audience=audience,
         group=original_activity.group_id,
         action_object=original_activity.action_object,
     )
