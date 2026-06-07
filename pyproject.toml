@@ -33,11 +33,12 @@ dependencies = [
     "django-redis",
     "user-agents",
     "drf-spectacular",
-    "pyjwt[crypto]"
+    "pyjwt[crypto]",
+    "gunicorn",
 ]
 dynamic = ["version"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "isort",
     "black",
@@ -45,6 +46,7 @@ dev = [
     "parameterized",
     "factory_boy",
     "types-factory-boy",
+    "django-stubs",
 ]
 
 [project.scripts]

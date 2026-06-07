@@ -45,7 +45,7 @@ services:
       - POSTGRES_USERNAME=splinter
       - POSTGRES_PASSWORD=splinter
     command: >
-      bash -c "
+      sh -c "
         splinter migrate &&
         splinter runserver 0.0.0.0:8000
       "
