@@ -89,7 +89,7 @@ export function ParticipantsSelector() {
   return (
     <div
       ref={triggerRef}
-      className="-mx-4 border-y border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
+      className="-mx-4 border-b border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
     >
       <ComboBox
         selectionMode="multiple"

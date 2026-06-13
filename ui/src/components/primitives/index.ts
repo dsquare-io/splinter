@@ -6,7 +6,7 @@ export { Button, IconButton } from './Button';
 export { Checkbox } from './Checkbox';
 export { Description } from './Description';
 export { DropdownMenu, DropdownMenuItem } from './DropdownMenu';
-export { Dialog, DialogHeader, useDialog } from './Dialog';
+export { Dialog, DialogHeader, useDialog, DialogFooter } from './Dialog';
 export { EmptyState } from './EmptyState';
 export { Input } from './Input';
 export { InputGroup, InputGroupAddon, InputGroupButton } from './InputGroup';

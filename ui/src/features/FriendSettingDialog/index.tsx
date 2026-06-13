@@ -10,7 +10,7 @@ export function FriendSettingDialog({ friend }: FriendSettingsDialogProps) {
   return (
     <Dialog>
       <DialogHeader title="Friend Settings" />
-      <div className="flex items-center gap-x-3">
+      <div className="mt-4 flex items-center gap-2">
         <Avatar
           fallback={friend.name}
           className="size-10 shrink-0"

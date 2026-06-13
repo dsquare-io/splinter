@@ -6,7 +6,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/api-types';
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
-import { Avatar, Button, Money, useDialog } from '@/components/primitives';
+import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
@@ -45,7 +45,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
 
   return (
     <Form
-      className="space-y-4"
+      className="mt-4 flex h-full flex-col space-y-4"
       control={formControl}
       transformData={(data) => {
         const paymentDir = data?.paymentDir ?? 'out';
@@ -170,7 +170,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         }}
       />
 
-      <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
+      <DialogFooter className="flex justify-end gap-2">
         <Button
           variant="plain"
           onPress={close}
@@ -179,7 +179,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           Cancel
         </Button>
         <SubmitButton>Add Payment</SubmitButton>
-      </div>
+      </DialogFooter>
     </Form>
   );
 }

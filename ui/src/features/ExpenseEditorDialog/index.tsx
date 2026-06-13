@@ -13,7 +13,6 @@ export function ExpenseEditorDialog({ expense, isOpen, onOpenChange }: ExpenseEd
     <Dialog
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      mobileFullscreen
     >
       <ExpenseEditorForm expense={expense} />
     </Dialog>

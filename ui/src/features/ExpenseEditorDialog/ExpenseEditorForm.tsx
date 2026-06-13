@@ -8,7 +8,7 @@ import { ApiRoutes, type SimpleUser } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
-import { Button, DialogHeader, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, DialogHeader, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
@@ -141,7 +141,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         {step === 'shares' && <ExpenseShares />}
         {step === 'options' && <ExpenseOptions />}
 
-        <div className="sticky -bottom-4 -mx-4 mt-auto -mb-4 flex justify-between border-t border-neutral-200 bg-white px-4 pt-3 pb-7 sm:static sm:-mx-6 sm:mt-4 sm:mb-0 sm:border-0 sm:px-6 sm:pt-2 sm:pb-0">
+        <DialogFooter className="flex justify-between gap-2">
           {step === 'entry' ? (
             <>
               <div className="flex gap-2">
@@ -174,7 +174,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
               Back
             </Button>
           )}
-        </div>
+        </DialogFooter>
       </Form>
     </>
   );

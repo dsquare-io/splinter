@@ -1,7 +1,7 @@
 import { ApiRoutes } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
-import { Button, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, useDialog } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
@@ -10,7 +10,7 @@ export function AddFriendForm() {
 
   return (
     <Form
-      className="space-y-4"
+      className="mt-4 flex h-full flex-col space-y-4"
       action={ApiRoutes.FRIEND_LIST}
       onSubmitSuccess={() =>
         queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST)).then(close)
@@ -39,7 +39,7 @@ export function AddFriendForm() {
         description="Only needed if your friend hasn't joined yet"
       />
 
-      <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
+      <DialogFooter className="flex justify-end gap-2">
         <Button
           variant="plain"
           onPress={close}
@@ -48,7 +48,7 @@ export function AddFriendForm() {
           Cancel
         </Button>
         <SubmitButton>Invite Friend</SubmitButton>
-      </div>
+      </DialogFooter>
     </Form>
   );
 }

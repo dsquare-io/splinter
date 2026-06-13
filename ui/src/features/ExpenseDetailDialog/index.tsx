@@ -45,6 +45,7 @@ export function ExpenseDetailDialog() {
       variant="drawer"
       isOpen={isOpen}
       onOpenChange={setIsOpen}
+      isDismissable
     >
       <ExpenseDialogHeader expenseId={expense} />
 
