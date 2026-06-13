@@ -307,6 +307,8 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
         )
 
         if is_multiple:
+            self._sync_children(parent, old_children, new_specs)
+
             was_generated = self._is_description_generated(parent.description, old_children)
 
             provided_desc = data.get('description')
@@ -327,7 +329,6 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
 
             parent.amount = sum(s['amount'] for s in new_specs)
             parent.save()
-            self._sync_children(parent, old_children, new_specs)
         else:
             # Case: Single Expense
             spec = new_specs[0]

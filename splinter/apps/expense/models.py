@@ -137,6 +137,9 @@ class ExpenseChangeLog(models.Model):
     class Meta:
         db_table = 'expense_change_logs'
 
+    def __str__(self):
+        return f'{self.expense} - {self.changes}'
+
 
 class OutstandingBalance(TimestampedModel, SoftDeleteModel):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
