@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -8,7 +9,7 @@ import { ApiRoutes, type SimpleUser } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
-import { Button, DialogFooter, DialogHeader, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
@@ -136,10 +137,22 @@ function ExpenseEditorFormInner({ expense }: Props) {
       <DialogHeader
         title={isEdit ? 'Edit Expense' : 'Add Expense'}
         description={description}
+        prefix={
+          step !== 'entry' && (
+            <IconButton
+              variant="plain"
+              aria-label="Back"
+              onPress={() => setStep('entry')}
+              className="-ml-1"
+            >
+              <ChevronLeftIcon className="size-5" />
+            </IconButton>
+          )
+        }
       />
       <Form
         control={form}
-        className="flex flex-1 flex-col"
+        className={clsx('flex flex-1 flex-col', step !== 'entry' && 'mt-4')}
         action={action}
         method={isEdit ? 'PUT' : 'POST'}
         onSubmitSuccess={async (response, control) => {
@@ -154,7 +167,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         {step === 'shares' && <ExpenseShares />}
         {step === 'options' && <ExpenseOptions />}
 
-        <DialogFooter className="flex justify-between gap-2">
+        <DialogFooter className="flex justify-between gap-2 sm:mt-4">
           {step === 'entry' ? (
             <>
               <div className="flex gap-2">
@@ -175,7 +188,6 @@ function ExpenseEditorFormInner({ expense }: Props) {
                   Customize splits
                 </Button>
               </div>
-              <SubmitButton>{isEdit ? 'Save Changes' : 'Add Expense'}</SubmitButton>
             </>
           ) : (
             <Button
@@ -187,6 +199,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
               Back
             </Button>
           )}
+          <SubmitButton>{isEdit ? 'Save Changes' : 'Add Expense'}</SubmitButton>
         </DialogFooter>
       </Form>
     </>
