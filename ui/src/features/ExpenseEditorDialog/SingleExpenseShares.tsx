@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Button } from 'react-aria-components';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 
@@ -33,14 +32,6 @@ export function SingleExpenseShares() {
 
   const shareValues = useWatch({ name: shareFieldNames }) as (number | undefined)[];
   const allSelected = participants.length > 0 && shareValues.every((v) => (v ?? 0) > 0);
-
-  useEffect(() => {
-    for (const user of participants) {
-      const key = [sharesBaseName, user.uid].join('.');
-      if (!(getValues(key) > 0)) setValue(key, 1);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [participants.length]);
 
   return (
     <>

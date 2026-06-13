@@ -69,13 +69,26 @@ function ExpenseEditorFormInner({ expense }: Props) {
   }, []);
 
   const defaultSharesInitialized = useRef(false);
+  const prevParticipantIdsRef = useRef('');
   useEffect(() => {
     if (!participants.length || !expenseCount) return;
     // In edit mode, skip the first fire so pre-populated shares aren't overwritten
     if (expense && !defaultSharesInitialized.current) {
       defaultSharesInitialized.current = true;
+      prevParticipantIdsRef.current = participantIds;
       return;
     }
+
+    const prevIds = prevParticipantIdsRef.current ? prevParticipantIdsRef.current.split(',') : [];
+    const currentIds = participantIds ? participantIds.split(',') : [];
+    const removedIds = prevIds.filter((id) => !currentIds.includes(id));
+    for (let i = 0; i < expenseCount; i++) {
+      for (const uid of removedIds) {
+        setValue(`expenses.${i}.shares:to_dict__user__share.${uid}`, undefined);
+      }
+    }
+    prevParticipantIdsRef.current = participantIds;
+
     setDefaultShares(getValues, setValue, participants, expenseCount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantIds, expenseCount]);
