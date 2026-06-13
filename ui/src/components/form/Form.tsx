@@ -1,6 +1,6 @@
 import { ForwardedRef, forwardRef, useId } from 'react';
 import { ButtonContext } from 'react-aria-components';
-import { FormProvider, useForm, type FieldValues } from 'react-hook-form';
+import { FormProvider, useForm, type FieldValues, type SubmitHandler } from 'react-hook-form';
 
 import { axiosInstance } from '@/axios';
 import { useContextProps } from '@/hooks/useContextProps';
@@ -88,6 +88,44 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
     delayError,
   });
 
+  const onValidSubmit: SubmitHandler<TFieldValues> = async (data, event) => {
+    if (event?.isPropagationStopped()) {
+      return undefined;
+    }
+
+    event?.preventDefault();
+    event?.stopPropagation();
+
+    // transform form data data
+    const processedData = applyTransformers(data);
+    const transformedData = await transformData(processedData, control);
+    // if transformData function returns undefined just exit submission
+    if (!transformedData) return undefined;
+
+    // resolve headers
+    const resolvedHeaders =
+      typeof headers === 'function'
+        ? await headers(transformedData, { method: method as Method, action }, event)
+        : headers;
+
+    if (resolvedHeaders === null) {
+      return undefined;
+    }
+
+    // call submission handler
+    let response: any;
+    try {
+      response = await onSubmit?.(transformedData, { method, action, headers: resolvedHeaders }, event);
+    } catch (err: unknown) {
+      handleSubmissionError(err, control);
+      return onSubmitError?.(err, control);
+    }
+
+    // call submission success hook
+    await Promise.resolve(onSubmitSuccess?.(response, control))?.catch();
+    return undefined;
+  };
+
   const control = providedControl || internalControl;
 
   return (
@@ -131,49 +169,11 @@ function Form<SubmitResponse = any, TFieldValues extends FieldValues = FieldValu
           noValidate={!shouldUseNativeValidation}
           data-form-name={props.name}
           ref={ref}
-          onSubmit={control.handleSubmit(async (data, event) => {
-            if (event?.isPropagationStopped()) {
-              return undefined;
-            }
-
-            event?.preventDefault();
-            event?.stopPropagation();
-
-            // transform form data data
-            const processedData = applyTransformers(data);
-            const transformedData = await transformData(processedData, control);
-            // if transformData function returns undefined just exit submission
-            if (!transformedData) return undefined;
-
-            // resolve headers
-            const resolvedHeaders =
-              typeof headers === 'function'
-                ? await headers(transformedData, { method: method as Method, action }, event)
-                : headers;
-
-            if (resolvedHeaders === null) {
-              return undefined;
-            }
-
-            // call submission handler
-            let response: any;
-            try {
-              response = await onSubmit?.(
-                transformedData,
-                { method, action, headers: resolvedHeaders },
-                event
-              );
-            } catch (err: unknown) {
-              handleSubmissionError(err, control);
-              return onSubmitError?.(err, control);
-            }
-
-            // call submission success hook
-            await Promise.resolve(onSubmitSuccess?.(response, control))?.catch();
-            // you need to clear all previous errors on the form
+          onSubmit={(event) => {
             control.clearErrors();
-            return undefined;
-          }, onInvalid)}
+
+            control.handleSubmit(onValidSubmit, onInvalid)(event);
+          }}
         />
       </Provider>
     </FormProvider>
