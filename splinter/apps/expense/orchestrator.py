@@ -2,6 +2,8 @@ import threading
 from collections import Counter, defaultdict
 from contextlib import ContextDecorator
 from decimal import Decimal
+from functools import reduce
+from math import gcd
 from typing import Callable
 
 from django.db import transaction
@@ -172,6 +174,10 @@ class ExpenseEventOrchestrator(ContextDecorator):
             # In real-world, ExpenseSplit for a given expense cannot be empty; as at-minimum
             # payer is always there
             return
+
+        common = reduce(gcd, share_by_user.values())
+        if common > 1:
+            share_by_user = {user_id: share // common for user_id, share in share_by_user.items()}
 
         current_expense_splits = {
             expense_split.user_id: expense_split
