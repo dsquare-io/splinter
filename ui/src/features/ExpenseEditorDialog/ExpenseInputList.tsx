@@ -68,6 +68,7 @@ export function ExpenseInputList({ isSimple }: Props) {
                       currency={currency}
                       name={`expenses.${index}.amount`}
                       defaultValue={null}
+                      required
                       aria-label="expense item"
                     />
 
