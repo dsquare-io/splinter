@@ -3,8 +3,7 @@ import { useState, type ComponentProps, type ComponentType, type ReactNode } fro
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Button } from '@/components/primitives';
-import { Spinner } from '@/components/primitives/Button/Spinner.tsx';
+import { Button, Spinner } from '@/components/primitives';
 import { useConfirmation, type ConfirmationOptions } from '@/hooks/useConfirmation.ts';
 
 type ActionButtonProps = {

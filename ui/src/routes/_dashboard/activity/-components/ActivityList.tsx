@@ -12,8 +12,7 @@ import groupBy from 'just-group-by';
 
 import { Paths } from '@/api-types/routePaths.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Spinner } from '@/components/primitives/Button/Spinner.tsx';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene, Spinner } from '@/components/primitives';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
 import { ActivityListItem } from './ActivityListItem.tsx';
 import { EmptyActivity } from './EmptyActivity.tsx';

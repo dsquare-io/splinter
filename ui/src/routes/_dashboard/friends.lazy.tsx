@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene } from '@/components/primitives';
 import { FriendList } from './friends/-components/FriendList.tsx';
 import { FriendListHeader } from './friends/-components/FriendListHeader.tsx';
 

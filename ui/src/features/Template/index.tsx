@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from 'react';
 
 import type { Object_ } from '@/api-types';
-import { Money } from '@/components/primitives/Money';
+import { Money } from '@/components/primitives';
 import { parseUrn } from '@/features/ActivityDescription';
 
 type TemplateProps = {

@@ -2,8 +2,7 @@ import { ArrowLeftStartOnRectangleIcon, ArrowPathIcon } from '@heroicons/react/2
 import { createFileRoute } from '@tanstack/react-router';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
-import { Avatar, Button } from '@/components/primitives';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ChangePassword } from './-change-password.tsx';
 import { PersonalInfo } from './-personal-info.tsx';

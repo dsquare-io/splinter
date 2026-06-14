@@ -3,7 +3,7 @@ import groupBy from 'just-group-by';
 import { ApiRoutes } from '@/api-types';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';

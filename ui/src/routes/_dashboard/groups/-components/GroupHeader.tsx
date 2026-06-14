@@ -6,8 +6,7 @@ import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
-import { Avatar, Button } from '@/components/primitives';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';

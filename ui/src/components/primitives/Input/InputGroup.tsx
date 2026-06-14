@@ -1,6 +1,6 @@
 import { ComponentProps, MouseEvent } from 'react';
 
-import { inputGroupStyles } from '@/components/primitives/Input/style.ts';
+import { inputGroupStyles } from './style.ts';
 
 export function InputGroup({ className, ...props }: ComponentProps<'div'>) {
   return (

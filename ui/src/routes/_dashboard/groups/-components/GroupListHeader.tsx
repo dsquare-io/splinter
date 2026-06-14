@@ -2,8 +2,7 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { ApiRoutes } from '@/api-types';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
-import { Button, Money } from '@/components/primitives';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { Button, Money, ScrollScene } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 

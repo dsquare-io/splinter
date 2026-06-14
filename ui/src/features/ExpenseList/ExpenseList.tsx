@@ -13,8 +13,7 @@ import groupBy from 'just-group-by';
 
 import { ApiRoutes, UrlArgs, type ExpenseOrPayment } from '@/api-types';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Button } from '@/components/primitives/Button/Button.tsx';
-import { Spinner } from '@/components/primitives/Button/Spinner.tsx';
+import { Button, Spinner } from '@/components/primitives';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
 import { EmptyExpenses } from './EmptyExpenses.tsx';
 import { ExpenseListItem } from './ExpenseListItem.tsx';

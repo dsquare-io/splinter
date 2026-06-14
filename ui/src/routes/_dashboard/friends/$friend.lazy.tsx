@@ -2,7 +2,7 @@ import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene } from '@/components/primitives';
 import { ExpenseList } from '@/features/ExpenseList';
 import { FriendHeader } from './-components/FriendHeader.tsx';
 

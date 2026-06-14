@@ -6,8 +6,8 @@ import {
 
 import { tv, VariantProps } from 'tailwind-variants';
 
+import { Spinner } from '../Spinner';
 import { buttonBaseStyles } from './ButtonBase.tsx';
-import { Spinner } from './Spinner.tsx';
 
 type IconButtonProps = RACButtonProps & VariantProps<typeof iconButtonStyles>;
 

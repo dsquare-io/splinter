@@ -4,8 +4,8 @@ import { ComboBoxValue, Tag, TagGroup, TagList } from 'react-aria-components';
 
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-import type { SelectItemRenderProps } from '@/components/primitives/Select/types.ts';
 import { IconButton } from '../Button';
+import type { SelectItemRenderProps } from './types.ts';
 
 type SelectValueProps<T extends Record<string, any>> = {
   idPropName: string;
