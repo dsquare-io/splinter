@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import React, { useCallback, useRef, useState } from 'react';
-import { Dialog, Heading, Modal } from 'react-aria-components';
+import { Heading } from 'react-aria-components';
 
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
-import { Button } from '@/components/primitives';
+import { Button, Dialog } from '@/components/primitives';
 import { ConfirmationOptions, ConfirmationServiceContext } from '@/hooks/useConfirmation';
 
 export function ConfirmationProvider({ children }: React.PropsWithChildren<any>) {
@@ -62,55 +62,52 @@ export function ConfirmationProvider({ children }: React.PropsWithChildren<any>)
         {children}
       </ConfirmationServiceContext.Provider>
 
-      {/*<ModalOverlay isDismissable>*/}
-      <Modal
+      <Dialog
         isOpen={show}
         onOpenChange={(open) => !open && handleCancel()}
-        className="react-aria-Modal max-h-145 overflow-y-auto sm:max-w-lg"
+        variant="prompt"
+        isDismissable
       >
-        <Dialog className="react-aria-Dialog flex h-full flex-col">
-          <div className="grid-flow-row grid-cols-[auto_1fr] [grid-template-areas:'icon_title'_'icon_description'] sm:grid">
-            <div
-              className={clsx(
-                'mx-auto flex size-12 shrink-0 items-center justify-center rounded-full [grid-area:icon] **:data-[slot="icon"]:size-6 sm:mx-0 sm:h-10 sm:w-10',
-                'bg-red-100 **:data-[slot="icon"]:text-red-600'
-              )}
-            >
-              {options?.Icon ?? <ExclamationTriangleIcon />}
-            </div>
-            {options?.title && (
-              <Heading
-                slot="title"
-                className="mt-3 text-base leading-6 font-semibold text-gray-900 [grid-area:title] sm:mt-0 sm:ml-3"
-              >
-                {options.title}
-              </Heading>
+        <div className="grid-flow-row grid-cols-[auto_1fr] [grid-template-areas:'icon_title'_'icon_description'] sm:grid">
+          <div
+            className={clsx(
+              'mx-auto flex size-12 shrink-0 items-center justify-center rounded-full [grid-area:icon] **:data-[slot="icon"]:size-6 sm:mx-0 sm:h-10 sm:w-10',
+              'bg-red-100 **:data-[slot="icon"]:text-red-600'
             )}
-            {options?.description && (
-              <p className="mt-2 text-sm text-gray-500 [grid-area:description] sm:ml-3">
-                {options.description}
-              </p>
-            )}
+          >
+            {options?.Icon ?? <ExclamationTriangleIcon />}
           </div>
-          <div className="mt-5 flex flex-col-reverse gap-4 sm:mt-4 sm:flex-row sm:justify-end">
-            <Button
-              variant="outlined"
-              isDisabled={loading}
-              onPress={handleCancel}
+          {options?.title && (
+            <Heading
+              slot="title"
+              className="mt-3 text-base leading-6 font-semibold text-gray-900 [grid-area:title] sm:mt-0 sm:ml-3"
             >
-              Cancel
-            </Button>
-            <Button
-              color="danger"
-              isDisabled={loading}
-              onPress={handleConfirm}
-            >
-              {options?.actionLabel ?? 'Confirm Delete'}
-            </Button>
-          </div>
-        </Dialog>
-      </Modal>
-      {/*</ModalOverlay>*/}
+              {options.title}
+            </Heading>
+          )}
+          {options?.description && (
+            <p className="mt-2 text-sm text-gray-500 [grid-area:description] sm:ml-3">
+              {options.description}
+            </p>
+          )}
+        </div>
+        <div className="mt-5 flex flex-col-reverse gap-4 sm:mt-4 sm:flex-row sm:justify-end">
+          <Button
+            variant="outlined"
+            isDisabled={loading}
+            onPress={handleCancel}
+          >
+            Cancel
+          </Button>
+          <Button
+            color="danger"
+            isDisabled={loading}
+            onPress={handleConfirm}
+          >
+            {options?.actionLabel ?? 'Confirm Delete'}
+          </Button>
+        </div>
+      </Dialog>
     </>
   );
 }

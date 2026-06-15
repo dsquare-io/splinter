@@ -6,13 +6,13 @@ import {
 
 import { tv, VariantProps } from 'tailwind-variants';
 
+import { Spinner } from '../Spinner';
 import { buttonBaseStyles } from './ButtonBase.tsx';
-import { Spinner } from './Spinner.tsx';
 
 const button = tv({
   extend: buttonBaseStyles,
   base: [
-    'relative inline-flex items-center justify-center gap-x-2 font-medium',
+    'relative inline-flex items-center justify-center gap-x-2 font-medium overflow-hidden',
     '*:data-[slot=icon]:shrink-0',
   ],
   variants: {
@@ -40,7 +40,16 @@ export function Button({ variant, color, size, isPending, children, className, .
       )}
       {...props}
     >
-      {isPending ? <Spinner /> : children}
+      {composeRenderProps(children, (resolvedChildren) => (
+        <>
+          {resolvedChildren}
+          {isPending && (
+            <div className="absolute top-0 left-0 flex h-full w-full cursor-default items-center justify-center bg-inherit">
+              <Spinner />
+            </div>
+          )}
+        </>
+      ))}
     </RACButton>
   );
 }

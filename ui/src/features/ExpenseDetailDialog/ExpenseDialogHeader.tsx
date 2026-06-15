@@ -1,20 +1,14 @@
 import { useContext, useState } from 'react';
-import { Heading, OverlayTriggerStateContext } from 'react-aria-components';
+import { OverlayTriggerStateContext } from 'react-aria-components';
 
-import { ChevronLeftIcon, EllipsisVerticalIcon } from '@heroicons/react/20/solid';
-import {
-  BanknotesIcon,
-  PencilSquareIcon,
-  ReceiptPercentIcon,
-  TrashIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
+import { BanknotesIcon, PencilSquareIcon, ReceiptPercentIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 import { ApiRoutes } from '@/api-types';
 import { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
-import { DropdownMenu, DropdownMenuItem, IconButton } from '@/components/primitives';
+import { DialogHeader, DropdownMenu, DropdownMenuItem, IconButton } from '@/components/primitives';
 import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useConfirmation } from '@/hooks/useConfirmation';
@@ -46,7 +40,7 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
 
   async function handleDelete() {
     await confirm({
-      title: 'Delete Expense',
+      title: isExpense ? 'Delete Expense' : 'Delete Payment',
       actionLabel: 'Delete',
       description: (
         <>
@@ -62,67 +56,46 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
   }
 
   return (
-    <div className="mb-6 flex items-center gap-x-4">
-      <IconButton
-        variant="plain"
-        aria-label="Go back"
-        onPress={close}
-        className="-ml-1 sm:hidden"
-      >
-        <ChevronLeftIcon className="size-5" />
-      </IconButton>
-
-      <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${config.iconBg}`}>
-        <Icon className={`size-5 ${config.iconColor}`} />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="text-xs tracking-wide text-gray-400">{config.label}</p>
-        <Heading
-          slot="title"
-          className="truncate text-base font-semibold text-gray-900"
-        >
-          {expense?.description ?? ''}
-        </Heading>
-      </div>
-
-      <DropdownMenu
-        trigger={
-          <IconButton
-            variant="plain"
-            aria-label="More options"
-          >
-            <EllipsisVerticalIcon className="size-5" />
-          </IconButton>
+    <>
+      <DialogHeader
+        backButton
+        prefix={
+          <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${config.iconBg}`}>
+            <Icon className={`size-5 ${config.iconColor}`} />
+          </div>
         }
-      >
-        {isExpense && (
-          <DropdownMenuItem
-            id="edit"
-            icon={PencilSquareIcon}
-            onAction={() => setIsEditing(true)}
+        title={config.label}
+        actions={
+          <DropdownMenu
+            trigger={
+              <IconButton
+                variant="plain"
+                aria-label="More options"
+              >
+                <EllipsisVerticalIcon className="size-5" />
+              </IconButton>
+            }
           >
-            Edit
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem
-          id="delete"
-          icon={TrashIcon}
-          variant="danger"
-          onAction={handleDelete}
-        >
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenu>
-
-      <IconButton
-        variant="plain"
-        aria-label="Close"
-        onPress={close}
-        className="max-sm:hidden"
-      >
-        <XMarkIcon className="size-5" />
-      </IconButton>
+            {isExpense && (
+              <DropdownMenuItem
+                id="edit"
+                icon={PencilSquareIcon}
+                onAction={() => setIsEditing(true)}
+              >
+                Edit
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuItem
+              id="delete"
+              icon={TrashIcon}
+              variant="danger"
+              onAction={handleDelete}
+            >
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenu>
+        }
+      />
 
       {isExpense && (
         <ExpenseEditorDialog
@@ -131,6 +104,6 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
           onOpenChange={setIsEditing}
         />
       )}
-    </div>
+    </>
   );
 }

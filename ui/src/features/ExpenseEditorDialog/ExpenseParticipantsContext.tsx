@@ -91,6 +91,7 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
         if (group) dispatch({ type: 'select_group', data: group });
       } else {
         const sharedUserUids = new Set(initialExpense.expenses.flatMap((e) => e.shares.map((s) => s.user)));
+        sharedUserUids.add(initialExpense.paidBy.uid);
         sharedUserUids.delete(currentUser!.uid);
         for (const uid of sharedUserUids) {
           const friend = friends.find((f) => f.uid === uid);

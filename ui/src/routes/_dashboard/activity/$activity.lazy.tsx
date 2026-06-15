@@ -4,7 +4,7 @@ import { type InfiniteData } from '@tanstack/react-query';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 import { ApiRoutes, type ApiResponse } from '@/api-types';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene } from '@/components/primitives';
 import { ExpenseActivity } from '@/features/ExpenseActivity';
 import { ExpenseDetail } from '@/features/ExpenseDetail';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';

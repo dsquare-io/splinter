@@ -307,6 +307,8 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
         )
 
         if is_multiple:
+            self._sync_children(parent, old_children, new_specs)
+
             was_generated = self._is_description_generated(parent.description, old_children)
 
             provided_desc = data.get('description')
@@ -317,27 +319,29 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
 
             if should_log:
                 self._set_and_track(
-                    parent, 'description', new_desc, f"Description changed from {parent.description} to {new_desc}"
+                    parent,
+                    'description',
+                    new_desc,
+                    f"Description changed from [[value:{parent.description}]] to [[value:{new_desc}]]",
                 )
             else:
                 parent.description = new_desc  # Update silently
 
             parent.amount = sum(s['amount'] for s in new_specs)
             parent.save()
-            self._sync_children(parent, old_children, new_specs)
         else:
             # Case: Single Expense
             spec = new_specs[0]
             if old_children:
                 for child in old_children:
-                    self._changes.append(f"Item '{child.description}' was removed")
+                    self._changes.append(f"[[value:{child.description}]] was removed")
                     child.delete()
 
             self._set_and_track(
                 parent,
                 'description',
                 spec['description'],
-                f"Description changed from {parent.description} to {spec['description']}",
+                f"Description changed from [[value:{parent.description}]] to [[value:{spec['description']}]]",
             )
 
             self._set_and_track(
@@ -410,7 +414,10 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
             if match:
                 remaining_old.pop(match.id, None)
                 self._set_and_track(
-                    match, 'description', spec['description'], f"{match.description} renamed to {spec['description']}"
+                    match,
+                    'description',
+                    spec['description'],
+                    f"[[value:{match.description}]] renamed to [[value:{spec['description']}]]",
                 )
 
                 self._set_and_track(
@@ -418,7 +425,8 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
                     'amount',
                     spec['amount'],
                     (
-                        f"{spec['description']} amount changed from [[money:{match.currency.code};{match.amount}]] to "
+                        f"[[value:{spec['description']}]] amount changed from "
+                        f"[[money:{match.currency.code};{match.amount}]] to "
                         f"[[money:{match.currency.code};{spec['amount']}]]"
                     ),
                 )
@@ -428,7 +436,7 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
                 match.save()
                 self._sync_shares(match, spec['shares'], spec['amount'], is_child=True, log_changes=log_changes)
             else:
-                self._changes.append(f"{spec['description']} was added")
+                self._changes.append(f"[[value:{spec['description']}]] was added")
                 target = Expense.objects.create(
                     parent=parent,
                     description=spec['description'],
@@ -442,7 +450,7 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
                 self._sync_shares(target, spec['shares'], spec['amount'], is_child=True, log_changes=False)
 
         for orphaned in remaining_old.values():
-            self._changes.append(f"{orphaned.description} was removed")
+            self._changes.append(f"[[value:{orphaned.description}]] was removed")
             orphaned.delete()
 
     def _sync_shares(

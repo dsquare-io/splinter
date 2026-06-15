@@ -83,7 +83,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
         }
 
     def prefetch_queryset(self, queryset=None):
-        return super().prefetch_queryset(queryset).prefetch_related('user')
+        return super().prefetch_queryset(queryset).select_related('user').order_by('user__username')
 
 
 class ChildExpenseSerializer(serializers.Serializer):
@@ -321,6 +321,7 @@ class UpsertExpenseSerializer(ExpenseFileAttachmentMixin, serializers.Serializer
 
     def validate(self, attrs):
         errors: dict = {}
+        request_errors = []
 
         # Validate Share Holders
         share_holders = {attrs['paid_by']}
@@ -333,10 +334,18 @@ class UpsertExpenseSerializer(ExpenseFileAttachmentMixin, serializers.Serializer
             error_template = 'User "{}" is not a member of the group'
         else:
             if self.context['request'].user not in share_holders:
-                errors[''] = ErrorDetail('Current user must be a share holder', 'disallowed_user')
+                request_errors.append(ErrorDetail('Current user must be a share holder', 'disallowed_user'))
 
             members_qs = Friendship.objects.get_user_friends(self.context['request'].user)
             error_template = 'User "{}" is not a friend'
+
+        if len(share_holders) == 1:
+            request_errors.append(
+                ErrorDetail(
+                    'Paying yourself back? Bold strategy. Add at least one other person to split with.',
+                    'disallowed_action',
+                )
+            )
 
         allowed_members = set(members_qs.values_list('pk', flat=True))
         allowed_members.add(self.context['request'].user.pk)
@@ -365,6 +374,9 @@ class UpsertExpenseSerializer(ExpenseFileAttachmentMixin, serializers.Serializer
             errors.setdefault('expenses', {}).setdefault(0, {})['description'] = ErrorDetail(
                 'Description must be same as the expense', 'description_mismatch'
             )
+
+        if request_errors:
+            errors[''] = request_errors
 
         if errors:
             raise serializers.ValidationError(errors)

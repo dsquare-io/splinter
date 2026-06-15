@@ -30,10 +30,13 @@ export const Paths = {
   PASSWORD_LOGIN: '/api/authn/password',
   PAYMENT: '/api/payments',
   PROFILE: '/api/user/profile',
+  PUSH_SUBSCRIPTION: '/api/notifications/push-subscriptions',
+  PUSH_SUBSCRIPTION_DETAIL: '/api/notifications/push-subscriptions/{subscription_uid}',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
   RESET_PASSWORD: '/api/user/reset',
   UPLOAD_MEDIA_FILE: '/api/media/upload',
   USER_OUTSTANDING_BALANCE: '/api/user/outstanding-balance',
+  VAPID_PUBLIC_KEY: '/api/notifications/vapid-key',
   VERIFY_EMAIL: '/api/user/verify-email',
   VERIFY_MFA_DEVICE: '/api/mfa/verify/{device_type}',
 } as const;

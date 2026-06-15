@@ -21,10 +21,24 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'prompt',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
+        injectManifest: {
+          manifestTransforms: [
+            (entries) => ({
+              manifest: entries.map((e) => ({
+                ...e,
+                url: e.url === 'index.html' ? '/' : e.url.startsWith('/') ? e.url : `/${e.url}`,
+              })),
+              warnings: [],
+            }),
+          ],
+        },
         manifest: {
           name: 'Splinter',
           short_name: 'Splinter',
-          description: 'Opensource expense tracking',
+          description: 'Split bills and settle group expenses',
           theme_color: '#267360',
           icons: [
             {
@@ -50,11 +64,9 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-        workbox: {
-          navigateFallbackDenylist: [/^\/api\//, /^\/admin\//, /^\/static\//],
-        },
         devOptions: {
           enabled: true,
+          type: 'module',
         },
       }),
       env.SENTRY_AUTH_TOKEN &&

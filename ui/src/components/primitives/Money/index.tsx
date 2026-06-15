@@ -26,6 +26,7 @@ export function Money({ value, currency, className, noColor, noTabularNums = fal
     <span
       {...props}
       className={twMerge(
+        'shrink-0',
         !noTabularNums && 'tabular-nums',
         className,
         !noColor && (+value < 0 ? 'text-red-600' : 'text-green-700')

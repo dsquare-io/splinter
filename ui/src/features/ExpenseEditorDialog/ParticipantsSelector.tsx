@@ -74,22 +74,29 @@ export function ParticipantsSelector() {
 
   const allItems: (Friend | Group)[] = [...groups, ...friends];
   const selectedUrns = selected.map((p) => p.urn);
+  const selectedType = selected[0]?.type;
 
   const filteredSections = [
     {
       name: 'Groups',
-      children: groups.filter((g) => g.name.toLowerCase().includes(inputValue.toLowerCase())),
+      children:
+        !selectedType || selectedType === 'group'
+          ? groups.filter((g) => g.name.toLowerCase().includes(inputValue.toLowerCase()))
+          : [],
     },
     {
       name: 'Friends',
-      children: friends.filter((f) => f.name.toLowerCase().includes(inputValue.toLowerCase())),
+      children:
+        !selectedType || selectedType === 'friend'
+          ? friends.filter((f) => f.name.toLowerCase().includes(inputValue.toLowerCase()))
+          : [],
     },
   ].filter((s) => s.children.length > 0);
 
   return (
     <div
       ref={triggerRef}
-      className="-mx-4 border-y border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
+      className="-mx-4 border-b border-neutral-300 px-4 py-2 sm:-mx-6 sm:px-6"
     >
       <ComboBox
         selectionMode="multiple"

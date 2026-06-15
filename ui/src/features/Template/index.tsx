@@ -1,7 +1,7 @@
 import { Fragment, ReactNode } from 'react';
 
 import type { Object_ } from '@/api-types';
-import { Money } from '@/components/primitives/Money';
+import { Money } from '@/components/primitives';
 import { parseUrn } from '@/features/ActivityDescription';
 
 type TemplateProps = {
@@ -37,6 +37,8 @@ export function Template({ string, references }: TemplateProps) {
           noColor
         />
       );
+    } else if (type === 'value') {
+      parts.push(<i key={match.index}>{value}</i>);
     } else if (type === 'urn') {
       const ref = references[content];
       parts.push(ref ? ref.value : parseUrn(content)?.modelUid);

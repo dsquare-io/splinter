@@ -2,8 +2,7 @@ import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 
 import { Activity } from '@/api-types';
-import { ActivityVerbIcon, Avatar, UserLabel } from '@/components/primitives';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ActivityVerbIcon, Avatar, ScrollScene, UserLabel } from '@/components/primitives';
 import { formatDistanceLong } from '@/utils/date.ts';
 import { getVerbConfig } from '../-utils/verbConfig.ts';
 import { ActivityOutstandingBalance } from './ActivityOutstandingBalance.tsx';

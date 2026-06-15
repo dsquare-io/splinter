@@ -21,14 +21,18 @@ RUN npm run build
 
 FROM python:3.12-alpine
 
-RUN pip install -U pip && pip install gunicorn --no-cache-dir
-
-COPY pyproject.toml /app/
-COPY splinter/__init__.py /app/splinter/
-RUN pip install -e /app --no-cache-dir
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+
+COPY pyproject.toml uv.lock /app
+RUN uv sync --frozen --no-dev --no-install-project --no-progress
+
 COPY splinter /app/splinter
+RUN uv sync --frozen --no-dev --no-progress
+ENV PATH="/opt/venv/bin:$PATH"
+
 RUN splinter collectstatic --no-input
 
 COPY --from=node /app/dist/ /app/ui

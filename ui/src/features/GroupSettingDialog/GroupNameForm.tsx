@@ -20,6 +20,7 @@ export function GroupNameForm({ group_uid, groupName }: GroupNameFormProps) {
       onSubmitSuccess={() =>
         queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })).then(close)
       }
+      className="mt-4"
     >
       <FormRootErrors />
 

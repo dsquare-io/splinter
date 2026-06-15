@@ -2,6 +2,8 @@ import threading
 from collections import Counter, defaultdict
 from contextlib import ContextDecorator
 from decimal import Decimal
+from functools import reduce
+from math import gcd
 from typing import Callable
 
 from django.db import transaction
@@ -10,6 +12,7 @@ from django.dispatch import receiver
 
 from splinter.apps.expense.models import Expense, ExpenseParty, ExpenseSplit, OutstandingBalance
 from splinter.apps.friend.models import Friendship
+from splinter.db.models import StateAwareModel
 from splinter.db.models.signals import post_restore
 
 
@@ -17,24 +20,22 @@ class OutstandingBalanceCollector:
     def __init__(self):
         self._currency_id: str | None = None
         self._group_id: int | None = None
-        self._payer_id: int | None = None
 
         self._user_balances: dict[tuple[int, int], Decimal] = defaultdict(Decimal)
 
-    def set_defaults(self, currency_id: str, group_id: int, payer_id: int) -> None:
+    def set_defaults(self, currency_id: str, group_id: int) -> None:
         self._currency_id = currency_id
         self._group_id = group_id
-        self._payer_id = payer_id
 
-    def add(self, payee_id: int, amount: Decimal) -> None:
-        if self._payer_id == payee_id:
+    def add(self, payer_id: int, user_id: int, amount: Decimal) -> None:
+        if payer_id == user_id or amount == 0:
             return
 
         if not isinstance(amount, Decimal):
             amount = Decimal(amount)
 
-        self._user_balances[(self._payer_id, payee_id)] += amount
-        self._user_balances[(payee_id, self._payer_id)] -= amount
+        self._user_balances[(payer_id, user_id)] += amount
+        self._user_balances[(user_id, payer_id)] -= amount
 
     def apply(self):
         to_create = []
@@ -79,11 +80,14 @@ class ExpenseEventOrchestrator(ContextDecorator):
             raise ValueError('Orchestrator is already bound to an expense')
 
         self._root_expense = parent
-        self._outstanding_balance.set_defaults(
-            currency_id=parent.currency_id,
-            group_id=parent.group_id,
-            payer_id=parent.paid_by_id,
-        )
+        self._outstanding_balance.set_defaults(currency_id=parent.currency_id, group_id=parent.group_id)
+
+    def handle_payer_change(self, expense: Expense, old_payer_id: int) -> None:
+        self.set_expense(expense)
+
+        for split in ExpenseSplit.objects.filter(expense=expense):
+            self._outstanding_balance.add(expense.paid_by_id, split.user_id, split.amount)
+            self._outstanding_balance.add(old_payer_id, split.user_id, -split.amount)
 
     def handle_expense_split_post_save(self, expense_split: ExpenseSplit, created: bool):
         amount_delta = 0
@@ -103,28 +107,28 @@ class ExpenseEventOrchestrator(ContextDecorator):
         self.set_expense(expense)
 
         if expense.parent_id is None:
-            self._outstanding_balance.add(expense_split.user_id, amount_delta)
+            self._outstanding_balance.add(expense.paid_by_id, expense_split.user_id, amount_delta)
 
     def handle_expense_split_post_delete(self, expense_split: ExpenseSplit):
         expense = expense_split.expense
         self.set_expense(expense)
 
         if expense.parent_id is None:
-            self._outstanding_balance.add(expense_split.user_id, -expense_split.amount)
+            self._outstanding_balance.add(expense.paid_by_id, expense_split.user_id, -expense_split.amount)
 
     def handle_expense_post_delete(self, expense: Expense):
         self.set_expense(expense)
 
         if expense.parent_id is None:
             for expense_split in ExpenseSplit.objects.filter(expense=expense):
-                self._outstanding_balance.add(expense_split.user_id, -expense_split.amount)
+                self._outstanding_balance.add(expense.paid_by_id, expense_split.user_id, -expense_split.amount)
 
     def handle_expense_post_restore(self, expense: Expense):
         self.set_expense(expense)
 
         if expense.parent_id is None:
             for expense_split in ExpenseSplit.objects.filter(expense=expense):
-                self._outstanding_balance.add(expense_split.user_id, expense_split.amount)
+                self._outstanding_balance.add(expense.paid_by_id, expense_split.user_id, expense_split.amount)
 
     def update_expense_parties(self) -> None:
         to_create = []
@@ -173,6 +177,10 @@ class ExpenseEventOrchestrator(ContextDecorator):
             # payer is always there
             return
 
+        common = reduce(gcd, share_by_user.values())
+        if common > 1:
+            share_by_user = {user_id: share // common for user_id, share in share_by_user.items()}
+
         current_expense_splits = {
             expense_split.user_id: expense_split
             for expense_split in ExpenseSplit.objects.filter(expense=self._root_expense)
@@ -182,15 +190,12 @@ class ExpenseEventOrchestrator(ContextDecorator):
         for user_id, amount in amount_by_user.items():
             if user_id in current_expense_splits:
                 expense_split = current_expense_splits[user_id]
-                if expense_split.amount == amount:
-                    continue
-
-                self._outstanding_balance.add(user_id, amount - expense_split.amount)
+                self._outstanding_balance.add(self._root_expense.paid_by_id, user_id, amount - expense_split.amount)
                 ExpenseSplit.objects.filter(pk=expense_split.pk).update(
                     amount=amount, share=share_by_user[user_id]
                 )  # Skip signals
             else:
-                self._outstanding_balance.add(user_id, amount)
+                self._outstanding_balance.add(self._root_expense.paid_by_id, user_id, amount)
                 to_create.append(
                     ExpenseSplit(
                         expense=self._root_expense, user_id=user_id, amount=amount, share=share_by_user[user_id]
@@ -199,7 +204,9 @@ class ExpenseEventOrchestrator(ContextDecorator):
 
         expense_share_holders_to_discard = set(current_expense_splits.keys()) - set(amount_by_user.keys())
         for user_id in expense_share_holders_to_discard:
-            self._outstanding_balance.add(user_id, -current_expense_splits[user_id].amount)
+            self._outstanding_balance.add(
+                self._root_expense.paid_by_id, user_id, -current_expense_splits[user_id].amount
+            )
 
         ExpenseSplit.objects.filter(
             expense=self._root_expense, user_id__in=expense_share_holders_to_discard
@@ -244,8 +251,9 @@ def expense_event_orchestrator(f: Callable = None):
     return ExpenseEventOrchestrator()(f)
 
 
+@receiver(pre_save, sender=Expense)
 @receiver(pre_save, sender=ExpenseSplit)
-def keep_reference_of_dirty_fields(instance: ExpenseSplit, **kwargs):
+def keep_reference_of_dirty_fields(instance: StateAwareModel, **kwargs):
     if instance.pk is not None:
         instance._dirty_fields = instance.get_dirty_fields()
 
@@ -270,6 +278,24 @@ def handle_expense_split_post_delete(instance: ExpenseSplit, **kwargs):
             orchestrator.handle_expense_split_post_delete(instance)
 
 
+@receiver(post_save, sender=Expense)
+def handle_expense_post_save(instance: Expense, created: bool, **kwargs):
+    if created or instance.parent_id is not None:
+        return
+
+    dirty_fields = getattr(instance, '_dirty_fields')
+    if 'paid_by_id' not in dirty_fields:
+        return
+
+    old_payer = dirty_fields['paid_by_id']['saved']
+    orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
+    if orchestrator is not None:
+        orchestrator.handle_payer_change(instance, old_payer)
+    else:
+        with ExpenseEventOrchestrator() as orchestrator:
+            orchestrator.handle_payer_change(instance, old_payer)
+
+
 @receiver(post_delete, sender=Expense)
 def handle_expense_post_delete(instance: Expense, **kwargs):
     orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
@@ -281,7 +307,7 @@ def handle_expense_post_delete(instance: Expense, **kwargs):
 
 
 @receiver(post_restore, sender=Expense)
-def handle_expense_post_save(instance: Expense, **kwargs):
+def handle_expense_post_restore(instance: Expense, **kwargs):
     orchestrator: ExpenseEventOrchestrator | None = getattr(_local, 'orchestrator', None)
     if orchestrator is not None:
         orchestrator.handle_expense_post_restore(instance)

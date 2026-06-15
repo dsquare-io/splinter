@@ -33,7 +33,7 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
   const items = activities?.results ?? [];
 
   return (
-    <div>
+    <>
       <h3 className="mb-4 px-4 text-sm font-medium text-gray-900">Activity</h3>
 
       <ul role="list">
@@ -89,6 +89,6 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
           <CommentForm activityId={items?.[0]?.uid} />
         </li>
       </ul>
-    </div>
+    </>
   );
 }

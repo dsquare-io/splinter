@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -8,7 +9,7 @@ import { ApiRoutes, type SimpleUser } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
-import { Button, DialogHeader, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { AttachmentsContext, useAttachmentsContext } from './AttachmentsContext.tsx';
@@ -83,13 +84,26 @@ function ExpenseEditorFormInner({ expense }: Props) {
   }, []);
 
   const defaultSharesInitialized = useRef(false);
+  const prevParticipantIdsRef = useRef('');
   useEffect(() => {
     if (!participants.length || !expenseCount) return;
     // In edit mode, skip the first fire so pre-populated shares aren't overwritten
     if (expense && !defaultSharesInitialized.current) {
       defaultSharesInitialized.current = true;
+      prevParticipantIdsRef.current = participantIds;
       return;
     }
+
+    const prevIds = prevParticipantIdsRef.current ? prevParticipantIdsRef.current.split(',') : [];
+    const currentIds = participantIds ? participantIds.split(',') : [];
+    const removedIds = prevIds.filter((id) => !currentIds.includes(id));
+    for (let i = 0; i < expenseCount; i++) {
+      for (const uid of removedIds) {
+        setValue(`expenses.${i}.shares:to_dict__user__share.${uid}`, undefined);
+      }
+    }
+    prevParticipantIdsRef.current = participantIds;
+
     setDefaultShares(getValues, setValue, participants, expenseCount);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantIds, expenseCount]);
@@ -125,7 +139,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
 
   const description =
     step === 'entry'
-      ? 'Split costs with friends or a group, equally or customized.'
+      ? 'Split costs with friends or a group.'
       : step === 'options'
         ? 'Set the currency and date for this expense.'
         : expenseCount === 1
@@ -137,10 +151,22 @@ function ExpenseEditorFormInner({ expense }: Props) {
       <DialogHeader
         title={isEdit ? 'Edit Expense' : 'Add Expense'}
         description={description}
+        prefix={
+          step !== 'entry' && (
+            <IconButton
+              variant="plain"
+              aria-label="Back"
+              onPress={() => setStep('entry')}
+              className="-ml-1"
+            >
+              <ChevronLeftIcon className="size-5" />
+            </IconButton>
+          )
+        }
       />
       <Form
         control={form}
-        className="flex flex-col"
+        className={clsx('flex flex-1 flex-col', step !== 'entry' && 'mt-4')}
         action={action}
         method={isEdit ? 'PUT' : 'POST'}
         transformData={(data) => {
@@ -161,7 +187,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
         {step === 'shares' && <ExpenseShares />}
         {step === 'options' && <ExpenseOptions />}
 
-        <div className="-mx-4 mt-4 flex justify-between px-4 pt-2 sm:-mx-6 sm:px-6">
+        <DialogFooter className="flex justify-between gap-2 sm:mt-4">
           {step === 'entry' ? (
             <>
               <div className="flex gap-2">
@@ -182,7 +208,6 @@ function ExpenseEditorFormInner({ expense }: Props) {
                   Customize splits
                 </Button>
               </div>
-              <SubmitButton>{isEdit ? 'Save Changes' : 'Add Expense'}</SubmitButton>
             </>
           ) : (
             <Button
@@ -194,7 +219,8 @@ function ExpenseEditorFormInner({ expense }: Props) {
               Back
             </Button>
           )}
-        </div>
+          <SubmitButton>{isEdit ? 'Save Changes' : 'Add Expense'}</SubmitButton>
+        </DialogFooter>
       </Form>
     </>
   );

@@ -1,7 +1,7 @@
 import { ApiRoutes, urlWithArgs, type ExtendedGroup } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
-import { Button, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, useDialog } from '@/components/primitives';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
@@ -25,7 +25,7 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
             .invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid }))
             .then(close)
         }
-        className="space-y-4"
+        className="mt-4 flex h-full flex-col space-y-4"
       >
         <FormRootErrors />
 
@@ -36,7 +36,7 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
           items={friendsExcludingMembers ?? []}
         />
 
-        <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
+        <DialogFooter className="flex justify-end gap-2">
           <Button
             variant="plain"
             onPress={close}
@@ -45,7 +45,7 @@ export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {
             Cancel
           </Button>
           <SubmitButton>Add to Group</SubmitButton>
-        </div>
+        </DialogFooter>
       </Form>
     </>
   );

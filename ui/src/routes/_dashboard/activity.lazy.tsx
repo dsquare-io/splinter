@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { createLazyFileRoute, Outlet, useMatchRoute } from '@tanstack/react-router';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { ScrollScene } from '@/components/primitives/ScrollScene';
+import { ScrollScene } from '@/components/primitives';
 import { ActivityList } from './activity/-components/ActivityList.tsx';
 
 export const Route = createLazyFileRoute('/_dashboard/activity')({

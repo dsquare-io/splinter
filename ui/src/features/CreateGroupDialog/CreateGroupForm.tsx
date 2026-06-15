@@ -4,7 +4,7 @@ import { ApiRoutes } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
-import { Button, useDialog } from '@/components/primitives';
+import { Button, DialogFooter, useDialog } from '@/components/primitives';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
@@ -29,7 +29,7 @@ export function CreateGroupForm() {
           )
           .then(close)
       }
-      className="space-y-4"
+      className="mt-4 flex h-full flex-col space-y-4"
     >
       <FormRootErrors />
 
@@ -49,7 +49,7 @@ export function CreateGroupForm() {
           message: 'Please select at least one friend',
         }}
       />
-      <div className="-mx-4 flex justify-end gap-2 px-4 pt-4 sm:-mx-6 sm:px-6">
+      <DialogFooter className="flex justify-end gap-2">
         <Button
           variant="plain"
           size="small"
@@ -59,7 +59,7 @@ export function CreateGroupForm() {
           Cancel
         </Button>
         <SubmitButton>Create Group</SubmitButton>
-      </div>
+      </DialogFooter>
     </Form>
   );
 }
