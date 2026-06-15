@@ -1,20 +1,15 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import * as Collapsible from '@radix-ui/react-collapsible';
 
-import { ApiRoutes } from '@/api-types';
+import type { Expense } from '@/api-types/components/schemas';
 import { Money } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { ExpenseItemShares } from './ExpenseItemShares.tsx';
 
 type ExpenseItemsProps = {
-  expenseId: string;
+  expense: Expense;
 };
 
-export function ExpenseItems({ expenseId }: ExpenseItemsProps) {
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
-
-  if (!expense || expense.type !== 'expense') return null;
-
+export function ExpenseItems({ expense }: ExpenseItemsProps) {
   return (
     <div>
       {expense?.expenses.map((expenseItem, index) => (
@@ -43,6 +38,7 @@ export function ExpenseItems({ expenseId }: ExpenseItemsProps) {
             <ExpenseItemShares
               expenseItem={expenseItem}
               currency={expense.currency}
+              paidBy={expense.paidBy}
             />
           </Collapsible.Content>
 

@@ -69,7 +69,6 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
     ) : (
       <ExpenseDetailView
         expense={expense}
-        expenseId={expenseId}
         group={group}
       />
     );
