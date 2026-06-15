@@ -64,14 +64,7 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
             <Icon className={`size-5 ${config.iconColor}`} />
           </div>
         }
-        title={
-          <>
-            <span className="block text-xs font-normal tracking-wide text-gray-400">{config.label}</span>
-            <span className="block truncate text-base font-semibold text-gray-900">
-              {expense?.description ?? ''}
-            </span>
-          </>
-        }
+        title={config.label}
         actions={
           <DropdownMenu
             trigger={
