@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
+
 import { ApiRoutes, SimpleGroup } from '@/api-types';
+import { axiosInstance } from '@/axios.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -19,6 +22,14 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
     isPending,
     error,
   } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
+
+  useEffect(() => {
+    if (!expense) return;
+    const timer = setTimeout(() => {
+      axiosInstance.patch('/api/activities', null, { params: { of: expense.urn } });
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [expense, expense?.urn]);
 
   if (isPending) {
     return (

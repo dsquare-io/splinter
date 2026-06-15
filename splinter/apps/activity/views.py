@@ -1,19 +1,29 @@
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import Http404
 from django.utils import timezone
 from django.utils.functional import cached_property
+from drf_spectacular.utils import OpenApiParameter, OpenApiTypes, extend_schema
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from splinter.apps.activity.models import Activity, ActivityAudience, Comment
 from splinter.apps.activity.serializers import ActivitySerializer, CommentSerializer
 from splinter.core.pagination import CursorPagination
+from splinter.core.serializers import EmptySerializer
 from splinter.core.views import CreateAPIView, DestroyAPIView, GenericAPIView, ListAPIView, RetrieveAPIView
 from splinter.db.urn import ResourceName
 
 
-class ListActivityView(ListAPIView):
+class ListAcknowledgeActivityView(ListAPIView):
     serializer_class = ActivitySerializer
     pagination_class = CursorPagination
+
+    VERBS_BY_METHOD = {
+        'PATCH': {'Acknowledge'},
+    }
 
     def get_ordering(self, request):
         return ('created_at',) if request.GET.get('order') == 'asc' else ('-created_at',)
@@ -42,6 +52,38 @@ class ListActivityView(ListAPIView):
             )
 
         return qs
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='of',
+                type=OpenApiTypes.URI,
+                location='query',
+                required=True,
+                description='URN of the object whose activities should be acknowledged (e.g. urn:splinter:expense/some-uid)',
+            )
+        ],
+        request=None,
+        responses={204: None},
+    )
+    def patch(self, request, *args, **kwargs):
+        object_urn = ResourceName.try_parse(request.GET.get('of'))
+        if not object_urn:
+            raise ValidationError({'of': 'A valid URN is required.'})
+
+        try:
+            instance = object_urn.get_instance()
+        except ObjectDoesNotExist:
+            raise Http404()
+
+        ActivityAudience.objects.filter(
+            user=request.user,
+            activity__object_content_type=ContentType.objects.get_for_model(instance),
+            activity__object_id=instance.id,
+            read_at__isnull=True,
+        ).update(read_at=timezone.now())
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RetrieveActivityView(RetrieveAPIView):
