@@ -6,6 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import Exists, Manager, Model, OuterRef
 
+from splinter.apps.activity.signals import activity_logged
 from splinter.db.models import PublicModel, SoftDeleteModel
 from splinter.utils.django import PrimaryKeyField
 from splinter.utils.strings import public_string
@@ -55,6 +56,13 @@ class ActivityManager(Manager):
                 for user_id in audience_user_ids
             ]
         )
+
+        actor_id = actor if isinstance(actor, int) else actor.pk
+        notify_user_ids = list(audience_user_ids - {actor_id})
+
+        if notify_user_ids:
+            activity_logged.send(sender=Activity, activity=activity, notify_user_ids=notify_user_ids)
+
         return activity
 
 

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     # Other Apps
     'splinter',
     'splinter.apps.activity',
+    'splinter.apps.notification',
     'splinter.apps.authn',
     'splinter.apps.currency',
     'splinter.apps.expense',

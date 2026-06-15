@@ -9,10 +9,7 @@ type AddPaymentModalProps = ComponentProps<typeof AddPaymentForm> & {
 
 export function AddPaymentDialog({ onOpenChange, ...props }: AddPaymentModalProps) {
   return (
-    <Dialog
-      mobileFullscreen
-      onOpenChange={onOpenChange}
-    >
+    <Dialog onOpenChange={onOpenChange}>
       <DialogHeader
         title="Settle Up"
         description="Record a payment to clear an outstanding balance."

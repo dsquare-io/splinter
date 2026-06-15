@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth.ts';
 import { ChangePassword } from './-change-password.tsx';
 import { PersonalInfo } from './-personal-info.tsx';
 import { Preferences } from './-preferences.tsx';
+import { PushNotification } from './-push-notification.tsx';
 
 export const Route = createFileRoute('/_dashboard/profile/me')({
   component: RootComponent,
@@ -70,6 +71,15 @@ function RootComponent() {
           </div>
 
           <ChangePassword />
+        </section>
+
+        <section className="grid max-w-7xl grid-cols-1 gap-x-8 gap-y-10 px-4 py-16 sm:px-6 lg:px-8 @3xl:grid-cols-3">
+          <div>
+            <h1 className="text-lg leading-6 font-medium text-gray-900">Notifications</h1>
+            <p className="mt-1.5 text-sm text-gray-500">Manage push notifications for this device.</p>
+          </div>
+
+          <PushNotification />
         </section>
 
         <section className="space-y-3 px-4 py-8 sm:px-6 md:hidden">

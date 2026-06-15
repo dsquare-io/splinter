@@ -9,6 +9,7 @@ from .drf import *
 from .email import *
 from .host import *
 from .logging import *
+from .notification import *
 from .static import *
 from .templates import *
 

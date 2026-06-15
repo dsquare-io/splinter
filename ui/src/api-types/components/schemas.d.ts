@@ -304,6 +304,15 @@ export type PaymentTyped = {
   };
 export type PaymentTypedTypeEnum = 'payment';
 
+export interface PushSubscription {
+  /** Format: uuid */
+  readonly uid: string;
+  /** Format: uri */
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
 export interface RefreshAccessToken {
   refreshToken: string;
 }
@@ -404,4 +413,8 @@ export interface UserOutstandingBalance {
   amount: string;
   readonly paid: AggregatedOutstandingBalance;
   readonly borrowed: AggregatedOutstandingBalance;
+}
+
+export interface VapidPublicKey {
+  publicKey: string;
 }

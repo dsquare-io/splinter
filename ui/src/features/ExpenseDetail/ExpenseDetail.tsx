@@ -26,7 +26,7 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
   useEffect(() => {
     if (!expense) return;
     const timer = setTimeout(() => {
-      axiosInstance.patch('/api/activities', null, { params: { of: expense.urn } });
+      axiosInstance.patch(ApiRoutes.ACTIVITY_LIST, null, { params: { of: expense.urn } }).catch(() => false);
     }, 2000);
     return () => clearTimeout(timer);
   }, [expense, expense?.urn]);

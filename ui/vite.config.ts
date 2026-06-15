@@ -21,6 +21,9 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'prompt',
+        strategies: 'injectManifest',
+        srcDir: 'src',
+        filename: 'sw.ts',
         manifest: {
           name: 'Splinter',
           short_name: 'Splinter',
@@ -50,11 +53,9 @@ export default defineConfig(({ mode }) => {
             },
           ],
         },
-        workbox: {
-          navigateFallbackDenylist: [/^\/api\//, /^\/admin\//, /^\/static\//],
-        },
         devOptions: {
           enabled: true,
+          type: 'module',
         },
       }),
       env.SENTRY_AUTH_TOKEN &&

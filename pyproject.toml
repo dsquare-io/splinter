@@ -35,6 +35,7 @@ dependencies = [
     "drf-spectacular",
     "pyjwt[crypto]",
     "gunicorn",
+    "pywebpush",
 ]
 dynamic = ["version"]
 
@@ -47,6 +48,8 @@ dev = [
     "factory_boy",
     "types-factory-boy",
     "django-stubs",
+    "celery-types>=0.26.0",
+    "djangorestframework-stubs>=3.17.0",
 ]
 
 [project.scripts]
@@ -68,6 +71,7 @@ line_length = 120
 [tool.black]
 line-length = 120
 skip-string-normalization = true
+target-version = ['py312']
 
 [tool.semantic_release]
 version_variables = ['splinter/__init__.py:__version__']

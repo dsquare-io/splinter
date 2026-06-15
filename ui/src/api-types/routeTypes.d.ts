@@ -13,7 +13,8 @@ export interface paths {
     delete?: never;
     options?: never;
     head?: never;
-    patch?: never;
+    /** Acknowledge Activity */
+    patch: operations['AcknowledgeActivity'];
     trace?: never;
   };
   '/api/activities/{activity_uid}': {
@@ -452,6 +453,58 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/notifications/push-subscriptions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create Push Subscription */
+    post: operations['CreatePushSubscription'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications/push-subscriptions/{subscription_uid}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Test Push Subscription */
+    post: operations['TestPushSubscription'];
+    /** Destroy Push Subscription */
+    delete: operations['DestroyPushSubscription'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/notifications/vapid-key': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Vapid Public Key */
+    get: operations['RetrieveVapidPublicKey'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/payments': {
     parameters: {
       query?: never;
@@ -642,6 +695,7 @@ export interface components {
     PaymentTyped: import('./components/schemas.d.ts').PaymentTyped;
     /** @enum {string} */
     PaymentTypedTypeEnum: import('./components/schemas.d.ts').PaymentTypedTypeEnum;
+    PushSubscription: import('./components/schemas.d.ts').PushSubscription;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
     Settlement: import('./components/schemas.d.ts').Settlement;
@@ -657,6 +711,7 @@ export interface components {
     UserCurrency: import('./components/schemas.d.ts').UserCurrency;
     UserDeviceInfo: import('./components/schemas.d.ts').UserDeviceInfo;
     UserOutstandingBalance: import('./components/schemas.d.ts').UserOutstandingBalance;
+    VapidPublicKey: import('./components/schemas.d.ts').VapidPublicKey;
   };
   responses: never;
   parameters: never;
@@ -684,6 +739,59 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['PaginatedActivityList'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  AcknowledgeActivity: {
+    parameters: {
+      query: {
+        /** @description URN of the object whose activities should be acknowledged (e.g. urn:splinter:expense/some-uid) */
+        of: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
         };
       };
       /** @description Unauthorized */
@@ -2549,6 +2657,206 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  CreatePushSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PushSubscription'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  TestPushSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        subscription_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  DestroyPushSubscription: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        subscription_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  RetrieveVapidPublicKey: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VapidPublicKey'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
         };
       };
     };
