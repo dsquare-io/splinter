@@ -23,14 +23,14 @@ INSTALLED_APPS = [
     # Other Apps
     'splinter',
     'splinter.apps.activity',
-    'splinter.apps.notification',
+    'splinter.apps.attachment',
     'splinter.apps.authn',
     'splinter.apps.currency',
     'splinter.apps.expense',
     'splinter.apps.friend',
     'splinter.apps.group',
-    'splinter.apps.media',
     'splinter.apps.mfa',
+    'splinter.apps.notification',
     'splinter.apps.user',
 ]
 
@@ -38,6 +38,7 @@ MFA_BACKUP_CODES_COUNT = 10
 MFA_ACCESS_TOKEN_EXPIRY = timedelta(minutes=5)
 
 ACCESS_TOKEN_EXPIRY = timedelta(days=7)
+ATTACHMENT_TOKEN_EXPIRY = timedelta(weeks=1)
 EMAIL_VERIFICATION_EXPIRE_DAYS = 7
 
 USERNAME_MIN_LENGTH = 5
@@ -50,4 +51,11 @@ GROUP_MAX_ALLOWED_MEMBERS = 64
 GROUP_MAX_ALLOWED_MEMBERSHIPS = 64
 FRIEND_MAX_ALLOWED_FRIENDS = 64
 
-MEDIA_GARBAGE_COLLECTION_DELTA = timedelta(hours=1)
+ATTACHMENT_MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+ATTACHMENT_ALLOWED_CONTENT_TYPE_EXTENSIONS = {
+    'image/jpeg': ['.jpg', '.jpeg'],
+    'image/png': ['.png'],
+    'image/gif': ['.gif'],
+    'image/webp': ['.webp'],
+    'application/pdf': ['.pdf'],
+}

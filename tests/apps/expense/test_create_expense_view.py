@@ -77,6 +77,7 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         )
 
     def test_create_duplicate_share_holders(self):
+
         payload = {
             'datetime': '2024-03-16T08:23:00Z',
             'description': 'Single Row Expense',
@@ -93,7 +94,6 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
                 }
             ],
         }
-
         response = self.client.post('/api/expenses', payload, format='json')
         self.assertEqual(response.status_code, 400, response.json())
 
@@ -236,6 +236,7 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
                 'description': payload['description'],
                 'amount': '200.00',
                 'currency': self.currency,
+                'attachments': [],
                 'expenses': [
                     {
                         'amount': '100.00',

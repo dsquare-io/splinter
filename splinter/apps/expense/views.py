@@ -7,9 +7,7 @@ from typing import TYPE_CHECKING
 from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
 from django.db.models.functions import RowNumber
 from django.http import Http404
-from rest_framework import status
 from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
 
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
@@ -226,4 +224,3 @@ class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):
 
         serializer.context['referenced_resources'] = referenced_resources_by_pk
         return serializer
-

@@ -6,6 +6,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from splinter.apps.activity.activities import ActivityType
+from splinter.apps.attachment.models import FileAttachment
 from splinter.apps.expense.activities import (
     CreateExpenseActivity,
     CreatePaymentActivity,
@@ -16,7 +17,14 @@ from splinter.apps.expense.activities import (
     SettleUpActivity,
     UpdateExpenseActivity,
 )
-from splinter.apps.expense.models import Expense, ExpenseChangeLog, ExpenseRevision, ExpenseSplit, ExpenseSplitRevision
+from splinter.apps.expense.models import (
+    Expense,
+    ExpenseAttachment,
+    ExpenseChangeLog,
+    ExpenseRevision,
+    ExpenseSplit,
+    ExpenseSplitRevision,
+)
 from splinter.apps.expense.orchestrator import expense_event_orchestrator
 from splinter.apps.expense.settlements import check_and_create_settlement
 from splinter.apps.expense.utils import split_amount
@@ -133,6 +141,16 @@ class CreateExpenseOperation(ExpenseOperation[dict]):
                     share=share_spec['share'],
                 )
 
+        ExpenseAttachment.objects.bulk_create(
+            [
+                ExpenseAttachment(
+                    expense=expense,
+                    attachment=attachment,
+                )
+                for attachment in data['attachments']
+            ]
+        )
+
         return common_attrs['parent'] or expense
 
 
@@ -163,6 +181,16 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
             expense=expense,
             user=receiver,
             amount=amount,
+        )
+
+        ExpenseAttachment.objects.bulk_create(
+            [
+                ExpenseAttachment(
+                    expense=expense,
+                    attachment=attachment,
+                )
+                for attachment in data['attachments']
+            ]
         )
 
         return expense
@@ -305,6 +333,8 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
             data['paid_by'],
             f"Paid By changed from [[{parent.paid_by.urn}]] to [[{data['paid_by'].urn}]]",
         )
+
+        self._sync_attachments(parent, data['attachments'])
 
         if is_multiple:
             self._sync_children(parent, old_children, new_specs)
@@ -484,6 +514,35 @@ class UpdateExpenseOperation(ExpenseRevisionOperation):
             if log_changes:
                 self._changes.append(f"[[{leftover.user.urn}]] was removed{suffix}")
             leftover.delete()
+
+    def _sync_attachments(self, expense: Expense, attachments: list[FileAttachment]):
+        existing_attachments = list(FileAttachment.objects.filter(expense_attachment__expense=expense))
+
+        attachments_by_id = {attachment.id: attachment for attachment in attachments}
+        attachments_by_id.update({attachment.id: attachment for attachment in existing_attachments})
+
+        new_ids = {attachment.id for attachment in attachments}
+        existing_ids = {attachment.id for attachment in existing_attachments}
+
+        to_add = new_ids - existing_ids
+        to_remove = existing_ids - new_ids
+
+        links = []
+
+        for new_id in to_add:
+            attachment = attachments_by_id[new_id]
+            self._changes.append(f"[[{attachment.urn}]] was added")
+            links.append(ExpenseAttachment(expense=expense, attachment=attachment))
+
+        if links:
+            ExpenseAttachment.objects.bulk_create(links)
+
+        for old_id in to_remove:
+            attachment = attachments_by_id[old_id]
+            self._changes.append(f"[[{attachment.urn}]] was removed")
+
+        if to_remove:
+            ExpenseAttachment.objects.filter(attachment_id__in=to_remove).delete()
 
     def _set_and_track(self, obj, field, new_val, log_message: str) -> bool:
         if getattr(obj, field) != new_val:

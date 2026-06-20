@@ -10,6 +10,3 @@ CreatePaymentActivity = ActivityType(verb='payment', template='{actor} paid {tar
 UpdatePaymentActivity = ActivityType(verb='update_payment', template='{actor} updated a payment: {object}')
 DeletePaymentActivity = ActivityType(verb='delete_payment', template='{actor} deleted a payment: {object}')
 RestorePaymentActivity = ActivityType(verb='restore_payment', template='{actor} restored a payment: {object}')
-
-AttachExpenseFileActivity = ActivityType(verb='attach_expense_file', template='{actor} attached a file to {target}')
-DetachExpenseFileActivity = ActivityType(verb='detach_expense_file', template='{actor} removed a file from {target}')

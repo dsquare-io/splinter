@@ -141,6 +141,18 @@ class ExpenseChangeLog(models.Model):
         return f'{self.expense} - {self.changes}'
 
 
+class ExpenseAttachment(models.Model):
+    expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='attachments')
+    attachment = models.OneToOneField(
+        'attachment.FileAttachment', on_delete=models.CASCADE, related_name='expense_attachment'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_attachments'
+
+
 class OutstandingBalance(TimestampedModel, SoftDeleteModel):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='+')
     group = models.ForeignKey(

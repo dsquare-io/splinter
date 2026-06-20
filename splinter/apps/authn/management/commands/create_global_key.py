@@ -8,10 +8,10 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = 'Create a versioned global signing key for access or refresh tokens'
+    help = 'Create a versioned global signing key for JWT tokens'
 
     def add_arguments(self, parser):
-        parser.add_argument('key_type', choices=[GlobalKey.KEY_TYPE_ACCESS, GlobalKey.KEY_TYPE_REFRESH])
+        parser.add_argument('key_type', choices=list(GlobalKey.KEY_TYPE_ALGORITHMS))
         parser.add_argument('version', type=int)
 
     def handle(self, *args, **options):

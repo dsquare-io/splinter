@@ -97,8 +97,9 @@ if SENTRY_DSN:
 
 def configure_logging(settings: dict[str, Any]) -> None:
     if settings['WITHIN_TEST_SUITE']:
-        settings['LOGGING']['loggers']['django.request'] = {
-            'handlers': ['console'],
-            'level': 'CRITICAL',
-            'propagate': False,
-        }
+        for logger_name in ('django.request', 'celery.app.trace'):
+            settings['LOGGING']['loggers'][logger_name] = {
+                'handlers': ['console'],
+                'level': 'CRITICAL',
+                'propagate': False,
+            }

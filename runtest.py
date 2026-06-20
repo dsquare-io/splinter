@@ -25,6 +25,7 @@ def main():
     os.chdir(PROJECT_ROOT)
     os.environ['DJANGO_SETTINGS_MODULE'] = 'splinter.settings'
     os.environ['WITHIN_TEST_SUITE'] = 'True'
+    os.environ['CELERY_TASK_ALWAYS_EAGER'] = 'True'
 
     django.setup()
     TestRunner = get_runner(settings)
