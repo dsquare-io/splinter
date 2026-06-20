@@ -69,6 +69,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/attachments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upload File Attachment */
+    post: operations['UploadFileAttachment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/attachments/config': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Attachment Config */
+    get: operations['RetrieveAttachmentConfig'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/authn/password': {
     parameters: {
       query?: never;
@@ -328,57 +362,6 @@ export interface paths {
     post?: never;
     /** Destroy Group Membership */
     delete: operations['DestroyGroupMembership'];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/media/{media_uid}/thumbnail': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve Media Thumbnail */
-    get: operations['RetrieveMediaThumbnail'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/media/{media_uid}/url': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Retrieve Media Url */
-    get: operations['RetrieveMediaUrl'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/media/upload': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Upload Media File */
-    post: operations['UploadMediaFile'];
-    delete?: never;
     options?: never;
     head?: never;
     patch?: never;
@@ -702,6 +685,7 @@ export interface components {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
     AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
+    AttachmentConfig: import('./components/schemas.d.ts').AttachmentConfig;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
@@ -710,6 +694,7 @@ export interface components {
     ChildExpense: import('./components/schemas.d.ts').ChildExpense;
     Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
+    CreateFileAttachment: import('./components/schemas.d.ts').CreateFileAttachment;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
     CreateGroup: import('./components/schemas.d.ts').CreateGroup;
     CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
@@ -722,7 +707,6 @@ export interface components {
     Error: import('./components/schemas.d.ts').Error;
     Expense: import('./components/schemas.d.ts').Expense;
     ExpenseChangeLog: import('./components/schemas.d.ts').ExpenseChangeLog;
-    ExpenseFileAttachmentMixin: import('./components/schemas.d.ts').ExpenseFileAttachmentMixin;
     ExpenseOrPayment: import('./components/schemas.d.ts').ExpenseOrPayment;
     ExpenseOrPaymentOrSettlement: import('./components/schemas.d.ts').ExpenseOrPaymentOrSettlement;
     ExpenseShare: import('./components/schemas.d.ts').ExpenseShare;
@@ -730,14 +714,12 @@ export interface components {
     /** @enum {string} */
     ExpenseTypedTypeEnum: import('./components/schemas.d.ts').ExpenseTypedTypeEnum;
     ExtendedGroup: import('./components/schemas.d.ts').ExtendedGroup;
-    FileAttachmentMixin: import('./components/schemas.d.ts').FileAttachmentMixin;
+    FileAttachment: import('./components/schemas.d.ts').FileAttachment;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
     Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
     Group: import('./components/schemas.d.ts').Group;
     GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
-    MediaFile: import('./components/schemas.d.ts').MediaFile;
-    MediaUrl: import('./components/schemas.d.ts').MediaUrl;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
     Object: import('./components/schemas.d.ts').Object_;
@@ -1079,6 +1061,98 @@ export interface operations {
       };
     };
   };
+  UploadFileAttachment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'multipart/form-data': components['schemas']['CreateFileAttachment'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  RetrieveAttachmentConfig: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AttachmentConfig'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
   PasswordLogin: {
     parameters: {
       query?: never;
@@ -1179,7 +1253,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
+    requestBody: {
       content: {
         'application/json': components['schemas']['UpsertExpense'];
       };
@@ -1284,7 +1358,7 @@ export interface operations {
       };
       cookie?: never;
     };
-    requestBody?: {
+    requestBody: {
       content: {
         'application/json': components['schemas']['UpsertExpense'];
       };
@@ -2283,152 +2357,6 @@ export interface operations {
       };
     };
   };
-  RetrieveMediaThumbnail: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        media_uid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description No response body */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Resource Not Found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['NotFound'];
-        };
-      };
-    };
-  };
-  RetrieveMediaUrl: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        media_uid: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MediaUrl'];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Resource Not Found */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['NotFound'];
-        };
-      };
-    };
-  };
-  UploadMediaFile: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MediaFile'];
-        };
-      };
-      /** @description Bad Request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            /** @description List of non-field errors */
-            ''?: string[];
-          } & {
-            [key: string]: string[];
-          };
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Request Forbidden */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
   ChallengeMfaDevice: {
     parameters: {
       query?: never;
@@ -3069,7 +2997,7 @@ export interface operations {
       path?: never;
       cookie?: never;
     };
-    requestBody?: {
+    requestBody: {
       content: {
         'application/json': components['schemas']['UpsertPayment'];
       };

@@ -3,20 +3,11 @@ import { useCallback, useRef, useState } from 'react';
 import { ApiRoutes } from '@/api-types';
 import type { MediaFile } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
-
-export const ACCEPTED_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-  'image/heic',
-  'image/heif',
-  'application/pdf',
-];
-export const MAX_FILE_SIZE = 10 * 1024 * 1024;
+import { useAttachmentConfig } from './useAttachmentConfig';
 
 export type AttachmentStatus = 'uploading' | 'registered' | 'error';
 
-export interface PendingAttachment {
+export interface LocalAttachment {
   localId: string;
   file: File;
   filename: string;
@@ -29,8 +20,8 @@ export interface PendingAttachment {
   previewUrl?: string;
 }
 
-export interface UseAttachmentsReturn {
-  pendingAttachments: PendingAttachment[];
+export interface UseAttachmentReturn {
+  pendingAttachments: LocalAttachment[];
   existingAttachments: MediaFile[];
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
@@ -58,32 +49,36 @@ async function convertHeic(file: File): Promise<File> {
   return file;
 }
 
-export function useAttachments(): UseAttachmentsReturn {
-  const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([]);
+export function useAttachment(): UseAttachmentReturn {
+  const { data: attachmentConfig } = useAttachmentConfig();
+  const [pendingAttachments, setPendingAttachments] = useState<LocalAttachment[]>([]);
   const [existingAttachments, setExistingAttachments] = useState<MediaFile[]>([]);
   const [deletedUids, setDeletedUids] = useState<string[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
   const previewUrls = useRef<Map<string, string>>(new Map());
 
-  const updatePending = useCallback((localId: string, updates: Partial<PendingAttachment>) => {
+  const updatePending = useCallback((localId: string, updates: Partial<LocalAttachment>) => {
     setPendingAttachments((prev) => prev.map((a) => (a.localId === localId ? { ...a, ...updates } : a)));
   }, []);
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
       const fileArray = Array.from(files);
+      const acceptedTypes = attachmentConfig?.allowedContentTypes ?? [];
+      const maxFileSize = attachmentConfig?.maxFileSize ?? Infinity;
 
       for (const file of fileArray) {
         const lower = file.name.toLowerCase();
         const effectiveMime =
           file.type || (lower.endsWith('.heic') || lower.endsWith('.heif') ? 'image/heic' : '');
 
-        if (!ACCEPTED_TYPES.includes(effectiveMime)) {
+        if (acceptedTypes.length > 0 && !acceptedTypes.includes(effectiveMime)) {
           setValidationError(`${file.name}: unsupported file type`);
           return;
         }
-        if (file.size > MAX_FILE_SIZE) {
-          setValidationError(`${file.name}: file exceeds 10 MB limit`);
+        if (file.size > maxFileSize) {
+          const mb = (maxFileSize / (1024 * 1024)).toFixed(0);
+          setValidationError(`${file.name}: file exceeds ${mb} MB limit`);
           return;
         }
       }
@@ -136,7 +131,7 @@ export function useAttachments(): UseAttachmentsReturn {
             const formData = new FormData();
             formData.append('file', prepared, prepared.name);
 
-            const res = await axiosInstance.post<MediaFile>(ApiRoutes.UPLOAD_MEDIA_FILE, formData, {
+            const res = await axiosInstance.post<MediaFile>(ApiRoutes.UPLOAD_ATTACHMENT, formData, {
               headers: { 'Content-Type': 'multipart/form-data' },
               onUploadProgress: (e) => {
                 if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
@@ -153,7 +148,7 @@ export function useAttachments(): UseAttachmentsReturn {
         })();
       }
     },
-    [existingAttachments.length, pendingAttachments, updatePending]
+    [attachmentConfig, existingAttachments.length, pendingAttachments, updatePending]
   );
 
   const removePending = useCallback((localId: string) => {

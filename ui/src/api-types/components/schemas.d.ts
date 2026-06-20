@@ -30,6 +30,12 @@ export interface AggregatedOutstandingBalance {
   readonly balances: OutstandingBalance[];
 }
 
+export interface AttachmentConfig {
+  readonly maxFileSize: number;
+  readonly allowedContentTypes: string[];
+  readonly allowedExtensions: string[];
+}
+
 export interface AuthTokenData {
   accessToken: string;
   refreshToken: string;
@@ -81,6 +87,11 @@ export interface Country {
   readonly urn: string;
   name: string;
   flag: string;
+}
+
+export interface CreateFileAttachment {
+  /** Format: uri */
+  file: string;
 }
 
 export type CreateFriendship = CreateUser;
@@ -148,7 +159,7 @@ export interface Expense {
    */
   readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
-  readonly attachments: MediaFile[];
+  readonly attachments: FileAttachment[];
   version?: number;
   readonly paidBy: SimpleUser;
   readonly isDeleted: boolean;
@@ -161,7 +172,6 @@ export interface ExpenseChangeLog {
   readonly references: Object_[];
 }
 
-export type ExpenseFileAttachmentMixin = FileAttachmentMixin;
 export type ExpenseOrPayment = ExpenseTyped | PaymentTyped;
 export type ExpenseOrPaymentOrSettlement = ExpenseTyped | PaymentTyped | SettlementTyped;
 
@@ -199,8 +209,16 @@ export type ExtendedGroup = SimpleGroup & {
   readonly members: SimpleUser[];
 };
 
-export interface FileAttachmentMixin {
-  attachmentUids?: string[];
+export interface FileAttachment {
+  readonly uid: string;
+  readonly urn: string;
+  fileName: string;
+  fileSize: number;
+  contentType: string;
+  /** Format: uri */
+  readonly url: string;
+  /** Format: uri */
+  readonly thumbnailUrl: string | null;
 }
 
 export interface ForgetPassword {
@@ -230,24 +248,6 @@ export type GroupOutstandingBalance = OutstandingBalance & {
   readonly user: SimpleUser;
   readonly friend: SimpleUser;
 };
-
-export interface MediaFile {
-  /** Format: uuid */
-  readonly uid: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
-  processed?: boolean;
-  /** Format: uri */
-  readonly signedUrl: string | null;
-  /** Format: uri */
-  readonly thumbnailUrl: string | null;
-}
-
-export interface MediaUrl {
-  /** Format: uri */
-  url: string;
-}
 
 export interface MfaToken {
   token: string;
@@ -314,7 +314,7 @@ export interface Payment {
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
-  readonly attachments: MediaFile[];
+  readonly attachments: FileAttachment[];
   readonly isDeleted: boolean;
 }
 
@@ -386,7 +386,7 @@ export interface SimpleUser {
   readonly isActive: boolean;
 }
 
-export type UpsertExpense = ExpenseFileAttachmentMixin & {
+export interface UpsertExpense {
   /** Format: date-time */
   datetime: string;
   description?: string;
@@ -398,8 +398,10 @@ export type UpsertExpense = ExpenseFileAttachmentMixin & {
   /** @description ISO 4217 Currency Code */
   currency: string;
   expenses: ChildExpense[];
-};
-export type UpsertPayment = ExpenseFileAttachmentMixin & {
+  attachments?: string[];
+}
+
+export interface UpsertPayment {
   sender: string;
   receiver: string;
   /** Format: date-time */
@@ -410,7 +412,9 @@ export type UpsertPayment = ExpenseFileAttachmentMixin & {
   currency: string;
   /** Format: decimal */
   amount: string;
-};
+  attachments?: string[];
+}
+
 export type User = SimpleUser & {
   firstName?: string;
   lastName?: string;
