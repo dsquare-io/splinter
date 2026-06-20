@@ -19,6 +19,7 @@ making financial harmony a breeze.
 
       docker exec splinter-primary splinter create_global_key access 1
       docker exec splinter-primary splinter create_global_key refresh 1
+      docker exec splinter-primary splinter create_global_key attachment 1
 
 
 ### Generating Fake Data
