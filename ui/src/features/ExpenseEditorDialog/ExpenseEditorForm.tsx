@@ -12,12 +12,12 @@ import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
-import { AttachmentsContext, useAttachmentsContext } from './AttachmentsContext.tsx';
+import { AttachmentContext, useAttachmentContext } from '@/features/AttachmentPanel/Context.tsx';
+import { useAttachment } from '@/features/AttachmentPanel/useAttachment.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import { ExpenseOptions } from './ExpenseOptions.tsx';
 import { ExpenseParticipantsProvider, useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ExpenseShares } from './ExpenseShares.tsx';
-import { useAttachments } from './useAttachments.ts';
 
 type Step = 'entry' | 'shares' | 'options';
 
@@ -46,7 +46,7 @@ function buildDefaultValues(expense: Expense) {
 }
 
 export function ExpenseEditorForm({ expense }: Props) {
-  const attachments = useAttachments();
+  const attachments = useAttachment();
 
   useEffect(() => {
     if (expense?.attachments) {
@@ -57,9 +57,9 @@ export function ExpenseEditorForm({ expense }: Props) {
 
   return (
     <ExpenseParticipantsProvider initialExpense={expense}>
-      <AttachmentsContext.Provider value={attachments}>
+      <AttachmentContext.Provider value={attachments}>
         <ExpenseEditorFormInner expense={expense} />
-      </AttachmentsContext.Provider>
+      </AttachmentContext.Provider>
     </ExpenseParticipantsProvider>
   );
 }
@@ -67,7 +67,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { getAttachmentUids, existingAttachments } = useAttachmentsContext();
+  const { getAttachmentUids, existingAttachments } = useAttachmentContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;
   const [step, setStep] = useState<Step>('entry');

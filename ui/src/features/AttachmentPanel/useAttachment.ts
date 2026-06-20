@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
 import { ApiRoutes } from '@/api-types';
-import type { MediaFile } from '@/api-types/components/schemas';
+import type { FileAttachment } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
 import { useAttachmentConfig } from './useAttachmentConfig';
 
@@ -22,12 +22,12 @@ export interface LocalAttachment {
 
 export interface UseAttachmentReturn {
   pendingAttachments: LocalAttachment[];
-  existingAttachments: MediaFile[];
+  existingAttachments: FileAttachment[];
   addFiles: (files: FileList | File[]) => void;
   removePending: (localId: string) => void;
   removeExisting: (uid: string) => void;
   getAttachmentUids: () => string[];
-  initialize: (attachments: MediaFile[]) => void;
+  initialize: (attachments: FileAttachment[]) => void;
   deletedUids: string[];
   validationError: string | null;
   clearValidationError: () => void;
@@ -50,9 +50,9 @@ async function convertHeic(file: File): Promise<File> {
 }
 
 export function useAttachment(): UseAttachmentReturn {
-  const { data: attachmentConfig } = useAttachmentConfig();
+  const attachmentConfig = useAttachmentConfig();
   const [pendingAttachments, setPendingAttachments] = useState<LocalAttachment[]>([]);
-  const [existingAttachments, setExistingAttachments] = useState<MediaFile[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<FileAttachment[]>([]);
   const [deletedUids, setDeletedUids] = useState<string[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
   const previewUrls = useRef<Map<string, string>>(new Map());
@@ -131,7 +131,7 @@ export function useAttachment(): UseAttachmentReturn {
             const formData = new FormData();
             formData.append('file', prepared, prepared.name);
 
-            const res = await axiosInstance.post<MediaFile>(ApiRoutes.UPLOAD_ATTACHMENT, formData, {
+            const res = await axiosInstance.post<{ uid: string }>(ApiRoutes.UPLOAD_FILE_ATTACHMENT, formData, {
               headers: { 'Content-Type': 'multipart/form-data' },
               onUploadProgress: (e) => {
                 if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
@@ -170,7 +170,7 @@ export function useAttachment(): UseAttachmentReturn {
     [pendingAttachments]
   );
 
-  const initialize = useCallback((attachments: MediaFile[]) => {
+  const initialize = useCallback((attachments: FileAttachment[]) => {
     setExistingAttachments(attachments);
     setDeletedUids([]);
   }, []);

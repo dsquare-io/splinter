@@ -5,7 +5,7 @@ import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { Money } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
-import { AttachmentStrip } from './AttachmentStrip.tsx';
+import { AttachmentPanel } from '@/features/AttachmentPanel/AttachmentPanel.tsx';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 import { ParticipantsSelector } from './ParticipantsSelector.tsx';
@@ -68,7 +68,7 @@ export function ExpenseEntry() {
 
       <ExpenseInputList isSimple={isSimple} />
 
-      <AttachmentStrip />
+      <AttachmentPanel />
     </div>
   );
 }

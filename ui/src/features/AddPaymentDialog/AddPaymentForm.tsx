@@ -7,8 +7,9 @@ import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/a
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
-import { AttachmentStrip } from '@/features/ExpenseEditorDialog/AttachmentStrip.tsx';
-import { useAttachments } from '@/features/ExpenseEditorDialog/useAttachments.ts';
+import { AttachmentPanel } from '@/features/AttachmentPanel/AttachmentPanel.tsx';
+import { AttachmentContext } from '@/features/AttachmentPanel/Context.tsx';
+import { useAttachment } from '@/features/AttachmentPanel/useAttachment.ts';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
@@ -23,7 +24,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const formControl = useForm();
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const attachments = useAttachments();
+  const attachments = useAttachment();
 
   useEffect(() => {
     if (friend?.aggregatedOutstandingBalance) {
@@ -47,9 +48,10 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   }, [group?.outstandingBalances, currentUser?.uid]);
 
   return (
-    <Form
-      className="mt-4 flex h-full flex-col space-y-4"
-      control={formControl}
+    <AttachmentContext.Provider value={attachments}>
+      <Form
+        className="mt-4 flex h-full flex-col space-y-4"
+        control={formControl}
       transformData={(data) => {
         const paymentDir = data?.paymentDir ?? 'out';
         const selectedFriend = data?.friend ?? '';
@@ -174,7 +176,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         }}
       />
 
-      <AttachmentStrip />
+      <AttachmentPanel />
 
       <DialogFooter className="flex justify-end gap-2">
         <Button
@@ -186,6 +188,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         </Button>
         <SubmitButton>Add Payment</SubmitButton>
       </DialogFooter>
-    </Form>
+      </Form>
+    </AttachmentContext.Provider>
   );
 }

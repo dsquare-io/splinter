@@ -32,13 +32,13 @@ export function AttachmentPanel() {
               <AttachmentTile
                 key={a.uid}
                 status="existing"
-                label={a.originalFilename}
+                label={a.fileName}
                 onRemove={() => removeExisting(a.uid)}
                 thumbnail={
                   a.thumbnailUrl ? (
                     <ThumbnailImage
                       src={a.thumbnailUrl}
-                      alt={a.originalFilename}
+                      alt={a.fileName}
                       className="h-full w-full object-cover"
                       fallback={
                         <div className="flex h-full w-full items-center justify-center">

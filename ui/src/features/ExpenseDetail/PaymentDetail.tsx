@@ -2,18 +2,11 @@ import { DocumentIcon } from '@heroicons/react/20/solid';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
-import { ApiRoutes, PaymentTyped, SimpleGroup } from '@/api-types';
-import type { MediaFile, MediaUrl } from '@/api-types/components/schemas';
-import { urlWithArgs } from '@/api-types/url';
-import { axiosInstance } from '@/axios';
+import { PaymentTyped, SimpleGroup } from '@/api-types';
+import type { FileAttachment } from '@/api-types/components/schemas';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
 import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { GroupBadge } from './GroupBadge.tsx';
-
-async function fetchMediaUrl(mediaUid: string): Promise<string> {
-  const res = await axiosInstance.get<MediaUrl>(urlWithArgs(ApiRoutes.MEDIA_URL, { media_uid: mediaUid }));
-  return res.data.url;
-}
 
 const fallbackIcon = (
   <div className="flex h-full w-full items-center justify-center">
@@ -21,10 +14,9 @@ const fallbackIcon = (
   </div>
 );
 
-function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
-  const open = async () => {
-    const url = await fetchMediaUrl(attachment.uid);
-    window.open(url, '_blank', 'noopener,noreferrer');
+function PaymentAttachmentTile({ attachment }: { attachment: FileAttachment }) {
+  const open = () => {
+    window.open(attachment.url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -32,13 +24,13 @@ function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
       type="button"
       onClick={open}
       className="group relative flex flex-col items-center gap-1"
-      title={attachment.originalFilename}
+      title={attachment.fileName}
     >
       <div className="relative h-16 w-16 rounded-lg border border-gray-200 bg-gray-100 transition group-hover:border-gray-300">
         {attachment.thumbnailUrl ? (
           <ThumbnailImage
             src={attachment.thumbnailUrl}
-            alt={attachment.originalFilename}
+            alt={attachment.fileName}
             className="h-full w-full object-cover"
             fallback={fallbackIcon}
           />
@@ -47,7 +39,7 @@ function PaymentAttachmentTile({ attachment }: { attachment: MediaFile }) {
         )}
         <div className="absolute inset-0 bg-black/0 transition group-hover:bg-black/10" />
       </div>
-      <span className="w-16 truncate text-center text-xs text-gray-500">{attachment.originalFilename}</span>
+      <span className="w-16 truncate text-center text-xs text-gray-500">{attachment.fileName}</span>
     </button>
   );
 }
