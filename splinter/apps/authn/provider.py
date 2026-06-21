@@ -41,14 +41,14 @@ class AccessTokenProvider:
     def access_token_payload(self) -> dict:
         return {
             'jti': self.token_identifier,
-            'sub': self.subject.username,
+            'sub': self.subject.uid,
             'exp': self.access_token_expiry,
         }
 
     def refresh_token_payload(self) -> dict:
         return {
             'jti': self.token_identifier,
-            'sub': self.subject.username,
+            'sub': self.subject.uid,
         }
 
     def generate_access_token(self) -> str:

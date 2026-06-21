@@ -4,6 +4,8 @@ import string
 from html.parser import HTMLParser
 from textwrap import wrap
 
+from splinter.db.urn import HasURN
+
 WHITE_SPACE_RE = re.compile(r'\s+')
 FIRST_CAP_RE = re.compile('(.)([A-Z][a-z]+)')
 ALL_CAP_RE = re.compile('([a-z0-9])([A-Z])')
@@ -108,8 +110,7 @@ def public_string(obj) -> str:
     if hasattr(obj, '__public_str__'):
         return obj.__public_str__()
 
-    uid_field = getattr(obj, 'UID_FIELD', None)
-    if uid_field:
-        return f'{obj.__class__.__name__}: {getattr(obj, uid_field)}'
+    if isinstance(obj, HasURN):
+        return f'{obj.__class__.__name__}: {obj.uid}'
 
     return obj.__class__.__name__
