@@ -39,12 +39,16 @@ class AccessTokenProvider:
         return timezone.now() + self.access_token_expiry_delta
 
     def access_token_payload(self) -> dict:
-        return {'jti': self.token_identifier, 'sub': self.subject.urn, 'exp': self.access_token_expiry}
+        return {
+            'jti': self.token_identifier,
+            'sub': self.subject.uid,
+            'exp': self.access_token_expiry,
+        }
 
     def refresh_token_payload(self) -> dict:
         return {
             'jti': self.token_identifier,
-            'sub': self.subject.urn,
+            'sub': self.subject.uid,
         }
 
     def generate_access_token(self) -> str:
@@ -120,7 +124,7 @@ class AccessTokenFromRefreshTokenProvider(AccessTokenProvider):
     def __init__(self, refresh_token: ValidatedToken):
         super().__init__(
             subject=refresh_token.subject,
-            token_identifier=refresh_token.subject_secret.jti.decode(),
+            token_identifier=refresh_token.token_identifier,
             access_key=_get_current_access_key(),
             refresh_key=_get_current_refresh_key(),
         )

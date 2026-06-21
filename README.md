@@ -15,6 +15,10 @@ making financial harmony a breeze.
 
       docker-compose up
 
+- Create signing keys for access and refresh tokens
+
+      docker exec splinter-primary splinter create_global_key access 1
+      docker exec splinter-primary splinter create_global_key refresh 1
 
 ### Generating Fake Data
 
