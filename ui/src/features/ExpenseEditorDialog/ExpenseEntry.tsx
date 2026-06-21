@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { Money } from '@/components/primitives';
-import { AttachmentPanel } from '@/features/AttachmentPanel/AttachmentPanel.tsx';
+import { AttachmentPanel } from '@/features/AttachmentPanel';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { ExpenseInputList } from './ExpenseInputList.tsx';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';

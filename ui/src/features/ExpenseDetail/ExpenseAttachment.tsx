@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { DocumentIcon } from '@heroicons/react/20/solid';
 
 import type { FileAttachment } from '@/api-types/components/schemas';
-import { Thumbnail } from '@/features/AttachmentPanel/Thumbnail';
+import { Thumbnail } from '@/features/AttachmentPanel';
 import { AttachmentPreviewDialog } from '@/features/AttachmentPreviewDialog';
 
 type Props = {

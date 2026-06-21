@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 import { SimpleGroup } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
-import { ExpenseAttachment } from './ExpenseAttachment.tsx';
 import { ExpenseItems } from './ExpenseItems.tsx';
 import { ExpenseItemShares } from './ExpenseItemShares.tsx';
 import { GroupBadge } from './GroupBadge.tsx';

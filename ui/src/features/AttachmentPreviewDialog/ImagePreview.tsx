@@ -22,17 +22,22 @@ export function ImagePreview({ src, alt }: Props) {
   const [scale, setScale] = useState(1);
   const [fitScale, setFitScale] = useState(1);
   const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
+  const [prevSrc, setPrevSrc] = useState(src);
   const containerRef = useRef<HTMLDivElement>(null);
   const scaleRef = useRef(scale);
-  scaleRef.current = scale;
 
   useEffect(() => {
+    scaleRef.current = scale;
+  }, [scale]);
+
+  if (prevSrc !== src) {
+    setPrevSrc(src);
     setLoaded(false);
     setError(false);
     setNaturalSize(null);
     setScale(1);
     setFitScale(1);
-  }, [src]);
+  }
 
   // Scroll to center when scale changes via buttons
   useEffect(() => {

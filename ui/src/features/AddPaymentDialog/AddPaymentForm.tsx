@@ -7,9 +7,7 @@ import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/a
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
-import { AttachmentPanel } from '@/features/AttachmentPanel/AttachmentPanel.tsx';
-import { AttachmentContext } from '@/features/AttachmentPanel/Context.tsx';
-import { useAttachment } from '@/features/AttachmentPanel/useAttachment.ts';
+import { AttachmentContext, AttachmentPanel, useAttachment } from '@/features/AttachmentPanel';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
