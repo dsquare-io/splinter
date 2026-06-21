@@ -25,7 +25,6 @@ class TokenValidator[T: Model]:
     error_class: type[APIException] = AuthenticationFailed
 
     algorithm: str = 'ES256'
-    subject_model: type[T]
     key_type: str
 
     def translate_jwt_error(self, ex: jwt.PyJWTError) -> APIException:
