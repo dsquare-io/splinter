@@ -31,6 +31,7 @@ urlpatterns = [
     path('', include('splinter.core.health.urls')),
     path('api/', include('splinter.core.openapi.urls', namespace='openapi')),
     path('api/', include('splinter.apps.activity.urls')),
+    path('api/', include('splinter.apps.attachment.urls')),
     path('api/', include('splinter.apps.authn.urls')),
     path('api/', include('splinter.apps.currency.urls')),
     path('api/', include('splinter.apps.expense.urls')),
@@ -39,6 +40,7 @@ urlpatterns = [
     path('api/', include('splinter.apps.mfa.urls')),
     path('api/', include('splinter.apps.notification.urls')),
     path('api/', include('splinter.apps.user.urls')),
+    path('media/', include('splinter.apps.attachment.media_urls')),
 ]
 
 if not settings.DEBUG:
