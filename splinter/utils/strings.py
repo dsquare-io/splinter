@@ -108,8 +108,7 @@ def public_string(obj) -> str:
     if hasattr(obj, '__public_str__'):
         return obj.__public_str__()
 
-    uid_field = getattr(obj, 'UID_FIELD', None)
-    if uid_field:
-        return f'{obj.__class__.__name__}: {getattr(obj, uid_field)}'
+    if hasattr(obj, 'uid'):
+        return f'{obj.__class__.__name__}: {obj.uid}'
 
     return obj.__class__.__name__

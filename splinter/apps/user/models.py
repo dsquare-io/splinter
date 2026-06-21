@@ -8,13 +8,12 @@ from django.utils import timezone
 
 from splinter.apps.user.managers import EmailVerificationManager, UserInvitationManager, UserManager
 from splinter.db.models import SoftDeleteModel, TimestampedModel
+from splinter.db.urn import HasURN
 
 
-class User(TimestampedModel, SoftDeleteModel, AuthAbstractUser):
+class User(HasURN, TimestampedModel, SoftDeleteModel, AuthAbstractUser):
     UID_FIELD = 'username'
     SEARCH_FIELDS = ['full_name', 'username', 'email']
-
-    urn: str
 
     username_validator = ASCIIUsernameValidator()
     email = models.EmailField(unique=True, null=True, blank=True)

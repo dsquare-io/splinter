@@ -5,12 +5,11 @@ from django.db import IntegrityError, transaction
 from django.db.models import Model
 
 from splinter.db.models.fields import UniqueUUIDField
+from splinter.db.urn import HasURN
 
 
-class PublicModel(Model):
+class PublicModel(HasURN, Model):
     UID_FIELD = 'public_id'
-
-    urn: str
 
     public_id = UniqueUUIDField(editable=False)
 

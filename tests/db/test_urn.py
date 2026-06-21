@@ -1,10 +1,11 @@
-from unittest.mock import MagicMock, PropertyMock
+from unittest.mock import MagicMock, patch
 
-from django.core.exceptions import FieldDoesNotExist
-from django.test import TestCase
+from django.contrib.auth.models import Permission
+from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
+from django.test import SimpleTestCase, TestCase
 from parameterized import parameterized
 
-from splinter.db.urn import ResourceName, ResourceNameDecorator, check_urn_support
+from splinter.db.urn import ResourceName, ResourceNameDecorator, UIDDecorator, check_uid_fields
 from tests._app.models.urn import UrnSupportedModel
 
 
@@ -97,40 +98,50 @@ class ResourceNameHashTests(TestCase):
         self.assertEqual(d[rn], 'value')
 
 
-class CheckUrnSupportTests(TestCase):
-    def _make_model(self, uid_field=None, field_exists=True):
+class CheckUidFieldsTests(SimpleTestCase):
+    def _make_mock_model(self, uid_field, field_exists=True):
         model = MagicMock()
-        type(model)._meta = PropertyMock(return_value=MagicMock(app_label='test', model_name='mock'))
-
-        if uid_field is None:
-            del model.UID_FIELD
-            type(model).UID_FIELD = PropertyMock(side_effect=AttributeError)
+        model.UID_FIELD = uid_field
+        model._meta.label = 'tests.MockModel'
+        if field_exists:
+            model._meta.get_field.return_value = MagicMock()
         else:
-            model.UID_FIELD = uid_field
-            if field_exists:
-                model._meta.get_field.return_value = MagicMock()
-            else:
-                model._meta.get_field.side_effect = FieldDoesNotExist()
-
+            model._meta.get_field.side_effect = FieldDoesNotExist()
         return model
 
-    def test_no_uid_field_raises(self):
+    def test_valid_uid_field_no_errors(self):
+        model = self._make_mock_model('id', field_exists=True)
+        with patch('splinter.db.urn.apps.get_models', return_value=[model]):
+            errors = check_uid_fields(None)
+        self.assertEqual(errors, [])
+
+    def test_nonexistent_uid_field_returns_error(self):
+        model = self._make_mock_model('nonexistent', field_exists=False)
+        with patch('splinter.db.urn.apps.get_models', return_value=[model]):
+            errors = check_uid_fields(None)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual(errors[0].id, 'splinter.E001')
+
+    def test_model_without_uid_field_ignored(self):
         model = MagicMock(spec=[])
-        type(model)._meta = PropertyMock(return_value=MagicMock(app_label='test', model_name='mock'))
-        with self.assertRaises(NotImplementedError):
-            check_urn_support(model)
+        with patch('splinter.db.urn.apps.get_models', return_value=[model]):
+            errors = check_uid_fields(None)
+        self.assertEqual(errors, [])
 
-    def test_nonexistent_uid_field_raises(self):
-        model = MagicMock()
-        model.UID_FIELD = 'nonexistent'
-        model._meta.app_label = 'test'
-        model._meta.model_name = 'mock'
-        model._meta.get_field.side_effect = FieldDoesNotExist()
-        with self.assertRaises(NotImplementedError):
-            check_urn_support(model)
+    def test_urn_supported_model_no_errors(self):
+        with patch('splinter.db.urn.apps.get_models', return_value=[UrnSupportedModel]):
+            errors = check_uid_fields(None)
+        self.assertEqual(errors, [])
 
-    def test_valid_model_passes(self):
-        check_urn_support(UrnSupportedModel)
+
+class SignalInjectionTests(SimpleTestCase):
+    def test_model_with_uid_field_gets_decorators(self):
+        self.assertIsInstance(UrnSupportedModel.__dict__.get('uid'), UIDDecorator)
+        self.assertIsInstance(UrnSupportedModel.__dict__.get('urn'), ResourceNameDecorator)
+
+    def test_model_without_uid_field_no_decorators(self):
+        self.assertNotIsInstance(Permission.__dict__.get('uid'), UIDDecorator)
+        self.assertNotIsInstance(Permission.__dict__.get('urn'), ResourceNameDecorator)
 
 
 class ResourceNameDecoratorTests(TestCase):
@@ -156,8 +167,6 @@ class ResourceNameGetInstanceTests(TestCase):
         self.assertEqual(fetched.pk, obj.pk)
 
     def test_get_instance_not_found_raises(self):
-        from django.core.exceptions import ObjectDoesNotExist
-
         rn = ResourceName(app_label='splinter_tests', model_name='urnsupportedmodel', uid='nonexistent')
         with self.assertRaises(ObjectDoesNotExist):
             rn.get_instance()

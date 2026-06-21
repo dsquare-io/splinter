@@ -7,13 +7,11 @@ from django.utils import timezone
 
 from splinter.apps.currency.managers import ConversionRateManager, UserCurrencyManager
 from splinter.db.models import TimestampedModel
+from splinter.db.urn import HasURN
 
 
-class Country(TimestampedModel):
+class Country(HasURN, TimestampedModel):
     UID_FIELD = 'code'
-
-    if TYPE_CHECKING:
-        urn: str
 
     code = models.CharField(max_length=2, primary_key=True, help_text='ISO 3166-1 Alpha-2 Country Code')
     name = models.CharField(max_length=128)
@@ -28,11 +26,8 @@ class Country(TimestampedModel):
         return self.name
 
 
-class Currency(TimestampedModel):
+class Currency(HasURN, TimestampedModel):
     UID_FIELD = 'code'
-
-    if TYPE_CHECKING:
-        urn: str
 
     code = models.CharField(max_length=3, primary_key=True, help_text='ISO 4217 Currency Code')
     symbol = models.CharField(max_length=3, null=True, blank=True)

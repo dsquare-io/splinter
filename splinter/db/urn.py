@@ -1,20 +1,21 @@
 import inspect
 from collections import defaultdict
 from dataclasses import dataclass
-from functools import lru_cache
-from typing import Collection, Optional, Protocol
+from typing import Collection, Optional
 
 from django.apps import apps
+from django.core.checks import Error, register
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Model
 from django.db.models.signals import class_prepared
 from django.dispatch import receiver
 
 
-class ResourceNameProtocol(Protocol):
+class HasURN:
     UID_FIELD: str
 
     urn: str
+    uid: str | None
 
 
 @dataclass(slots=True, frozen=True)
@@ -23,10 +24,10 @@ class ResourceName:
     model_name: str
     uid: str | None = None
 
-    def get_model_cls(self) -> type[ResourceNameProtocol] | type[Model]:
+    def get_model_cls(self) -> type[Model]:
         return apps.get_model(self.app_label, self.model_name)
 
-    def get_instance(self) -> Model | ResourceNameProtocol:
+    def get_instance(self) -> Model | HasURN:
         model_cls = self.get_model_cls()
         return model_cls._base_manager.get(**{model_cls.UID_FIELD: self.uid})
 
@@ -76,10 +77,8 @@ class ResourceName:
             return None
 
     @classmethod
-    def bulk_get_instance(
-        cls, resource_names: Collection['ResourceName']
-    ) -> dict['ResourceName', Model | ResourceNameProtocol]:
-        instances: dict['ResourceName', Model | ResourceNameProtocol] = {}
+    def bulk_get_instance(cls, resource_names: Collection['ResourceName']) -> dict['ResourceName', Model | HasURN]:
+        instances: dict['ResourceName', Model | HasURN] = {}
 
         grouped_by_model: dict[type[Model], list[ResourceName]] = defaultdict(list)
         for resource_name in resource_names:
@@ -88,40 +87,57 @@ class ResourceName:
         for model_cls, names in grouped_by_model.items():
             rn_by_uid = {u.uid: u for u in names}
             for instance in model_cls._base_manager.filter(**{f'{model_cls.UID_FIELD}__in': list(rn_by_uid)}):
-                instances[rn_by_uid[getattr(instance, model_cls.UID_FIELD)]] = instance
+                instances[rn_by_uid[instance.uid]] = instance
 
         return instances
 
 
-@lru_cache(maxsize=None)
-def check_urn_support(model: Model | ResourceNameProtocol):
-    model_name = f'{model._meta.app_label}.{model._meta.model_name}'.lower()
-
-    if not hasattr(model, 'UID_FIELD'):
-        raise NotImplementedError(f'URN is not supported for {model_name}. Reason: UID_FIELD is not defined')
-
-    try:
-        model._meta.get_field(model.UID_FIELD)
-    except FieldDoesNotExist:
-        raise NotImplementedError(
-            f'URN is not supported for {model_name}. Reason: Specified UID_FIELD "{model.UID_FIELD}" does not exists'
-        )
-
-
-class ResourceNameDecorator:
-    def __get__(self, instance: Model | ResourceNameProtocol, owner) -> 'str | ResourceNameDecorator':
-        check_urn_support(type(instance))
+class UIDDecorator:
+    def __get__(self, instance: Model | HasURN, owner) -> 'str | UIDDecorator | None':
         if instance is None:
             return self
 
         uid = getattr(instance, instance.UID_FIELD)
+        if uid is not None and not isinstance(uid, str):
+            uid = str(uid)
+
+        return uid
+
+
+class ResourceNameDecorator:
+    def __get__(self, instance: Model | HasURN, owner) -> 'str | ResourceNameDecorator':
+        if instance is None:
+            return self
+
         app_label = instance._meta.app_label
         model_name = instance._meta.model_name
-        name = ResourceName(app_label=app_label, model_name=model_name, uid=uid)
+        name = ResourceName(app_label=app_label, model_name=model_name, uid=instance.uid)
         return str(name)
 
 
 @receiver(class_prepared)
 def add_resource_name(sender, **kwargs):
-    if inspect.isclass(sender) and issubclass(sender, Model):
+    if inspect.isclass(sender) and issubclass(sender, Model) and hasattr(sender, 'UID_FIELD'):
+        setattr(sender, 'uid', UIDDecorator())
         setattr(sender, 'urn', ResourceNameDecorator())
+
+
+@register()
+def check_uid_fields(app_configs, **kwargs):
+    errors = []
+    for model in apps.get_models():
+        if not hasattr(model, 'UID_FIELD'):
+            continue
+        try:
+            model._meta.get_field(model.UID_FIELD)
+        except FieldDoesNotExist:
+            errors.append(
+                Error(
+                    f'UID_FIELD "{model.UID_FIELD}" does not exist on {model._meta.label}.',
+                    hint=f'Add a field named "{model.UID_FIELD}" or update UID_FIELD.',
+                    obj=model,
+                    id='splinter.E001',
+                )
+            )
+
+    return errors
