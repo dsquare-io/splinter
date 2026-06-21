@@ -118,6 +118,16 @@ class ExpenseSplitRevision(models.Model):
         db_table = 'expense_split_revisions'
 
 
+class ExpenseAttachmentRevision(models.Model):
+    expense = models.ForeignKey(ExpenseRevision, on_delete=models.CASCADE, related_name='+')
+    attachment = models.ForeignKey('attachment.FileAttachment', on_delete=models.CASCADE, related_name='+')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_attachment_revisions'
+
+
 class ExpenseChangeLog(models.Model):
     expense = models.ForeignKey('Expense', on_delete=models.CASCADE, related_name='changes')
     activity = models.ForeignKey(

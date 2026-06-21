@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from parameterized import parameterized
 
 from splinter.apps.attachment.models import FileAttachment
-from splinter.apps.expense.models import ExpenseAttachment, ExpenseChangeLog
+from splinter.apps.expense.models import ExpenseAttachment, ExpenseAttachmentRevision, ExpenseChangeLog, ExpenseRevision
 from splinter.apps.friend.models import Friendship
 from tests.apps.attachment.factories import FileAttachmentFactory
 from tests.apps.expense.case import ExpenseTestCase
@@ -133,6 +133,13 @@ class UpdateExpenseWithAttachmentTests(ExpenseTestCase, AuthenticatedAPITestCase
         changelog = ExpenseChangeLog.objects.get(expense=self.expense)
         self.assertSetEqual(set(changelog.changes), set(entries))
 
+    def assertRevisionAttachmentsEqual(self, attachments: list):
+        revision = ExpenseRevision.objects.get(expense=self.expense)
+        revision_attachment_ids = set(
+            ExpenseAttachmentRevision.objects.filter(expense=revision).values_list('attachment_id', flat=True)
+        )
+        self.assertSetEqual(revision_attachment_ids, {a.id for a in attachments})
+
     def test_new_attachment(self):
         file = FileAttachmentFactory(created_by=self.user)
         attachment_uids = [str(file.public_id)]
@@ -175,3 +182,29 @@ class UpdateExpenseWithAttachmentTests(ExpenseTestCase, AuthenticatedAPITestCase
 
         self.assertAttachmentsEqual(attachment_uids)
         self.assertChangeLogsEqual(set())
+
+    def test_revision_captures_attachments(self):
+        file1 = FileAttachmentFactory(created_by=self.user)
+        file2 = FileAttachmentFactory(created_by=self.user)
+
+        ExpenseAttachment.objects.create(expense=self.expense, attachment=file1)
+        ExpenseAttachment.objects.create(expense=self.expense, attachment=file2)
+
+        payload = self._update_payload(attachments=[str(file1.public_id), str(file2.public_id)])
+        response = self.client.put(f'/api/expenses/{self.expense.public_id}', payload, format='json')
+        self.assertEqual(response.status_code, 200, response.json())
+
+        self.assertRevisionAttachmentsEqual([file1, file2])
+
+    def test_revision_captures_attachments_before_removal(self):
+        file1 = FileAttachmentFactory(created_by=self.user)
+        file2 = FileAttachmentFactory(created_by=self.user)
+
+        ExpenseAttachment.objects.create(expense=self.expense, attachment=file1)
+        ExpenseAttachment.objects.create(expense=self.expense, attachment=file2)
+
+        payload = self._update_payload(attachments=[str(file2.public_id)])
+        response = self.client.put(f'/api/expenses/{self.expense.public_id}', payload, format='json')
+        self.assertEqual(response.status_code, 200, response.json())
+
+        self.assertRevisionAttachmentsEqual([file1, file2])

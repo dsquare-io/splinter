@@ -34,4 +34,26 @@ class Migration(migrations.Migration):
                 'db_table': 'expense_attachments',
             },
         ),
+        migrations.CreateModel(
+            name='ExpenseAttachmentRevision',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    'attachment',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='attachment.fileattachment'
+                    ),
+                ),
+                (
+                    'expense',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='expense.expenserevision'
+                    ),
+                ),
+            ],
+            options={
+                'db_table': 'expense_attachment_revisions',
+            },
+        ),
     ]

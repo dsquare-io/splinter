@@ -20,6 +20,7 @@ from splinter.apps.expense.activities import (
 from splinter.apps.expense.models import (
     Expense,
     ExpenseAttachment,
+    ExpenseAttachmentRevision,
     ExpenseChangeLog,
     ExpenseRevision,
     ExpenseSplit,
@@ -285,6 +286,12 @@ class ExpenseRevisionOperation(ExpenseOperation[dict]):
             [
                 ExpenseSplitRevision(expense=revision, user_id=s.user_id, amount=s.amount, share=s.share)
                 for s in ExpenseSplit.objects.filter(expense=expense)
+            ]
+        )
+        ExpenseAttachmentRevision.objects.bulk_create(
+            [
+                ExpenseAttachmentRevision(expense=revision, attachment_id=a.attachment_id)
+                for a in ExpenseAttachment.objects.filter(expense=expense)
             ]
         )
 
