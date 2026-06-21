@@ -14,7 +14,7 @@
     "generate-pwa-assets": "pwa-assets-generator"
   },
   "dependencies": {
-    "@heroicons/react": "^2.1.1",
+    "@heroicons/react": "^2.1.5",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-collapsible": "^1.0.3",
@@ -29,6 +29,7 @@
     "clsx": "^2.1.0",
     "date-fns": "^3.3.1",
     "framer-motion": "^11.1.9",
+    "heic2any": "^0.0.4",
     "just-group-by": "^2.2.0",
     "react": "^18.2.0",
     "react-aria-components": "^1.17.0",

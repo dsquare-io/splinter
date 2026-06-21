@@ -1,6 +1,7 @@
 export const Paths = {
   ACTIVITY_DETAIL: '/api/activities/{activity_uid}',
   ACTIVITY_LIST: '/api/activities',
+  ATTACHMENT_CONFIG: '/api/attachments/config',
   CHALLENGE_MFA_DEVICE: '/api/mfa/challenge/{device_type}',
   CHANGE_PASSWORD: '/api/user/password',
   COMMENT_DETAIL: '/api/activities/{activity_uid}/comments/{comment_uid}',
@@ -32,6 +33,7 @@ export const Paths = {
   PUSH_SUBSCRIPTION_DETAIL: '/api/notifications/push-subscriptions/{subscription_uid}',
   REFRESH_ACCESS_TOKEN: '/api/authn/refresh',
   RESET_PASSWORD: '/api/user/reset',
+  UPLOAD_FILE_ATTACHMENT: '/api/attachments',
   USER_OUTSTANDING_BALANCE: '/api/user/outstanding-balance',
   VAPID_PUBLIC_KEY: '/api/notifications/vapid-key',
   VERIFY_EMAIL: '/api/user/verify-email',

@@ -69,6 +69,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/attachments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Upload File Attachment */
+    post: operations['UploadFileAttachment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/attachments/config': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Attachment Config */
+    get: operations['RetrieveAttachmentConfig'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/authn/password': {
     parameters: {
       query?: never;
@@ -651,6 +685,7 @@ export interface components {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
     AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
+    AttachmentConfig: import('./components/schemas.d.ts').AttachmentConfig;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
@@ -659,6 +694,7 @@ export interface components {
     ChildExpense: import('./components/schemas.d.ts').ChildExpense;
     Comment: import('./components/schemas.d.ts').Comment;
     Country: import('./components/schemas.d.ts').Country;
+    CreateFileAttachment: import('./components/schemas.d.ts').CreateFileAttachment;
     CreateFriendship: import('./components/schemas.d.ts').CreateFriendship;
     CreateGroup: import('./components/schemas.d.ts').CreateGroup;
     CreateGroupMembership: import('./components/schemas.d.ts').CreateGroupMembership;
@@ -678,6 +714,7 @@ export interface components {
     /** @enum {string} */
     ExpenseTypedTypeEnum: import('./components/schemas.d.ts').ExpenseTypedTypeEnum;
     ExtendedGroup: import('./components/schemas.d.ts').ExtendedGroup;
+    FileAttachment: import('./components/schemas.d.ts').FileAttachment;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
     Friend: import('./components/schemas.d.ts').Friend;
     FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
@@ -1020,6 +1057,98 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  UploadFileAttachment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'multipart/form-data': components['schemas']['CreateFileAttachment'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  RetrieveAttachmentConfig: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AttachmentConfig'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
         };
       };
     };

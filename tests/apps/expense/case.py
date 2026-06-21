@@ -13,7 +13,13 @@ from tests.apps.expense.factories import ExpenseFactory
 
 class ExpenseTestCase(TestCase):
     currency: Currency
-    available_apps = ('splinter.apps.currency', 'splinter.apps.expense', 'splinter.apps.group', 'splinter.apps.user')
+    available_apps = (
+        'splinter.apps.currency',
+        'splinter.apps.expense',
+        'splinter.apps.group',
+        'splinter.apps.user',
+        'splinter.apps.attachment',
+    )
 
     @classmethod
     def setUpTestData(cls):

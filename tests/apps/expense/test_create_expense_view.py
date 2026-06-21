@@ -236,6 +236,7 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
                 'description': payload['description'],
                 'amount': '200.00',
                 'currency': self.currency,
+                'attachments': [],
                 'expenses': [
                     {
                         'amount': '100.00',

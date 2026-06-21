@@ -326,6 +326,7 @@ class CreatePaymentOperationSettlementTests(ExpenseTestCase):
                 'amount': Decimal(amount),
                 'datetime': '2024-01-01T00:00:00Z',
                 'description': None,
+                'attachments': [],
                 **kwargs,
             }
         )

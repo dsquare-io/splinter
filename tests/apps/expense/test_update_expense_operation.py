@@ -24,6 +24,7 @@ def _expense_state(expense):
             [{'user_id': s.user_id, 'amount': s.amount, 'share': s.share} for s in expense.splits.all()],
             key=lambda x: x['user_id'],
         ),
+        'attachments': [],
         'children': [_expense_state(c) for c in children],
     }
 
@@ -43,6 +44,7 @@ def _revision_state(revision):
             [{'user_id': s.user_id, 'amount': s.amount, 'share': s.share} for s in revision.splits.all()],
             key=lambda x: x['user_id'],
         ),
+        'attachments': [],
         'children': [_revision_state(c) for c in children],
     }
 
@@ -53,14 +55,9 @@ class UpdateExpenseOperationTests(ExpenseTestCase):
     MULTIPLE_MULTIPLE = 'multiple → multiple'
     MULTIPLE_SINGLE = 'multiple → single'
 
-    available_apps = (
-        'django.contrib.contenttypes',
+    available_apps = ExpenseTestCase.available_apps + (
         'splinter.apps.activity',
-        'splinter.apps.currency',
-        'splinter.apps.expense',
         'splinter.apps.friend',
-        'splinter.apps.group',
-        'splinter.apps.user',
     )
 
     @classmethod
@@ -84,6 +81,7 @@ class UpdateExpenseOperationTests(ExpenseTestCase):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': expense.group,
+                'attachments': [],
                 'expenses': [{'description': description, 'amount': Decimal(amount), 'shares': self._shares()}],
             },
         )
@@ -96,6 +94,7 @@ class UpdateExpenseOperationTests(ExpenseTestCase):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': expense.group,
+                'attachments': [],
                 'expenses': [
                     {'description': 'New Item A', 'amount': Decimal(120), 'shares': self._shares()},
                     {'description': 'New Item B', 'amount': Decimal(80), 'shares': self._shares()},
@@ -111,6 +110,7 @@ class UpdateExpenseOperationTests(ExpenseTestCase):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': parent.group,
+                'attachments': [],
                 'expenses': [
                     {'description': 'Alpha', 'amount': Decimal(150), 'shares': self._shares()},
                     {'description': 'Beta', 'amount': Decimal(50), 'shares': self._shares()},
@@ -126,6 +126,7 @@ class UpdateExpenseOperationTests(ExpenseTestCase):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': parent.group,
+                'attachments': [],
                 'expenses': [{'description': 'Merged', 'amount': Decimal(200), 'shares': self._shares()}],
             },
         )
@@ -215,6 +216,7 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': None,
+                'attachments': [],
                 'expenses': [
                     {
                         'description': expense.description,
@@ -237,6 +239,7 @@ class UpdateExpenseOperationRevisionTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': None,
+                'attachments': [],
                 'expenses': [
                     {'description': children[0].description, 'amount': Decimal(70), 'shares': self._shares()},
                     {'description': children[1].description, 'amount': Decimal(30), 'shares': self._shares()},
@@ -324,6 +327,7 @@ class UpdateExpenseOperationChangeLogTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': None,
+                'attachments': [],
                 'expenses': [
                     {
                         'description': expense.description,
@@ -478,6 +482,7 @@ class UpdateExpenseOperationExpensePartyTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': None,
+                'attachments': [],
                 'expenses': [
                     {'description': 'Updated', 'amount': Decimal(100), 'shares': [{'user': self.payer, 'share': 1}]}
                 ],
@@ -497,6 +502,7 @@ class UpdateExpenseOperationExpensePartyTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': None,
+                'attachments': [],
                 'expenses': [
                     {
                         'description': 'Updated',
@@ -520,6 +526,7 @@ class UpdateExpenseOperationExpensePartyTests(UpdateExpenseOperationTests):
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': group,
+                'attachments': [],
                 'expenses': [{'description': 'Updated', 'amount': Decimal(200), 'shares': self._shares()}],
             },
         )
@@ -556,6 +563,7 @@ class UpdateExpenseOperationOutstandingBalanceTests(UpdateExpenseOperationTests)
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': expense.group,
+                'attachments': [],
                 'expenses': [
                     {'description': 'New Item A', 'amount': Decimal(360), 'shares': self._shares()},
                     {'description': 'New Item B', 'amount': Decimal(240), 'shares': self._shares()},
@@ -571,6 +579,7 @@ class UpdateExpenseOperationOutstandingBalanceTests(UpdateExpenseOperationTests)
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': parent.group,
+                'attachments': [],
                 'expenses': [
                     {'description': 'Alpha', 'amount': Decimal(450), 'shares': self._shares()},
                     {'description': 'Beta', 'amount': Decimal(150), 'shares': self._shares()},
@@ -586,6 +595,7 @@ class UpdateExpenseOperationOutstandingBalanceTests(UpdateExpenseOperationTests)
                 'currency': self.currency,
                 'paid_by': self.payer,
                 'group': parent.group,
+                'attachments': [],
                 'expenses': [{'description': 'Merged', 'amount': Decimal(600), 'shares': self._shares()}],
             },
         )

@@ -36,6 +36,7 @@ class CreateExpenseOperationActivityTests(ExpenseTestCase):
                 'datetime': '2024-01-01T00:00:00Z',
                 'currency': self.currency,
                 'paid_by': payer,
+                'attachments': [],
                 'expenses': [
                     {
                         'description': 'Test expense',
@@ -148,6 +149,7 @@ class CreateExpenseOperationExpensePartyTests(ExpenseTestCase):
                 'datetime': '2024-01-01T00:00:00Z',
                 'currency': self.currency,
                 'paid_by': payer,
+                'attachments': [],
                 'expenses': [{'description': 'Test expense', 'amount': Decimal(100), 'shares': shares}],
                 **kwargs,
             }

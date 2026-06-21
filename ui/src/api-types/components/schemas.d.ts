@@ -30,6 +30,12 @@ export interface AggregatedOutstandingBalance {
   readonly balances: OutstandingBalance[];
 }
 
+export interface AttachmentConfig {
+  readonly maxFileSize: number;
+  readonly allowedContentTypes: string[];
+  readonly allowedExtensions: string[];
+}
+
 export interface AuthTokenData {
   accessToken: string;
   refreshToken: string;
@@ -81,6 +87,11 @@ export interface Country {
   readonly urn: string;
   name: string;
   flag: string;
+}
+
+export interface CreateFileAttachment {
+  /** Format: uri */
+  file: string;
 }
 
 export type CreateFriendship = CreateUser;
@@ -148,6 +159,7 @@ export interface Expense {
    */
   readonly outstandingBalance: string;
   readonly expenses: ChildExpense[];
+  readonly attachments: FileAttachment[];
   version?: number;
   readonly paidBy: SimpleUser;
   readonly isDeleted: boolean;
@@ -196,6 +208,18 @@ export type ExtendedGroup = SimpleGroup & {
   readonly createdBy: SimpleUser;
   readonly members: SimpleUser[];
 };
+
+export interface FileAttachment {
+  readonly uid: string;
+  readonly urn: string;
+  fileName: string;
+  fileSize: number;
+  contentType: string;
+  /** Format: uri */
+  readonly url: string;
+  /** Format: uri */
+  readonly thumbnailUrl: string | null;
+}
 
 export interface ForgetPassword {
   /** Format: email */
@@ -290,6 +314,7 @@ export interface Payment {
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
+  readonly attachments: FileAttachment[];
   readonly isDeleted: boolean;
 }
 
@@ -373,6 +398,7 @@ export interface UpsertExpense {
   /** @description ISO 4217 Currency Code */
   currency: string;
   expenses: ChildExpense[];
+  attachments?: string[];
 }
 
 export interface UpsertPayment {
@@ -386,6 +412,7 @@ export interface UpsertPayment {
   currency: string;
   /** Format: decimal */
   amount: string;
+  attachments?: string[];
 }
 
 export type User = SimpleUser & {

@@ -118,6 +118,16 @@ class ExpenseSplitRevision(models.Model):
         db_table = 'expense_split_revisions'
 
 
+class ExpenseAttachmentRevision(models.Model):
+    expense = models.ForeignKey(ExpenseRevision, on_delete=models.CASCADE, related_name='+')
+    attachment = models.ForeignKey('attachment.FileAttachment', on_delete=models.CASCADE, related_name='+')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_attachment_revisions'
+
+
 class ExpenseChangeLog(models.Model):
     expense = models.ForeignKey('Expense', on_delete=models.CASCADE, related_name='changes')
     activity = models.ForeignKey(
@@ -139,6 +149,18 @@ class ExpenseChangeLog(models.Model):
 
     def __str__(self):
         return f'{self.expense} - {self.changes}'
+
+
+class ExpenseAttachment(models.Model):
+    expense = models.ForeignKey(Expense, on_delete=models.CASCADE, related_name='attachments')
+    attachment = models.OneToOneField(
+        'attachment.FileAttachment', on_delete=models.CASCADE, related_name='expense_attachment'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'expense_attachments'
 
 
 class OutstandingBalance(TimestampedModel, SoftDeleteModel):

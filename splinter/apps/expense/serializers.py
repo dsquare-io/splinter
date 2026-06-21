@@ -3,15 +3,19 @@ from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import Prefetch
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
+from splinter.apps.attachment.fields import FileAttachmentField
+from splinter.apps.attachment.serializers import FileAttachmentSerializer
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
     Expense,
+    ExpenseAttachment,
     ExpenseChangeLog,
     ExpenseSplit,
     OutstandingBalance,
@@ -101,6 +105,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
 
     expenses = serializers.SerializerMethodField()
     outstanding_balance = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -115,6 +120,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'currency',
             'outstanding_balance',
             'expenses',
+            'attachments',
             'version',
             'paid_by',
             'is_deleted',
@@ -123,12 +129,14 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
 
     def prefetch_queryset(self, queryset=None):
         splits_qs = ExpenseShareSerializer().prefetch_queryset()
+        attachment_qs = ExpenseAttachment.objects.prefetch_related('attachment')
 
         queryset = (
             super()
             .prefetch_queryset(queryset)
             .prefetch_related(
                 Prefetch('splits', queryset=splits_qs, to_attr='shares'),
+                Prefetch('attachments', queryset=attachment_qs),
             )
         )
         child_queryset = (
@@ -144,6 +152,11 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
             'created_by',
             Prefetch('children', queryset=child_queryset),
         )
+
+    @extend_schema_field(FileAttachmentSerializer(many=True))
+    def get_attachments(self, expense: Expense):
+        attachments = [ea.attachment for ea in expense.attachments.all()]
+        return FileAttachmentSerializer(attachments, many=True).data
 
     @extend_schema_field(
         serializers.DecimalField(
@@ -185,6 +198,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     sender = SimpleUserSerializer(source='paid_by', read_only=True)
     receiver = serializers.SerializerMethodField()
+    attachments = serializers.SerializerMethodField()
 
     class Meta:
         model = Expense
@@ -200,6 +214,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             'created_by',
             'sender',
             'receiver',
+            'attachments',
             'is_deleted',
         )
 
@@ -209,6 +224,11 @@ class PaymentSerializer(serializers.ModelSerializer):
         sender = splits[0].user
 
         return SimpleUserSerializer(sender).data
+
+    @extend_schema_field(FileAttachmentSerializer(many=True))
+    def get_attachments(self, expense: Expense):
+        attachments = [ea.attachment for ea in expense.attachments.all()]
+        return FileAttachmentSerializer(attachments, many=True).data
 
 
 class SettlementSerializer(serializers.ModelSerializer):
@@ -244,6 +264,14 @@ class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
         return super().get_discriminator(instance)
 
 
+def _get_expense_audience(actor, expense):
+    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
+    user_ids.add(expense.paid_by_id)
+    audience = {uid: {} for uid in user_ids}
+    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
+    return audience
+
+
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
@@ -254,6 +282,7 @@ class UpsertExpenseSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     expenses = ChildExpenseSerializer(many=True, allow_empty=False)
+    attachments = FileAttachmentField(many=True, required=False, default=list)
 
     validate_description = staticmethod(validate_description)
 
@@ -328,15 +357,16 @@ class UpsertExpenseSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        return CreateExpenseOperation(self.context['request'].user).execute(validated_data)
+        actor = self.context['request'].user
+        return CreateExpenseOperation(actor).execute(validated_data)
 
     def update(self, instance, validated_data):
         if instance.version != validated_data['version']:
             raise serializers.ValidationError(
                 'You are trying to update an expense which is updated by someone else. Please refresh and try again.'
             )
-
-        return UpdateExpenseOperation(self.context['request'].user, instance).execute(validated_data)
+        actor = self.context['request'].user
+        return UpdateExpenseOperation(actor, instance).execute(validated_data)
 
 
 class UpsertPaymentSerializer(serializers.Serializer):
@@ -349,6 +379,8 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
+
+    attachments = FileAttachmentField(many=True, required=False, default=list)
 
     def validate(self, attrs):
         errors: dict = {}
@@ -382,7 +414,8 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        return CreatePaymentOperation(self.context['request'].user).execute(validated_data)
+        actor = self.context['request'].user
+        return CreatePaymentOperation(actor).execute(validated_data)
 
 
 class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
