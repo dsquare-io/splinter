@@ -57,3 +57,6 @@ venv.bak/
 
 pnpm-lock.yaml
 docker-compose.override.yml
+
+/media/
+/emails/

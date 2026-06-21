@@ -36,6 +36,8 @@ dependencies = [
     "pyjwt[crypto]",
     "gunicorn",
     "pywebpush",
+    "Pillow",
+    "django-storages[s3]",
 ]
 dynamic = ["version"]
 

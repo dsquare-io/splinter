@@ -1,6 +1,7 @@
 volumes:
   postgresql:
   node_modules:
+  media:
 
 services:
   database:
@@ -54,6 +55,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+      - media:/app/media
       - ./emails/:/tmp/splinter-emails/
 
   ui:
