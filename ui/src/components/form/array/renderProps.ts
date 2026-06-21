@@ -24,8 +24,8 @@ export function computeRenderProps<T>(props: RenderPropsHookOptions<T>) {
   const { className, style, children, defaultClassName, defaultChildren, values } = props;
 
   let computedClassName: string | undefined;
-  let computedStyle: React.CSSProperties | undefined;
-  let computedChildren: React.ReactNode | undefined;
+  let computedStyle: CSSProperties | undefined;
+  let computedChildren: ReactNode | undefined;
 
   if (typeof className === 'function') {
     computedClassName = className(values);

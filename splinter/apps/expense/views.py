@@ -31,7 +31,7 @@ from splinter.apps.expense.serializers import (
     UserOutstandingBalanceSerializer,
 )
 from splinter.apps.friend.models import Friendship
-from splinter.apps.group.models import Group, GroupMembership
+from splinter.apps.group.models import GroupMembership
 from splinter.apps.user.models import User
 from splinter.core.mixins import UpdateModelMixin
 from splinter.core.pagination import CursorPagination

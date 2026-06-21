@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, type PropsWithChildren } from 'react';
 import { Heading } from 'react-aria-components';
 
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -7,7 +7,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button, Dialog } from '@/components/primitives';
 import { ConfirmationOptions, ConfirmationServiceContext } from '@/hooks/useConfirmation';
 
-export function ConfirmationProvider({ children }: React.PropsWithChildren<any>) {
+export function ConfirmationProvider({ children }: PropsWithChildren<any>) {
   const [options, setOptions] = useState<ConfirmationOptions>({} as any);
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import { ComponentType, type CSSProperties } from 'react';
 
 import {
   ArrowUturnLeftIcon,
@@ -40,7 +40,7 @@ type ActivityVerbIconProps = {
   verb: string;
   className?: string;
   iconClassName?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 export function ActivityVerbIcon({ verb, className, iconClassName, style }: ActivityVerbIconProps) {
