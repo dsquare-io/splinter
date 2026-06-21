@@ -39,12 +39,16 @@ class AccessTokenProvider:
         return timezone.now() + self.access_token_expiry_delta
 
     def access_token_payload(self) -> dict:
-        return {'jti': self.token_identifier, 'sub': self.subject.urn, 'exp': self.access_token_expiry}
+        return {
+            'jti': self.token_identifier,
+            'sub': self.subject.username,
+            'exp': self.access_token_expiry,
+        }
 
     def refresh_token_payload(self) -> dict:
         return {
             'jti': self.token_identifier,
-            'sub': self.subject.urn,
+            'sub': self.subject.username,
         }
 
     def generate_access_token(self) -> str:

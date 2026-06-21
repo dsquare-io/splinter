@@ -14,12 +14,10 @@ from splinter.db.models import (
 
 class GlobalKey(TimestampedModel, models.Model):
     KEY_TYPE_ACCESS = 'access'
-    KEY_TYPE_ATTACHMENT = 'attachment'
     KEY_TYPE_REFRESH = 'refresh'
 
     KEY_TYPE_ALGORITHMS = {
         KEY_TYPE_ACCESS: ACCESS_TOKEN_ALGORITHM,
-        KEY_TYPE_ATTACHMENT: ACCESS_TOKEN_ALGORITHM,
         KEY_TYPE_REFRESH: REFRESH_TOKEN_ALGORITHM,
     }
 

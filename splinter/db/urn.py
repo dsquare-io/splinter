@@ -15,6 +15,7 @@ class ResourceNameProtocol(Protocol):
     UID_FIELD: str
 
     urn: str
+    uid: str | None
 
 
 @dataclass(slots=True, frozen=True)
@@ -88,7 +89,7 @@ class ResourceName:
         for model_cls, names in grouped_by_model.items():
             rn_by_uid = {u.uid: u for u in names}
             for instance in model_cls._base_manager.filter(**{f'{model_cls.UID_FIELD}__in': list(rn_by_uid)}):
-                instances[rn_by_uid[getattr(instance, model_cls.UID_FIELD)]] = instance
+                instances[rn_by_uid[instance.uid]] = instance
 
         return instances
 
@@ -108,13 +109,25 @@ def check_urn_support(model: Model | ResourceNameProtocol):
         )
 
 
-class ResourceNameDecorator:
-    def __get__(self, instance: Model | ResourceNameProtocol, owner) -> 'str | ResourceNameDecorator':
-        check_urn_support(type(instance))
+class UIDDecorator:
+    def __get__(self, instance: Model | ResourceNameProtocol, owner) -> 'str | UIDDecorator | None':
         if instance is None:
             return self
 
+        check_urn_support(type(instance))
         uid = getattr(instance, instance.UID_FIELD)
+        if uid is not None and not isinstance(uid, str):
+            uid = str(uid)
+
+        return uid
+
+
+class ResourceNameDecorator:
+    def __get__(self, instance: Model | ResourceNameProtocol, owner) -> 'str | ResourceNameDecorator':
+        if instance is None:
+            return self
+
+        uid = instance.uid
         app_label = instance._meta.app_label
         model_name = instance._meta.model_name
         name = ResourceName(app_label=app_label, model_name=model_name, uid=uid)
@@ -124,4 +137,5 @@ class ResourceNameDecorator:
 @receiver(class_prepared)
 def add_resource_name(sender, **kwargs):
     if inspect.isclass(sender) and issubclass(sender, Model):
+        setattr(sender, 'uid', UIDDecorator())
         setattr(sender, 'urn', ResourceNameDecorator())

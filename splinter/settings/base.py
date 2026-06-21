@@ -10,6 +10,7 @@ BASE_DIR = str(Path(__file__).resolve().parent.parent.parent)
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
 WSGI_APPLICATION = 'splinter.wsgi.application'
 ROOT_URLCONF = 'splinter.urls'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

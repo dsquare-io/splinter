@@ -5,7 +5,7 @@ export function ProgressRing({ progress }: { progress: number }) {
 
   return (
     <svg
-      className="absolute inset-0 -rotate-90"
+      className="-rotate-90"
       width="40"
       height="40"
       viewBox="0 0 40 40"

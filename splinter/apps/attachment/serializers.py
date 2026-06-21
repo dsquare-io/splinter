@@ -64,11 +64,10 @@ class FileAttachmentSerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'file_name', 'file_size', 'content_type', 'url', 'thumbnail_url')
 
     def generate_auth_token(self, attachment: FileAttachment) -> str:
-        if getattr(self, '_auth_token', None) is None:
-            auth_token = generate_attachment_token(attachment)
-            setattr(self, '_auth_token', auth_token)
-
-        return getattr(self, '_auth_token')
+        cache = self.__dict__.setdefault('_auth_token_cache', {})
+        if attachment.pk not in cache:
+            cache[attachment.pk] = generate_attachment_token(attachment)
+        return cache[attachment.pk]
 
     @extend_schema_field(serializers.URLField())
     def get_url(self, attachment: FileAttachment) -> str:

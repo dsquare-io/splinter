@@ -28,16 +28,18 @@ type DialogProps = VariantProps<typeof dialogStyle> & {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   className?: string;
+  /** Extra classes applied to the inner RACDialog element (e.g. sm:h-[90dvh] for full-height content) */
+  dialogClassName?: string;
 };
 
 export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
-  { children, isDismissable = false, isOpen, onOpenChange, className, variant = 'modal' },
+  { children, isDismissable = false, isOpen, onOpenChange, className, dialogClassName, variant = 'modal' },
   ref
 ) {
   const keyboardHeight = useKeyboardHeight();
 
   const content = (
-    <RACDialog className={dialogStyle({ variant })}>
+    <RACDialog className={twMerge(dialogStyle({ variant }), dialogClassName)}>
       {({ close }) => (
         <DialogContext.Provider value={{ close }}>
           <ErrorBoundary>{children}</ErrorBoundary>

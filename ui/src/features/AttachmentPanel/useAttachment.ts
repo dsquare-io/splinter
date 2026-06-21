@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 
+import heic2any from 'heic2any';
+
 import { ApiRoutes } from '@/api-types';
 import type { FileAttachment } from '@/api-types/components/schemas';
 import { axiosInstance } from '@/axios';
@@ -28,32 +30,20 @@ export interface UseAttachmentReturn {
   removeExisting: (uid: string) => void;
   getAttachmentUids: () => string[];
   initialize: (attachments: FileAttachment[]) => void;
-  deletedUids: string[];
   validationError: string | null;
   clearValidationError: () => void;
 }
 
 async function convertHeic(file: File): Promise<File> {
-  const lower = file.name.toLowerCase();
-  if (
-    file.type === 'image/heic' ||
-    file.type === 'image/heif' ||
-    lower.endsWith('.heic') ||
-    lower.endsWith('.heif')
-  ) {
-    const heic2any = (await import('heic2any')).default;
-    const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
-    const resultBlob = Array.isArray(blob) ? blob[0] : blob;
-    return new File([resultBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
-  }
-  return file;
+  const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+  const resultBlob = Array.isArray(blob) ? blob[0] : blob;
+  return new File([resultBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
 }
 
 export function useAttachment(): UseAttachmentReturn {
-  const attachmentConfig = useAttachmentConfig();
+  const { maxFileSize, allowedContentTypes } = useAttachmentConfig();
   const [pendingAttachments, setPendingAttachments] = useState<LocalAttachment[]>([]);
   const [existingAttachments, setExistingAttachments] = useState<FileAttachment[]>([]);
-  const [deletedUids, setDeletedUids] = useState<string[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
   const previewUrls = useRef<Map<string, string>>(new Map());
 
@@ -64,18 +54,15 @@ export function useAttachment(): UseAttachmentReturn {
   const addFiles = useCallback(
     (files: FileList | File[]) => {
       const fileArray = Array.from(files);
-      const acceptedTypes = attachmentConfig?.allowedContentTypes ?? [];
-      const maxFileSize = attachmentConfig?.maxFileSize ?? Infinity;
 
       for (const file of fileArray) {
-        const lower = file.name.toLowerCase();
-        const effectiveMime =
-          file.type || (lower.endsWith('.heic') || lower.endsWith('.heif') ? 'image/heic' : '');
+        const contentType = file.type;
 
-        if (acceptedTypes.length > 0 && !acceptedTypes.includes(effectiveMime)) {
+        if (!allowedContentTypes.includes(contentType)) {
           setValidationError(`${file.name}: unsupported file type`);
           return;
         }
+
         if (file.size > maxFileSize) {
           const mb = (maxFileSize / (1024 * 1024)).toFixed(0);
           setValidationError(`${file.name}: file exceeds ${mb} MB limit`);
@@ -100,7 +87,8 @@ export function useAttachment(): UseAttachmentReturn {
           file.type === 'image/heif' ||
           lower.endsWith('.heic') ||
           lower.endsWith('.heif');
-        const isImage = /\.(heic|heif|jpg|jpeg|png|webp)$/i.test(file.name) || file.type.startsWith('image/');
+
+        const isImage = file.type.startsWith('image/');
         const previewUrl = isImage && !isHeic ? URL.createObjectURL(file) : undefined;
         if (previewUrl) previewUrls.current.set(localId, previewUrl);
 
@@ -110,7 +98,7 @@ export function useAttachment(): UseAttachmentReturn {
             localId,
             file,
             filename: file.name,
-            contentType: file.type || 'image/heic',
+            contentType: file.type,
             fileSize: file.size,
             status: 'uploading',
             progress: 0,
@@ -120,23 +108,28 @@ export function useAttachment(): UseAttachmentReturn {
 
         void (async () => {
           try {
-            const prepared = await convertHeic(file);
-
+            let prepared = file;
             if (isHeic) {
+              prepared = await convertHeic(file);
+
               const url = URL.createObjectURL(prepared);
               previewUrls.current.set(localId, url);
               updatePending(localId, { previewUrl: url, contentType: prepared.type });
             }
 
             const formData = new FormData();
-            formData.append('file', prepared, prepared.name);
+            formData.append('file', prepared, file.name);
 
-            const res = await axiosInstance.post<{ uid: string }>(ApiRoutes.UPLOAD_FILE_ATTACHMENT, formData, {
-              headers: { 'Content-Type': 'multipart/form-data' },
-              onUploadProgress: (e) => {
-                if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
-              },
-            });
+            const res = await axiosInstance.post<{ uid: string }>(
+              ApiRoutes.UPLOAD_FILE_ATTACHMENT,
+              formData,
+              {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (e) => {
+                  if (e.total) updatePending(localId, { progress: Math.round((e.loaded / e.total) * 100) });
+                },
+              }
+            );
 
             updatePending(localId, { status: 'registered', uid: res.data.uid, progress: 100 });
           } catch (err) {
@@ -148,7 +141,7 @@ export function useAttachment(): UseAttachmentReturn {
         })();
       }
     },
-    [attachmentConfig, existingAttachments.length, pendingAttachments, updatePending]
+    [allowedContentTypes, existingAttachments.length, maxFileSize, pendingAttachments, updatePending]
   );
 
   const removePending = useCallback((localId: string) => {
@@ -162,7 +155,6 @@ export function useAttachment(): UseAttachmentReturn {
 
   const removeExisting = useCallback((uid: string) => {
     setExistingAttachments((prev) => prev.filter((a) => a.uid !== uid));
-    setDeletedUids((prev) => [...prev, uid]);
   }, []);
 
   const getAttachmentUids = useCallback(
@@ -172,7 +164,6 @@ export function useAttachment(): UseAttachmentReturn {
 
   const initialize = useCallback((attachments: FileAttachment[]) => {
     setExistingAttachments(attachments);
-    setDeletedUids([]);
   }, []);
 
   return {
@@ -183,7 +174,6 @@ export function useAttachment(): UseAttachmentReturn {
     removeExisting,
     getAttachmentUids,
     initialize,
-    deletedUids,
     validationError,
     clearValidationError: () => setValidationError(null),
   };

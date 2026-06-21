@@ -6,6 +6,7 @@ import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { DeletedBanner } from './DeletedBanner.tsx';
+import { ExpenseAttachment } from './ExpenseAttachment.tsx';
 import { ExpenseDetailView } from './ExpenseDetailView.tsx';
 import { PaymentDetail } from './PaymentDetail.tsx';
 
@@ -94,6 +95,8 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
         />
       )}
       {content}
+
+      <ExpenseAttachment attachments={expense.attachments} />
     </>
   );
 }

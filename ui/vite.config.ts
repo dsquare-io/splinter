@@ -93,6 +93,10 @@ export default defineConfig(({ mode }) => {
           target: env.VITE_APP_BACKEND_URL,
           changeOrigin: true,
         },
+        '/media': {
+          target: env.VITE_APP_BACKEND_URL,
+          changeOrigin: true,
+        },
       },
     },
   };

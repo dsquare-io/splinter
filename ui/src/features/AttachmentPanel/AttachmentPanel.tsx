@@ -1,10 +1,9 @@
 import { useRef } from 'react';
 
-import { DocumentIcon, PaperClipIcon } from '@heroicons/react/20/solid';
+import { PaperClipIcon } from '@heroicons/react/20/solid';
 import { AnimatePresence } from 'framer-motion';
 
 import { FieldError } from '@/components/form';
-import { ThumbnailImage } from '@/components/ThumbnailImage';
 import { AttachmentTile } from './AttachmentTile.tsx';
 import { useAttachmentContext } from './Context.tsx';
 import { useAttachmentConfig } from './useAttachmentConfig';
@@ -34,24 +33,7 @@ export function AttachmentPanel() {
                 status="existing"
                 label={a.fileName}
                 onRemove={() => removeExisting(a.uid)}
-                thumbnail={
-                  a.thumbnailUrl ? (
-                    <ThumbnailImage
-                      src={a.thumbnailUrl}
-                      alt={a.fileName}
-                      className="h-full w-full object-cover"
-                      fallback={
-                        <div className="flex h-full w-full items-center justify-center">
-                          <DocumentIcon className="size-6 text-gray-400" />
-                        </div>
-                      }
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center">
-                      <DocumentIcon className="size-6 text-gray-400" />
-                    </div>
-                  )
-                }
+                thumbnailUrl={a.thumbnailUrl}
               />
             ))}
 
@@ -64,19 +46,7 @@ export function AttachmentPanel() {
                   label={a.filename}
                   progress={a.progress}
                   onRemove={() => removePending(a.localId)}
-                  thumbnail={
-                    isImage && a.previewUrl ? (
-                      <img
-                        src={a.previewUrl}
-                        alt={a.filename}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <DocumentIcon className="size-6 text-gray-400" />
-                      </div>
-                    )
-                  }
+                  thumbnailUrl={isImage ? a.previewUrl : null}
                 />
               );
             })}

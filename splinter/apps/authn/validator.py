@@ -1,13 +1,17 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import jwt
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Model
 from rest_framework.exceptions import APIException, AuthenticationFailed, ValidationError
 
 from splinter.apps.authn import ACCESS_TOKEN_ALGORITHM, REFRESH_TOKEN_ALGORITHM
 from splinter.apps.authn.models import GlobalKey, UserSecret
 from splinter.apps.user.models import User
-from splinter.db.urn import ResourceName
+
+if TYPE_CHECKING:
+    from cryptography.hazmat.primitives.asymmetric.ec import EllipticCurvePrivateKey
 
 
 @dataclass(slots=True, frozen=True)
@@ -36,7 +40,41 @@ class TokenValidator[T: Model]:
 
         return self.error_class(f'Invalid token: {ex}', code='authn:invalid_token')
 
-    def get_signing_key(self, token: str) -> GlobalKey:
+    def get_signing_key(self, token: str):
+        raise NotImplementedError()
+
+    def validate_subject(self, subject: str) -> tuple[T, str]:
+        raise NotImplementedError()
+
+    def validate(self, token: str) -> ValidatedToken:
+        try:
+            signing_key = self.get_signing_key(token)
+            decoded_payload = jwt.decode(token, options={'verify_signature': False})
+        except jwt.PyJWTError as ex:
+            raise self.translate_jwt_error(ex)
+
+        try:
+            subject, token_identifier = self.validate_subject(decoded_payload['sub'])
+        except (ValueError, DjangoValidationError):
+            raise self.error_class('Invalid subject', code='authn:invalid_subject')
+
+        try:
+            decoded_payload = jwt.decode(token, signing_key, algorithms=[self.algorithm])
+        except jwt.PyJWTError as ex:
+            raise self.translate_jwt_error(ex)
+
+        if token_identifier != decoded_payload.get('jti'):
+            raise self.error_class('Token has been revoked', code='authn:token_revoked')
+
+        return ValidatedToken(
+            subject=subject,
+            token_identifier=token_identifier,
+            payload=decoded_payload,
+        )
+
+
+class UserTokenValidator(TokenValidator[User]):
+    def get_signing_key(self, token: str) -> 'EllipticCurvePrivateKey':
         kid = jwt.get_unverified_header(token).get('kid', '')
         prefix = f'{self.key_type}_v'
 
@@ -52,48 +90,7 @@ class TokenValidator[T: Model]:
         if global_key is None:
             raise self.error_class('Invalid token kind', code='authn:invalid_kind')
 
-        return global_key
-
-    def validate_subject(self, subject: str) -> tuple[T, str]:
-        raise NotImplementedError()
-
-    def validate(self, token: str) -> ValidatedToken:
-        try:
-            signing_key = self.get_signing_key(token)
-            decoded_payload = jwt.decode(token, options={'verify_signature': False})
-        except jwt.PyJWTError as ex:
-            raise self.translate_jwt_error(ex)
-
-        subject_rn = ResourceName.try_parse(decoded_payload.get('sub'))
-        if subject_rn is None:
-            raise self.error_class('Invalid subject in token payload', code='authn:invalid_subject')
-
-        if (
-            subject_rn.app_label != self.subject_model._meta.app_label
-            or subject_rn.model_name != self.subject_model._meta.model_name
-            or subject_rn.uid is None
-        ):
-            raise self.error_class('Invalid subject in token payload', code='authn:invalid_subject')
-
-        subject, token_identifier = self.validate_subject(subject_rn.uid)
-
-        try:
-            decoded_payload = jwt.decode(token, signing_key.private_key.decode(), algorithms=[self.algorithm])
-        except jwt.PyJWTError as ex:
-            raise self.translate_jwt_error(ex)
-
-        if token_identifier != decoded_payload['jti']:
-            raise self.error_class('Token has been revoked', code='authn:token_revoked')
-
-        return ValidatedToken(
-            subject=subject,
-            token_identifier=token_identifier,
-            payload=decoded_payload,
-        )
-
-
-class UserTokenValidator(TokenValidator[User]):
-    subject_model = User
+        return global_key.private_key.decode()
 
     def validate_subject(self, subject: str) -> tuple[User, str]:
         filters = {
