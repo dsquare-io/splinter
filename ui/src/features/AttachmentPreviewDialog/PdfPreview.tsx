@@ -28,7 +28,7 @@ export function PdfPreview({ src, fileName }: Props) {
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       {!loaded && (
         <div className="flex h-64 items-center justify-center">
           <Spinner className="size-8 text-gray-400" />
@@ -37,7 +37,7 @@ export function PdfPreview({ src, fileName }: Props) {
       <iframe
         src={`${src}#toolbar=0`}
         title={fileName}
-        className={loaded ? 'h-[70vh] w-full border-0' : 'hidden'}
+        className={loaded ? 'h-full w-full border-0' : 'hidden'}
         onLoad={() => setLoaded(true)}
         onError={() => setError(true)}
       />
