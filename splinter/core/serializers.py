@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from splinter.utils.strings import public_string
 
@@ -9,14 +10,16 @@ class EmptySerializer(serializers.Serializer):
 
 
 class ObjectSerializer(serializers.Serializer):
-    uid = serializers.SerializerMethodField(read_only=True, allow_null=True)
-    urn = serializers.SerializerMethodField(allow_null=True)
+    uid = serializers.SerializerMethodField()
+    urn = serializers.SerializerMethodField()
 
     value = serializers.SerializerMethodField('get_obj_value')
 
     @extend_schema_field(serializers.CharField(help_text='Unique identifier of object'))
     def get_uid(self, obj):
-        return getattr(obj, 'uid', None)
+        uid = getattr(obj, 'uid', None)
+        assert uid is not None, f'{type(obj).__name__} is must inherit define UID_FIELD'
+        return uid
 
     @extend_schema_field(serializers.CharField(help_text='Unique resource name of object'))
     def get_urn(self, obj):

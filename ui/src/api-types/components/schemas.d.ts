@@ -259,9 +259,9 @@ export interface NotFound {
 
 export interface Object_ {
   /** @description Unique identifier of object */
-  readonly uid: string | null;
+  readonly uid: string;
   /** @description Unique resource name of object */
-  readonly urn: string | null;
+  readonly urn: string;
   /** @description String representation of object */
   readonly value: string;
 }

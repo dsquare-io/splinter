@@ -67,7 +67,9 @@ class ConversionRate(TimestampedModel):
         super().save(**kwargs)
 
 
-class UserCurrency(TimestampedModel):
+class UserCurrency(HasURN, TimestampedModel):
+    UID_FIELD = 'currency_id'
+
     user = models.OneToOneField('user.User', on_delete=models.CASCADE, primary_key=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
 

@@ -2,6 +2,7 @@ from django.db import models
 
 from splinter.apps.group.managers import GroupManager
 from splinter.db.models import PublicModel, SoftDeleteModel, TimestampedModel
+from splinter.db.urn import HasURN
 
 
 class Group(TimestampedModel, SoftDeleteModel, PublicModel):
@@ -20,7 +21,9 @@ class Group(TimestampedModel, SoftDeleteModel, PublicModel):
         return self.name
 
 
-class GroupMembership(models.Model):
+class GroupMembership(HasURN, models.Model):
+    UID_FIELD = 'id'
+
     group = models.ForeignKey('group.Group', on_delete=models.CASCADE, related_name='memberships')
     user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='group_memberships')
 
