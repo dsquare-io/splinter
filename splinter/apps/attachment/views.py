@@ -3,7 +3,7 @@ import itertools
 from django.conf import settings
 from django.http import FileResponse
 from drf_spectacular.utils import extend_schema
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -42,7 +42,11 @@ class GenericAttachmentView(APIView):
 
     @property
     def attachment(self) -> AbstractAttachment:
-        return self.request.user  # NOQA
+        attachment: "AbstractAttachment" = self.request.user  # NOQA
+        if attachment.public_id != self.kwargs['attachment_uid']:
+            raise PermissionDenied(detail='You do not have permission to view this attachment.')
+
+        return attachment
 
     def serve_file(self, file_field, content_type: str) -> FileResponse:
         response = FileResponse(file_field.open('rb'), content_type=content_type)
