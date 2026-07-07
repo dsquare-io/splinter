@@ -36,6 +36,11 @@ export function PaymentDetail({ payment, group }: { payment: PaymentTyped; group
       </div>
 
       <div className="flex flex-col items-center gap-y-0.5">
+        <p className="text-sm text-gray-500">
+          <UserLabel user={payment.sender} />
+          {' paid '}
+          <UserLabel user={payment.receiver} />
+        </p>
         <Money
           noTabularNums
           noColor
@@ -43,7 +48,6 @@ export function PaymentDetail({ payment, group }: { payment: PaymentTyped; group
           currency={payment.currency}
           value={payment.amount}
         />
-        {payment.description && <p className="text-sm text-gray-500">{payment.description}</p>}
         <p className="text-xs text-gray-400">{format(new Date(payment.datetime), 'MMM d, yyyy')}</p>
         {group && (
           <div className="mt-2">
