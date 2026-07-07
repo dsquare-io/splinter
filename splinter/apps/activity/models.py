@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models import Exists, Manager, Model, OuterRef
 
 from splinter.apps.activity.signals import activity_logged
+from splinter.apps.user.models import User
 from splinter.db.models import PublicModel, SoftDeleteModel
 from splinter.utils.django import PrimaryKeyField
 from splinter.utils.strings import public_string
@@ -14,7 +15,6 @@ from splinter.utils.strings import public_string
 if TYPE_CHECKING:
     from splinter.apps.activity.activities import ActivityType
     from splinter.apps.group.models import Group
-    from splinter.apps.user.models import User
 
 
 class ActivityManager(Manager):
@@ -109,19 +109,34 @@ class Activity(PublicModel):
     def __public_str__(self):
         return self.render_template()
 
-    def render_template(self):
-        object_str = '(unknown)' if self.action_object is None else public_string(self.action_object)
-        target_str = '(unknown)' if self.target is None else public_string(self.target)
+    def render_template(self, current_user: User | int | None = None):
+        current_user_id = current_user if isinstance(current_user, int) else (current_user.pk if current_user else None)
+
+        def render_obj(obj: models.Model) -> str:
+            if isinstance(obj, User) and obj.pk == current_user_id:
+                return 'you'
+
+            if obj is not None:
+                return public_string(obj)
+
+            return '(unknown)'
+
+        object_str = render_obj(self.action_object)
+        target_str = render_obj(self.target)
+        actor_str = render_obj(self.actor)
 
         rendered = self.activity_type.template.format(
             verb=self.verb,
-            actor=self.actor.full_name,
+            actor=actor_str,
             target=target_str,
             object=object_str,
         )
 
         if self.group:
             return f'{rendered} in {self.group}'
+
+        if rendered[0].islower():
+            rendered = rendered[0].upper() + rendered[1:]
 
         return rendered
 

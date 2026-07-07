@@ -10,8 +10,8 @@ from splinter.apps.notification.models import PushSubscription
 logger = logging.getLogger(__name__)
 
 
-def notify_users(user_ids: list[int], title: str, body: str, url: str = '/') -> None:
-    send_push_notifications.delay(user_ids, title, body, url)
+def notify_user(user_id: int, title: str, body: str, url: str = '/') -> None:
+    send_push_notifications.delay([user_id], title, body, url)
 
 
 def notify_subscription(subscription: 'PushSubscription', title: str, body: str, url: str = '/') -> None:
@@ -37,7 +37,6 @@ def _deliver(sub: 'PushSubscription', payload: str) -> bool:
 
 @shared_task
 def send_push_notifications(user_ids: list[int], title: str, body: str, url: str) -> None:
-
     subscriptions = list(PushSubscription.objects.filter(user_id__in=user_ids))
     if not subscriptions:
         return
