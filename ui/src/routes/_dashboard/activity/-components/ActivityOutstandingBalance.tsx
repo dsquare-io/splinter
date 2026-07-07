@@ -3,7 +3,13 @@ import { tv } from 'tailwind-variants';
 import { SimpleCurrency } from '@/api-types';
 import { Money } from '@/components/primitives';
 
-const PAYMENT_VERBS = new Set(['payment', 'update_payment', 'delete_payment', 'settle_up']);
+const PAYMENT_VERBS = new Set([
+  'payment',
+  'receive_payment',
+  'update_payment',
+  'delete_payment',
+  'settle_up',
+]);
 
 const balanceStyle = tv({
   base: 'mt-1 font-normal',

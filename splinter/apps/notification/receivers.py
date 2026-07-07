@@ -9,7 +9,7 @@ from splinter.apps.notification.tasks import notify_user
 if TYPE_CHECKING:
     from splinter.apps.activity.models import Activity
 
-PAYMENT_VERBS = {'payment', 'update_payment', 'delete_payment', 'settle_up'}
+PAYMENT_VERBS = {'payment', 'receive_payment', 'update_payment', 'delete_payment', 'settle_up'}
 
 
 def _balance_label(verb: str, amount: float) -> str:

@@ -7,6 +7,7 @@ RestoreExpenseActivity = ActivityType(verb='restore_expense', template='{actor} 
 SettleUpActivity = ActivityType(verb='settle_up', template='{actor} settled up with {target}')
 
 CreatePaymentActivity = ActivityType(verb='payment', template='{actor} paid {target}')
+ReceivePaymentActivity = ActivityType(verb='receive_payment', template='{target} paid {actor}')
 UpdatePaymentActivity = ActivityType(verb='update_payment', template='{actor} updated a payment: {object}')
 DeletePaymentActivity = ActivityType(verb='delete_payment', template='{actor} deleted a payment: {object}')
 RestorePaymentActivity = ActivityType(verb='restore_payment', template='{actor} restored a payment: {object}')

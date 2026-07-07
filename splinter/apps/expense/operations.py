@@ -12,6 +12,7 @@ from splinter.apps.expense.activities import (
     CreatePaymentActivity,
     DeleteExpenseActivity,
     DeletePaymentActivity,
+    ReceivePaymentActivity,
     RestoreExpenseActivity,
     RestorePaymentActivity,
     SettleUpActivity,
@@ -156,8 +157,6 @@ class CreateExpenseOperation(ExpenseOperation[dict]):
 
 
 class CreatePaymentOperation(ExpenseOperation[dict]):
-    activity_type = CreatePaymentActivity
-
     def _execute(self, data: dict) -> Expense:
         sender: "User" = data['sender']
         receiver: "User" = data['receiver']
@@ -198,12 +197,16 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
 
     def _build_log_activity_params(self, expense: Expense) -> dict:
         params = super()._build_log_activity_params(expense)
-        params['actor'] = expense.paid_by
-        params['target'] = ExpenseSplit.objects.get(expense=expense).user
+        receiver = ExpenseSplit.objects.get(expense=expense).user
+        if self.actor.id == expense.paid_by_id:
+            params['target'] = receiver
+        else:
+            params['target'] = expense.paid_by
         return params
 
     def log_activity(self, expense: Expense) -> 'Activity':
-        activity = super().log_activity(expense)
+        activity_type = CreatePaymentActivity if self.actor.id == expense.paid_by_id else ReceivePaymentActivity
+        activity = activity_type.log(**self._build_log_activity_params(expense))
 
         settled = check_and_create_settlement(expense, activity.actor_id, activity.target_object_id)
         if settled:
