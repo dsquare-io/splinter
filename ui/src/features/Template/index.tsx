@@ -2,7 +2,7 @@ import { Fragment, ReactNode } from 'react';
 
 import type { Object_ } from '@/api-types';
 import { Money } from '@/components/primitives';
-import { parseUrn } from '@/features/ActivityDescription';
+import { parseUrn } from './urnParser.ts';
 
 type TemplateProps = {
   string: string;
