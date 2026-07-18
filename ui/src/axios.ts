@@ -19,8 +19,19 @@ let _refreshTokenRequest: Promise<Tokens> | null = null;
 
 function refreshTokens(): Promise<Tokens> {
   if (!_refreshTokenRequest) {
+    const redirectToLogin = () => {
+      setAccessToken(null);
+      setRefreshToken(null);
+      setHeaders(null);
+
+      window.location.href = '/auth/login';
+    };
+
     const refreshToken = getRefreshToken();
-    if (!refreshToken) return Promise.reject(new Error('No refresh token'));
+    if (!refreshToken) {
+      redirectToLogin();
+      return Promise.reject(new Error('No refresh token'));
+    }
 
     _refreshTokenRequest = axios
       .post<Tokens>(ApiRoutes.REFRESH_ACCESS_TOKEN, { refreshToken })
@@ -31,11 +42,7 @@ function refreshTokens(): Promise<Tokens> {
         return res.data;
       })
       .catch((e) => {
-        setAccessToken(null);
-        setRefreshToken(null);
-        setHeaders(null);
-
-        window.location.href = '/auth/login';
+        if (e.response?.status === 400) redirectToLogin();
         throw e;
       })
       .finally(() => {
@@ -58,7 +65,7 @@ axiosInstance.interceptors.response.use(
       throw e;
     }
 
-    if (e.response?.data?.code === 'authn:token_expired' && getRefreshToken()) {
+    if (e.response?.data?.code === 'authn:token_expired') {
       const { accessToken } = await refreshTokens();
 
       originalRequest._retry = true;
