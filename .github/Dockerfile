@@ -26,7 +26,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 WORKDIR /app
 ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 
-COPY pyproject.toml uv.lock /app
+COPY pyproject.toml uv.lock /app/
 RUN uv sync --frozen --no-dev --no-install-project --no-progress
 
 COPY splinter /app/splinter

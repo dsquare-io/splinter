@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from splinter.utils.parser import parse_int
 
@@ -26,8 +27,11 @@ AUTHENTICATION_BACKENDS = ('splinter.apps.user.backend.AuthBackend',)
 
 AUTHN_JTI_LENGTH = 8
 AUTHN_REFRESH_TOKEN_ENABLED = True
+AUTHN_ACCESS_TOKEN_EXPIRY = timedelta(minutes=5)
 AUTHN_ACCESS_TOKEN_KEY_VERSION = parse_int(os.getenv('AUTHN_ACCESS_TOKEN_KEY_VERSION', '1'))
 AUTHN_REFRESH_TOKEN_KEY_VERSION = parse_int(os.getenv('AUTHN_REFRESH_TOKEN_KEY_VERSION', '1'))
+
+ATTACHMENT_TOKEN_EXPIRY = timedelta(weeks=1)
 ATTACHMENT_TOKEN_SECRET = os.getenv('ATTACHMENT_TOKEN_SECRET')
 
 OTP_TOTP_ISSUER = 'Splinter'

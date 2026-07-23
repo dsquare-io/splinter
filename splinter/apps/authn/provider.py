@@ -29,7 +29,7 @@ class AccessTokenProvider:
         self.access_key = access_key
         self.refresh_key = refresh_key
 
-        self.access_token_expiry_delta = settings.ACCESS_TOKEN_EXPIRY
+        self.access_token_expiry_delta = settings.AUTHN_ACCESS_TOKEN_EXPIRY
 
     def should_generate_refresh_token(self) -> bool:
         return settings.AUTHN_REFRESH_TOKEN_ENABLED
