@@ -77,18 +77,15 @@ function SplashController() {
     if (status === AuthStatus.VALIDATING) return;
     const splash = document.getElementById('splash');
     if (!splash) return;
-    splash.style.opacity = '0';
-    const timer = setTimeout(() => splash.remove(), 250);
-    return () => clearTimeout(timer);
-  }, [status]);
 
-  useEffect(() => {
-    if (status !== AuthStatus.VALIDATING) return;
-    const timer = setTimeout(() => {
-      const msg = document.getElementById('splash-slow');
-      if (msg) msg.style.display = 'block';
-    }, 3000);
-    return () => clearTimeout(timer);
+    const fadeTimer = setTimeout(() => {
+      splash.style.opacity = '0';
+    }, 300);
+    const removeTimer = setTimeout(() => splash.remove(), 600);
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
   }, [status]);
 
   if (!authError) return null;
@@ -125,17 +122,14 @@ function SplashController() {
 
 function RootComponent() {
   return (
-    <div
-      className="flex flex-col"
-      style={{ height: '100dvh' }}
-    >
+    <>
       <UpdateBanner />
       <TopLoader />
       <SplashController />
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
-    </div>
+    </>
   );
 }
 

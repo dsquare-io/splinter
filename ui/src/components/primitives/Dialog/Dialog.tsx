@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 import { tv, VariantProps } from 'tailwind-variants';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx';
-import { useKeyboardHeight } from '@/hooks/useKeyboardHeight.ts';
+import { KeyboardSpacer } from '@/components/KeyboardSpacer.tsx';
 import { DialogContext } from './context';
 
 const dialogStyle = tv({
@@ -36,17 +36,12 @@ export const Dialog = forwardRef<HTMLDivElement, DialogProps>(function Dialog(
   { children, isDismissable = false, isOpen, onOpenChange, className, dialogClassName, variant = 'modal' },
   ref
 ) {
-  const keyboardHeight = useKeyboardHeight();
-
   const content = (
     <RACDialog className={twMerge(dialogStyle({ variant }), dialogClassName)}>
       {({ close }) => (
         <DialogContext.Provider value={{ close }}>
           <ErrorBoundary>{children}</ErrorBoundary>
-          <div
-            className="w-full shrink-0"
-            style={{ height: keyboardHeight }}
-          />
+          <KeyboardSpacer />
         </DialogContext.Provider>
       )}
     </RACDialog>

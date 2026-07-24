@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: 'prompt',
         strategies: 'injectManifest',
+        pwaAssets: {
+          config: true,
+        },
         srcDir: 'src',
         filename: 'sw.ts',
         injectManifest: {
@@ -40,6 +43,7 @@ export default defineConfig(({ mode }) => {
           short_name: 'Splinter',
           description: 'Split bills and settle group expenses',
           theme_color: '#267360',
+          background_color: '#ffffff',
           icons: [
             {
               src: 'pwa-64x64.png',

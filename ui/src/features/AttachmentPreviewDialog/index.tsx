@@ -36,7 +36,7 @@ export function AttachmentPreviewDialog({ attachment, onClose }: Props) {
               </IconButton>
             }
           />
-          <div className="-mb-4 flex min-h-0 flex-1 flex-col sm:-mb-6 -mx-4 sm:-mx-6">
+          <div className="-mx-4 -mb-4 flex min-h-0 flex-1 flex-col sm:-mx-6 sm:-mb-6">
             {attachment.contentType.startsWith('image/') ? (
               <ImagePreview
                 src={attachment.url}

@@ -11,10 +11,7 @@ interface SlottedValue<T> {
 }
 
 export type ContextValue<T extends SlotProps, E extends Element> =
-  | SlottedValue<WithRef<T, E>>
-  | WithRef<T, E>
-  | null
-  | undefined;
+  SlottedValue<WithRef<T, E>> | WithRef<T, E> | null | undefined;
 
 export const slotCallbackSymbol = Symbol('callback');
 export const defaultSlot = Symbol('default');

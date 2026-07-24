@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 dev-dist/
+
+# Generated PWA splash screens
+public/apple-splash-*.png

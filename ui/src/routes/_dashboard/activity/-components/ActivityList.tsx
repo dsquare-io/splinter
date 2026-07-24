@@ -47,7 +47,7 @@ export function ActivityList() {
         {sections.map(([month, items]) => (
           <ListBoxSection key={month}>
             <Header className="contents">
-              <ScrollScene.Sticky className="z-20 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
+              <ScrollScene.Sticky className="z-10 border-t border-b border-gray-200 bg-gray-50 px-6 py-1 text-sm font-medium text-gray-500">
                 {format(new Date(month + '-01'), 'MMM yyyy')}
               </ScrollScene.Sticky>
             </Header>
