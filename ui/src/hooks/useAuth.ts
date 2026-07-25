@@ -1,6 +1,8 @@
-import { startTransition, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { ApiRoutes, User } from '@/api-types';
+import { useQuery } from '@tanstack/react-query';
+
+import { ApiRoutes } from '@/api-types';
 import {
   addAuthTokenChangeListener,
   getAccessToken,
@@ -8,7 +10,11 @@ import {
   setAccessToken,
   setRefreshToken,
 } from '@/authStorage.ts';
-import { axiosInstance, setHeaders } from '@/axios.ts';
+import { setHeaders } from '@/axios.ts';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { currencyPreferenceQueryOptions } from '@/hooks/useCurrencyPreference.ts';
+import { queryClient } from '@/queryClient.ts';
+import { persister } from '@/queryPersister.ts';
 
 export enum AuthStatus {
   LOGGED_OUT = 'logged_out',
@@ -17,97 +23,46 @@ export enum AuthStatus {
   ERROR = 'error',
 }
 
-let cachedUser: User | null = null;
-let cachedAuthError: unknown = null;
-let profileRequest: Promise<User> | null = null;
-const profileListeners = new Set<(user: User | null) => void>();
-const authErrorListeners = new Set<(err: unknown) => void>();
-
-function setAuthError(err: unknown) {
-  cachedAuthError = err;
-  authErrorListeners.forEach((fn) => fn(err));
-}
-
-function fetchProfile(invalidate = false): Promise<User> {
-  if (invalidate) {
-    cachedUser = null;
-    profileRequest = null;
-  }
-  if (!profileRequest) {
-    profileRequest = axiosInstance
-      .get<User>(ApiRoutes.PROFILE)
-      .then((res) => {
-        cachedUser = res.data;
-        setAuthError(null);
-        profileListeners.forEach((fn) => fn(res.data));
-        return res.data;
-      })
-      .catch((err) => {
-        cachedUser = null;
-        profileListeners.forEach((fn) => fn(null));
-        setAuthError(err);
-        throw err;
-      })
-      .finally(() => {
-        profileRequest = null;
-      });
-  }
-  return profileRequest;
+export function profileQueryOptions() {
+  return apiQueryOptions(ApiRoutes.PROFILE, undefined, undefined, {
+    meta: { persist: true },
+    gcTime: Infinity, // paired with a finite persistOptions.maxAge — see queryPersister.ts
+    staleTime: 5 * 60_000,
+    // Never let a transient/background refetch failure regress an already-known-good profile back to blank.
+    placeholderData: (prev) => prev,
+  });
 }
 
 export function useAuth() {
-  const [currentUser, setCurrentUser] = useState<User | null>(cachedUser);
-  const [authError, setAuthErrorState] = useState<unknown>(cachedAuthError);
   const [accessToken, setAccessTokenState] = useState<string | null>(getAccessToken);
 
   useEffect(() => {
-    const sync = () => {
-      setAccessTokenState(getAccessToken());
-    };
+    const sync = () => setAccessTokenState(getAccessToken());
     addAuthTokenChangeListener(sync);
     return () => removeAuthTokenChangeListener(sync);
   }, []);
 
-  useEffect(() => {
-    profileListeners.add(setCurrentUser);
-    authErrorListeners.add(setAuthErrorState);
-    return () => {
-      profileListeners.delete(setCurrentUser);
-      authErrorListeners.delete(setAuthErrorState);
-    };
-  }, []);
+  const { data: currentUser, error: authError } = useQuery({
+    ...profileQueryOptions(),
+    enabled: !!accessToken,
+  });
 
-  useEffect(() => {
-    if (!accessToken) {
-      cachedUser = null;
-      setAuthError(null);
-      startTransition(() => setCurrentUser(null));
-      return;
-    }
-
-    if (cachedUser) {
-      startTransition(() => setCurrentUser(cachedUser));
-      return;
-    }
-
-    fetchProfile()
-      .then(setCurrentUser)
-      .catch(() => {});
-  }, [accessToken]); // refreshToken excluded — rotation doesn't change identity
-
-  let status: AuthStatus = AuthStatus.LOGGED_OUT;
-  if (currentUser) {
+  let status: AuthStatus;
+  if (!accessToken) {
+    status = AuthStatus.LOGGED_OUT;
+  } else if (currentUser) {
+    // Includes the offline-with-cached-data case: fetchStatus may be 'paused', but data is present.
     status = AuthStatus.LOGGED_IN;
-  } else if (accessToken && authError !== null) {
+  } else if (authError) {
     status = AuthStatus.ERROR;
-  } else if (accessToken) {
+  } else {
     status = AuthStatus.VALIDATING;
   }
 
   return {
     status,
-    authError,
-    currentUser,
+    authError: authError ?? null,
+    currentUser: currentUser ?? null,
     setToken: ({ access, refresh } = { access: '', refresh: '' }) => {
       setAccessToken(access || null);
       setRefreshToken(refresh || null);
@@ -118,11 +73,6 @@ export function useAuth() {
       setHeaders(null);
       if (redirect) window.location.href = '/auth/login';
     },
-    refetchProfile: () => {
-      setAuthError(null);
-      return fetchProfile(true)
-        .then(setCurrentUser)
-        .catch(() => {});
-    },
+    refetchProfile: () => queryClient.refetchQueries({ queryKey: profileQueryOptions().queryKey }),
   };
 }

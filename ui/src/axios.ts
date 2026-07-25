@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { onlineManager } from '@tanstack/react-query';
+import axios, { isAxiosError } from 'axios';
 
 import { ApiRoutes, type AccessToken } from '@/api-types';
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '@/authStorage.ts';
@@ -50,6 +51,20 @@ function refreshTokens(): Promise<AccessToken> {
 
   return _refreshTokenRequest;
 }
+
+// navigator.onLine / browser online-offline events don't catch everything (e.g. DevTools
+// request throttling leaves navigator.onLine true) — corroborate with real request outcomes.
+// A response with no `response` object is a genuine network failure, not an HTTP error.
+axiosInstance.interceptors.response.use(
+  (res) => {
+    onlineManager.setOnline(true);
+    return res;
+  },
+  (e) => {
+    onlineManager.setOnline(!(isAxiosError(e) && !e.response));
+    throw e;
+  }
+);
 
 axiosInstance.interceptors.response.use(
   (res) => res,
