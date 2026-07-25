@@ -2,6 +2,7 @@ import itertools
 
 from django.conf import settings
 from django.http import FileResponse
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.parsers import MultiPartParser
@@ -55,6 +56,7 @@ class GenericAttachmentView(APIView):
 
 
 class RetrieveAttachmentFileView(GenericAttachmentView):
+    @extend_schema(responses={200: OpenApiTypes.BINARY})
     def get(self, request, *args, **kwargs):
         if self.attachment.processed_file:
             return self.serve_file(self.attachment.processed_file, 'image/webp')
@@ -63,6 +65,7 @@ class RetrieveAttachmentFileView(GenericAttachmentView):
 
 
 class RetrieveAttachmentThumbnailView(GenericAttachmentView):
+    @extend_schema(responses={(200, "image/*"): OpenApiTypes.BINARY})
     def get(self, request, *args, **kwargs):
         if not self.attachment.thumbnail:
             raise NotFound('Thumbnail not available.')
