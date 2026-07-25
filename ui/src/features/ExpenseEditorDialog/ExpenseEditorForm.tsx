@@ -11,7 +11,7 @@ import { urlWithArgs } from '@/api-types/url';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { AttachmentContext, useAttachment, useAttachmentContext } from '@/features/AttachmentPanel';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import { ExpenseOptions } from './ExpenseOptions.tsx';
@@ -65,7 +65,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
-  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useCurrencyPreference();
   const { getAttachmentUids, existingAttachments } = useAttachmentContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;

@@ -8,8 +8,8 @@ import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/c
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
 import { AttachmentContext, AttachmentPanel, useAttachment } from '@/features/AttachmentPanel';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
@@ -21,7 +21,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const { close } = useDialog();
   const formControl = useForm();
   const { currentUser } = useAuth();
-  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useCurrencyPreference();
   const attachments = useAttachment();
 
   useEffect(() => {

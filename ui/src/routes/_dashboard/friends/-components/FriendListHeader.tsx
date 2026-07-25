@@ -5,11 +5,10 @@ import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Button, Money, ScrollScene } from '@/components/primitives';
 import { AddFriendModal } from '@/features/AddFriendDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 
 export function FriendListHeader() {
-  const { data: preferredCurrency, isPending: isCurrencyPending } = useApiQuery(
-    ApiRoutes.CURRENCY_PREFERENCE
-  );
+  const { data: preferredCurrency, isPending: isCurrencyPending } = useCurrencyPreference();
   const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
 
   const aggregatedOutstandingBalance = friends?.reduce(

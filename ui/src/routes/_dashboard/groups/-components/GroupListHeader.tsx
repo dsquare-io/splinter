@@ -5,9 +5,10 @@ import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Button, Money, ScrollScene } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 
 export function GroupListHeader() {
-  const { data: preferredCurrency, isPending: currencyPending } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency, isPending: currencyPending } = useCurrencyPreference();
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
 
   const aggregatedOutstandingBalance = groups?.reduce(
