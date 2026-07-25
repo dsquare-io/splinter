@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
+import { onlineManager } from '@tanstack/react-query';
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { useRegisterSW } from 'virtual:pwa-register/react';
@@ -69,6 +70,21 @@ function UpdateBanner() {
   );
 }
 
+function OfflineBanner() {
+  const isOnline = useSyncExternalStore(
+    (onChange) => onlineManager.subscribe(onChange),
+    () => onlineManager.isOnline()
+  );
+
+  if (isOnline) return null;
+
+  return (
+    <div className="z-50 w-full bg-gray-800 px-4 py-1.5 text-center text-xs text-white">
+      You're offline — showing saved data
+    </div>
+  );
+}
+
 function SplashController() {
   const { status, authError, refetchProfile, logout } = useAuth();
   const [isPending, setIsPending] = useState(false);
@@ -123,6 +139,7 @@ function SplashController() {
 function RootComponent() {
   return (
     <>
+      <OfflineBanner />
       <UpdateBanner />
       <TopLoader />
       <SplashController />

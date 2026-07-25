@@ -4,8 +4,13 @@ import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 import { Link } from '@tanstack/react-router';
 
 import { Friend } from '@/api-types/components/schemas';
+import { FriendIdentity } from '@/collections/friendsCollection.ts';
+import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
+
+type FriendListItemProps = FriendIdentity &
+  Partial<Pick<Friend, 'aggregatedOutstandingBalance' | 'outstandingBalances'>>;
 
 export function FriendListItem({
   name,
@@ -13,7 +18,7 @@ export function FriendListItem({
   isActive,
   aggregatedOutstandingBalance,
   outstandingBalances,
-}: Friend) {
+}: FriendListItemProps) {
   return (
     <Link
       to="/friends/$friend"
@@ -37,7 +42,12 @@ export function FriendListItem({
           </div>
         )}
         <div className="text-md flex flex-1 items-center gap-2 py-1">{name}</div>
-        {+aggregatedOutstandingBalance.amount === 0 ? (
+        {!aggregatedOutstandingBalance ? (
+          <div className="space-y-1.5 text-right">
+            <Skeleton className="ml-auto h-2.5 w-12" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+        ) : +aggregatedOutstandingBalance.amount === 0 ? (
           <div className="text-xs text-gray-400">Settled up</div>
         ) : (
           <div className="text-right text-sm">

@@ -10,6 +10,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+  const API_URL = env.VITE_APP_BACKEND_URL ?? 'http://localhost:8000';
 
   return {
     build: {
@@ -94,11 +95,11 @@ export default defineConfig(({ mode }) => {
     server: {
       proxy: {
         '/api': {
-          target: env.VITE_APP_BACKEND_URL,
+          target: API_URL,
           changeOrigin: true,
         },
         '/media': {
-          target: env.VITE_APP_BACKEND_URL,
+          target: API_URL,
           changeOrigin: true,
         },
       },

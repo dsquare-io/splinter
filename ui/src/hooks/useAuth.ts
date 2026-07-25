@@ -71,6 +71,14 @@ export function useAuth() {
       setAccessToken(null);
       setRefreshToken(null);
       setHeaders(null);
+      queryClient.removeQueries({ queryKey: profileQueryOptions().queryKey });
+      queryClient.removeQueries({ queryKey: currencyPreferenceQueryOptions().queryKey });
+      persister.removeClient();
+      // Dynamic import: keeps RxDB/TanStack DB out of the eager root bundle — useAuth.ts
+      // is used by __root.tsx, so a static import here would ship it on every page load.
+      import('@/collections/friendsCollection.ts').then(({ clearFriendsCollection }) =>
+        clearFriendsCollection()
+      );
       if (redirect) window.location.href = '/auth/login';
     },
     refetchProfile: () => queryClient.refetchQueries({ queryKey: profileQueryOptions().queryKey }),

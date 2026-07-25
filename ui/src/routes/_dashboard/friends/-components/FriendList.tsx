@@ -1,6 +1,10 @@
+import { useEffect, useMemo } from 'react';
+
+import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
+import { friendsCollection, syncFriendIdentities } from '@/collections/friendsCollection.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { PullToRefresh, ScrollScene } from '@/components/primitives';
@@ -9,19 +13,38 @@ import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';
 
 export function FriendList() {
-  const { data: friends, isPending, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  // Balances stay on the existing react-query path so they keep invalidating via
+  // invalidateQueriesForExpense; identity is mirrored into RxDB below for offline reads.
+  const { data: friendsWithBalances, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: identities, isLoading: identitiesLoading } = useLiveQuery((q) =>
+    q.from({ friend: friendsCollection })
+  );
+
+  useEffect(() => {
+    if (friendsWithBalances) syncFriendIdentities(friendsWithBalances);
+  }, [friendsWithBalances]);
+
+  const balanceByUid = useMemo(
+    () => new Map((friendsWithBalances ?? []).map((friend) => [friend.uid, friend])),
+    [friendsWithBalances]
+  );
+
+  const friends = identities.map((identity) => ({
+    ...identity,
+    ...balanceByUid.get(identity.uid),
+  }));
 
   return (
     <PullToRefresh onRefresh={refetch}>
       <div className="flex flex-col -space-y-px">
-        {error ? (
+        {error && identities.length === 0 ? (
           <ErrorAlert
             error={error}
             variant="centered"
           />
-        ) : isPending ? (
+        ) : identitiesLoading && identities.length === 0 ? (
           Array.from({ length: 6 }).map((_, i) => <FriendListItemSkeleton key={i} />)
-        ) : !friends?.length ? (
+        ) : friends.length === 0 ? (
           <EmptyFriends />
         ) : (
           Object.entries(groupBy(friends, (friend) => friend.name[0].toLowerCase()))
