@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ApiRoutes } from '@/api-types';
+import { ApiRoutes, type AccessToken } from '@/api-types';
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '@/authStorage.ts';
 
 const cachedAccessToken = getAccessToken();
@@ -13,11 +13,10 @@ export const axiosInstance = axios.create({
     : {},
 });
 
-type Tokens = { accessToken: string; refreshToken: string };
+let _refreshTokenRequest: Promise<AccessToken> | null = null;
 
-let _refreshTokenRequest: Promise<Tokens> | null = null;
-
-function refreshTokens(): Promise<Tokens> {
+function refreshTokens(): Promise<AccessToken> {
+  console.log('refreshing token...');
   if (!_refreshTokenRequest) {
     const redirectToLogin = () => {
       setAccessToken(null);
@@ -34,10 +33,9 @@ function refreshTokens(): Promise<Tokens> {
     }
 
     _refreshTokenRequest = axios
-      .post<Tokens>(ApiRoutes.REFRESH_ACCESS_TOKEN, { refreshToken })
+      .post<AccessToken>(ApiRoutes.REFRESH_ACCESS_TOKEN, { refreshToken })
       .then((res) => {
         setAccessToken(res.data.accessToken);
-        setRefreshToken(res.data.refreshToken);
         setHeaders(res.data.accessToken);
         return res.data;
       })
