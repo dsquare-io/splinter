@@ -68,27 +68,6 @@
   }
 }
 
-/* Scale up hit targets on high resolution mobile devices. */
-/*@media (min-resolution: 200dpi) {*/
-/*  html {*/
-/*    font-size: 18px;*/
-/*  }*/
-
-/*  .text-sm {*/
-/*    !* ensure minimum font size of 16px *!*/
-/*    font-size: 0.9rem;*/
-/*  }*/
-/*}*/
-
 body {
   font-family: 'Figtree', sans-serif;
-}
-
-html,
-body {
-  height: 100%;
-  overflow-x: hidden;
-
-  /* prevents rubber-band chaining */
-  overscroll-behavior-y: none;
 }

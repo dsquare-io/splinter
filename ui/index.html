@@ -18,7 +18,7 @@
     />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Splinter</title>
     <meta
@@ -33,7 +33,10 @@
       name="apple-mobile-web-app-capable"
       content="yes"
     />
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta
+      name="mobile-web-app-capable"
+      content="yes"
+    />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
@@ -120,14 +123,20 @@
         animation: splash-text-in 0.4s 3s ease forwards;
       }
 
-      html {
+      html,
+      body {
+        height: 100dvh;
+        overflow-x: hidden;
         background: #ffffff;
+
+        /* prevents rubber-band chaining */
+        overscroll-behavior-y: none;
       }
 
-      #root {
-        height: 100vh;
+      body {
         min-height: 100dvh;
         padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
       }
     </style>
   </head>
@@ -156,7 +165,7 @@
     </div>
     <div
       id="root"
-      class="flex h-full flex-col"
+      class="h-full"
     ></div>
     <script
       type="module"

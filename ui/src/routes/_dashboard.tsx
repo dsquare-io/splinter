@@ -16,7 +16,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <main className="min-h-0 flex-1 overflow-auto pb-[calc(64px+env(safe-area-inset-bottom))] md:ms-60 md:pb-0">
+      <main className="h-full min-h-0 pb-16 md:ms-60 md:pb-0">
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
