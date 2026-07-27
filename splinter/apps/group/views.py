@@ -8,8 +8,8 @@ from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.group.serializers import (
     CreateGroupMembershipSerializer,
     CreateGroupSerializer,
-    ExtendedGroupSerializer,
     GroupSerializer,
+    SimpleGroupSerializer,
 )
 from splinter.core.views import (
     CreateAPIView,
@@ -22,13 +22,13 @@ from splinter.core.views import (
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
-    serializer_class = GroupSerializer
+    serializer_class = SimpleGroupSerializer
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateGroupSerializer
 
-        return GroupSerializer
+        return self.serializer_class
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)
@@ -42,7 +42,7 @@ class ListCreateGroupView(ListAPIView, CreateAPIView):
 class RetrieveUpdateDestroyGroupView(RetrieveAPIView, UpdateAPIView, DestroyAPIView):
     lookup_field = 'public_id'
     lookup_url_kwarg = 'group_uid'
-    serializer_class = ExtendedGroupSerializer
+    serializer_class = GroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)

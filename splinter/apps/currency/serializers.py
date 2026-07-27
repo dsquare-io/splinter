@@ -13,20 +13,14 @@ class CountrySerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name', 'flag')
 
 
-class SimpleCurrencySerializer(serializers.ModelSerializer):
+class CurrencySerializer(serializers.ModelSerializer):
     uid = serializers.CharField(source='code')
     urn = serializers.CharField(read_only=True)
+    country = CountrySerializer(read_only=True)
 
     class Meta:
         model = Currency
-        fields = ('uid', 'urn', 'symbol')
-
-
-class CurrencySerializer(SimpleCurrencySerializer):
-    country = CountrySerializer(read_only=True)
-
-    class Meta(SimpleCurrencySerializer.Meta):
-        fields = SimpleCurrencySerializer.Meta.fields + ('country',)
+        fields = ('uid', 'urn', 'symbol', 'country')
 
 
 class UserCurrencySerializer(serializers.ModelSerializer):

@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework.exceptions import ValidationError
 
 from splinter.apps.expense.models import OutstandingBalance
@@ -18,11 +17,6 @@ class ListCreateFriendView(ListAPIView, CreateAPIView):
             return CreateFriendshipSerializer
 
         return FriendSerializer
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['outstanding_balance_limit'] = settings.EXPENSE_AGGREGATED_OUTSTANDING_BALANCE_LIMIT
-        return context
 
     def get_queryset(self):
         return Friendship.objects.get_user_friends(self.request.user)

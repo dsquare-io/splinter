@@ -2,7 +2,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from splinter.apps.activity.models import ActivityAudience, Comment
-from splinter.apps.currency.serializers import SimpleCurrencySerializer
+from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.group.serializers import SimpleGroupSerializer
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
@@ -24,7 +24,7 @@ class ActivitySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSeria
     template = serializers.CharField(read_only=True, source='activity.activity_type.template')
 
     is_read = serializers.SerializerMethodField()
-    currency = SimpleCurrencySerializer(read_only=True)
+    currency = CurrencySerializerField()
 
     class Meta:
         model = ActivityAudience

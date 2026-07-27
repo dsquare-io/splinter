@@ -1,11 +1,11 @@
 import itertools
 import re
 from collections import defaultdict
+from decimal import Decimal
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-from django.db.models import Case, Exists, IntegerField, OuterRef, Sum, When, Window
-from django.db.models.functions import RowNumber
+from django.db.models import Exists, OuterRef
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
@@ -14,6 +14,7 @@ from splinter.apps.expense.models import (
     Expense,
     ExpenseChangeLog,
     ExpenseParty,
+    OutstandingBalance,
     Settlement,
 )
 from splinter.apps.expense.operations import (
@@ -26,6 +27,7 @@ from splinter.apps.expense.serializers import (
     ExpenseChangeLogSerializer,
     ExpenseOrPaymentOrSettlementSerializer,
     ExpenseOrPaymentSerializer,
+    GroupOutstandingBalanceSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
@@ -175,19 +177,48 @@ class RetrieveUserOutstandingBalanceView(GenericAPIView):
     serializer_class = UserOutstandingBalanceSerializer
 
     def get(self, *args, **kwargs):
-        qs = (
-            AggregatedOutstandingBalance.objects.annotate(
-                balance_type=Case(When(amount__gt=0, then=1), default=0, output_field=IntegerField()),
-            )
-            .annotate(
-                total_amount=Window(expression=Sum('amount'), partition_by=('balance_type', 'currency')),
-                row_number=Window(expression=RowNumber(), partition_by=('balance_type', 'currency')),
-            )
-            .filter(row_number=1, user=self.request.user)
+        qs = list(
+            OutstandingBalance.objects.prefetch_related('currency', 'friend', 'group').filter(user=self.request.user)
         )
 
-        qs = self.get_serializer().prefetch_queryset(qs)
-        return self.get_serializer(list(qs)).data
+        summed: dict[tuple[int | None, int | None, int], AggregatedOutstandingBalance] = {}
+        for balance in qs:
+            key = (balance.friend_id if balance.group_id is None else None, balance.group_id, balance.currency_id)
+            aggregated = summed.get(key)
+            if aggregated is None:
+                aggregated = AggregatedOutstandingBalance()
+                if balance.group_id is None:
+                    aggregated.friend = balance.friend
+                else:
+                    aggregated.group = balance.group
+                aggregated.currency = balance.currency
+                aggregated.amount = Decimal(0)
+                summed[key] = aggregated
+
+            aggregated.amount += balance.amount
+
+        grouped: dict[tuple[int | None, int | None], list[AggregatedOutstandingBalance]] = defaultdict(list)
+        for aggregated in summed.values():
+            grouped[(aggregated.friend_id, aggregated.group_id)].append(aggregated)
+
+        return UserOutstandingBalanceSerializer(
+            {
+                "outstanding_balances": qs,
+                "aggregated_outstanding_balance": list(grouped.values()),
+            },
+            context=self.get_serializer_context(),
+        ).data
+
+
+class RetrieveGroupOutstandingBalanceView(ListAPIView):
+    serializer_class = GroupOutstandingBalanceSerializer
+
+    @cached_property
+    def membership(self):
+        return get_object_or_404(GroupMembership, group__public_id=self.kwargs['group_uid'], user=self.request.user)
+
+    def get_queryset(self):
+        return OutstandingBalance.objects.filter(group_id=self.membership.group_id)
 
 
 class RetrieveExpenseChangeLogView(ListAPIView, GenericAPIView):

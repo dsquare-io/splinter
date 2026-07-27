@@ -14,4 +14,5 @@ urlpatterns = [
     path('groups/<uuid:group_uid>/expenses', views.ListGroupExpenseView.as_view()),
     # User
     path('user/outstanding-balance', views.RetrieveUserOutstandingBalanceView.as_view()),
+    path('groups/<uuid:group_uid>/outstanding-balance', views.RetrieveGroupOutstandingBalanceView.as_view()),
 ]
