@@ -33,9 +33,10 @@
       name="apple-mobile-web-app-capable"
       content="yes"
     />
+    <meta name="mobile-web-app-capable" content="yes">
     <meta
       name="apple-mobile-web-app-status-bar-style"
-      content="default"
+      content="black-translucent"
     />
     <meta
       name="apple-mobile-web-app-title"
@@ -126,6 +127,7 @@
       #root {
         height: 100vh;
         min-height: 100dvh;
+        padding-top: env(safe-area-inset-top);
       }
     </style>
   </head>
