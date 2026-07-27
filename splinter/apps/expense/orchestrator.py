@@ -130,6 +130,15 @@ class ExpenseEventOrchestrator(ContextDecorator):
             for expense_split in ExpenseSplit.objects.filter(expense=expense):
                 self._outstanding_balance.add(expense.paid_by_id, expense_split.user_id, expense_split.amount)
 
+    def auto_befriend_participants(self) -> None:
+        users = set(ExpenseSplit.objects.filter(expense=self._root_expense).values_list('user_id', flat=True))
+        for user_id in users:
+            if user_id == self._root_expense.paid_by_id:
+                continue  # Skip the payer
+
+            if not Friendship.objects.is_friend_with(self._root_expense.paid_by_id, user_id):
+                Friendship.objects.create(user1_id=self._root_expense.paid_by_id, user2_id=user_id)
+
     def update_expense_parties(self) -> None:
         to_create = []
         current_parties = set()
@@ -142,10 +151,7 @@ class ExpenseEventOrchestrator(ContextDecorator):
             if user_id == self._root_expense.paid_by_id:
                 continue  # Skip the payer
 
-            try:
-                friendship = Friendship.objects.of(self._root_expense.paid_by_id, user_id)
-            except Friendship.DoesNotExist:
-                friendship = Friendship.objects.create(user1_id=self._root_expense.paid_by_id, user2_id=user_id)
+            friendship = Friendship.objects.of(self._root_expense.paid_by_id, user_id)
 
             current_parties.add(friendship.id)
             if friendship.id not in existing_parties:
@@ -234,6 +240,8 @@ class ExpenseEventOrchestrator(ContextDecorator):
         with transaction.atomic():
             if self._update_expense_splits:
                 self.update_expense_splits()
+
+            self.auto_befriend_participants()
 
             if self._root_expense.group_id is None:  # Personal expense
                 self.update_expense_parties()

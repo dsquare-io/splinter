@@ -1,11 +1,13 @@
+import itertools
 from decimal import Decimal
 
 from splinter.apps.activity.models import Activity, ActivityAudience
 from splinter.apps.expense.activities import CreateExpenseActivity
 from splinter.apps.expense.models import ExpenseParty
 from splinter.apps.expense.operations import CreateExpenseOperation
+from splinter.apps.friend.models import Friendship
 from tests.apps.expense.case import ExpenseTestCase
-from tests.apps.group.factories import GroupFactory
+from tests.apps.group.factories import GroupFactory, GroupMembershipFactory
 from tests.apps.user.factories import UserFactory
 
 
@@ -172,3 +174,70 @@ class CreateExpenseOperationExpensePartyTests(ExpenseTestCase):
         group = GroupFactory()
         expense = self._execute(group=group)
         self.assertEqual(ExpenseParty.objects.filter(expense=expense).count(), 0)
+
+
+class GroupExpenseAutoFriendTests(ExpenseTestCase):
+    """
+    Group: 4 members, none friends with each other beforehand.
+    One member pays a group expense split among 3 of the 4 members.
+    Expectation under test: the involved members should become friends automatically.
+    """
+
+    available_apps = (
+        'django.contrib.contenttypes',
+        'splinter.apps.activity',
+        'splinter.apps.currency',
+        'splinter.apps.expense',
+        'splinter.apps.friend',
+        'splinter.apps.group',
+        'splinter.apps.user',
+    )
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.member1 = UserFactory()
+        cls.member2 = UserFactory()
+        cls.member3 = UserFactory()
+        cls.member4 = UserFactory()
+
+        cls.group = GroupFactory(created_by=cls.member1)
+        GroupMembershipFactory(group=cls.group, user=cls.member2)
+        GroupMembershipFactory(group=cls.group, user=cls.member3)
+        GroupMembershipFactory(group=cls.group, user=cls.member4)
+
+    def test_no_friendships_exist_before_expense(self):
+        members = [self.member1, self.member2, self.member3, self.member4]
+        for a, b in itertools.combinations(members, 2):
+            self.assertFalse(Friendship.objects.is_friend_with(a, b), f'{a} and {b} should not be friends yet')
+
+    def test_group_expense_auto_friends_payer_with_each_participant(self):
+        payer = self.member1
+        participants = [self.member2, self.member3]  # member4 sits out
+        shares = [{'user': payer, 'share': 1}] + [{'user': user, 'share': 1} for user in participants]
+
+        CreateExpenseOperation(actor=payer).execute(
+            {
+                'datetime': '2024-01-01T00:00:00Z',
+                'currency': self.currency,
+                'paid_by': payer,
+                'attachments': [],
+                'group': self.group,
+                'expenses': [{'description': 'Group dinner', 'amount': Decimal(90), 'shares': shares}],
+            }
+        )
+
+        # Payer becomes friends with each participant (existing personal-expense semantics,
+        # now also applied to group expenses).
+        for participant in participants:
+            self.assertTrue(
+                Friendship.objects.is_friend_with(payer, participant),
+                f'{payer} and {participant} should have become friends automatically after sharing a group expense',
+            )
+
+        # Non-payer participants are not auto-friended with each other.
+        self.assertFalse(Friendship.objects.is_friend_with(self.member2, self.member3))
+
+        # member4 was not part of the expense and should not have been auto-friended.
+        for other in [payer, *participants]:
+            self.assertFalse(Friendship.objects.is_friend_with(self.member4, other))
