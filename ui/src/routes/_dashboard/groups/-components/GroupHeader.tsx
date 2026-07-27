@@ -2,9 +2,11 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { useLiveQuery } from '@tanstack/react-db';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
+import { outstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
@@ -12,16 +14,17 @@ import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { useAuth } from '@/hooks/useAuth.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export function GroupHeader({ group_uid }: { group_uid: string }) {
-  const { currentUser } = useAuth();
   const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   useRedirectOn404(error, '/groups');
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
 
-  const myOutstandingBalances =
-    group?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
+  // The endpoint is already scoped to the current user server-side, so no need to
+  // filter by "which member" — every row here is already "my" balance.
+  const myOutstandingBalances = balances.filter((b) => b.group === group_uid);
+  const membersByUid = new Map((group?.members ?? []).map((member) => [member.uid, member]));
 
   return (
     <ScrollScene.Header
@@ -66,7 +69,10 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
           <>
             <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
             <ScrollScene.Hide range={[0, 200]}>
-              <OutstandingBalanceList balances={myOutstandingBalances} />
+              <OutstandingBalanceList
+                balances={myOutstandingBalances}
+                resolveFriend={(uid) => membersByUid.get(uid)}
+              />
             </ScrollScene.Hide>
           </>
         )}

@@ -1,6 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-import { ApiRoutes, GroupOutstandingBalance, SimpleUser, urlWithArgs, type ExtendedGroup } from '@/api-types';
+import { ApiRoutes, SimpleUser, urlWithArgs, type Group } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { Avatar, IconButton } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -8,11 +8,14 @@ import { useConfirmation } from '@/hooks/useConfirmation.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type GroupMembersSectionProps = {
-  group: ExtendedGroup;
-  balanceByUsers: Record<string, GroupOutstandingBalance[]>;
+  group: Group;
+  // The API only tells us the current user's own balance now, not who owes whom within
+  // the group — so this can no longer gate removal per-member. Coarser but safe: block
+  // removing anyone while the current user has any outstanding balance in this group.
+  currentUserHasBalance: boolean;
 };
 
-export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectionProps) {
+export function GroupMemberSection({ group, currentUserHasBalance }: GroupMembersSectionProps) {
   const confirm = useConfirmation();
 
   async function removeMember(member: SimpleUser) {
@@ -58,7 +61,7 @@ export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectio
               <div>{member.name}</div>
               {!member.isActive && <div className="text-sm text-neutral-500">Inactive</div>}
             </div>
-            {!balanceByUsers[member.uid]?.length && (
+            {!currentUserHasBalance && (
               <IconButton
                 type="button"
                 variant="plain"

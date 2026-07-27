@@ -79,6 +79,9 @@ export function useAuth() {
       import('@/collections/friendsCollection.ts').then(({ clearFriendsCollection }) =>
         clearFriendsCollection()
       );
+      import('@/collections/outstandingBalancesCollection.ts').then(
+        ({ clearOutstandingBalancesCollections }) => clearOutstandingBalancesCollections()
+      );
       if (redirect) window.location.href = '/auth/login';
     },
     refetchProfile: () => queryClient.refetchQueries({ queryKey: profileQueryOptions().queryKey }),

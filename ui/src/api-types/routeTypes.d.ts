@@ -367,6 +367,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/groups/{group_uid}/outstanding-balance': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Group Outstanding Balance */
+    get: operations['RetrieveGroupOutstandingBalance'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/mfa/challenge/{device_type}': {
     parameters: {
       query?: never;
@@ -678,6 +695,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/media/attachments/{attachment_uid}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Attachment File */
+    get: operations['RetrieveAttachmentFile'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/media/attachments/{attachment_uid}/thumbnail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Retrieve Attachment Thumbnail */
+    get: operations['RetrieveAttachmentThumbnail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -685,6 +736,12 @@ export interface components {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
     AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
+    /**
+     * @description * `friend` - friend
+     *     * `group` - group
+     * @enum {string}
+     */
+    AggregatedOutstandingBalanceTypeEnum: import('./components/schemas.d.ts').AggregatedOutstandingBalanceTypeEnum;
     AttachmentConfig: import('./components/schemas.d.ts').AttachmentConfig;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
@@ -713,11 +770,9 @@ export interface components {
     ExpenseTyped: import('./components/schemas.d.ts').ExpenseTyped;
     /** @enum {string} */
     ExpenseTypedTypeEnum: import('./components/schemas.d.ts').ExpenseTypedTypeEnum;
-    ExtendedGroup: import('./components/schemas.d.ts').ExtendedGroup;
     FileAttachment: import('./components/schemas.d.ts').FileAttachment;
     ForgetPassword: import('./components/schemas.d.ts').ForgetPassword;
     Friend: import('./components/schemas.d.ts').Friend;
-    FriendOutstandingBalance: import('./components/schemas.d.ts').FriendOutstandingBalance;
     Group: import('./components/schemas.d.ts').Group;
     GroupOutstandingBalance: import('./components/schemas.d.ts').GroupOutstandingBalance;
     MfaToken: import('./components/schemas.d.ts').MfaToken;
@@ -726,7 +781,7 @@ export interface components {
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedExpenseOrPaymentOrSettlementList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentOrSettlementList;
-    PatchedExtendedGroup: import('./components/schemas.d.ts').PatchedExtendedGroup;
+    PatchedGroup: import('./components/schemas.d.ts').PatchedGroup;
     PatchedUser: import('./components/schemas.d.ts').PatchedUser;
     Payment: import('./components/schemas.d.ts').Payment;
     PaymentTyped: import('./components/schemas.d.ts').PaymentTyped;
@@ -739,8 +794,8 @@ export interface components {
     SettlementTyped: import('./components/schemas.d.ts').SettlementTyped;
     /** @enum {string} */
     SettlementTypedTypeEnum: import('./components/schemas.d.ts').SettlementTypedTypeEnum;
-    SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
+    SimpleOutstandingBalance: import('./components/schemas.d.ts').SimpleOutstandingBalance;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;
     UpsertExpense: import('./components/schemas.d.ts').UpsertExpense;
     UpsertPayment: import('./components/schemas.d.ts').UpsertPayment;
@@ -1887,7 +1942,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['Group'][];
+          'application/json': components['schemas']['SimpleGroup'][];
         };
       };
       /** @description Unauthorized */
@@ -1981,7 +2036,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['ExtendedGroup'];
+          'application/json': components['schemas']['Group'];
         };
       };
       /** @description Unauthorized */
@@ -2024,7 +2079,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        'application/json': components['schemas']['ExtendedGroup'];
+        'application/json': components['schemas']['Group'];
       };
     };
     responses: {
@@ -2137,7 +2192,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        'application/json': components['schemas']['PatchedExtendedGroup'];
+        'application/json': components['schemas']['PatchedGroup'];
       };
     };
     responses: {
@@ -2327,6 +2382,54 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  RetrieveGroupOutstandingBalance: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        group_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GroupOutstandingBalance'][];
+        };
       };
       /** @description Unauthorized */
       401: {
@@ -3537,6 +3640,102 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  RetrieveAttachmentFile: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attachment_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  RetrieveAttachmentThumbnail: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        attachment_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'image/*': string;
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
         };
       };
     };

@@ -1,4 +1,4 @@
-import { ApiRoutes, urlWithArgs, type ExtendedGroup } from '@/api-types';
+import { ApiRoutes, urlWithArgs, type Group } from '@/api-types';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { Button, DialogFooter, useDialog } from '@/components/primitives';
@@ -6,7 +6,7 @@ import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type AddGroupMemberFormProps = {
-  group: ExtendedGroup;
+  group: Group;
 };
 
 export function AddGroupMemberForm({ group }: AddGroupMemberFormProps) {

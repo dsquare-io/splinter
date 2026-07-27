@@ -1,22 +1,22 @@
-import { useMemo } from 'react';
+import { useLiveQuery } from '@tanstack/react-db';
 
-import groupBy from 'just-group-by';
-
-import type { ExtendedGroup } from '@/api-types';
+import type { Group } from '@/api-types';
+import { outstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
 import { Dialog, DialogHeader } from '@/components/primitives';
 import { GroupActionSection } from './GroupActionSection.tsx';
 import { GroupMemberSection } from './GroupMemberSection.tsx';
 import { GroupNameForm } from './GroupNameForm';
 
 type GroupSettingDialogProps = {
-  group: ExtendedGroup;
+  group: Group;
 };
 
 export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
-  const balanceByUsers = useMemo(
-    () => groupBy(group.outstandingBalances, (balance) => balance.user.uid),
-    [group.outstandingBalances]
-  );
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  // The API only tells us the current user's own balance now — not the full
+  // member-to-member matrix — so this is a coarse "does the current user have any
+  // outstanding balance in this group" flag, not a per-member check.
+  const currentUserHasBalance = balances.some((b) => b.group === group.uid);
 
   return (
     <Dialog>
@@ -27,11 +27,11 @@ export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
       />
       <GroupMemberSection
         group={group}
-        balanceByUsers={balanceByUsers}
+        currentUserHasBalance={currentUserHasBalance}
       />
       <GroupActionSection
         group={group}
-        balanceByUsers={balanceByUsers}
+        currentUserHasBalance={currentUserHasBalance}
       />
     </Dialog>
   );

@@ -1,10 +1,15 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
 import { friendsCollection, syncFriendIdentities } from '@/collections/friendsCollection.ts';
+import {
+  aggregatedOutstandingBalancesCollection,
+  outstandingBalancesCollection,
+  syncOutstandingBalances,
+} from '@/collections/outstandingBalancesCollection.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { PullToRefresh, ScrollScene } from '@/components/primitives';
@@ -13,29 +18,41 @@ import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';
 
 export function FriendList() {
-  // Balances stay on the existing react-query path so they keep invalidating via
-  // invalidateQueriesForExpense; identity is mirrored into RxDB below for offline reads.
-  const { data: friendsWithBalances, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  // Identity survives offline via RxDB (friendsCollection). Balances are their own
+  // RxDB collections now too — see outstandingBalancesCollection.ts.
+  const { data: friendIdentities, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
   const { data: identities, isLoading: identitiesLoading } = useLiveQuery((q) =>
     q.from({ friend: friendsCollection })
   );
+  const { data: aggregatedBalances } = useLiveQuery((q) =>
+    q.from({ balance: aggregatedOutstandingBalancesCollection })
+  );
+  const { data: rawBalances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  const [balancesSynced, setBalancesSynced] = useState(false);
 
   useEffect(() => {
-    if (friendsWithBalances) syncFriendIdentities(friendsWithBalances);
-  }, [friendsWithBalances]);
+    if (friendIdentities) syncFriendIdentities(friendIdentities);
+  }, [friendIdentities]);
 
-  const balanceByUid = useMemo(
-    () => new Map((friendsWithBalances ?? []).map((friend) => [friend.uid, friend])),
-    [friendsWithBalances]
-  );
+  useEffect(() => {
+    syncOutstandingBalances().then(() => setBalancesSynced(true));
+  }, []);
 
   const friends = identities.map((identity) => ({
     ...identity,
-    ...balanceByUid.get(identity.uid),
+    aggregatedOutstandingBalances: aggregatedBalances.filter(
+      (b) => b.type === 'friend' && b.uid === identity.uid
+    ),
+    outstandingBalances: rawBalances.filter((b) => b.friend === identity.uid),
+    balancesLoading: !balancesSynced,
   }));
 
   return (
-    <PullToRefresh onRefresh={refetch}>
+    <PullToRefresh
+      onRefresh={async () => {
+        await Promise.all([refetch(), syncOutstandingBalances()]);
+      }}
+    >
       <div className="flex flex-col -space-y-px">
         {error && identities.length === 0 ? (
           <ErrorAlert

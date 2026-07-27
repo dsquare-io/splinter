@@ -7,8 +7,7 @@ import { rxdbPromise } from '@/rxdb.ts';
 
 export type FriendIdentity = Pick<Friend, 'uid' | 'urn' | 'name' | 'isActive' | 'email'>;
 
-// Identity only — balances stay on the existing react-query path (see FriendList.tsx)
-// so they keep invalidating via invalidateQueriesForExpense without RxDB involvement.
+// Identity only — balances live in their own collections, see outstandingBalancesCollection.ts.
 const friendIdentitySchema = {
   title: 'friend-identity',
   version: 0,

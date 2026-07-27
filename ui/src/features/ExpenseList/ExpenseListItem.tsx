@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 import { format } from 'date-fns';
 
-import { ExpenseOrPayment, SimpleCurrency } from '@/api-types/components/schemas';
+import { ExpenseOrPayment } from '@/api-types/components/schemas';
 import { Money, UserLabel } from '@/components/primitives';
 
 type ExpenseListItemProps = {
@@ -71,7 +71,7 @@ function OutstandingBalance({
   currency,
 }: {
   outstandingBalance?: string;
-  currency: SimpleCurrency;
+  currency: string;
 }) {
   const amount = +(outstandingBalance ?? 0);
 

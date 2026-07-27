@@ -3,10 +3,8 @@ import { ComponentProps } from 'react';
 import { useNumberFormatter } from '@react-aria/i18n';
 import { twMerge } from 'tailwind-merge';
 
-import { SimpleCurrency } from '@/api-types';
-
 interface Props extends Omit<ComponentProps<'span'>, 'children'> {
-  currency: string | SimpleCurrency;
+  currency: string;
   value: number | string;
   noColor?: boolean;
   noTabularNums?: boolean;
@@ -15,7 +13,7 @@ interface Props extends Omit<ComponentProps<'span'>, 'children'> {
 export function Money({ value, currency, className, noColor, noTabularNums = false, ...props }: Props) {
   const formatter = useNumberFormatter({
     style: 'currency',
-    currency: typeof currency === 'string' ? currency : currency.uid,
+    currency,
     currencyDisplay: 'narrowSymbol',
     minimumFractionDigits: 1,
     maximumFractionDigits: 2,

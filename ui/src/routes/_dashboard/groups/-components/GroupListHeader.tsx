@@ -1,24 +1,29 @@
 import { DialogTrigger } from 'react-aria-components';
 
-import { ApiRoutes } from '@/api-types';
+import { useLiveQuery } from '@tanstack/react-db';
+
+import { aggregatedOutstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Button, Money, ScrollScene } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 
 export function GroupListHeader() {
   const { data: preferredCurrency, isPending: currencyPending } = useCurrencyPreference();
-  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-
-  const aggregatedOutstandingBalance = groups?.reduce(
-    (acc, group) => {
-      const currency = group.aggregatedOutstandingBalance?.currency.uid ?? '';
-      acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalance?.amount ?? 0);
-      return acc;
-    },
-    {} as Record<string, number>
+  const { data: balances } = useLiveQuery((q) =>
+    q.from({ balance: aggregatedOutstandingBalancesCollection })
   );
+
+  const aggregatedOutstandingBalance = balances
+    .filter((b) => b.type === 'group')
+    .reduce(
+      (acc, balance) => {
+        const currency = balance.currency;
+        acc[currency] = (acc[currency] ?? 0) + +balance.amount;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   return (
     <ScrollScene.Header
@@ -32,7 +37,7 @@ export function GroupListHeader() {
         <ScrollScene.Hide range={[0, 50]}>
           {currencyPending ? (
             <Skeleton className="mt-1 h-4 w-40" />
-          ) : groups ? (
+          ) : (
             <p className="text-sm text-gray-600">
               {!aggregatedOutstandingBalance?.[preferredCurrency!.uid] ? (
                 'You are all settled up'
@@ -49,7 +54,7 @@ export function GroupListHeader() {
                 </>
               )}
             </p>
-          ) : undefined}
+          )}
         </ScrollScene.Hide>
       </div>
 

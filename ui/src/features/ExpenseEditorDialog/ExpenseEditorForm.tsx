@@ -8,6 +8,7 @@ import { AdjustmentsHorizontalIcon, Cog6ToothIcon } from '@heroicons/react/24/ou
 import { ApiRoutes, type SimpleUser } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
+import { syncOutstandingBalances } from '@/collections/outstandingBalancesCollection.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { AttachmentContext, useAttachment, useAttachmentContext } from '@/features/AttachmentPanel';
@@ -32,7 +33,7 @@ function buildDefaultValues(expense: Expense) {
   return {
     description: expense.description ?? '',
     paidBy: expense.paidBy.uid,
-    currency: expense.currency.uid,
+    currency: expense.currency,
     'datetime:iso': datetimeLocal,
     group: expense.group || undefined,
     version: expense.version,
@@ -175,7 +176,10 @@ function ExpenseEditorFormInner({ expense }: Props) {
         }}
         onSubmitSuccess={async (response, control) => {
           const expenseUid = response.data.uid as string;
-          await invalidateQueriesForExpense({ uid: expenseUid, group: control.getValues('group') });
+          await Promise.all([
+            invalidateQueriesForExpense({ uid: expenseUid, group: control.getValues('group') }),
+            syncOutstandingBalances(),
+          ]);
           close();
         }}
       >

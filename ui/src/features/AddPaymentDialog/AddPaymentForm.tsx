@@ -1,9 +1,14 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/api-types';
+import { ApiRoutes, type Friend, type Group, type SimpleUser } from '@/api-types';
+import {
+  outstandingBalancesCollection,
+  syncOutstandingBalances,
+} from '@/collections/outstandingBalancesCollection.ts';
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
@@ -13,7 +18,7 @@ import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
-  group?: ExtendedGroup;
+  group?: Group;
   friend?: Friend;
 };
 
@@ -23,27 +28,32 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useCurrencyPreference();
   const attachments = useAttachment();
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+
+  const friendBalance = friend
+    ? (balances.find((b) => b.friend === friend.uid && b.currency === preferredCurrency?.uid) ??
+      balances.find((b) => b.friend === friend.uid))
+    : undefined;
 
   useEffect(() => {
-    if (friend?.aggregatedOutstandingBalance) {
-      const balance = +(friend.aggregatedOutstandingBalance.amount ?? 0);
+    if (friendBalance) {
+      const balance = +friendBalance.amount;
 
       if (balance) {
         formControl.setValue('paymentDir', balance < 0 ? 'out' : 'in');
         formControl.setValue('amount', Math.abs(balance));
       }
     }
-  }, [formControl, friend]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formControl, friendBalance?.id]);
 
   const balanceByUsers = useMemo(() => {
-    const grouped = groupBy(group?.outstandingBalances ?? [], (balance) => balance.user.uid);
-    return Object.fromEntries(
-      Object.entries(grouped).map(([uId, balances]) => [
-        uId,
-        balances.filter((balance) => balance.friend.uid === currentUser?.uid),
-      ])
+    const grouped = groupBy(
+      balances.filter((b) => b.group === group?.uid),
+      (balance) => balance.friend ?? ''
     );
-  }, [group?.outstandingBalances, currentUser?.uid]);
+    return grouped;
+  }, [balances, group?.uid]);
 
   return (
     <AttachmentContext.Provider value={attachments}>
@@ -72,7 +82,10 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         method="POST"
         action={ApiRoutes.PAYMENT}
         onSubmitSuccess={async (response) => {
-          await invalidateQueriesForExpense({ uid: response.uid, group: group?.uid });
+          await Promise.all([
+            invalidateQueriesForExpense({ uid: response.uid, group: group?.uid }),
+            syncOutstandingBalances(),
+          ]);
           close();
         }}
       >

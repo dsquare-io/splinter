@@ -18,17 +18,23 @@ export interface Activity {
   readonly isRead: boolean;
   /** Format: decimal */
   outstandingBalance?: string | null;
-  readonly currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   /** Format: date-time */
   readonly createdAt: string;
 }
 
 export interface AggregatedOutstandingBalance {
-  readonly currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   /** Format: decimal */
   amount: string;
-  readonly balances: OutstandingBalance[];
+  readonly balances: SimpleOutstandingBalance[];
+  readonly type: AggregatedOutstandingBalanceTypeEnum;
+  readonly uid: string;
 }
+
+export type AggregatedOutstandingBalanceTypeEnum = 'friend' | 'group';
 
 export interface AttachmentConfig {
   readonly maxFileSize: number;
@@ -111,9 +117,12 @@ export interface CreateUser {
   name: string;
 }
 
-export type Currency = SimpleCurrency & {
+export interface Currency {
+  uid: string;
+  readonly urn: string;
+  symbol?: string | null;
   readonly country: Country;
-};
+}
 
 export interface Device {
   id: number;
@@ -152,7 +161,8 @@ export interface Expense {
   /** Format: decimal */
   amount: string;
   group: string;
-  currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   /**
    * Format: decimal
    * @description The outstanding balance of current user in this expense document
@@ -200,14 +210,6 @@ export type ExpenseTyped = {
     type: 'expense';
   };
 export type ExpenseTypedTypeEnum = 'expense';
-export type ExtendedGroup = SimpleGroup & {
-  /** @description Outstanding balances for all group members */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
-  readonly createdBy: SimpleUser;
-  readonly members: SimpleUser[];
-};
 
 export interface FileAttachment {
   readonly uid: string;
@@ -229,24 +231,14 @@ export interface ForgetPassword {
 export type Friend = SimpleUser & {
   /** Format: email */
   email?: string | null;
-  /** @description Outstanding balances for current user. Only top 5 on list view */
-  readonly outstandingBalances: FriendOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
-};
-export type FriendOutstandingBalance = OutstandingBalance & {
-  readonly group: SimpleGroup;
-  readonly friend: SimpleUser;
 };
 export type Group = SimpleGroup & {
-  /** @description Top 5 Outstanding balances for current user */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+  readonly createdBy: SimpleUser;
+  readonly members: SimpleUser[];
 };
-export type GroupOutstandingBalance = OutstandingBalance & {
-  readonly user: SimpleUser;
-  readonly friend: SimpleUser;
+export type GroupOutstandingBalance = SimpleOutstandingBalance & {
+  readonly user: string;
+  readonly friend: string;
 };
 
 export interface MfaToken {
@@ -266,11 +258,11 @@ export interface Object_ {
   readonly value: string;
 }
 
-export interface OutstandingBalance {
-  /** Format: decimal */
-  amount: string;
-  readonly currency: SimpleCurrency;
-}
+export type OutstandingBalance = SimpleOutstandingBalance & {
+  /** Format: uuid */
+  readonly group: string;
+  readonly friend: string;
+};
 
 export interface PaginatedActivityList {
   nextCursor?: string | null;
@@ -284,11 +276,7 @@ export interface PaginatedExpenseOrPaymentOrSettlementList {
   results: ExpenseOrPaymentOrSettlement[];
 }
 
-export type PatchedExtendedGroup = SimpleGroup & {
-  /** @description Outstanding balances for all group members */
-  readonly outstandingBalances: GroupOutstandingBalance[];
-  /** @description Aggregated outstanding balance for the current user */
-  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance;
+export type PatchedGroup = SimpleGroup & {
   readonly createdBy: SimpleUser;
   readonly members: SimpleUser[];
 };
@@ -310,7 +298,8 @@ export interface Payment {
   /** Format: decimal */
   amount: string;
   group: string;
-  currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
@@ -366,16 +355,17 @@ export type SettlementTyped = {
   };
 export type SettlementTypedTypeEnum = 'settlement';
 
-export interface SimpleCurrency {
-  uid: string;
-  readonly urn: string;
-  symbol?: string | null;
-}
-
 export interface SimpleGroup {
   readonly uid: string;
   readonly urn: string;
   name: string;
+}
+
+export interface SimpleOutstandingBalance {
+  /** Format: decimal */
+  amount: string;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
 }
 
 export interface SimpleUser {
@@ -435,11 +425,8 @@ export interface UserDeviceInfo {
 }
 
 export interface UserOutstandingBalance {
-  readonly currency: SimpleCurrency;
-  /** Format: decimal */
-  amount: string;
-  readonly paid: AggregatedOutstandingBalance;
-  readonly borrowed: AggregatedOutstandingBalance;
+  readonly outstandingBalances: OutstandingBalance[];
+  readonly aggregatedOutstandingBalance: AggregatedOutstandingBalance[];
 }
 
 export interface VapidPublicKey {
