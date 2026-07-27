@@ -45,3 +45,18 @@ class UserAdmin(AuthUserAdmin):
     fieldsets = AuthUserAdmin.fieldsets[:-1]
     list_filter = ('is_staff', 'is_superuser', 'groups')
     actions = [resend_email_verification, resend_invitation]
+
+
+@admin.register(UserInvitation)
+class UserInvitationAdmin(admin.ModelAdmin):
+    list_display = ('inviter', 'invitee', 'created_at')
+    search_fields = ('inviter__username', 'inviter__email', 'invitee__username', 'invitee__email')
+    list_filter = ('created_at',)
+
+
+@admin.register(EmailVerification)
+class EmailVerificationAdmin(admin.ModelAdmin):
+    list_display = ('email', 'confirmed', 'dispatched_at', 'verified_at', 'created_at')
+    search_fields = ('email',)
+    list_filter = ('created_at',)
+    readonly_fields = ('verification_token',)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from splinter.apps.currency.models import ConversionRate, Country, Currency
+from splinter.apps.currency.models import ConversionRate, Country, Currency, UserCurrency
 
 
 @admin.register(Country)
@@ -22,3 +22,10 @@ class ConversionRateAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(UserCurrency)
+class UserCurrencyAdmin(admin.ModelAdmin):
+    list_display = ('user', 'currency')
+    search_fields = ('user__username', 'user__email')
+    list_filter = ('currency',)
