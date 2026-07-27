@@ -15,13 +15,12 @@ import { useFormContext } from 'react-hook-form';
 
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
-import { ApiRoutes } from '@/api-types';
-import { Friend, Group } from '@/api-types/components/schemas';
+import { ApiRoutes, type Friend, type SimpleGroup } from '@/api-types';
 import { Avatar, SelectValue, type SelectItemRenderProps } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
 
-function ParticipantTag({ item }: SelectItemRenderProps<Friend | Group>) {
+function ParticipantTag({ item }: SelectItemRenderProps<Friend | SimpleGroup>) {
   return (
     <>
       <Avatar
@@ -72,7 +71,7 @@ export function ParticipantsSelector() {
 
   if (!groups || !friends) return null;
 
-  const allItems: (Friend | Group)[] = [...groups, ...friends];
+  const allItems: (Friend | SimpleGroup)[] = [...groups, ...friends];
   const selectedUrns = selected.map((p) => p.urn);
   const selectedType = selected[0]?.type;
 
@@ -136,7 +135,7 @@ export function ParticipantsSelector() {
         }}
       >
         <Label className="shrink-0 text-sm text-gray-600">With you and:</Label>
-        <SelectValue<Friend | Group>
+        <SelectValue<Friend | SimpleGroup>
           idPropName="urn"
           textValuePropName="name"
           ItemComponent={ParticipantTag}
@@ -166,7 +165,7 @@ export function ParticipantsSelector() {
             {(section) => (
               <ListBoxSection id={section.name}>
                 <Header>{section.name}</Header>
-                <Collection items={section.children as (Friend | Group)[]}>
+                <Collection items={section.children as (Friend | SimpleGroup)[]}>
                   {(item) => (
                     <ListBoxItem
                       id={item.urn}

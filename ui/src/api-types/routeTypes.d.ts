@@ -736,12 +736,6 @@ export interface components {
     AccessToken: import('./components/schemas.d.ts').AccessToken;
     Activity: import('./components/schemas.d.ts').Activity;
     AggregatedOutstandingBalance: import('./components/schemas.d.ts').AggregatedOutstandingBalance;
-    /**
-     * @description * `friend` - friend
-     *     * `group` - group
-     * @enum {string}
-     */
-    AggregatedOutstandingBalanceTypeEnum: import('./components/schemas.d.ts').AggregatedOutstandingBalanceTypeEnum;
     AttachmentConfig: import('./components/schemas.d.ts').AttachmentConfig;
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
@@ -778,6 +772,12 @@ export interface components {
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
     Object: import('./components/schemas.d.ts').Object_;
+    /**
+     * @description * `friend` - friend
+     *     * `group` - group
+     * @enum {string}
+     */
+    ObjectTypeEnum: import('./components/schemas.d.ts').ObjectTypeEnum;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedExpenseOrPaymentOrSettlementList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentOrSettlementList;

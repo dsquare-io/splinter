@@ -109,11 +109,11 @@ function ExpenseEditorFormInner({ expense }: Props) {
   }, [participantIds, expenseCount]);
 
   useEffect(() => {
-    if (preferredCurrency?.uid && !getValues('currency')) {
-      setValue('currency', preferredCurrency.uid);
+    if (preferredCurrency && !getValues('currency')) {
+      setValue('currency', preferredCurrency);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preferredCurrency?.uid]);
+  }, [preferredCurrency]);
 
   useEffect(() => {
     if (expense) return;

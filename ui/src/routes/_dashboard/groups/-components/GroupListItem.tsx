@@ -33,7 +33,7 @@ export function GroupListItem({
   const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsCollection }));
 
   const primaryBalance =
-    aggregatedOutstandingBalances.find((b) => b.currency === preferredCurrency?.uid) ??
+    aggregatedOutstandingBalances.find((b) => b.currency === preferredCurrency) ??
     aggregatedOutstandingBalances[0];
 
   return (

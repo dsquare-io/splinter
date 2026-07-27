@@ -11,8 +11,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 
-import { ApiRoutes, type SimpleUser } from '@/api-types';
-import { Expense, Friend, Group } from '@/api-types/components/schemas';
+import { ApiRoutes, type Expense, type Friend, type SimpleGroup, type SimpleUser } from '@/api-types';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 
@@ -25,7 +24,7 @@ export interface Participant {
 }
 
 type ParticipantsAction =
-  | { type: 'select_group'; data: Group }
+  | { type: 'select_group'; data: SimpleGroup }
   | { type: 'select_friend'; data: Friend }
   | { type: 'remove'; urn: string };
 

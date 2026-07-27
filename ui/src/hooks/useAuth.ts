@@ -11,8 +11,7 @@ import {
   setRefreshToken,
 } from '@/authStorage.ts';
 import { setHeaders } from '@/axios.ts';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
-import { currencyPreferenceQueryOptions } from '@/hooks/useCurrencyPreference.ts';
+import { apiQueryKey, persistApiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 import { persister } from '@/queryPersister.ts';
 
@@ -21,16 +20,6 @@ export enum AuthStatus {
   VALIDATING = 'validating',
   LOGGED_IN = 'logged_in',
   ERROR = 'error',
-}
-
-export function profileQueryOptions() {
-  return apiQueryOptions(ApiRoutes.PROFILE, undefined, undefined, {
-    meta: { persist: true },
-    gcTime: Infinity, // paired with a finite persistOptions.maxAge — see queryPersister.ts
-    staleTime: 5 * 60_000,
-    // Never let a transient/background refetch failure regress an already-known-good profile back to blank.
-    placeholderData: (prev) => prev,
-  });
 }
 
 export function useAuth() {
@@ -43,7 +32,7 @@ export function useAuth() {
   }, []);
 
   const { data: currentUser, error: authError } = useQuery({
-    ...profileQueryOptions(),
+    ...persistApiQueryOptions(ApiRoutes.PROFILE),
     enabled: !!accessToken,
   });
 
@@ -71,19 +60,15 @@ export function useAuth() {
       setAccessToken(null);
       setRefreshToken(null);
       setHeaders(null);
-      queryClient.removeQueries({ queryKey: profileQueryOptions().queryKey });
-      queryClient.removeQueries({ queryKey: currencyPreferenceQueryOptions().queryKey });
+      queryClient.removeQueries({ queryKey: apiQueryKey(ApiRoutes.PROFILE) });
+      queryClient.removeQueries({ queryKey: apiQueryKey(ApiRoutes.CURRENCY_PREFERENCE) });
       persister.removeClient();
+
       // Dynamic import: keeps RxDB/TanStack DB out of the eager root bundle — useAuth.ts
       // is used by __root.tsx, so a static import here would ship it on every page load.
-      import('@/collections/friendsCollection.ts').then(({ clearFriendsCollection }) =>
-        clearFriendsCollection()
-      );
-      import('@/collections/outstandingBalancesCollection.ts').then(
-        ({ clearOutstandingBalancesCollections }) => clearOutstandingBalancesCollections()
-      );
+      import('@/rxdb.ts').then(({ rxdbPromise }) => rxdbPromise.then((db) => db.remove()));
       if (redirect) window.location.href = '/auth/login';
     },
-    refetchProfile: () => queryClient.refetchQueries({ queryKey: profileQueryOptions().queryKey }),
+    refetchProfile: () => queryClient.refetchQueries({ queryKey: apiQueryKey(ApiRoutes.PROFILE) }),
   };
 }

@@ -5,11 +5,8 @@ import { RxCollection } from 'rxdb/plugins/core';
 import { Friend } from '@/api-types';
 import { rxdbPromise } from '@/rxdb.ts';
 
-export type FriendIdentity = Pick<Friend, 'uid' | 'urn' | 'name' | 'isActive' | 'email'>;
-
-// Identity only — balances live in their own collections, see outstandingBalancesCollection.ts.
-const friendIdentitySchema = {
-  title: 'friend-identity',
+const friendSchema = {
+  title: 'friend',
   version: 0,
   type: 'object',
   primaryKey: 'uid',
@@ -24,26 +21,19 @@ const friendIdentitySchema = {
 };
 
 const friendsRxCollectionPromise = rxdbPromise.then(async (db) => {
-  const { friends } = await db.addCollections<{ friends: RxCollection<FriendIdentity> }>({
-    friends: { schema: friendIdentitySchema as never },
+  const { friends } = await db.addCollections<{ friends: RxCollection<Friend> }>({
+    friends: { schema: friendSchema as never },
   });
   return friends;
 });
 
 export const friendsCollection = createCollection(
-  rxdbCollectionOptions<FriendIdentity>({
+  rxdbCollectionOptions<Friend>({
     rxCollection: await friendsRxCollectionPromise,
   })
 );
 
-export async function syncFriendIdentities(friends: Friend[]) {
+export async function syncFriends(friends: Friend[]) {
   const rxCollection = await friendsRxCollectionPromise;
-  await rxCollection.bulkUpsert(
-    friends.map(({ uid, urn, name, isActive, email }) => ({ uid, urn, name, isActive, email: email ?? null }))
-  );
-}
-
-export async function clearFriendsCollection() {
-  const rxCollection = await friendsRxCollectionPromise;
-  await rxCollection.remove();
+  await rxCollection.bulkUpsert(friends);
 }

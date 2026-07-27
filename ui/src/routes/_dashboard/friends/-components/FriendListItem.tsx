@@ -30,7 +30,7 @@ export function FriendListItem({
   // to one) — show the preferred-currency entry if present, else the first available,
   // rather than silently hiding a real balance just because it's in another currency.
   const primaryBalance =
-    aggregatedOutstandingBalances.find((b) => b.currency === preferredCurrency?.uid) ??
+    aggregatedOutstandingBalances.find((b) => b.currency === preferredCurrency) ??
     aggregatedOutstandingBalances[0];
 
   return (

@@ -31,7 +31,7 @@ export function GroupList() {
   const groups = (groupIdentities ?? []).map((identity) => ({
     ...identity,
     aggregatedOutstandingBalances: aggregatedBalances.filter(
-      (b) => b.type === 'group' && b.uid === identity.uid
+      (b) => b.objectType === 'group' && b.objectUid === identity.uid
     ),
     outstandingBalances: rawBalances.filter((b) => b.group === identity.uid),
     balancesLoading: !balancesSynced,

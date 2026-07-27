@@ -1,18 +1,15 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type DefinedUseQueryResult, type QueryClient } from '@tanstack/react-query';
 
 import { ApiRoutes } from '@/api-types';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { apiQueryKey, persistApiQueryOptions } from '@/hooks/useApiQuery.ts';
 
-export function currencyPreferenceQueryOptions() {
-  return apiQueryOptions(ApiRoutes.CURRENCY_PREFERENCE, undefined, undefined, {
-    meta: { persist: true },
-    gcTime: Infinity, // paired with a finite persistOptions.maxAge — see queryPersister.ts
-    staleTime: 5 * 60_000,
-    // Never let a transient/background refetch failure regress an already-known-good value back to blank.
-    placeholderData: (prev) => prev,
+export function useCurrencyPreference(): DefinedUseQueryResult<NoInfer<string>, Error> {
+  return useQuery({
+    ...persistApiQueryOptions(ApiRoutes.CURRENCY_PREFERENCE),
+    select: (currency) => currency.uid,
   });
 }
 
-export function useCurrencyPreference() {
-  return useQuery(currencyPreferenceQueryOptions());
+export function invalidateCurrencyPreference(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({ queryKey: apiQueryKey(ApiRoutes.CURRENCY_PREFERENCE) });
 }

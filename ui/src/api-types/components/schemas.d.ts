@@ -25,16 +25,15 @@ export interface Activity {
 }
 
 export interface AggregatedOutstandingBalance {
+  readonly uid: string;
   /** @description ISO 4217 Currency Code */
   currency: string;
   /** Format: decimal */
   amount: string;
   readonly balances: SimpleOutstandingBalance[];
-  readonly type: AggregatedOutstandingBalanceTypeEnum;
-  readonly uid: string;
+  readonly objectType: ObjectTypeEnum;
+  readonly objectUid: string;
 }
-
-export type AggregatedOutstandingBalanceTypeEnum = 'friend' | 'group';
 
 export interface AttachmentConfig {
   readonly maxFileSize: number;
@@ -258,7 +257,9 @@ export interface Object_ {
   readonly value: string;
 }
 
+export type ObjectTypeEnum = 'friend' | 'group';
 export type OutstandingBalance = SimpleOutstandingBalance & {
+  readonly uid: string;
   /** Format: uuid */
   readonly group: string;
   readonly friend: string;

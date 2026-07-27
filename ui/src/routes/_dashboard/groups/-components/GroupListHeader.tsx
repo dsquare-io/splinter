@@ -15,7 +15,7 @@ export function GroupListHeader() {
   );
 
   const aggregatedOutstandingBalance = balances
-    .filter((b) => b.type === 'group')
+    .filter((b) => b.objectType === 'group')
     .reduce(
       (acc, balance) => {
         const currency = balance.currency;
@@ -39,17 +39,15 @@ export function GroupListHeader() {
             <Skeleton className="mt-1 h-4 w-40" />
           ) : (
             <p className="text-sm text-gray-600">
-              {!aggregatedOutstandingBalance?.[preferredCurrency!.uid] ? (
+              {!aggregatedOutstandingBalance?.[preferredCurrency!] ? (
                 'You are all settled up'
               ) : (
                 <>
                   Overall,{' '}
-                  {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
-                    ? 'you lent '
-                    : 'you borrowed '}
+                  {+aggregatedOutstandingBalance?.[preferredCurrency!] > 0 ? 'you lent ' : 'you borrowed '}
                   <Money
                     currency={preferredCurrency!}
-                    value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
+                    value={aggregatedOutstandingBalance?.[preferredCurrency!]}
                   />
                 </>
               )}

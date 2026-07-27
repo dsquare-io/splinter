@@ -31,7 +31,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
 
   const friendBalance = friend
-    ? (balances.find((b) => b.friend === friend.uid && b.currency === preferredCurrency?.uid) ??
+    ? (balances.find((b) => b.friend === friend.uid && b.currency === preferredCurrency) ??
       balances.find((b) => b.friend === friend.uid))
     : undefined;
 
@@ -45,7 +45,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formControl, friendBalance?.id]);
+  }, [formControl, friendBalance?.uid]);
 
   const balanceByUsers = useMemo(() => {
     const grouped = groupBy(
@@ -91,7 +91,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
       >
         <HiddenField
           name="currency"
-          value={preferredCurrency?.uid}
+          value={preferredCurrency}
         />
         <HiddenField
           name="datetime:now"

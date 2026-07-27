@@ -17,7 +17,6 @@ export const axiosInstance = axios.create({
 let _refreshTokenRequest: Promise<AccessToken> | null = null;
 
 function refreshTokens(): Promise<AccessToken> {
-  console.log('refreshing token...');
   if (!_refreshTokenRequest) {
     const redirectToLogin = () => {
       setAccessToken(null);

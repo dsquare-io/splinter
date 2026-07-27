@@ -429,12 +429,25 @@ class SimpleOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serial
 
 
 class OutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
+    uid = serializers.SerializerMethodField()
     currency = CurrencySerializerField()
     group = serializers.UUIDField(source='group.uid', read_only=True)
     friend = serializers.CharField(source='friend.uid', read_only=True)
 
     class Meta(SimpleOutstandingBalanceSerializer.Meta):
-        fields = SimpleOutstandingBalanceSerializer.Meta.fields + ('group', 'friend')
+        fields = SimpleOutstandingBalanceSerializer.Meta.fields + ('uid', 'group', 'friend')
+
+    @extend_schema_field(serializers.CharField())
+    def get_uid(self, obj: "OutstandingBalance") -> str:
+        parts = []
+        if obj.group:
+            parts.append(obj.group.uid)
+
+        if obj.friend:
+            parts.append(obj.friend.uid)
+
+        identity = ":".join(parts)
+        return f"{identity}-{obj.currency.uid}"
 
 
 class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
@@ -447,24 +460,29 @@ class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
 
 
 class AggregatedOutstandingBalanceSerializer(serializers.Serializer):
+    uid = serializers.CharField(read_only=True)
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=9, decimal_places=2)
     balances = SimpleOutstandingBalanceSerializer(many=True, read_only=True)
-    type = serializers.ChoiceField(choices=('friend', 'group'), read_only=True)
-    uid = serializers.CharField(read_only=True)
+    object_type = serializers.ChoiceField(choices=('friend', 'group'), read_only=True)
+    object_uid = serializers.CharField(read_only=True)
 
     def to_representation(self, instances: list['AggregatedOutstandingBalance']):
         converted = simplify_outstanding_balances(self.context['request'].user, instances)
         instance = instances[0]
         is_group = instance.group_id is not None
 
+        object_type = 'group' if is_group else 'friend'
+        object_uid = instance.group.uid if is_group else instance.friend.uid
+
         return super().to_representation(
             {
                 'currency': converted.currency,
                 'amount': converted.amount,
                 'balances': instances,
-                'type': 'group' if is_group else 'friend',
-                'uid': instance.group.uid if is_group else instance.friend.uid,
+                'object_type': object_type,
+                'object_uid': object_uid,
+                'uid': f'{object_type}:{object_uid}-{converted.currency.uid}',
             }
         )
 

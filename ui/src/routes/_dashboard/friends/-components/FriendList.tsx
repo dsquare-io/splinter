@@ -4,7 +4,7 @@ import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
-import { friendsCollection, syncFriendIdentities } from '@/collections/friendsCollection.ts';
+import { friendsCollection, syncFriends } from '@/collections/friendsCollection.ts';
 import {
   aggregatedOutstandingBalancesCollection,
   outstandingBalancesCollection,
@@ -31,7 +31,7 @@ export function FriendList() {
   const [balancesSynced, setBalancesSynced] = useState(false);
 
   useEffect(() => {
-    if (friendIdentities) syncFriendIdentities(friendIdentities);
+    if (friendIdentities) syncFriends(friendIdentities);
   }, [friendIdentities]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function FriendList() {
   const friends = identities.map((identity) => ({
     ...identity,
     aggregatedOutstandingBalances: aggregatedBalances.filter(
-      (b) => b.type === 'friend' && b.uid === identity.uid
+      (b) => b.objectType === 'friend' && b.objectUid === identity.uid
     ),
     outstandingBalances: rawBalances.filter((b) => b.friend === identity.uid),
     balancesLoading: !balancesSynced,
