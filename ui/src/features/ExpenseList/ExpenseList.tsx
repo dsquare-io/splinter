@@ -13,10 +13,19 @@ import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes, UrlArgs, type ExpenseOrPayment } from '@/api-types';
-import { expensesForFriend, expensesForGroup, ingest, type LocalExpenseRow } from '@/collections/expenses.ts';
+import {
+  expensesForFriend,
+  expensesForGroup,
+  ingest,
+  scopeKey,
+  syncedScopes,
+  type LocalExpenseRow,
+} from '@/collections/expenses.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
-import { Button, PullToRefresh, Spinner } from '@/components/primitives';
+import { Button, EmptyState, PullToRefresh, Spinner } from '@/components/primitives';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
+import { useIsOnline } from '@/hooks/useIsOnline.ts';
+import { useLocalValue } from '@/hooks/useLocalValue.ts';
 import { EmptyExpenses } from './EmptyExpenses.tsx';
 import { ExpenseListItem } from './ExpenseListItem.tsx';
 
@@ -38,6 +47,7 @@ export function ExpenseList<Path extends ExpenseListPath>({
   className = 'my-3 px-4 sm:px-6 md:px-8',
 }: ExpenseListProps<Path>) {
   const [settledUpExpandCount, setSettledUpExpandCount] = useState(0);
+  const isOnline = useIsOnline();
 
   // Drives background population + pagination controls; render data comes from useLiveQuery
   // below, over the local mirror those pages get ingested into.
@@ -59,9 +69,11 @@ export function ExpenseList<Path extends ExpenseListPath>({
     return scoped.orderBy(({ expense }: any) => expense.datetime, 'desc');
   }, [scope.type, scope.uid]);
 
-  // Joined queries (expensesForFriend) return rows namespaced as {expense, p}; single-source
-  // queries (expensesForGroup) return flat rows — normalize both to the same flat shape.
-  const allItems = ((localItems ?? []) as any[]).map((row) => row.expense ?? row) as LocalExpenseRow[];
+  const allItems = (localItems ?? []) as LocalExpenseRow[];
+
+  // Zero rows is ambiguous on its own — this distinguishes "never synced" from "synced,
+  // genuinely empty" so the two don't both fall into the same offline/loading UI.
+  const hasSyncedScope = (useLocalValue(syncedScopes) ?? []).includes(scopeKey(scope));
 
   let paymentsSeen = 0;
   let hitBoundary = false;
@@ -86,7 +98,20 @@ export function ExpenseList<Path extends ExpenseListPath>({
         aria-label="Expenses"
         className={className}
         renderEmptyState={() =>
-          isPending && allItems.length === 0 ? (
+          hasSyncedScope && allItems.length === 0 ? (
+            // Confirmed empty (synced at least once) — always the genuine empty state,
+            // regardless of online/pending/error, so it can't be mistaken for "not loaded yet".
+            <EmptyExpenses />
+          ) : !isOnline && allItems.length === 0 ? (
+            // offlineFirst pauses retries rather than erroring while offline, so isPending
+            // stays true forever here — there's no real error to hand ErrorAlert, and a
+            // spinner would spin indefinitely. This is its own state, not a fetch error.
+            <EmptyState
+              messages={[
+                { icon: '📡', title: "You're offline", body: "This hasn't been loaded before." },
+              ]}
+            />
+          ) : isPending && allItems.length === 0 ? (
             <div className="flex justify-center py-4">
               <Spinner className="size-5 text-gray-400" />
             </div>

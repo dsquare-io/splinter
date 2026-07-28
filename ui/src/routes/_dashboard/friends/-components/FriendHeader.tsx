@@ -1,23 +1,37 @@
+import { useEffect } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { eq } from '@tanstack/db';
 import { useLiveQuery } from '@tanstack/react-db';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
+import { friends } from '@/collections/friends.ts';
 import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { FriendSettingDialog } from '@/features/FriendSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
-import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
 export function FriendHeader({ friend_uid }: { friend_uid: string }) {
-  const { data: friend, isPending, error } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
-  useRedirectOn404(error, '/friends');
+  const navigate = useNavigate();
+  const { hasSynced } = useEntitySync(friends);
+
+  const { data: matches } = useLiveQuery(
+    (q) => q.from({ friend: friends.collection }).where(({ friend }: any) => eq(friend.uid, friend_uid)),
+    [friend_uid]
+  );
+  const friend = matches?.[0];
+
+  // Only bounce once a sync has actually completed and the friend still isn't there —
+  // not just because the cache hasn't loaded yet.
+  useEffect(() => {
+    if (hasSynced && !friend) void navigate({ to: '/friends' });
+  }, [hasSynced, friend, navigate]);
+
   const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
   const friendBalances = balances.filter((b) => b.friend === friend_uid);
 
@@ -39,7 +53,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         </Link>
       </div>
 
-      {isPending ? (
+      {!friend ? (
         <Skeleton className="size-16 rounded-full" />
       ) : (
         <ScrollScene.Animate
@@ -49,18 +63,18 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         >
           <Avatar
             className="size-full rounded-full"
-            fallback={friend?.name || 'User'}
+            fallback={friend.name || 'User'}
           />
         </ScrollScene.Animate>
       )}
 
       <div>
-        {isPending ? (
+        {!friend ? (
           <>
             <Skeleton className="mt-1 h-7 w-36" />
             <Skeleton className="mt-2 h-4 w-48" />
           </>
-        ) : friend ? (
+        ) : (
           <>
             <div className="mt-1 text-2xl font-semibold text-gray-900">{friend.name}</div>
             <ScrollScene.Hide range={[0, 100]}>
@@ -75,7 +89,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
               />
             </ScrollScene.Hide>
           </>
-        ) : undefined}
+        )}
       </div>
 
       <ScrollScene.Hide

@@ -2,10 +2,12 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import { eq } from '@tanstack/db';
 import { useLiveQuery } from '@tanstack/react-db';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
+import { groups } from '@/collections/groups.ts';
 import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
@@ -14,17 +16,29 @@ import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export function GroupHeader({ group_uid }: { group_uid: string }) {
-  const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  // Full detail (members, createdBy) isn't in the local mirror — only GROUP_LIST's lighter
+  // shape is. Kept live for anything member-dependent; the cached name/avatar below is what
+  // makes the header itself render instantly/offline.
+  const { data: detail, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   useRedirectOn404(error, '/groups');
+
+  useEntitySync(groups);
+  const { data: cached } = useLiveQuery(
+    (q) => q.from({ group: groups.collection }).where(({ group }: any) => eq(group.uid, group_uid)),
+    [group_uid]
+  );
+  const displayName = detail?.name ?? cached?.[0]?.name;
+
   const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
 
   // The endpoint is already scoped to the current user server-side, so no need to
   // filter by "which member" — every row here is already "my" balance.
   const myOutstandingBalances = balances.filter((b) => b.group === group_uid);
-  const membersByUid = new Map((group?.members ?? []).map((member) => [member.uid, member]));
+  const membersByUid = new Map((detail?.members ?? []).map((member) => [member.uid, member]));
 
   return (
     <ScrollScene.Header
@@ -44,7 +58,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         </Link>
       </div>
 
-      {isPending ? (
+      {!displayName ? (
         <Skeleton className="size-16 rounded-lg" />
       ) : (
         <ScrollScene.Animate
@@ -54,20 +68,20 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         >
           <Avatar
             className="size-full rounded-lg"
-            fallback={group?.name || 'Group'}
+            fallback={displayName}
           />
         </ScrollScene.Animate>
       )}
 
       <div>
-        {isPending ? (
+        {!displayName ? (
           <>
             <Skeleton className="h-7 w-36" />
             <Skeleton className="mt-2 h-4 w-48" />
           </>
         ) : (
           <>
-            <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
+            <div className="text-2xl font-semibold text-gray-900">{displayName}</div>
             <ScrollScene.Hide range={[0, 200]}>
               <OutstandingBalanceList
                 balances={myOutstandingBalances}
@@ -86,12 +100,12 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
           <DialogTrigger>
             <Button
               size="small"
-              isDisabled={!group}
+              isDisabled={!detail}
             >
               <BanknotesIcon />
               Settle Up
             </Button>
-            <AddPaymentDialog group={group} />
+            <AddPaymentDialog group={detail} />
           </DialogTrigger>
 
           <div className="flex-1" />
@@ -101,24 +115,24 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
               variant="outlined"
               className="bg-white"
               size="small"
-              isDisabled={!group}
+              isDisabled={!detail}
             >
               <UserPlusIcon />
               Add Member
             </Button>
-            <AddGroupMemberDialog group={group} />
+            <AddGroupMemberDialog group={detail} />
           </DialogTrigger>
           <DialogTrigger>
             <Button
               variant="outlined"
               className="bg-white"
               size="small"
-              isDisabled={!group}
+              isDisabled={!detail}
             >
               <Cog8ToothIcon />
               <span className="hidden sm:block">Settings</span>
             </Button>
-            {group && <GroupSettingDialog group={group} />}
+            {detail && <GroupSettingDialog group={detail} />}
           </DialogTrigger>
         </div>
       </ScrollScene.Hide>

@@ -4,8 +4,19 @@ import { ApiRoutes, type ExpenseOrPaymentOrSettlement } from '@/api-types';
 import { fetchApi } from '@/hooks/useApiQuery.ts';
 import { LocalCollection } from './base/LocalCollection.ts';
 import { on } from './events.ts';
+import { LocalValue } from '@/localValue.ts';
 
-type Scope = { type: 'group' | 'friend'; uid: string };
+export type Scope = { type: 'group' | 'friend'; uid: string };
+
+export function scopeKey(scope: Scope): string {
+  return `${scope.type}:${scope.uid}`;
+}
+
+// Zero rows is ambiguous — "never fetched" and "fetched, genuinely empty" look identical from
+// row count alone. This tracks which scopes have completed at least one real ingest, so callers
+// (ExpenseList.tsx) can tell "no data yet" apart from "confirmed empty" — persisted, so it
+// survives across sessions same as the RxDB mirror itself.
+export const syncedScopes = new LocalValue<string[]>('splinter-expenses-synced-scopes');
 
 export type LocalExpenseRow = {
   uid: string;
@@ -78,29 +89,35 @@ function toParticipants(item: ExpenseOrPaymentOrSettlement, scope?: Scope): Expe
   return friendUids.map((friendUid) => ({ id: `${item.uid}:${friendUid}`, expenseUid: item.uid, friendUid }));
 }
 
+// A join adds a second named source, so its raw result rows come back namespaced by source
+// alias ({expense, p}) — a single-source query's rows come back flat. This .select() projects
+// both shapes back to the same flat LocalExpenseRow, so every caller of any of the 4 functions
+// below can treat the result identically without caring whether a join was involved.
+const selectRow = ({ expense }: any) => expense;
+
 // Unfiltered — reconcileStaleRows needs to see already-deleted rows too (see there for why).
 const rawExpensesForGroup = (groupUid: string) => (q: any) =>
-  q.from({ expense: local.collection }).where(({ expense }: any) => eq(expense.group, groupUid));
+  q.from({ expense: local.collection }).where(({ expense }: any) => eq(expense.group, groupUid)).select(selectRow);
 
 const rawExpensesForFriend = (friendUid: string) => (q: any) =>
   q
     .from({ expense: local.collection })
     .join({ p: participantsLocal.collection }, ({ expense, p }: any) => eq(expense.uid, p.expenseUid), 'inner')
-    .where(({ p }: any) => eq(p.friendUid, friendUid));
+    .where(({ p }: any) => eq(p.friendUid, friendUid))
+    .select(selectRow);
 
 export const expensesForGroup = (groupUid: string) => (q: any) =>
   q
     .from({ expense: local.collection })
-    .where(({ expense }: any) => and(eq(expense.group, groupUid), eq(expense.isDeleted, false)));
+    .where(({ expense }: any) => and(eq(expense.group, groupUid), eq(expense.isDeleted, false)))
+    .select(selectRow);
 
-// NOTE: joined queries return rows namespaced by source alias ({expense, p}), not flat —
-// confirmed live (a bare join crashed rendering trying to read row.datetime off undefined).
-// Callers must normalize with `row.expense ?? row` (see ExpenseList.tsx / reconcileStaleRows).
 export const expensesForFriend = (friendUid: string) => (q: any) =>
   q
     .from({ expense: local.collection })
     .join({ p: participantsLocal.collection }, ({ expense, p }: any) => eq(expense.uid, p.expenseUid), 'inner')
-    .where(({ expense, p }: any) => and(eq(p.friendUid, friendUid), eq(expense.isDeleted, false)));
+    .where(({ expense, p }: any) => and(eq(p.friendUid, friendUid), eq(expense.isDeleted, false)))
+    .select(selectRow);
 
 /**
  * Deletes rows provably gone server-side, via date-range overlap — no "list everything"
@@ -118,27 +135,25 @@ async function reconcileStaleRows(scope: Scope, items: ExpenseOrPaymentOrSettlem
   const incomingUids = new Set(items.map((item) => item.uid));
 
   const scopedQuery = scope.type === 'group' ? rawExpensesForGroup(scope.uid) : rawExpensesForFriend(scope.uid);
-  const [oldest] = await queryOnce((q) => scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'asc').limit(1));
-  const [newest] = await queryOnce((q) => scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'desc').limit(1));
+  const [oldest] = (await queryOnce((q) =>
+    scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'asc').limit(1)
+  )) as LocalExpenseRow[];
+  const [newest] = (await queryOnce((q) =>
+    scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'desc').limit(1)
+  )) as LocalExpenseRow[];
   if (!oldest || !newest) return;
 
-  // NOTE: verify at implementation/runtime whether a joined query's rows are namespaced
-  // ({expense, p}) or flat — single-source queries are confirmed flat elsewhere in this repo.
-  const dateOf = (row: any) => row.expense?.datetime ?? row.datetime;
-  const uidOf = (row: any) => row.expense?.uid ?? row.uid;
-  const isDeletedOf = (row: any) => row.expense?.isDeleted ?? row.isDeleted;
-
-  const overlapStart = batchMin > dateOf(oldest) ? batchMin : dateOf(oldest);
-  const overlapEnd = batchMax < dateOf(newest) ? batchMax : dateOf(newest);
+  const overlapStart = batchMin > oldest.datetime ? batchMin : oldest.datetime;
+  const overlapEnd = batchMax < newest.datetime ? batchMax : newest.datetime;
   if (overlapStart > overlapEnd) return;
 
-  const inRange = await queryOnce((q) =>
+  const inRange = (await queryOnce((q) =>
     scopedQuery(q).where(({ expense }: any) => gte(expense.datetime, overlapStart) && lte(expense.datetime, overlapEnd))
-  );
+  )) as LocalExpenseRow[];
   const staleUids = inRange
-    .filter((row: any) => !isDeletedOf(row))
-    .map(uidOf)
-    .filter((uid: string) => !incomingUids.has(uid));
+    .filter((row) => !row.isDeleted)
+    .map((row) => row.uid)
+    .filter((uid) => !incomingUids.has(uid));
   if (staleUids.length) await local.removeMany(staleUids);
 }
 
@@ -146,7 +161,12 @@ export async function ingest(items: ExpenseOrPaymentOrSettlement[], scope?: Scop
   const rows = items.map((item) => toRow(item, scope));
   const participants = items.flatMap((item) => toParticipants(item, scope));
   await Promise.all([local.upsertMany(rows), participantsLocal.upsertMany(participants)]);
-  if (scope) await reconcileStaleRows(scope, items);
+  if (scope) {
+    await reconcileStaleRows(scope, items);
+    const key = scopeKey(scope);
+    const current = syncedScopes.get() ?? [];
+    if (!current.includes(key)) syncedScopes.set([...current, key]);
+  }
 }
 
 export const expenses = { name: local.name, collection: local.collection, expensesForGroup, expensesForFriend, ingest };

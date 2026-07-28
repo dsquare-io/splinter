@@ -1,6 +1,5 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState } from 'react';
 
-import { onlineManager } from '@tanstack/react-query';
 import { Outlet, RootRoute, useRouterState } from '@tanstack/react-router';
 import { isAxiosError } from 'axios';
 import { useRegisterSW } from 'virtual:pwa-register/react';
@@ -11,6 +10,7 @@ import { Logo } from '@/components/Logo.tsx';
 import { NotFound } from '@/components/NotFound.tsx';
 import { Button } from '@/components/primitives';
 import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
+import { useIsOnline } from '@/hooks/useIsOnline.ts';
 
 function TopLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === 'pending' });
@@ -71,10 +71,7 @@ function UpdateBanner() {
 }
 
 function OfflineBanner() {
-  const isOnline = useSyncExternalStore(
-    (onChange) => onlineManager.subscribe(onChange),
-    () => onlineManager.isOnline()
-  );
+  const isOnline = useIsOnline();
 
   if (isOnline) return null;
 
