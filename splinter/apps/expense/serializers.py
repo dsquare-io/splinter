@@ -263,14 +263,6 @@ class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
         return super().get_discriminator(instance)
 
 
-def _get_expense_audience(actor, expense):
-    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
-    user_ids.add(expense.paid_by_id)
-    audience = {uid: {} for uid in user_ids}
-    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
-    return audience
-
-
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)

@@ -38,4 +38,13 @@ export class LocalCollection<TRow extends object> {
     if (staleIds.length) await this.rxCollection.bulkRemove(staleIds);
     if (rows.length) await this.rxCollection.bulkUpsert(rows);
   }
+
+  /** Upserts without deleting anything absent from `rows` — for partial pages, not full sets. */
+  async upsertMany(rows: TRow[]): Promise<void> {
+    if (rows.length) await this.rxCollection.bulkUpsert(rows);
+  }
+
+  async removeMany(ids: string[]): Promise<void> {
+    if (ids.length) await this.rxCollection.bulkRemove(ids);
+  }
 }

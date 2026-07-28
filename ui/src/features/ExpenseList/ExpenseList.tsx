@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Collection,
   Header,
@@ -8,10 +8,12 @@ import {
   ListBoxSection,
 } from 'react-aria-components';
 
+import { useLiveQuery } from '@tanstack/react-db';
 import { format } from 'date-fns';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes, UrlArgs, type ExpenseOrPayment } from '@/api-types';
+import { expensesForFriend, expensesForGroup, ingest, type LocalExpenseRow } from '@/collections/expenses.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { Button, PullToRefresh, Spinner } from '@/components/primitives';
 import { useInfiniteApiQuery } from '@/hooks/useApiQuery';
@@ -37,27 +39,46 @@ export function ExpenseList<Path extends ExpenseListPath>({
 }: ExpenseListProps<Path>) {
   const [settledUpExpandCount, setSettledUpExpandCount] = useState(0);
 
-  const { data, isPending, error, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } =
+  // Drives background population + pagination controls; render data comes from useLiveQuery
+  // below, over the local mirror those pages get ingested into.
+  const { data: pages, isPending, error, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } =
     useInfiniteApiQuery(apiPath, args);
 
-  const allItems = data?.flatMap((page) => page.results) ?? [];
+  const scope =
+    apiPath === ApiRoutes.GROUP_EXPENSE_LIST
+      ? { type: 'group' as const, uid: (args as { group_uid: string }).group_uid }
+      : { type: 'friend' as const, uid: (args as { friend_uid: string }).friend_uid };
+
+  useEffect(() => {
+    if (pages?.length) void ingest(pages.flatMap((page) => page.results), scope);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pages]);
+
+  const { data: localItems } = useLiveQuery((q) => {
+    const scoped = scope.type === 'group' ? expensesForGroup(scope.uid)(q) : expensesForFriend(scope.uid)(q);
+    return scoped.orderBy(({ expense }: any) => expense.datetime, 'desc');
+  }, [scope.type, scope.uid]);
+
+  // Joined queries (expensesForFriend) return rows namespaced as {expense, p}; single-source
+  // queries (expensesForGroup) return flat rows — normalize both to the same flat shape.
+  const allItems = ((localItems ?? []) as any[]).map((row) => row.expense ?? row) as LocalExpenseRow[];
 
   let paymentsSeen = 0;
   let hitBoundary = false;
-  const visible: ExpenseOrPayment[] = [];
-  for (const item of allItems) {
-    if (item.type === 'settlement') {
+  const visible: LocalExpenseRow[] = [];
+  for (const row of allItems) {
+    if (row.type === 'settlement') {
       paymentsSeen++;
       if (paymentsSeen > settledUpExpandCount) {
         hitBoundary = true;
         break;
       }
     } else {
-      visible.push(item);
+      visible.push(row);
     }
   }
 
-  const sections = Object.entries(groupBy(visible, (item) => item.datetime.slice(0, 7)));
+  const sections = Object.entries(groupBy(visible, (row) => row.datetime.slice(0, 7)));
 
   return (
     <PullToRefresh onRefresh={refetch}>
@@ -65,11 +86,11 @@ export function ExpenseList<Path extends ExpenseListPath>({
         aria-label="Expenses"
         className={className}
         renderEmptyState={() =>
-          isPending ? (
+          isPending && allItems.length === 0 ? (
             <div className="flex justify-center py-4">
               <Spinner className="size-5 text-gray-400" />
             </div>
-          ) : error ? (
+          ) : error && allItems.length === 0 ? (
             <ErrorAlert
               error={error}
               variant="centered"
@@ -79,20 +100,20 @@ export function ExpenseList<Path extends ExpenseListPath>({
           )
         }
       >
-        {sections.map(([month, items]) => (
+        {sections.map(([month, rows]) => (
           <ListBoxSection key={month}>
             <Header className="pt-4 pb-2 text-sm text-neutral-500">
               {format(new Date(month + '-01'), 'MMM yyyy')}
             </Header>
-            <Collection items={items}>
-              {(expense) => (
+            <Collection items={rows}>
+              {(row) => (
                 <ListBoxItem
-                  id={expense.uid}
-                  textValue={expense.description ?? expense.uid}
+                  id={row.uid}
+                  textValue={(row.item as ExpenseOrPayment).description ?? row.uid}
                   className="outline-none"
                 >
                   <ExpenseListItem
-                    expense={expense}
+                    expense={row.item as ExpenseOrPayment}
                     detailRoute={detailRoute}
                     detailRouteParams={detailRouteParams}
                   />

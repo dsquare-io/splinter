@@ -6,3 +6,4 @@ export * from './outstandingBalances.ts';
 export * from './groups.ts';
 export * from './profile.ts';
 export * from './currencyPreference.ts';
+export * from './expenses.ts';
