@@ -6,7 +6,7 @@ import { useLiveQuery } from '@tanstack/react-db';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { outstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
@@ -18,7 +18,7 @@ import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 export function FriendHeader({ friend_uid }: { friend_uid: string }) {
   const { data: friend, isPending, error } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
   useRedirectOn404(error, '/friends');
-  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
   const friendBalances = balances.filter((b) => b.friend === friend_uid);
 
   return (

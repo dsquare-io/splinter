@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes, urlWithArgs, type Group } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
+import { emit } from '@/collections/events.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
@@ -30,10 +31,11 @@ export function GroupActionSection({ group, currentUserHasBalance: hasBalance }:
                 member_uid: currentUser!.uid,
               })
             );
-            await queryClient.invalidateQueries(
-              apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })
-            );
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST));
+            await Promise.all([
+              queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })),
+              queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST)),
+              emit('group:mutated', { uid: group.uid }),
+            ]);
 
             return navigate({ to: '/groups' });
           }}
@@ -66,7 +68,10 @@ export function GroupActionSection({ group, currentUserHasBalance: hasBalance }:
                 group_uid: group.uid,
               })
             );
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST));
+            await Promise.all([
+              queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST)),
+              emit('group:mutated', { uid: group.uid }),
+            ]);
             await navigate({ to: '/groups' });
           }}
           confirmation={{

@@ -1,4 +1,5 @@
 import { ApiRoutes, urlWithArgs } from '@/api-types';
+import { emit } from '@/collections/events.ts';
 import { FieldError, Form, FormRootErrors, SubmitButton, TextFormField } from '@/components/form';
 import { Input, Label, useDialog } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -18,7 +19,10 @@ export function GroupNameForm({ group_uid, groupName }: GroupNameFormProps) {
       method="PATCH"
       action={urlWithArgs(ApiRoutes.GROUP_DETAIL, { group_uid })}
       onSubmitSuccess={() =>
-        queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })).then(close)
+        Promise.all([
+          queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid })),
+          emit('group:mutated', { uid: group_uid }),
+        ]).then(close)
       }
       className="mt-4"
     >

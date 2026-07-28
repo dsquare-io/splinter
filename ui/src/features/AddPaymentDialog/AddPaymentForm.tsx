@@ -5,10 +5,8 @@ import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
 import { ApiRoutes, type Friend, type Group, type SimpleUser } from '@/api-types';
-import {
-  outstandingBalancesCollection,
-  syncOutstandingBalances,
-} from '@/collections/outstandingBalancesCollection.ts';
+import { emit } from '@/collections/events.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
@@ -28,7 +26,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useCurrencyPreference();
   const attachments = useAttachment();
-  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
 
   const friendBalance = friend
     ? (balances.find((b) => b.friend === friend.uid && b.currency === preferredCurrency) ??
@@ -84,7 +82,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         onSubmitSuccess={async (response) => {
           await Promise.all([
             invalidateQueriesForExpense({ uid: response.uid, group: group?.uid }),
-            syncOutstandingBalances(),
+            emit('expense:mutated', { uid: response.uid, group: group?.uid }),
           ]);
           close();
         }}
@@ -176,7 +174,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           min={1}
           name="amount"
           label="Amount"
-          currency={preferredCurrency}
+          currency={preferredCurrency!}
           onBlur={() => {
             const val = formControl.getValues('amount');
             const paymentDir = formControl.getValues('paymentDir');

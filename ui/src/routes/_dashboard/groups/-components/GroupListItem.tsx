@@ -8,7 +8,7 @@ import {
   OutstandingBalance,
   SimpleGroup,
 } from '@/api-types/components/schemas';
-import { friendsCollection } from '@/collections/friendsCollection.ts';
+import { friends as friendsEntity } from '@/collections/friends.ts';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
@@ -30,7 +30,7 @@ export function GroupListItem({
   // GROUP_LIST doesn't include members, so name resolution for the breakdown is
   // best-effort against the friends collection only — a counterparty who isn't already
   // a friend falls back to a generic label in OutstandingBalanceList.
-  const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsCollection }));
+  const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsEntity.collection }));
 
   const primaryBalance =
     aggregatedOutstandingBalances.find((b) => b.currency === preferredCurrency) ??

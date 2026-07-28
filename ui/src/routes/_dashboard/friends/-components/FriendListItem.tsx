@@ -3,14 +3,14 @@ import clx from 'clsx';
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 import { Link } from '@tanstack/react-router';
 
+import { Friend } from '@/api-types';
 import { AggregatedOutstandingBalance, OutstandingBalance } from '@/api-types/components/schemas';
-import { FriendIdentity } from '@/collections/friendsCollection.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 
-type FriendListItemProps = FriendIdentity & {
+type FriendListItemProps = Friend & {
   aggregatedOutstandingBalances: AggregatedOutstandingBalance[];
   outstandingBalances: OutstandingBalance[];
   balancesLoading: boolean;

@@ -8,7 +8,7 @@ import { ApiRoutes } from '@/api-types';
 import { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
 import { axiosInstance } from '@/axios';
-import { syncOutstandingBalances } from '@/collections/outstandingBalancesCollection.ts';
+import { emit } from '@/collections/events.ts';
 import { DialogHeader, DropdownMenu, DropdownMenuItem, IconButton } from '@/components/primitives';
 import { ExpenseEditorDialog } from '@/features/ExpenseEditorDialog';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
@@ -50,7 +50,10 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
       ),
       callback: async () => {
         await axiosInstance.delete(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId }));
-        await Promise.all([invalidateQueriesForExpense(expense), syncOutstandingBalances()]);
+        await Promise.all([
+          invalidateQueriesForExpense(expense),
+          emit('expense:mutated', { uid: expenseId, group: expense?.group }),
+        ]);
         close();
       },
     });

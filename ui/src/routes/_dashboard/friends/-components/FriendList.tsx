@@ -1,42 +1,27 @@
-import { useEffect, useState } from 'react';
-
 import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes } from '@/api-types';
-import { friendsCollection, syncFriends } from '@/collections/friendsCollection.ts';
-import {
-  aggregatedOutstandingBalancesCollection,
-  outstandingBalancesCollection,
-  syncOutstandingBalances,
-} from '@/collections/outstandingBalancesCollection.ts';
+import { friends as friendsEntity } from '@/collections/friends.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { PullToRefresh, ScrollScene } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';
 
 export function FriendList() {
-  // Identity survives offline via RxDB (friendsCollection). Balances are their own
-  // RxDB collections now too — see outstandingBalancesCollection.ts.
-  const { data: friendIdentities, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  // Identity and balances are all RxDB-backed collections now — see src/collections/.
   const { data: identities, isLoading: identitiesLoading } = useLiveQuery((q) =>
-    q.from({ friend: friendsCollection })
+    q.from({ friend: friendsEntity.collection })
   );
   const { data: aggregatedBalances } = useLiveQuery((q) =>
-    q.from({ balance: aggregatedOutstandingBalancesCollection })
+    q.from({ balance: outstandingBalances.aggregated.collection })
   );
-  const { data: rawBalances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
-  const [balancesSynced, setBalancesSynced] = useState(false);
+  const { data: rawBalances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
 
-  useEffect(() => {
-    if (friendIdentities) syncFriends(friendIdentities);
-  }, [friendIdentities]);
-
-  useEffect(() => {
-    syncOutstandingBalances().then(() => setBalancesSynced(true));
-  }, []);
+  const { error, refetch: refetchFriends } = useEntitySync(friendsEntity);
+  const { hasSynced: balancesSynced, refetch: refetchBalances } = useEntitySync(outstandingBalances);
 
   const friends = identities.map((identity) => ({
     ...identity,
@@ -50,7 +35,7 @@ export function FriendList() {
   return (
     <PullToRefresh
       onRefresh={async () => {
-        await Promise.all([refetch(), syncOutstandingBalances()]);
+        await Promise.all([refetchFriends(), refetchBalances()]);
       }}
     >
       <div className="flex flex-col -space-y-px">

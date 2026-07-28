@@ -1,6 +1,7 @@
 import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
+import { emit } from '@/collections/events.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
@@ -19,8 +20,10 @@ export function CreateGroupForm() {
       action={ApiRoutes.GROUP_LIST}
       defaultValues={{ members: [] }}
       onSubmitSuccess={(res) =>
-        queryClient
-          .invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST))
+        Promise.all([
+          queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST)),
+          emit('group:mutated', { uid: res.data.uid! }),
+        ])
           .then(() =>
             navigate({
               to: `/groups/$group`,

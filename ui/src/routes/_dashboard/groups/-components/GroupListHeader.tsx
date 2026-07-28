@@ -2,7 +2,7 @@ import { DialogTrigger } from 'react-aria-components';
 
 import { useLiveQuery } from '@tanstack/react-db';
 
-import { aggregatedOutstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Button, Money, ScrollScene } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
@@ -11,7 +11,7 @@ import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 export function GroupListHeader() {
   const { data: preferredCurrency, isPending: currencyPending } = useCurrencyPreference();
   const { data: balances } = useLiveQuery((q) =>
-    q.from({ balance: aggregatedOutstandingBalancesCollection })
+    q.from({ balance: outstandingBalances.aggregated.collection })
   );
 
   const aggregatedOutstandingBalance = balances

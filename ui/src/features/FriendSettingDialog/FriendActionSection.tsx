@@ -3,6 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes, urlWithArgs, type Friend } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
+import { emit } from '@/collections/events.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
@@ -38,7 +39,10 @@ export function FriendActionSection({ friend }: FriendActionSectionProps) {
           color="danger"
           onClick={async () => {
             await axiosInstance.delete(urlWithArgs(ApiRoutes.FRIEND_DETAIL, { friend_uid: friend.uid }));
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST));
+            await Promise.all([
+              queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST)),
+              emit('friend:mutated', { uid: friend.uid }),
+            ]);
             await navigate({ to: '/friends' });
           }}
           isDisabled={hasBalance}

@@ -6,7 +6,7 @@ import { Money, UserLabel } from '@/components/primitives';
 type OutstandingBalanceListProps = {
   balances?: OutstandingBalance[];
   // Raw rows only carry friend/group uids now — caller supplies whatever name lookup it
-  // already has on hand (friendsCollection, group.members, etc).
+  // already has on hand (friends collection, group.members, etc).
   resolveFriend: (uid: string) => SimpleUser | undefined;
 };
 

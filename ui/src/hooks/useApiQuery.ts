@@ -22,35 +22,26 @@ export function apiQueryKey<Path extends keyof paths>(
   return [...pathParts, ...(params ? [params] : [])];
 }
 
+export function fetchApi<Path extends keyof paths>(
+  url: Path,
+  args?: UrlArgs<Path>,
+  params?: Partial<Record<string, string | number | undefined | string[]>>,
+  signal?: AbortSignal
+): Promise<ApiResponse<Path>> {
+  const resolvedUrl = urlWithArgs(url, args as any, params);
+  return axiosInstance.get(resolvedUrl, { signal }).then((r) => r.data as ApiResponse<Path>);
+}
+
 export function apiQueryOptions<Path extends keyof paths>(
   url: Path,
   args?: UrlArgs<Path>,
   params?: Partial<Record<string, string | number | undefined | string[]>>,
   options?: Partial<Omit<UndefinedInitialDataOptions<ApiResponse<Path>>, 'queryKey' | 'queryFn'>>
 ) {
-  const resolvedUrl = urlWithArgs(url, args as any, params);
-
   return queryOptions<ApiResponse<Path>>({
     ...(options as any),
     queryKey: apiQueryKey(url, args, params),
-    queryFn: ({ signal }) =>
-      axiosInstance.get(resolvedUrl, { signal }).then((r) => r.data as ApiResponse<Path>),
-  });
-}
-
-export function persistApiQueryOptions<Path extends keyof paths>(
-  url: Path,
-  args?: UrlArgs<Path>,
-  params?: Partial<Record<string, string | number | undefined | string[]>>,
-  options?: Partial<Omit<UndefinedInitialDataOptions<ApiResponse<Path>>, 'queryKey' | 'queryFn'>>
-) {
-  return apiQueryOptions(url, args, params, {
-    ...(options || {}),
-    meta: { persist: true },
-    gcTime: Infinity, // paired with a finite persistOptions.maxAge — see queryPersister.ts
-    staleTime: 5 * 60_000,
-    // Never let a transient/background refetch failure regress an already-known-good value back to blank.
-    placeholderData: (prev) => prev,
+    queryFn: ({ signal }) => fetchApi(url, args, params, signal),
   });
 }
 

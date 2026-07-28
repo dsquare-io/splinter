@@ -6,7 +6,7 @@ import { useLiveQuery } from '@tanstack/react-db';
 import { Link } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
-import { outstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
@@ -19,7 +19,7 @@ import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 export function GroupHeader({ group_uid }: { group_uid: string }) {
   const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
   useRedirectOn404(error, '/groups');
-  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
 
   // The endpoint is already scoped to the current user server-side, so no need to
   // filter by "which member" — every row here is already "my" balance.

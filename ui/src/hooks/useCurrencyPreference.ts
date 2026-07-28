@@ -1,15 +1,10 @@
-import { useQuery, type DefinedUseQueryResult, type QueryClient } from '@tanstack/react-query';
+import { currencyPreference } from '@/collections/currencyPreference.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
+import { useLocalValue } from '@/hooks/useLocalValue.ts';
 
-import { ApiRoutes } from '@/api-types';
-import { apiQueryKey, persistApiQueryOptions } from '@/hooks/useApiQuery.ts';
+export function useCurrencyPreference() {
+  const data = useLocalValue(currencyPreference.store);
+  const { isSyncing, error } = useEntitySync(currencyPreference);
 
-export function useCurrencyPreference(): DefinedUseQueryResult<NoInfer<string>, Error> {
-  return useQuery({
-    ...persistApiQueryOptions(ApiRoutes.CURRENCY_PREFERENCE),
-    select: (currency) => currency.uid,
-  });
-}
-
-export function invalidateCurrencyPreference(queryClient: QueryClient) {
-  return queryClient.invalidateQueries({ queryKey: apiQueryKey(ApiRoutes.CURRENCY_PREFERENCE) });
+  return { data, isPending: !data && isSyncing, error };
 }

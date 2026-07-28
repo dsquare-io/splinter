@@ -1,7 +1,7 @@
 import { useLiveQuery } from '@tanstack/react-db';
 
 import type { Group } from '@/api-types';
-import { outstandingBalancesCollection } from '@/collections/outstandingBalancesCollection.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Dialog, DialogHeader } from '@/components/primitives';
 import { GroupActionSection } from './GroupActionSection.tsx';
 import { GroupMemberSection } from './GroupMemberSection.tsx';
@@ -12,7 +12,7 @@ type GroupSettingDialogProps = {
 };
 
 export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
-  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
+  const { data: balances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
   // The API only tells us the current user's own balance now — not the full
   // member-to-member matrix — so this is a coarse "does the current user have any
   // outstanding balance in this group" flag, not a per-member check.

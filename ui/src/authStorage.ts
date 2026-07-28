@@ -1,42 +1,22 @@
-const ACCESS_TOKEN_KEY = 'splinterAccessToken';
-const REFRESH_TOKEN_KEY = 'splinterRefreshToken';
+import { LocalValue } from '@/localValue.ts';
 
-const AUTH_STORAGE_EVENT = 'splinter-auth-storage-updated';
-
-function notify() {
-  window.dispatchEvent(new Event(AUTH_STORAGE_EVENT));
-}
-
-export function addAuthTokenChangeListener(callback: () => void): void {
-  window.addEventListener(AUTH_STORAGE_EVENT, callback);
-}
-
-export function removeAuthTokenChangeListener(callback: () => void): void {
-  window.removeEventListener(AUTH_STORAGE_EVENT, callback);
-}
+export const accessTokenStore = new LocalValue<string>('splinterAccessToken');
+export const refreshTokenStore = new LocalValue<string>('splinterRefreshToken');
 
 export function getAccessToken(): string | null {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+  return accessTokenStore.get() ?? null;
 }
 
 export function getRefreshToken(): string | null {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
+  return refreshTokenStore.get() ?? null;
 }
 
 export function setAccessToken(value: string | null): void {
-  if (value) {
-    localStorage.setItem(ACCESS_TOKEN_KEY, value);
-  } else {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-  }
-  notify();
+  if (value) accessTokenStore.set(value);
+  else accessTokenStore.clear();
 }
 
 export function setRefreshToken(value: string | null): void {
-  if (value) {
-    localStorage.setItem(REFRESH_TOKEN_KEY, value);
-  } else {
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-  }
-  notify();
+  if (value) refreshTokenStore.set(value);
+  else refreshTokenStore.clear();
 }

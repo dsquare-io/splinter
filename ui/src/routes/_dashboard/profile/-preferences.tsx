@@ -1,8 +1,9 @@
 import { ApiRoutes } from '@/api-types';
+import { currencyPreference } from '@/collections/currencyPreference.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { CurrencySelectFormInput } from '@/components/form-controls';
-import { invalidateCurrencyPreference, useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
-import { queryClient } from '@/queryClient.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
+import { syncEntity } from '@/hooks/useEntitySync.ts';
 
 export function Preferences() {
   const { data: userCurrency } = useCurrencyPreference();
@@ -13,7 +14,7 @@ export function Preferences() {
       className="@container md:col-span-2"
       method="PUT"
       action={ApiRoutes.CURRENCY_PREFERENCE}
-      onSubmitSuccess={() => invalidateCurrencyPreference(queryClient)}
+      onSubmitSuccess={() => syncEntity(currencyPreference)}
     >
       <FormRootErrors />
 

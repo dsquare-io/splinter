@@ -1,34 +1,28 @@
-import { useEffect, useState } from 'react';
-
 import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes } from '@/api-types';
-import {
-  aggregatedOutstandingBalancesCollection,
-  outstandingBalancesCollection,
-  syncOutstandingBalances,
-} from '@/collections/outstandingBalancesCollection.ts';
+import { groups as groupsEntity } from '@/collections/groups.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { GroupListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { PullToRefresh, ScrollScene } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 import { EmptyGroups } from './EmptyGroups';
 import { GroupListItem } from './GroupListItem';
 
 export function GroupList() {
-  const { data: groupIdentities, isPending, error, refetch } = useApiQuery(ApiRoutes.GROUP_LIST);
-  const { data: aggregatedBalances } = useLiveQuery((q) =>
-    q.from({ balance: aggregatedOutstandingBalancesCollection })
+  const { data: groupIdentities, isLoading: identitiesLoading } = useLiveQuery((q) =>
+    q.from({ group: groupsEntity.collection })
   );
-  const { data: rawBalances } = useLiveQuery((q) => q.from({ balance: outstandingBalancesCollection }));
-  const [balancesSynced, setBalancesSynced] = useState(false);
+  const { data: aggregatedBalances } = useLiveQuery((q) =>
+    q.from({ balance: outstandingBalances.aggregated.collection })
+  );
+  const { data: rawBalances } = useLiveQuery((q) => q.from({ balance: outstandingBalances.raw.collection }));
 
-  useEffect(() => {
-    syncOutstandingBalances().then(() => setBalancesSynced(true));
-  }, []);
+  const { error, refetch: refetchGroups } = useEntitySync(groupsEntity);
+  const { hasSynced: balancesSynced, refetch: refetchBalances } = useEntitySync(outstandingBalances);
 
-  const groups = (groupIdentities ?? []).map((identity) => ({
+  const groups = groupIdentities.map((identity) => ({
     ...identity,
     aggregatedOutstandingBalances: aggregatedBalances.filter(
       (b) => b.objectType === 'group' && b.objectUid === identity.uid
@@ -40,16 +34,16 @@ export function GroupList() {
   return (
     <PullToRefresh
       onRefresh={async () => {
-        await Promise.all([refetch(), syncOutstandingBalances()]);
+        await Promise.all([refetchGroups(), refetchBalances()]);
       }}
     >
       <div className="flex flex-col -space-y-px">
-        {error ? (
+        {error && groups.length === 0 ? (
           <ErrorAlert
             error={error}
             variant="centered"
           />
-        ) : isPending ? (
+        ) : identitiesLoading && groups.length === 0 ? (
           Array.from({ length: 6 }).map((_, i) => <GroupListItemSkeleton key={i} />)
         ) : !groups.length ? (
           <EmptyGroups />

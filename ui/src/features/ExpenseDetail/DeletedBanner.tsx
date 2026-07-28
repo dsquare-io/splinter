@@ -4,7 +4,7 @@ import { ArrowUturnLeftIcon, ExclamationTriangleIcon } from '@heroicons/react/16
 
 import { ApiRoutes, urlWithArgs } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
-import { syncOutstandingBalances } from '@/collections/outstandingBalancesCollection.ts';
+import { emit } from '@/collections/events.ts';
 import { Button } from '@/components/primitives';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
@@ -21,7 +21,7 @@ export function DeletedBanner({ type, uid, group }: DeletedBannerProps) {
     setRestoring(true);
     try {
       await axiosInstance.patch(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: uid }));
-      await Promise.all([invalidateQueriesForExpense({ uid, group }), syncOutstandingBalances()]);
+      await Promise.all([invalidateQueriesForExpense({ uid, group }), emit('expense:mutated', { uid, group })]);
     } finally {
       setRestoring(false);
     }
