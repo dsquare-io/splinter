@@ -16,7 +16,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <main className="h-full min-h-0 pb-16 md:ms-60 md:pb-0">
+      <main className="min-h-0 grow pb-16 md:ms-60 md:pb-0">
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>

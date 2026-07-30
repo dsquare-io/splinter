@@ -76,8 +76,8 @@ function OfflineBanner() {
   if (isOnline) return null;
 
   return (
-    <div className="z-50 w-full bg-gray-800 px-4 py-1.5 text-center text-xs text-white md:hidden">
-      You're offline — showing saved data
+    <div className="w-full bg-gray-800 px-4 py-1.5 text-center text-xs text-white md:hidden">
+      Can't reach Splinter — showing saved data
     </div>
   );
 }

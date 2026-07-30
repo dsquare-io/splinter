@@ -11,7 +11,7 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex grow flex-col">
       <div className="flex flex-1 flex-col items-center justify-center bg-white px-4 pt-12 pb-4 sm:px-6 lg:px-8">
         <div className="min-h-0 w-full max-w-sm space-y-4">
           <Logo className="mx-auto size-12" />
