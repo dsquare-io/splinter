@@ -20,7 +20,9 @@ export function on<E extends keyof EventMap>(event: E, listener: Listener<E>): v
  * away) or block sibling entities from syncing.
  */
 export async function emit<E extends keyof EventMap>(event: E, payload: EventMap[E]): Promise<void> {
-  const results = await Promise.allSettled([...(listeners[event] ?? [])].map((listener) => listener(payload)));
+  const results = await Promise.allSettled(
+    [...(listeners[event] ?? [])].map((listener) => listener(payload))
+  );
   results
     .filter((result): result is PromiseRejectedResult => result.status === 'rejected')
     .forEach((result) => console.error(event, result.reason));

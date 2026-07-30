@@ -51,8 +51,15 @@ export function ExpenseList<Path extends ExpenseListPath>({
 
   // Drives background population + pagination controls; render data comes from useLiveQuery
   // below, over the local mirror those pages get ingested into.
-  const { data: pages, isPending, error, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } =
-    useInfiniteApiQuery(apiPath, args);
+  const {
+    data: pages,
+    isPending,
+    error,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteApiQuery(apiPath, args);
 
   const scope =
     apiPath === ApiRoutes.GROUP_EXPENSE_LIST
@@ -60,14 +67,22 @@ export function ExpenseList<Path extends ExpenseListPath>({
       : { type: 'friend' as const, uid: (args as { friend_uid: string }).friend_uid };
 
   useEffect(() => {
-    if (pages?.length) void ingest(pages.flatMap((page) => page.results), scope);
+    if (pages?.length)
+      void ingest(
+        pages.flatMap((page) => page.results),
+        scope
+      );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pages]);
 
-  const { data: localItems } = useLiveQuery((q) => {
-    const scoped = scope.type === 'group' ? expensesForGroup(scope.uid)(q) : expensesForFriend(scope.uid)(q);
-    return scoped.orderBy(({ expense }: any) => expense.datetime, 'desc');
-  }, [scope.type, scope.uid]);
+  const { data: localItems } = useLiveQuery(
+    (q) => {
+      const scoped =
+        scope.type === 'group' ? expensesForGroup(scope.uid)(q) : expensesForFriend(scope.uid)(q);
+      return scoped.orderBy(({ expense }: any) => expense.datetime, 'desc');
+    },
+    [scope.type, scope.uid]
+  );
 
   const allItems = (localItems ?? []) as LocalExpenseRow[];
 
@@ -107,9 +122,7 @@ export function ExpenseList<Path extends ExpenseListPath>({
             // stays true forever here — there's no real error to hand ErrorAlert, and a
             // spinner would spin indefinitely. This is its own state, not a fetch error.
             <EmptyState
-              messages={[
-                { icon: '📡', title: "You're offline", body: "This hasn't been loaded before." },
-              ]}
+              messages={[{ icon: '📡', title: "You're offline", body: "This hasn't been loaded before." }]}
             />
           ) : isPending && allItems.length === 0 ? (
             <div className="flex justify-center py-4">

@@ -24,7 +24,12 @@ export function useEntitySync(entity: SyncableEntity, options?: { enabled?: bool
     staleTime: 0, // "top up local cache" trigger, not a data cache — RxDB is the source of truth
     enabled: options?.enabled,
   });
-  return { isSyncing: query.isFetching, hasSynced: query.isSuccess, error: query.error, refetch: query.refetch };
+  return {
+    isSyncing: query.isFetching,
+    hasSynced: query.isSuccess,
+    error: query.error,
+    refetch: query.refetch,
+  };
 }
 
 /** Imperative "sync now" for call sites outside render (post-mutation refresh). Shares the

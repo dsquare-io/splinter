@@ -32,7 +32,9 @@ export function GroupActionSection({ group, currentUserHasBalance: hasBalance }:
               })
             );
             await Promise.all([
-              queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })),
+              queryClient.invalidateQueries(
+                apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })
+              ),
               queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST)),
               emit('group:mutated', { uid: group.uid }),
             ]);

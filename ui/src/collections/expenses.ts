@@ -2,9 +2,9 @@ import { and, BTreeIndex, eq, gte, lte, queryOnce } from '@tanstack/db';
 
 import { ApiRoutes, type ExpenseOrPaymentOrSettlement } from '@/api-types';
 import { fetchApi } from '@/hooks/useApiQuery.ts';
+import { LocalValue } from '@/localValue.ts';
 import { LocalCollection } from './base/LocalCollection.ts';
 import { on } from './events.ts';
-import { LocalValue } from '@/localValue.ts';
 
 export type Scope = { type: 'group' | 'friend'; uid: string };
 
@@ -60,7 +60,10 @@ const participantSchema = {
   indexes: ['friendUid'],
 };
 
-const local = await LocalCollection.create<LocalExpenseRow>({ name: 'expenses', schema: expenseSchema as never });
+const local = await LocalCollection.create<LocalExpenseRow>({
+  name: 'expenses',
+  schema: expenseSchema as never,
+});
 const participantsLocal = await LocalCollection.create<ExpenseParticipant>({
   name: 'expense-participants',
   schema: participantSchema as never,
@@ -97,12 +100,19 @@ const selectRow = ({ expense }: any) => expense;
 
 // Unfiltered — reconcileStaleRows needs to see already-deleted rows too (see there for why).
 const rawExpensesForGroup = (groupUid: string) => (q: any) =>
-  q.from({ expense: local.collection }).where(({ expense }: any) => eq(expense.group, groupUid)).select(selectRow);
+  q
+    .from({ expense: local.collection })
+    .where(({ expense }: any) => eq(expense.group, groupUid))
+    .select(selectRow);
 
 const rawExpensesForFriend = (friendUid: string) => (q: any) =>
   q
     .from({ expense: local.collection })
-    .join({ p: participantsLocal.collection }, ({ expense, p }: any) => eq(expense.uid, p.expenseUid), 'inner')
+    .join(
+      { p: participantsLocal.collection },
+      ({ expense, p }: any) => eq(expense.uid, p.expenseUid),
+      'inner'
+    )
     .where(({ p }: any) => eq(p.friendUid, friendUid))
     .select(selectRow);
 
@@ -115,7 +125,11 @@ export const expensesForGroup = (groupUid: string) => (q: any) =>
 export const expensesForFriend = (friendUid: string) => (q: any) =>
   q
     .from({ expense: local.collection })
-    .join({ p: participantsLocal.collection }, ({ expense, p }: any) => eq(expense.uid, p.expenseUid), 'inner')
+    .join(
+      { p: participantsLocal.collection },
+      ({ expense, p }: any) => eq(expense.uid, p.expenseUid),
+      'inner'
+    )
     .where(({ expense, p }: any) => and(eq(p.friendUid, friendUid), eq(expense.isDeleted, false)))
     .select(selectRow);
 
@@ -134,12 +148,17 @@ async function reconcileStaleRows(scope: Scope, items: ExpenseOrPaymentOrSettlem
   const batchMax = dates.reduce((a, b) => (a > b ? a : b));
   const incomingUids = new Set(items.map((item) => item.uid));
 
-  const scopedQuery = scope.type === 'group' ? rawExpensesForGroup(scope.uid) : rawExpensesForFriend(scope.uid);
+  const scopedQuery =
+    scope.type === 'group' ? rawExpensesForGroup(scope.uid) : rawExpensesForFriend(scope.uid);
   const [oldest] = (await queryOnce((q) =>
-    scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'asc').limit(1)
+    scopedQuery(q)
+      .orderBy(({ expense }: any) => expense.datetime, 'asc')
+      .limit(1)
   )) as LocalExpenseRow[];
   const [newest] = (await queryOnce((q) =>
-    scopedQuery(q).orderBy(({ expense }: any) => expense.datetime, 'desc').limit(1)
+    scopedQuery(q)
+      .orderBy(({ expense }: any) => expense.datetime, 'desc')
+      .limit(1)
   )) as LocalExpenseRow[];
   if (!oldest || !newest) return;
 
@@ -148,7 +167,9 @@ async function reconcileStaleRows(scope: Scope, items: ExpenseOrPaymentOrSettlem
   if (overlapStart > overlapEnd) return;
 
   const inRange = (await queryOnce((q) =>
-    scopedQuery(q).where(({ expense }: any) => gte(expense.datetime, overlapStart) && lte(expense.datetime, overlapEnd))
+    scopedQuery(q).where(
+      ({ expense }: any) => gte(expense.datetime, overlapStart) && lte(expense.datetime, overlapEnd)
+    )
   )) as LocalExpenseRow[];
   const staleUids = inRange
     .filter((row) => !row.isDeleted)
@@ -169,7 +190,13 @@ export async function ingest(items: ExpenseOrPaymentOrSettlement[], scope?: Scop
   }
 }
 
-export const expenses = { name: local.name, collection: local.collection, expensesForGroup, expensesForFriend, ingest };
+export const expenses = {
+  name: local.name,
+  collection: local.collection,
+  expensesForGroup,
+  expensesForFriend,
+  ingest,
+};
 export const expenseParticipants = { collection: participantsLocal.collection };
 
 on('expense:mutated', async ({ uid }) => {
