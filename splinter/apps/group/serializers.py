@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Count
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
@@ -68,7 +68,6 @@ class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
     members = serializers.SerializerMethodField()
 
     class Meta(SimpleGroupSerializer.Meta):
-        model = Group
         fields = SimpleGroupSerializer.Meta.fields + ('created_by', 'members')
 
     @extend_schema_field(SimpleUserSerializer(many=True))
