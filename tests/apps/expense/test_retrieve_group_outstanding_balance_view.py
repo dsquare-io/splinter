@@ -34,11 +34,11 @@ class RetrieveGroupOutstandingBalanceViewTests(ExpenseTestCase, AuthenticatedAPI
 
         self.assertEqual(balances_by_user[self.user.username]['friend'], self.friend.username)
         self.assertEqual(balances_by_user[self.user.username]['amount'], '50.00')
-        self.assertEqual(balances_by_user[self.user.username]['currency'], self.serialize_currency(self.currency))
+        self.assertEqual(balances_by_user[self.user.username]['currency'], self.currency.code)
 
         self.assertEqual(balances_by_user[self.friend.username]['friend'], self.user.username)
         self.assertEqual(balances_by_user[self.friend.username]['amount'], '-50.00')
-        self.assertEqual(balances_by_user[self.friend.username]['currency'], self.serialize_currency(self.currency))
+        self.assertEqual(balances_by_user[self.friend.username]['currency'], self.currency.code)
 
     def test_retrieve_empty(self):
         response = self.client.get(f'/api/groups/{self.group.public_id}/outstanding-balance')

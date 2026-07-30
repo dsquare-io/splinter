@@ -26,10 +26,10 @@ class RetrieveUserOutstandingBalanceViewTests(ExpenseTestCase, AuthenticatedAPIT
         balances_by_friend = {balance['friend']: balance for balance in outstanding_balances}
 
         self.assertEqual(balances_by_friend[friend1.username]['amount'], '50.00')
-        self.assertEqual(balances_by_friend[friend1.username]['currency'], self.serialize_currency(self.currency))
+        self.assertEqual(balances_by_friend[friend1.username]['currency'], self.currency.code)
 
         self.assertEqual(balances_by_friend[friend2.username]['amount'], '-100.00')
-        self.assertEqual(balances_by_friend[friend2.username]['currency'], self.serialize_currency(self.currency))
+        self.assertEqual(balances_by_friend[friend2.username]['currency'], self.currency.code)
 
         aggregated_balances = response_json['aggregatedOutstandingBalance']
         self.assertEqual(len(aggregated_balances), 2)
