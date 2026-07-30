@@ -27,11 +27,19 @@ const invalidateExpenseOrPaymentQueries = (
   // /api/activities
   if (key[1] === 'activities') return true;
 
-  // /api/friends, /api/friends/<friend_uid> and /api/friends/<friend_uid>/expenses
-  if (key[1] === 'friends') return true;
+  // /api/user/outstanding-balance
+  if (key[1] === 'user' && key[2] === 'outstanding-balance') return true;
 
-  // /api/groups, /api/groups/<group_uid> and /api/groups/<group_uid>/expenses (only for group expenses)
-  return !!(group && key[1] === 'groups' && (key[2] === group || key.length === 2));
+  // /api/friends/<friend_uid>/expenses
+  if (key[1] === 'friends' && key[3] === 'expenses') return true;
+
+  // /api/groups/<group_uid>/expenses && /api/groups/<group_uid>/outstanding-balance
+  return !!(
+    group &&
+    key[1] === 'groups' &&
+    key[2] === group &&
+    (key[3] === 'expense' || key[3] === 'outstanding-balance')
+  );
 };
 
 export const invalidateQueriesForExpense = (expense: { uid: string; group?: string | null }) =>

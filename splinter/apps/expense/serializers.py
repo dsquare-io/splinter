@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import Prefetch
-from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
@@ -422,7 +421,6 @@ class SimpleOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serial
 
 class OutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
     uid = serializers.SerializerMethodField()
-    currency = CurrencySerializerField()
     group = serializers.UUIDField(source='group.uid', read_only=True)
     friend = serializers.CharField(source='friend.uid', read_only=True)
 
@@ -443,7 +441,6 @@ class OutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
 
 
 class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
-    currency = CurrencySerializerField()
     user = serializers.CharField(source='user.uid', read_only=True)
     friend = serializers.CharField(source='friend.uid', read_only=True)
 

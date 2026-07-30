@@ -32,7 +32,7 @@ export function ExpenseShares() {
                 noColor
                 noTabularNums
                 value={expense.amount}
-                currency={preferredCurrency}
+                currency={preferredCurrency.uid}
                 className="text-sm text-neutral-600"
               />
             )}

@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from tests.apps.group.factories import GroupFactory
@@ -27,19 +25,8 @@ class RetrieveGroupViewTest(AuthenticatedAPITestCase):
         self.assertEqual(response_json['urn'], self.group.urn)
         self.assertEqual(response_json['name'], self.group.name)
 
-        self.assertListEqual(response_json['outstandingBalances'], [])
-        self.assertDictEqual(
-            response_json['aggregatedOutstandingBalance'],
-            {
-                'currency': {
-                    'uid': settings.CURRENCY_DEFAULT_USER_PREFERENCE,
-                    'urn': f'urn:splinter:currency/{settings.CURRENCY_DEFAULT_USER_PREFERENCE}',
-                    'symbol': 'Rs',
-                },
-                'amount': '0.00',
-                'balances': [],
-            },
-        )
+        self.assertNotIn('outstandingBalances', response_json)
+        self.assertNotIn('aggregatedOutstandingBalance', response_json)
 
         self.assertEqual(len(response_json['members']), 2)
         self.assertIn(

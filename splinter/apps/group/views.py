@@ -22,13 +22,11 @@ from splinter.core.views import (
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
-    serializer_class = SimpleGroupSerializer
-
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateGroupSerializer
 
-        return self.serializer_class
+        return SimpleGroupSerializer
 
     def get_queryset(self):
         return Group.objects.of(self.request.user.id)
