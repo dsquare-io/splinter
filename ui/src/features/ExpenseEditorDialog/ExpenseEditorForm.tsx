@@ -32,7 +32,7 @@ function buildDefaultValues(expense: Expense) {
   return {
     description: expense.description ?? '',
     paidBy: expense.paidBy.uid,
-    currency: expense.currency.uid,
+    currency: expense.currency,
     'datetime:iso': datetimeLocal,
     group: expense.group || undefined,
     version: expense.version,

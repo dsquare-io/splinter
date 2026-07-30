@@ -794,7 +794,6 @@ export interface components {
     SettlementTyped: import('./components/schemas.d.ts').SettlementTyped;
     /** @enum {string} */
     SettlementTypedTypeEnum: import('./components/schemas.d.ts').SettlementTypedTypeEnum;
-    SimpleCurrency: import('./components/schemas.d.ts').SimpleCurrency;
     SimpleGroup: import('./components/schemas.d.ts').SimpleGroup;
     SimpleOutstandingBalance: import('./components/schemas.d.ts').SimpleOutstandingBalance;
     SimpleUser: import('./components/schemas.d.ts').SimpleUser;

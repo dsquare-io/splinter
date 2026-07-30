@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.currency.models import Country, Currency, UserCurrency
+from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
 
 class CountrySerializer(serializers.ModelSerializer):
@@ -13,20 +14,17 @@ class CountrySerializer(serializers.ModelSerializer):
         fields = ('uid', 'urn', 'name', 'flag')
 
 
-class SimpleCurrencySerializer(serializers.ModelSerializer):
+class CurrencySerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     uid = serializers.CharField(source='code')
     urn = serializers.CharField(read_only=True)
+    country = CountrySerializer(read_only=True)
 
     class Meta:
         model = Currency
-        fields = ('uid', 'urn', 'symbol')
+        fields = ('uid', 'urn', 'symbol', 'country')
 
-
-class CurrencySerializer(SimpleCurrencySerializer):
-    country = CountrySerializer(read_only=True)
-
-    class Meta(SimpleCurrencySerializer.Meta):
-        fields = SimpleCurrencySerializer.Meta.fields + ('country',)
+    def prefetch_queryset(self, queryset=None):
+        return super().prefetch_queryset().prefetch_related('country')
 
 
 class UserCurrencySerializer(serializers.ModelSerializer):

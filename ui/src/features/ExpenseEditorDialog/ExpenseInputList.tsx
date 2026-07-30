@@ -2,7 +2,6 @@ import { useFormContext, useWatch } from 'react-hook-form';
 
 import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-import type { SimpleCurrency } from '@/api-types';
 import { FieldArray, FieldArrayItems } from '@/components/form';
 import { CurrencyFormInput, TextFormInput } from '@/components/form-controls';
 import { Button } from '@/components/primitives';
@@ -19,8 +18,7 @@ export function ExpenseInputList({ isSimple }: Props) {
   } = useFormContext();
   const expensesError = (errors.expenses as any)?.root?.message;
 
-  const currencyCode = useWatch({ name: 'currency' }) as string | undefined;
-  const currency: SimpleCurrency | undefined = currencyCode ? { uid: currencyCode, urn: '' } : undefined;
+  const currency = useWatch({ name: 'currency' }) as string | undefined;
 
   if (!currency) return null;
 

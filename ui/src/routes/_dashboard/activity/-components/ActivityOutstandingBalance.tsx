@@ -1,6 +1,5 @@
 import { tv } from 'tailwind-variants';
 
-import { SimpleCurrency } from '@/api-types';
 import { Money } from '@/components/primitives';
 
 const PAYMENT_VERBS = new Set([
@@ -27,7 +26,7 @@ const balanceStyle = tv({
 type ActivityOutstandingBalanceProps = {
   balance?: string | null;
   verb: string;
-  currency: SimpleCurrency;
+  currency: string;
 };
 
 export function ActivityOutstandingBalance({

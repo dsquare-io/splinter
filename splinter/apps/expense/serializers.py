@@ -10,7 +10,6 @@ from rest_framework.exceptions import ErrorDetail
 from splinter.apps.attachment.fields import FileAttachmentField
 from splinter.apps.attachment.serializers import FileAttachmentSerializer
 from splinter.apps.currency.fields import CurrencySerializerField
-from splinter.apps.currency.serializers import SimpleCurrencySerializer
 from splinter.apps.expense.models import (
     AggregatedOutstandingBalance,
     Expense,
@@ -100,7 +99,7 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
     group = GroupSerializerField()
     paid_by = SimpleUserSerializer(read_only=True)
     created_by = SimpleUserSerializer(read_only=True)
-    currency = SimpleCurrencySerializer()
+    currency = CurrencySerializerField()
 
     expenses = serializers.SerializerMethodField()
     outstanding_balance = serializers.SerializerMethodField()
@@ -193,7 +192,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     group = GroupSerializerField()
     created_by = SimpleUserSerializer(read_only=True)
-    currency = SimpleCurrencySerializer()
+    currency = CurrencySerializerField()
 
     sender = SimpleUserSerializer(source='paid_by', read_only=True)
     receiver = serializers.SerializerMethodField()
@@ -410,7 +409,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
 
 
 class SimpleOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
-    currency = SimpleCurrencySerializer(read_only=True)
+    currency = CurrencySerializerField()
 
     class Meta:
         model = OutstandingBalance

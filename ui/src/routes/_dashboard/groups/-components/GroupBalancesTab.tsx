@@ -71,7 +71,7 @@ export function GroupBalancesTab({ group_uid }: GroupBalancesTabProps) {
             <div className="py-3 pl-4">
               {balances.map((e) => (
                 <div
-                  key={`${e.friend}-${e.currency.uid}`}
+                  key={`${e.friend}-${e.currency}`}
                   className="relative pb-6"
                 >
                   <span

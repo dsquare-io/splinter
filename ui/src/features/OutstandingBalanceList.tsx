@@ -1,11 +1,11 @@
 import { Fragment } from 'react';
 
-import { SimpleCurrency, SimpleUser } from '@/api-types/components/schemas';
+import { SimpleUser } from '@/api-types/components/schemas';
 import { Money, UserLabel } from '@/components/primitives';
 
 type Balance = {
   amount: string;
-  currency: SimpleCurrency;
+  currency: string;
   friend: SimpleUser;
   group?: { uid: string; name: string } | null;
 };

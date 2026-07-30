@@ -1,4 +1,4 @@
-import { ChildExpense, ExpenseShare, SimpleCurrency, SimpleUser } from '@/api-types';
+import { ChildExpense, ExpenseShare, SimpleUser } from '@/api-types';
 import { Avatar, Money, UserLabel } from '@/components/primitives';
 
 function ProportionBar({ shares }: { shares: ExpenseShare[] }) {
@@ -21,7 +21,7 @@ export function ExpenseItemShares({
   paidBy,
 }: {
   expenseItem: ChildExpense;
-  currency: SimpleCurrency;
+  currency: string;
   paidBy?: SimpleUser;
 }) {
   const totalShares = expenseItem.shares.reduce((sum, s) => sum + s.share, 0);

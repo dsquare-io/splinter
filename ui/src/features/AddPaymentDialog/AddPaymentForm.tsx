@@ -174,7 +174,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           min={1}
           name="amount"
           label="Amount"
-          currency={preferredCurrency}
+          currency={preferredCurrency?.uid}
           onBlur={() => {
             const val = formControl.getValues('amount');
             const paymentDir = formControl.getValues('paymentDir');

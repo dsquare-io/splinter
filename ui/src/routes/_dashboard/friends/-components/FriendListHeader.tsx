@@ -46,7 +46,7 @@ export function FriendListHeader() {
                     ? 'you lent '
                     : 'you borrowed '}
                   <Money
-                    currency={preferredCurrency!}
+                    currency={preferredCurrency!.uid}
                     value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
                   />
                 </>

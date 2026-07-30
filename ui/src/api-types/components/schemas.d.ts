@@ -18,7 +18,8 @@ export interface Activity {
   readonly isRead: boolean;
   /** Format: decimal */
   outstandingBalance?: string | null;
-  readonly currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   /** Format: date-time */
   readonly createdAt: string;
 }
@@ -115,9 +116,12 @@ export interface CreateUser {
   name: string;
 }
 
-export type Currency = SimpleCurrency & {
+export interface Currency {
+  uid: string;
+  readonly urn: string;
+  symbol?: string | null;
   readonly country: Country;
-};
+}
 
 export interface Device {
   id: number;
@@ -156,7 +160,8 @@ export interface Expense {
   /** Format: decimal */
   amount: string;
   group: string;
-  currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   /**
    * Format: decimal
    * @description The outstanding balance of current user in this expense document
@@ -294,7 +299,8 @@ export interface Payment {
   /** Format: decimal */
   amount: string;
   group: string;
-  currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
   readonly createdBy: SimpleUser;
   readonly sender: SimpleUser;
   readonly receiver: SimpleUser;
@@ -350,12 +356,6 @@ export type SettlementTyped = {
   };
 export type SettlementTypedTypeEnum = 'settlement';
 
-export interface SimpleCurrency {
-  uid: string;
-  readonly urn: string;
-  symbol?: string | null;
-}
-
 export interface SimpleGroup {
   readonly uid: string;
   readonly urn: string;
@@ -365,7 +365,8 @@ export interface SimpleGroup {
 export interface SimpleOutstandingBalance {
   /** Format: decimal */
   amount: string;
-  readonly currency: SimpleCurrency;
+  /** @description ISO 4217 Currency Code */
+  currency: string;
 }
 
 export interface SimpleUser {
