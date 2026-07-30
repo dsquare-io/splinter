@@ -19,12 +19,12 @@ export function GroupBalancesTab({ groupUid }: GroupBalancesTabProps) {
     data: members,
     isPending: membersPending,
     error: membersError,
-  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: groupUid });
+  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid });
   const {
     data: balances,
     isPending: balancesPending,
     error: balancesError,
-  } = useApiQuery(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { group_uid: groupUid });
+  } = useApiQuery(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { groupUid });
   const { currentUser } = useAuth();
 
   if (membersPending || balancesPending || !currentUser) {

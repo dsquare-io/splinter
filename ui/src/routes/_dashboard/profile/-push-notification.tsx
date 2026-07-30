@@ -14,7 +14,7 @@ export function PushNotification() {
     try {
       const uid = localStorage.getItem('push_subscription_uid');
       if (!uid) return;
-      await axiosInstance.post(urlWithArgs(ApiRoutes.PUSH_SUBSCRIPTION_DETAIL, { subscription_uid: uid }));
+      await axiosInstance.post(urlWithArgs(ApiRoutes.PUSH_SUBSCRIPTION_DETAIL, { subscriptionUid: uid }));
     } finally {
       setIsSendingTest(false);
     }

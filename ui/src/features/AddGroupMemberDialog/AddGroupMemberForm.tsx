@@ -20,7 +20,7 @@ export function AddGroupMemberForm({ groupUid }: AddGroupMemberFormProps) {
     data: members,
     error: membersError,
     refetch: refetchMembers,
-  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: groupUid });
+  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid });
 
   const friendsExcludingMembers = friends.filter((f) => !members?.find((m) => m.uid === f.uid));
 
@@ -33,11 +33,9 @@ export function AddGroupMemberForm({ groupUid }: AddGroupMemberFormProps) {
 
       <Form
         method="POST"
-        action={urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: groupUid })}
+        action={urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid })}
         onSubmitSuccess={async () => {
-          await queryClient.invalidateQueries(
-            apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: groupUid })
-          );
+          await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_DETAIL, { groupUid }));
           close();
         }}
         className="mt-4 flex h-full flex-col space-y-4"

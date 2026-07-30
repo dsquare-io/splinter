@@ -47,13 +47,13 @@ export function ExpenseDetailDialog() {
       onOpenChange={setIsOpen}
       isDismissable
     >
-      <ExpenseDialogHeader expenseId={expense} />
+      <ExpenseDialogHeader expenseUid={expense} />
 
-      <ExpenseDetail expenseId={expense} />
+      <ExpenseDetail expenseUid={expense} />
 
       <hr className="my-6 border-gray-300" />
 
-      <ExpenseActivity expenseId={expense} />
+      <ExpenseActivity expenseUid={expense} />
     </Dialog>
   );
 }

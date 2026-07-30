@@ -9,17 +9,17 @@ import { CommentItem } from './CommentItem.tsx';
 import { TimelineItem } from './TimelineItem.tsx';
 
 type ExpenseActivityProps = {
-  expenseId: string;
+  expenseUid: string;
 };
 
-export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
+export function ExpenseActivity({ expenseUid }: ExpenseActivityProps) {
   const { currentUser } = useAuth();
   const { data: activities, isLoading } = useApiQuery(
     ApiRoutes.ACTIVITY_LIST,
     {},
-    { of: `urn:splinter:expense/${expenseId}`, order: 'asc' }
+    { of: `urn:splinter:expense/${expenseUid}`, order: 'asc' }
   );
-  const { data: expenseChangeLogs } = useApiQuery(ApiRoutes.EXPENSE_CHANGE_LOG, { expense_uid: expenseId });
+  const { data: expenseChangeLogs } = useApiQuery(ApiRoutes.EXPENSE_CHANGE_LOG, { expenseUid });
 
   const changeLogByActivity = useMemo(() => {
     const grouped: Record<string, ExpenseChangeLog> = {};
@@ -86,7 +86,7 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
             fallback={currentUser?.name}
             className="size-6 shrink-0 bg-white"
           />
-          <CommentForm activityId={items?.[0]?.uid} />
+          <CommentForm activityUid={items?.[0]?.uid} />
         </li>
       </ul>
     </>

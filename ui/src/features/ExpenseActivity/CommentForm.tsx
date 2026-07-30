@@ -6,16 +6,16 @@ import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type CommentFormProps = {
-  activityId?: string;
+  activityUid?: string;
 };
 
-export function CommentForm({ activityId }: CommentFormProps) {
-  if (!activityId) return;
+export function CommentForm({ activityUid }: CommentFormProps) {
+  if (!activityUid) return;
 
   return (
     <Form
       className="relative flex-auto"
-      action={urlWithArgs(ApiRoutes.COMMENT_LIST, { activity_uid: activityId })}
+      action={urlWithArgs(ApiRoutes.COMMENT_LIST, { activityUid })}
       onSubmitSuccess={async (_, control) => {
         await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.ACTIVITY_LIST));
         control.reset();

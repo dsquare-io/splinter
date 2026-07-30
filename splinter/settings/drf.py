@@ -14,6 +14,10 @@ SPECTACULAR_SETTINGS = {
     'VERSION': __version__,
     'SCHEMA_PATH_PREFIX': '/api/',
     'SERVE_INCLUDE_SCHEMA': False,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+        "splinter.core.openapi.hooks.camelize_path_parameters",
+    ],
 }
 
 

@@ -21,7 +21,7 @@ export function GroupMemberSection({ group, currentUserHasBalance }: GroupMember
     isLoading: membersLoading,
     error: membersError,
     refetch: refetchMembers,
-  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: group.uid });
+  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid: group.uid });
 
   async function removeMember(member: SimpleUser) {
     return confirm({
@@ -35,12 +35,12 @@ export function GroupMemberSection({ group, currentUserHasBalance }: GroupMember
       callback: async () => {
         await axiosInstance.delete(
           urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP_DETAIL, {
-            group_uid: group.uid,
-            member_uid: member.uid,
+            groupUid: group.uid,
+            memberUid: member.uid,
           })
         );
         return queryClient.invalidateQueries(
-          apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: group.uid })
+          apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid: group.uid })
         );
       },
     });

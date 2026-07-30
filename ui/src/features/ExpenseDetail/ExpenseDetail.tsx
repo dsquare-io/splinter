@@ -11,18 +11,14 @@ import { ExpenseDetailView } from './ExpenseDetailView.tsx';
 import { PaymentDetail } from './PaymentDetail.tsx';
 
 type ExpenseDetailProps = {
-  expenseId: string;
+  expenseUid: string;
   group?: SimpleGroup | null;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 };
 
-export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
-  const {
-    data: expense,
-    isPending,
-    error,
-  } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
+export function ExpenseDetail({ expenseUid, group }: ExpenseDetailProps) {
+  const { data: expense, isPending, error } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expenseUid });
 
   useEffect(() => {
     if (!expense) return;
@@ -89,7 +85,7 @@ export function ExpenseDetail({ expenseId, group }: ExpenseDetailProps) {
     <>
       {expense.isDeleted && (
         <DeletedBanner
-          uid={expenseId}
+          uid={expenseUid}
           type={expense.type}
           group={expense.group}
         />

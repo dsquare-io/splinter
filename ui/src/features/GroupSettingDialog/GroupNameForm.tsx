@@ -4,20 +4,20 @@ import { FieldError, Form, FormRootErrors, SubmitButton, TextFormField } from '@
 import { Input, Label, useDialog } from '@/components/primitives';
 
 type GroupNameFormProps = {
-  group_uid: string;
+  groupUid: string;
   groupName?: string;
 };
 
-export function GroupNameForm({ group_uid, groupName }: GroupNameFormProps) {
+export function GroupNameForm({ groupUid, groupName }: GroupNameFormProps) {
   const { close } = useDialog();
 
   return (
     <Form
       values={{ name: groupName }}
       method="PATCH"
-      action={urlWithArgs(ApiRoutes.GROUP_DETAIL, { group_uid })}
+      action={urlWithArgs(ApiRoutes.GROUP_DETAIL, { groupUid })}
       onSubmitSuccess={async () => {
-        await emit('group:mutated', { uid: group_uid });
+        await emit('group:mutated', { uid: groupUid });
         close();
       }}
       className="mt-4"

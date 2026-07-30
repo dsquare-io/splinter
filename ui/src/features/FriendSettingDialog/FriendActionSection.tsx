@@ -33,7 +33,7 @@ export function FriendActionSection({ friend }: FriendActionSectionProps) {
         {!friend.isActive && (
           <ActionButton
             onClick={async () => {
-              await axiosInstance.post(urlWithArgs(ApiRoutes.FRIEND_INVITATION, { friend_uid: friend.uid }));
+              await axiosInstance.post(urlWithArgs(ApiRoutes.FRIEND_INVITATION, { friendUid: friend.uid }));
             }}
             doneMessage={`Invite sent to ${friend.name}`}
             IconComponent={EnvelopeIcon}
@@ -48,7 +48,7 @@ export function FriendActionSection({ friend }: FriendActionSectionProps) {
         <ActionButton
           color="danger"
           onClick={async () => {
-            await axiosInstance.delete(urlWithArgs(ApiRoutes.FRIEND_DETAIL, { friend_uid: friend.uid }));
+            await axiosInstance.delete(urlWithArgs(ApiRoutes.FRIEND_DETAIL, { friendUid: friend.uid }));
             await emit('friend:mutated', { uid: friend.uid });
             await navigate({ to: '/friends' });
             close();

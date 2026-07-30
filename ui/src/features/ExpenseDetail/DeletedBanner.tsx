@@ -20,7 +20,7 @@ export function DeletedBanner({ type, uid, group }: DeletedBannerProps) {
   async function handleRestore() {
     setRestoring(true);
     try {
-      await axiosInstance.patch(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: uid }));
+      await axiosInstance.patch(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expenseUid: uid }));
       await Promise.all([
         invalidateQueriesForExpense({ uid, group }),
         emit('expense:mutated', { uid, group }),

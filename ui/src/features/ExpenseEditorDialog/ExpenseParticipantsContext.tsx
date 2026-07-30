@@ -119,7 +119,7 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
 
   const isGroup = selected[0]?.type === 'group';
   const { data: groupMembers } = useQuery(
-    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: selected[0]?.uid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid: selected[0]?.uid ?? '' }, undefined, {
       enabled: isGroup,
     })
   );

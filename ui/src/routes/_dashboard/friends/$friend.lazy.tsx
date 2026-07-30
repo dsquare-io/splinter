@@ -24,7 +24,7 @@ function RootComponent() {
         <ScrollScene.Content>
           <ExpenseList
             apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}
-            args={{ friend_uid: friendUid }}
+            args={{ friendUid }}
             detailRoute="/friends/$friend/$expense"
             detailRouteParams={{ friend: friendUid }}
           />

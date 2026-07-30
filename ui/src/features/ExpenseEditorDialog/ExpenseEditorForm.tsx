@@ -125,7 +125,7 @@ function ExpenseEditorFormInner({ expense }: Props) {
 
   const isEdit = !!expense;
   const action = isEdit
-    ? urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expense!.uid })
+    ? urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expenseUid: expense!.uid })
     : ApiRoutes.EXPENSE;
 
   const goToShares = async () => {

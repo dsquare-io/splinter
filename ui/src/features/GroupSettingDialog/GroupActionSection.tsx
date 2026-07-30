@@ -27,8 +27,8 @@ export function GroupActionSection({ group, currentUserHasBalance: hasBalance }:
           onClick={async () => {
             await axiosInstance.delete(
               urlWithArgs(ApiRoutes.GROUP_MEMBERSHIP_DETAIL, {
-                group_uid: group.uid,
-                member_uid: currentUser!.uid,
+                groupUid: group.uid,
+                memberUid: currentUser!.uid,
               })
             );
             await emit('group:mutated', { uid: group.uid });
@@ -61,7 +61,7 @@ export function GroupActionSection({ group, currentUserHasBalance: hasBalance }:
           onClick={async () => {
             await axiosInstance.delete(
               urlWithArgs(ApiRoutes.GROUP_DETAIL, {
-                group_uid: group.uid,
+                groupUid: group.uid,
               })
             );
             await emit('group:mutated', { uid: group.uid });

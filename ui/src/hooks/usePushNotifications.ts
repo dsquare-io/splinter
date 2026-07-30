@@ -47,9 +47,7 @@ export function usePushNotifications() {
     try {
       const uid = localStorage.getItem(SUBSCRIPTION_UID_KEY);
       if (uid) {
-        await axiosInstance.delete(
-          urlWithArgs(ApiRoutes.PUSH_SUBSCRIPTION_DETAIL, { subscription_uid: uid })
-        );
+        await axiosInstance.delete(urlWithArgs(ApiRoutes.PUSH_SUBSCRIPTION_DETAIL, { subscriptionUid: uid }));
         localStorage.removeItem(SUBSCRIPTION_UID_KEY);
       }
       const sw = await navigator.serviceWorker.ready;

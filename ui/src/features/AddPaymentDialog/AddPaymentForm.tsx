@@ -46,7 +46,7 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
   );
   const friend = friendUid ? friendMatches?.[0] : undefined;
   const { data: members } = useQuery(
-    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: groupUid ?? '' }, undefined, {
+    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { groupUid: groupUid ?? '' }, undefined, {
       enabled: !!groupUid,
     })
   );

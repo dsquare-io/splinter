@@ -29,9 +29,9 @@ const PAYMENT_CONFIG = {
   label: 'Payment',
 } as const;
 
-export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
+export function ExpenseDialogHeader({ expenseUid }: { expenseUid: string }) {
   const { close } = useContext(OverlayTriggerStateContext)!;
-  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId });
+  const { data: expense } = useApiQuery(ApiRoutes.EXPENSE_DETAIL, { expenseUid });
   const confirm = useConfirmation();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -49,10 +49,10 @@ export function ExpenseDialogHeader({ expenseId }: { expenseId: string }) {
         </>
       ),
       callback: async () => {
-        await axiosInstance.delete(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expense_uid: expenseId }));
+        await axiosInstance.delete(urlWithArgs(ApiRoutes.EXPENSE_DETAIL, { expenseUid }));
         await Promise.all([
           invalidateQueriesForExpense(expense),
-          emit('expense:mutated', { uid: expenseId, group: expense?.group }),
+          emit('expense:mutated', { uid: expenseUid, group: expense?.group }),
         ]);
         close();
       },

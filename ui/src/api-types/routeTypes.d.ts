@@ -17,7 +17,7 @@ export interface paths {
     patch: operations['AcknowledgeActivity'];
     trace?: never;
   };
-  '/api/activities/{activity_uid}': {
+  '/api/activities/{activityUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -34,7 +34,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/activities/{activity_uid}/comments': {
+  '/api/activities/{activityUid}/comments': {
     parameters: {
       query?: never;
       header?: never;
@@ -52,7 +52,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/activities/{activity_uid}/comments/{comment_uid}': {
+  '/api/activities/{activityUid}/comments/{commentUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -171,7 +171,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/expenses/{expense_uid}': {
+  '/api/expenses/{expenseUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -191,7 +191,7 @@ export interface paths {
     patch: operations['RestoreExpense'];
     trace?: never;
   };
-  '/api/expenses/{expense_uid}/changelog': {
+  '/api/expenses/{expenseUid}/changelog': {
     parameters: {
       query?: never;
       header?: never;
@@ -226,7 +226,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/friends/{friend_uid}': {
+  '/api/friends/{friendUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -244,7 +244,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/friends/{friend_uid}/expenses': {
+  '/api/friends/{friendUid}/expenses': {
     parameters: {
       query?: never;
       header?: never;
@@ -261,7 +261,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/friends/{friend_uid}/invitations': {
+  '/api/friends/{friendUid}/invitations': {
     parameters: {
       query?: never;
       header?: never;
@@ -296,7 +296,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/groups/{group_uid}': {
+  '/api/groups/{groupUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -316,7 +316,7 @@ export interface paths {
     patch: operations['PartialUpdateGroup'];
     trace?: never;
   };
-  '/api/groups/{group_uid}/expenses': {
+  '/api/groups/{groupUid}/expenses': {
     parameters: {
       query?: never;
       header?: never;
@@ -333,7 +333,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/groups/{group_uid}/members': {
+  '/api/groups/{groupUid}/members': {
     parameters: {
       query?: never;
       header?: never;
@@ -351,7 +351,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/groups/{group_uid}/members/{member_uid}': {
+  '/api/groups/{groupUid}/members/{memberUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -368,7 +368,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/groups/{group_uid}/outstanding-balance': {
+  '/api/groups/{groupUid}/outstanding-balance': {
     parameters: {
       query?: never;
       header?: never;
@@ -385,7 +385,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mfa/challenge/{device_type}': {
+  '/api/mfa/challenge/{deviceType}': {
     parameters: {
       query?: never;
       header?: never;
@@ -402,7 +402,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mfa/confirm/{device_type}': {
+  '/api/mfa/confirm/{deviceType}': {
     parameters: {
       query?: never;
       header?: never;
@@ -419,7 +419,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mfa/device/{device_type}:{id}': {
+  '/api/mfa/device/{deviceType}:{id}': {
     parameters: {
       query?: never;
       header?: never;
@@ -453,7 +453,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mfa/enable/{device_type}': {
+  '/api/mfa/enable/{deviceType}': {
     parameters: {
       query?: never;
       header?: never;
@@ -488,7 +488,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/mfa/verify/{device_type}': {
+  '/api/mfa/verify/{deviceType}': {
     parameters: {
       query?: never;
       header?: never;
@@ -522,7 +522,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/api/notifications/push-subscriptions/{subscription_uid}': {
+  '/api/notifications/push-subscriptions/{subscriptionUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -696,7 +696,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/media/attachments/{attachment_uid}': {
+  '/media/attachments/{attachmentUid}': {
     parameters: {
       query?: never;
       header?: never;
@@ -713,7 +713,7 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  '/media/attachments/{attachment_uid}/thumbnail': {
+  '/media/attachments/{attachmentUid}/thumbnail': {
     parameters: {
       query?: never;
       header?: never;
@@ -912,7 +912,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        activity_uid: string;
+        activityUid: string;
       };
       cookie?: never;
     };
@@ -960,7 +960,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        activity_uid: string;
+        activityUid: string;
       };
       cookie?: never;
     };
@@ -1008,7 +1008,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        activity_uid: string;
+        activityUid: string;
       };
       cookie?: never;
     };
@@ -1074,8 +1074,8 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        activity_uid: string;
-        comment_uid: string;
+        activityUid: string;
+        commentUid: string;
       };
       cookie?: never;
     };
@@ -1362,7 +1362,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        expense_uid: string;
+        expenseUid: string;
       };
       cookie?: never;
     };
@@ -1410,7 +1410,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        expense_uid: string;
+        expenseUid: string;
       };
       cookie?: never;
     };
@@ -1476,7 +1476,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        expense_uid: string;
+        expenseUid: string;
       };
       cookie?: never;
     };
@@ -1523,7 +1523,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        expense_uid: string;
+        expenseUid: string;
       };
       cookie?: never;
     };
@@ -1584,7 +1584,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        expense_uid: string;
+        expenseUid: string;
       };
       cookie?: never;
     };
@@ -1727,7 +1727,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        friend_uid: string;
+        friendUid: string;
       };
       cookie?: never;
     };
@@ -1775,7 +1775,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        friend_uid: string;
+        friendUid: string;
       };
       cookie?: never;
     };
@@ -1825,7 +1825,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        friend_uid: string;
+        friendUid: string;
       };
       cookie?: never;
     };
@@ -1873,7 +1873,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        friend_uid: string;
+        friendUid: string;
       };
       cookie?: never;
     };
@@ -2026,7 +2026,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2074,7 +2074,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2140,7 +2140,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2187,7 +2187,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2256,7 +2256,7 @@ export interface operations {
       };
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2304,7 +2304,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2352,7 +2352,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2418,8 +2418,8 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
-        member_uid: string;
+        groupUid: string;
+        memberUid: string;
       };
       cookie?: never;
     };
@@ -2466,7 +2466,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        group_uid: string;
+        groupUid: string;
       };
       cookie?: never;
     };
@@ -2514,7 +2514,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        device_type: string;
+        deviceType: string;
       };
       cookie?: never;
     };
@@ -2576,7 +2576,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        device_type: string;
+        deviceType: string;
       };
       cookie?: never;
     };
@@ -2642,7 +2642,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        device_type: string;
+        deviceType: string;
         id: number;
       };
       cookie?: never;
@@ -2727,7 +2727,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        device_type: string;
+        deviceType: string;
       };
       cookie?: never;
     };
@@ -2881,7 +2881,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        device_type: string;
+        deviceType: string;
       };
       cookie?: never;
     };
@@ -3002,7 +3002,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        subscription_uid: string;
+        subscriptionUid: string;
       };
       cookie?: never;
     };
@@ -3063,7 +3063,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        subscription_uid: string;
+        subscriptionUid: string;
       };
       cookie?: never;
     };
@@ -3698,7 +3698,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        attachment_uid: string;
+        attachmentUid: string;
       };
       cookie?: never;
     };
@@ -3746,7 +3746,7 @@ export interface operations {
       query?: never;
       header?: never;
       path: {
-        attachment_uid: string;
+        attachmentUid: string;
       };
       cookie?: never;
     };

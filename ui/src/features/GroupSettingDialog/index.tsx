@@ -26,7 +26,7 @@ export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
     <Dialog>
       <DialogHeader title="Group Settings" />
       <GroupNameForm
-        group_uid={group.uid}
+        groupUid={group.uid}
         groupName={group.name}
       />
       <GroupMemberSection

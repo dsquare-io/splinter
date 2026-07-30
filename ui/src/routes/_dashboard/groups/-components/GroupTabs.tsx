@@ -22,7 +22,7 @@ export function GroupTabs({ groupUid }: { groupUid: string }) {
       <TabPanel id="activity">
         <ExpenseList
           apiPath={ApiRoutes.GROUP_EXPENSE_LIST}
-          args={{ group_uid: groupUid }}
+          args={{ groupUid }}
           detailRoute="/groups/$group/$expense"
           detailRouteParams={{ group: groupUid }}
         />
