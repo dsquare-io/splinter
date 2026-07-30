@@ -101,7 +101,7 @@ function SplashController() {
     };
   }, [status]);
 
-  if (!authError) return null;
+  if (!authError || window.location.pathname.startsWith('/auth')) return null;
 
   const isAuthError =
     isAxiosError(authError) && (authError.response?.status === 401 || authError.response?.status === 403);

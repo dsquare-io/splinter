@@ -4,7 +4,8 @@ import { currencyPreference } from '@/collections/currencyPreference.ts';
 import { profile } from '@/collections/profile.ts';
 import { syncEntity, useEntitySync } from '@/hooks/useEntitySync.ts';
 import { useLocalValue } from '@/hooks/useLocalValue.ts';
-import { rxdbPromise } from '@/rxdb.ts';
+import { requestLocalDatabaseWipe, rxdbPromise } from '@/rxdb.ts';
+import { broadcastLogout } from '@/tabSync.ts';
 
 export enum AuthStatus {
   LOGGED_OUT = 'logged_out',
@@ -40,7 +41,7 @@ export function useAuth() {
       setAccessToken(access || null);
       setRefreshToken(refresh || null);
     },
-    logout: ({ redirect = false }: { redirect?: boolean } = {}) => {
+    logout: async ({ redirect = false }: { redirect?: boolean } = {}) => {
       setAccessToken(null);
       setRefreshToken(null);
       setHeaders(null);
@@ -48,8 +49,11 @@ export function useAuth() {
       // LocalValue-backed store must be cleared explicitly.
       profile.store.clear();
       currencyPreference.store.clear();
-      rxdbPromise.then((db) => db.remove());
-      if (redirect) window.location.href = '/auth/login';
+      await rxdbPromise.then((db) => db.remove());
+      requestLocalDatabaseWipe();
+      // Other tabs must drop their connections too, or they'd block that wipe.
+      broadcastLogout();
+      if (redirect) window.location.reload();
     },
     refetchProfile: () => syncEntity(profile),
   };

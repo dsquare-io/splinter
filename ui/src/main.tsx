@@ -8,9 +8,11 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { ConfirmationProvider } from '@/components/ConfirmationProvider';
 import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
+import { listenToOtherTabs } from './tabSync';
 
-import '@/collections/index.ts';
 import './styles/index.css';
+
+listenToOtherTabs();
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
