@@ -11,15 +11,17 @@ export function FriendListHeader() {
     ApiRoutes.CURRENCY_PREFERENCE
   );
   const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
 
-  const aggregatedOutstandingBalance = friends?.reduce(
-    (acc, friend) => {
-      const currency = friend.aggregatedOutstandingBalance?.currency?.uid ?? '';
-      acc[currency] = (acc[currency] ?? 0) + +(friend.aggregatedOutstandingBalance?.amount ?? 0);
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const aggregatedOutstandingBalance = balanceData?.aggregatedOutstandingBalance
+    .filter((balance) => balance.objectType === 'friend')
+    .reduce(
+      (acc, balance) => {
+        acc[balance.currency] = (acc[balance.currency] ?? 0) + +balance.amount;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   return (
     <ScrollScene.Header

@@ -9,15 +9,17 @@ import { useApiQuery } from '@/hooks/useApiQuery.ts';
 export function GroupListHeader() {
   const { data: preferredCurrency, isPending: currencyPending } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
 
-  const aggregatedOutstandingBalance = groups?.reduce(
-    (acc, group) => {
-      const currency = group.aggregatedOutstandingBalance?.currency.uid ?? '';
-      acc[currency] = (acc[currency] ?? 0) + +(group.aggregatedOutstandingBalance?.amount ?? 0);
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const aggregatedOutstandingBalance = balanceData?.aggregatedOutstandingBalance
+    .filter((balance) => balance.objectType === 'group')
+    .reduce(
+      (acc, balance) => {
+        acc[balance.currency] = (acc[balance.currency] ?? 0) + +balance.amount;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
   return (
     <ScrollScene.Header

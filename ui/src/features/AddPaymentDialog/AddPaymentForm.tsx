@@ -1,19 +1,20 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useQuery } from '@tanstack/react-query';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes, type ExtendedGroup, type Friend, type SimpleUser } from '@/api-types';
+import { ApiRoutes, type Friend, type Group, type SimpleUser } from '@/api-types';
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
 import { AttachmentContext, AttachmentPanel, useAttachment } from '@/features/AttachmentPanel';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
-  group?: ExtendedGroup;
+  group?: Group;
   friend?: Friend;
 };
 
@@ -22,28 +23,38 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
   const formControl = useForm();
   const { currentUser } = useAuth();
   const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: userBalanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
+  const { data: groupBalances } = useQuery(
+    apiQueryOptions(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { group_uid: group?.uid ?? '' }, undefined, {
+      enabled: !!group,
+    })
+  );
   const attachments = useAttachment();
 
+  const friendAggregatedBalance = userBalanceData?.aggregatedOutstandingBalance.find(
+    (balance) => balance.objectType === 'friend' && balance.objectUid === friend?.uid
+  );
+
   useEffect(() => {
-    if (friend?.aggregatedOutstandingBalance) {
-      const balance = +(friend.aggregatedOutstandingBalance.amount ?? 0);
+    if (friendAggregatedBalance) {
+      const balance = +(friendAggregatedBalance.amount ?? 0);
 
       if (balance) {
         formControl.setValue('paymentDir', balance < 0 ? 'out' : 'in');
         formControl.setValue('amount', Math.abs(balance));
       }
     }
-  }, [formControl, friend]);
+  }, [formControl, friendAggregatedBalance]);
 
   const balanceByUsers = useMemo(() => {
-    const grouped = groupBy(group?.outstandingBalances ?? [], (balance) => balance.user.uid);
+    const grouped = groupBy(groupBalances ?? [], (balance) => balance.user);
     return Object.fromEntries(
       Object.entries(grouped).map(([uId, balances]) => [
         uId,
-        balances.filter((balance) => balance.friend.uid === currentUser?.uid),
+        balances.filter((balance) => balance.friend === currentUser?.uid),
       ])
     );
-  }, [group?.outstandingBalances, currentUser?.uid]);
+  }, [groupBalances, currentUser?.uid]);
 
   return (
     <AttachmentContext.Provider value={attachments}>

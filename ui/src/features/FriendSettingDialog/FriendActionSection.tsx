@@ -4,7 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { ApiRoutes, urlWithArgs, type Friend } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type FriendActionSectionProps = {
@@ -13,7 +13,8 @@ type FriendActionSectionProps = {
 
 export function FriendActionSection({ friend }: FriendActionSectionProps) {
   const navigate = useNavigate();
-  const hasBalance = false; // friend.outstandingBalances.length > 0;
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
+  const hasBalance = !!balanceData?.outstandingBalances.some((balance) => balance.friend === friend.uid);
 
   return (
     <section className="mt-6">

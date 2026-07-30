@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import groupBy from 'just-group-by';
 
 import { ApiRoutes } from '@/api-types';
@@ -10,6 +12,13 @@ import { FriendListItem } from './FriendListItem.tsx';
 
 export function FriendList() {
   const { data: friends, isPending, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
+  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
+
+  const groupsById = useMemo(
+    () => Object.fromEntries((groups ?? []).map((group) => [group.uid, group])),
+    [groups]
+  );
 
   return (
     <PullToRefresh onRefresh={refetch}>
@@ -39,6 +48,16 @@ export function FriendList() {
                     <FriendListItem
                       key={friend.uid}
                       {...friend}
+                      aggregatedOutstandingBalance={balanceData?.aggregatedOutstandingBalance.find(
+                        (balance) => balance.objectType === 'friend' && balance.objectUid === friend.uid
+                      )}
+                      outstandingBalances={(balanceData?.outstandingBalances ?? [])
+                        .filter((balance) => balance.friend === friend.uid)
+                        .map((balance) => ({
+                          ...balance,
+                          friend,
+                          group: balance.group ? (groupsById[balance.group] ?? null) : null,
+                        }))}
                     />
                   ))}
                 </div>

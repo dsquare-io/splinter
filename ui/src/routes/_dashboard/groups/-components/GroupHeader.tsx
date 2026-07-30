@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
@@ -12,16 +13,24 @@ import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 import { useApiQuery } from '@/hooks/useApiQuery';
-import { useAuth } from '@/hooks/useAuth.ts';
 import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export function GroupHeader({ group_uid }: { group_uid: string }) {
-  const { currentUser } = useAuth();
   const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
   useRedirectOn404(error, '/groups');
 
-  const myOutstandingBalances =
-    group?.outstandingBalances?.filter((e) => e.user.uid === currentUser?.uid) ?? [];
+  const membersById = useMemo(
+    () => Object.fromEntries((group?.members ?? []).map((member) => [member.uid, member])),
+    [group?.members]
+  );
+
+  const myOutstandingBalances = (balanceData?.outstandingBalances ?? [])
+    .filter((balance) => balance.group === group_uid)
+    .flatMap((balance) => {
+      const friend = membersById[balance.friend];
+      return friend ? [{ ...balance, friend, group: null }] : [];
+    });
 
   return (
     <ScrollScene.Header

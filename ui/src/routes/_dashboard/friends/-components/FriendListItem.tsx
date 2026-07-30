@@ -1,11 +1,17 @@
 import clx from 'clsx';
+import { ComponentProps } from 'react';
 
 import { ExclamationTriangleIcon } from '@heroicons/react/16/solid';
 import { Link } from '@tanstack/react-router';
 
-import { Friend } from '@/api-types/components/schemas';
+import { AggregatedOutstandingBalance, Friend } from '@/api-types/components/schemas';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
+
+type FriendListItemProps = Friend & {
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
+  outstandingBalances?: ComponentProps<typeof OutstandingBalanceList>['balances'];
+};
 
 export function FriendListItem({
   name,
@@ -13,7 +19,7 @@ export function FriendListItem({
   isActive,
   aggregatedOutstandingBalance,
   outstandingBalances,
-}: Friend) {
+}: FriendListItemProps) {
   return (
     <Link
       to="/friends/$friend"
@@ -37,16 +43,16 @@ export function FriendListItem({
           </div>
         )}
         <div className="text-md flex flex-1 items-center gap-2 py-1">{name}</div>
-        {+aggregatedOutstandingBalance.amount === 0 ? (
+        {+(aggregatedOutstandingBalance?.amount ?? 0) === 0 ? (
           <div className="text-xs text-gray-400">Settled up</div>
         ) : (
           <div className="text-right text-sm">
             <div className="text-xs text-gray-400">
-              {+aggregatedOutstandingBalance.amount > 0 ? 'You lent' : 'You borrowed'}
+              {+aggregatedOutstandingBalance!.amount > 0 ? 'You lent' : 'You borrowed'}
             </div>
             <Money
-              currency={aggregatedOutstandingBalance.currency}
-              value={aggregatedOutstandingBalance.amount}
+              currency={aggregatedOutstandingBalance!.currency}
+              value={aggregatedOutstandingBalance!.amount}
             />
           </div>
         )}

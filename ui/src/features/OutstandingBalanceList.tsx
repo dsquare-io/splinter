@@ -1,9 +1,14 @@
 import { Fragment } from 'react';
 
-import { FriendOutstandingBalance, GroupOutstandingBalance } from '@/api-types/components/schemas';
+import { SimpleCurrency, SimpleUser } from '@/api-types/components/schemas';
 import { Money, UserLabel } from '@/components/primitives';
 
-type Balance = FriendOutstandingBalance | GroupOutstandingBalance;
+type Balance = {
+  amount: string;
+  currency: SimpleCurrency;
+  friend: SimpleUser;
+  group?: { uid: string; name: string } | null;
+};
 
 type OutstandingBalanceListProps = {
   balances?: Balance[];
@@ -25,7 +30,7 @@ export function OutstandingBalanceList({ balances }: OutstandingBalanceListProps
               currency={e.currency}
               value={e.amount}
             />
-            {'group' in e && e.group && <> in {e.group.name}</>}
+            {e.group && <> in {e.group.name}</>}
           </p>
         </Fragment>
       ))}

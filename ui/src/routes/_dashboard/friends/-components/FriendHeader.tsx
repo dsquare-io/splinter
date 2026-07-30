@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon } from '@heroicons/react/16/solid';
@@ -15,7 +16,22 @@ import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
 
 export function FriendHeader({ friend_uid }: { friend_uid: string }) {
   const { data: friend, isPending, error } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
+  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
+  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
   useRedirectOn404(error, '/friends');
+
+  const groupsById = useMemo(
+    () => Object.fromEntries((groups ?? []).map((group) => [group.uid, group])),
+    [groups]
+  );
+
+  const outstandingBalances = (balanceData?.outstandingBalances ?? [])
+    .filter((balance) => friend && balance.friend === friend.uid)
+    .map((balance) => ({
+      ...balance,
+      friend: friend!,
+      group: balance.group ? (groupsById[balance.group] ?? null) : null,
+    }));
 
   return (
     <ScrollScene.Header
@@ -65,7 +81,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
                   Not yet joined
                 </span>
               )}
-              <OutstandingBalanceList balances={friend.outstandingBalances} />
+              <OutstandingBalanceList balances={outstandingBalances} />
             </ScrollScene.Hide>
           </>
         ) : undefined}

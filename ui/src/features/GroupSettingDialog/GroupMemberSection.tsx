@@ -1,6 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-import { ApiRoutes, GroupOutstandingBalance, SimpleUser, urlWithArgs, type ExtendedGroup } from '@/api-types';
+import { ApiRoutes, GroupOutstandingBalance, SimpleUser, urlWithArgs, type Group } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { Avatar, IconButton } from '@/components/primitives';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -8,7 +8,7 @@ import { useConfirmation } from '@/hooks/useConfirmation.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type GroupMembersSectionProps = {
-  group: ExtendedGroup;
+  group: Group;
   balanceByUsers: Record<string, GroupOutstandingBalance[]>;
 };
 

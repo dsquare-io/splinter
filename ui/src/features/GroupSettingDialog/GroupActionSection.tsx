@@ -1,7 +1,7 @@
 import { ArrowRightStartOnRectangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes, GroupOutstandingBalance, urlWithArgs, type ExtendedGroup } from '@/api-types';
+import { ApiRoutes, GroupOutstandingBalance, urlWithArgs, type Group } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type GroupActionsSectionProps = {
-  group: ExtendedGroup;
+  group: Group;
   balanceByUsers: Record<string, GroupOutstandingBalance[]>;
 };
 

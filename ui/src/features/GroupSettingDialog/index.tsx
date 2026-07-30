@@ -2,21 +2,21 @@ import { useMemo } from 'react';
 
 import groupBy from 'just-group-by';
 
-import type { ExtendedGroup } from '@/api-types';
+import { ApiRoutes, type Group } from '@/api-types';
 import { Dialog, DialogHeader } from '@/components/primitives';
+import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { GroupActionSection } from './GroupActionSection.tsx';
 import { GroupMemberSection } from './GroupMemberSection.tsx';
 import { GroupNameForm } from './GroupNameForm';
 
 type GroupSettingDialogProps = {
-  group: ExtendedGroup;
+  group: Group;
 };
 
 export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
-  const balanceByUsers = useMemo(
-    () => groupBy(group.outstandingBalances, (balance) => balance.user.uid),
-    [group.outstandingBalances]
-  );
+  const { data: balances } = useApiQuery(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { group_uid: group.uid });
+
+  const balanceByUsers = useMemo(() => groupBy(balances ?? [], (balance) => balance.user), [balances]);
 
   return (
     <Dialog>

@@ -100,7 +100,7 @@ function SplashController() {
   };
 
   return (
-    <div className="flex flex-1 flex-col px-4">
+    <div className="flex h-full flex-1 flex-col px-4">
       <div className="flex flex-1 items-center justify-center">
         <ErrorAlert
           error={authError}

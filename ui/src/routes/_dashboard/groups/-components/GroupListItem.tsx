@@ -1,12 +1,23 @@
 import clx from 'clsx';
+import { ComponentProps } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
-import { Group } from '@/api-types/components/schemas';
+import { AggregatedOutstandingBalance, SimpleGroup } from '@/api-types/components/schemas';
 import { Avatar, Money } from '@/components/primitives';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
 
-export function GroupListItem({ uid, name, outstandingBalances, aggregatedOutstandingBalance }: Group) {
+type GroupListItemProps = SimpleGroup & {
+  aggregatedOutstandingBalance?: AggregatedOutstandingBalance;
+  outstandingBalances?: ComponentProps<typeof OutstandingBalanceList>['balances'];
+};
+
+export function GroupListItem({
+  uid,
+  name,
+  outstandingBalances,
+  aggregatedOutstandingBalance,
+}: GroupListItemProps) {
   return (
     <Link
       to="/groups/$group"

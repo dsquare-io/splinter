@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import Prefetch
-from django.utils import timezone
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
@@ -264,14 +263,6 @@ class ExpenseOrPaymentOrSettlementSerializer(ExpenseOrPaymentSerializer):
         return super().get_discriminator(instance)
 
 
-def _get_expense_audience(actor, expense):
-    user_ids = set(ExpenseSplit.objects.filter(expense=expense).values_list('user_id', flat=True))
-    user_ids.add(expense.paid_by_id)
-    audience = {uid: {} for uid in user_ids}
-    audience.setdefault(actor.id, {})['read_at'] = timezone.now()
-    return audience
-
-
 class UpsertExpenseSerializer(serializers.Serializer):
     datetime = serializers.DateTimeField()
     description = serializers.CharField(max_length=64, default=None)
@@ -418,7 +409,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
         return CreatePaymentOperation(actor).execute(validated_data)
 
 
-class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
+class SimpleOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
     currency = SimpleCurrencySerializer(read_only=True)
 
     class Meta:
@@ -429,60 +420,66 @@ class OutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.
         return super().prefetch_queryset(queryset).prefetch_related('currency')
 
 
-class AggregatedOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
-    currency = SimpleCurrencySerializer(read_only=True)
+class OutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
+    uid = serializers.SerializerMethodField()
+    group = serializers.UUIDField(source='group.uid', read_only=True)
+    friend = serializers.CharField(source='friend.uid', read_only=True)
+
+    class Meta(SimpleOutstandingBalanceSerializer.Meta):
+        fields = SimpleOutstandingBalanceSerializer.Meta.fields + ('uid', 'group', 'friend')
+
+    @extend_schema_field(serializers.CharField())
+    def get_uid(self, obj: "OutstandingBalance") -> str:
+        parts = []
+        if obj.group:
+            parts.append(obj.group.uid)
+
+        if obj.friend:
+            parts.append(obj.friend.uid)
+
+        identity = ":".join(parts)
+        return f"{identity}-{obj.currency.uid}"
+
+
+class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
+    user = serializers.CharField(source='user.uid', read_only=True)
+    friend = serializers.CharField(source='friend.uid', read_only=True)
+
+    class Meta(SimpleOutstandingBalanceSerializer.Meta):
+        fields = SimpleOutstandingBalanceSerializer.Meta.fields + ('user', 'friend')
+
+
+class AggregatedOutstandingBalanceSerializer(serializers.Serializer):
+    uid = serializers.CharField(read_only=True)
+    currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=9, decimal_places=2)
-    balances = OutstandingBalanceSerializer(many=True, read_only=True)
-
-    def prefetch_queryset(self, queryset=None):
-        if queryset is None:
-            queryset = AggregatedOutstandingBalance.objects.all()
-
-        return queryset.prefetch_related('currency')
+    balances = SimpleOutstandingBalanceSerializer(many=True, read_only=True)
+    object_type = serializers.ChoiceField(choices=('friend', 'group'), read_only=True)
+    object_uid = serializers.CharField(read_only=True)
 
     def to_representation(self, instances: list['AggregatedOutstandingBalance']):
         converted = simplify_outstanding_balances(self.context['request'].user, instances)
+        instance = instances[0]
+        is_group = instance.group_id is not None
+
+        object_type = 'group' if is_group else 'friend'
+        object_uid = instance.group.uid if is_group else instance.friend.uid
+
         return super().to_representation(
             {
                 'currency': converted.currency,
                 'amount': converted.amount,
                 'balances': instances,
+                'object_type': object_type,
+                'object_uid': object_uid,
+                'uid': f'{object_type}:{object_uid}-{converted.currency.uid}',
             }
         )
 
 
-class UserOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.Serializer):
-    currency = SimpleCurrencySerializer(read_only=True)
-    amount = serializers.DecimalField(max_digits=9, decimal_places=2)
-
-    paid = AggregatedOutstandingBalanceSerializer(read_only=True)
-    borrowed = AggregatedOutstandingBalanceSerializer(read_only=True)
-
-    def prefetch_queryset(self, queryset=None):
-        if queryset is None:
-            queryset = OutstandingBalance.objects.all()
-
-        return queryset.prefetch_related('currency')
-
-    def to_representation(self, instances: list['AggregatedOutstandingBalance']):
-        paid = []
-        borrowed = []
-
-        for balance in instances:
-            if balance.amount > 0:
-                paid.append(balance)
-            else:
-                borrowed.append(balance)
-
-        converted = simplify_outstanding_balances(self.context['request'].user, instances)
-        return super().to_representation(
-            {
-                'paid': paid,
-                'borrowed': borrowed,
-                'currency': converted.currency,
-                'amount': converted.amount,
-            }
-        )
+class UserOutstandingBalanceSerializer(serializers.Serializer):
+    outstanding_balances = OutstandingBalanceSerializer(many=True, read_only=True)
+    aggregated_outstanding_balance = AggregatedOutstandingBalanceSerializer(many=True, read_only=True)
 
 
 class ExpenseChangeLogSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):
