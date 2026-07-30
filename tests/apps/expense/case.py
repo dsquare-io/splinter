@@ -27,14 +27,6 @@ class ExpenseTestCase(TestCase):
         cls.currency = CurrencyFactory()
         cls.default_currency = Currency.objects.get(code=settings.CURRENCY_DEFAULT_USER_PREFERENCE)
 
-    @staticmethod
-    def serialize_currency(currency: 'Currency') -> dict:
-        return {
-            'uid': currency.code,
-            'urn': currency.urn,
-            'symbol': currency.symbol,
-        }
-
     @classmethod
     def create_payment(cls, amount: int, sender: User, receiver: User, **kwargs) -> Expense:
         expense = ExpenseFactory(

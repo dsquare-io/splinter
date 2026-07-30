@@ -20,7 +20,7 @@ class CreateExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(serialized_expense['datetime'], expected_expense['datetime'])
         self.assertEqual(serialized_expense['description'], expected_expense['description'])
         self.assertEqual(serialized_expense['amount'], expected_expense['amount'])
-        self.assertDictEqual(serialized_expense['currency'], self.serialize_currency(expected_expense['currency']))
+        self.assertEqual(serialized_expense['currency'], expected_expense['currency'].code)
 
         self.assertEqual(len(serialized_expense['expenses']), len(expected_expense['expenses']))
 
