@@ -1,9 +1,11 @@
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 
 from splinter.apps.expense.models import OutstandingBalance
+from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
 from splinter.apps.group.serializers import (
     CreateGroupMembershipSerializer,
@@ -11,6 +13,7 @@ from splinter.apps.group.serializers import (
     GroupSerializer,
     SimpleGroupSerializer,
 )
+from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.views import (
     CreateAPIView,
     DestroyAPIView,
@@ -19,6 +22,9 @@ from splinter.core.views import (
     RetrieveAPIView,
     UpdateAPIView,
 )
+
+if TYPE_CHECKING:
+    from splinter.apps.user.models import User
 
 
 class ListCreateGroupView(ListAPIView, CreateAPIView):
@@ -65,8 +71,12 @@ class DestroyGroupMembershipView(DestroyAPIView):
         super().perform_destroy(instance)
 
 
-class CreateGroupMembershipView(CreateAPIView, GenericAPIView):
-    serializer_class = CreateGroupMembershipSerializer
+class ListCreateGroupMembershipView(ListAPIView, CreateAPIView, GenericAPIView):
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateGroupMembershipSerializer
+
+        return SimpleUserSerializer
 
     @cached_property
     def group(self):
@@ -76,3 +86,32 @@ class CreateGroupMembershipView(CreateAPIView, GenericAPIView):
         context = super().get_serializer_context()
         context['group'] = self.group
         return context
+
+    def get_queryset(self):
+        group = self.group
+        all_members = list(self.group.members.all())
+        friends_qs = Friendship.objects.get_user_friends(self.request.user)
+        friends = set(friends_qs.filter(pk__in=[m.pk for m in all_members]).values_list('pk', flat=True))
+
+        # Members are ordered based on following rules:
+        # 1. Current user
+        # 2. Group creator
+        # 3. Friends
+        # 4. Other users
+
+        def sort_key(user: 'User') -> tuple[int, str]:
+            user_id = user.pk
+
+            if user_id == self.request.user.pk:
+                bucket = 0
+            elif user_id == group.created_by_id:
+                bucket = 1
+            elif user_id in friends:
+                bucket = 2
+            else:
+                bucket = 3
+
+            return bucket, user.full_name
+
+        all_members.sort(key=sort_key)
+        return all_members

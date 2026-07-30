@@ -1,13 +1,10 @@
 from django.conf import settings
 from django.db.models import Count
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from rest_framework.exceptions import ErrorDetail
 
 from splinter.apps.friend.fields import FriendSerializerField
-from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
-from splinter.apps.user.models import User
 from splinter.apps.user.serializers import SimpleUserSerializer
 from splinter.core.prefetch import PrefetchQuerysetSerializerMixin
 
@@ -65,40 +62,9 @@ class CreateGroupSerializer(serializers.ModelSerializer):
 
 class GroupSerializer(PrefetchQuerysetSerializerMixin, SimpleGroupSerializer):
     created_by = SimpleUserSerializer(read_only=True)
-    members = serializers.SerializerMethodField()
 
     class Meta(SimpleGroupSerializer.Meta):
-        fields = SimpleGroupSerializer.Meta.fields + ('created_by', 'members')
-
-    @extend_schema_field(SimpleUserSerializer(many=True))
-    def get_members(self, group: Group):
-        # Members are ordered based on following rules:
-        # 1. Current user
-        # 2. Group creator
-        # 3. Friends
-        # 4. Other users
-
-        all_members = list(group.members.all())
-        friends_qs = Friendship.objects.get_user_friends(self.context['request'].user)
-        friends = set(friends_qs.filter(pk__in=[m.pk for m in all_members]).values_list('pk', flat=True))
-
-        def sort_key(user: 'User') -> int:
-            user_id = user.pk
-
-            if user_id == self.context['request'].user.pk:
-                return 0
-
-            if user_id == group.created_by_id:
-                return 1
-
-            if user_id in friends:
-                return 2
-
-            return 3
-
-        all_members.sort(key=sort_key)
-
-        return SimpleUserSerializer(all_members, many=True).data
+        fields = SimpleGroupSerializer.Meta.fields + ('created_by',)
 
 
 class CreateGroupMembershipSerializer(serializers.ModelSerializer):

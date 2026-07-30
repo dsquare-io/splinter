@@ -3,7 +3,6 @@ from django.test import override_settings
 
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.models import Group, GroupMembership
-from tests.apps.expense.case import ExpenseTestCase
 from tests.apps.group.factories import GroupFactory, GroupMembershipFactory
 from tests.apps.user.factories import UserFactory
 from tests.case import AuthenticatedAPITestCase
@@ -101,4 +100,52 @@ class CreateGroupMemberViewTest(AuthenticatedAPITestCase):
         self.assertDictEqual(
             response.json(),
             {'': [{'message': 'Group can have at most 1 members', 'code': 'group_members_limit_error'}]},
+        )
+
+
+class ListGroupMemberViewTest(AuthenticatedAPITestCase):
+    group: 'Group'
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.group = GroupFactory()
+        GroupMembership.objects.create(group=cls.group, user=cls.user)
+
+    def test_list(self):
+        response = self.client.get(f'/api/groups/{self.group.public_id}/members')
+        self.assertEqual(response.status_code, 200)
+
+        response_json = response.json()
+        self.assertEqual(len(response_json), 2)
+        self.assertIn(
+            {
+                'uid': self.user.username,
+                'urn': self.user.urn,
+                'name': self.user.full_name,
+                'isActive': self.user.is_active,
+            },
+            response_json,
+        )
+
+    def test_list__order(self):
+        non_friends = [UserFactory(first_name='Zack'), UserFactory(first_name='Amy')]
+        friends = [UserFactory(first_name='Wendy'), UserFactory(first_name='Bob')]
+        Friendship.objects.befriend(self.user, *friends)
+
+        GroupMembership.objects.bulk_create(
+            [GroupMembership(group=self.group, user=user) for user in friends + non_friends]
+        )
+
+        response = self.client.get(f'/api/groups/{self.group.public_id}/members')
+        self.assertEqual(response.status_code, 200)
+
+        group_members = response.json()
+        self.assertEqual(len(group_members), 6)
+
+        self.assertEqual(group_members[0]['uid'], self.user.username)
+        self.assertEqual(group_members[1]['uid'], self.group.created_by.username)
+        self.assertEqual([member['uid'] for member in group_members[2:4]], [friends[1].username, friends[0].username])
+        self.assertEqual(
+            [member['uid'] for member in group_members[4:]], [non_friends[1].username, non_friends[0].username]
         )
