@@ -8,13 +8,15 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useLiveQuery } from '@tanstack/react-db';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
 
-import { ApiRoutes, type SimpleUser } from '@/api-types';
-import { Expense, Friend, SimpleGroup } from '@/api-types/components/schemas';
+import { ApiRoutes, type Expense, type Friend, type SimpleGroup, type SimpleUser } from '@/api-types';
+import { friends as friendsEntity } from '@/collections/friends.ts';
 import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
 export interface Participant {
   uid: string;
@@ -72,7 +74,8 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
   const { currentUser } = useAuth();
   const params = useParams({ strict: false }) as { friend?: string; group?: string };
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsEntity.collection }));
+  const { hasSynced: friendsSynced } = useEntitySync(friendsEntity);
 
   const [selected, dispatch] = useReducer(participantsReducer, [] as Participant[]);
   const initialized = useRef(false);
@@ -80,9 +83,13 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
   const hasPreselected = !!params.friend || !!params.group;
   const groupLocked = !!initialExpense?.group;
 
+  // Cached data wins over sync status — but an empty, not-yet-synced cache must not be
+  // mistaken for "this user really has zero friends" and skip pre-selection prematurely.
+  const friendsReady = friendsSynced || friends.length > 0;
+
   useEffect(() => {
     if (initialized.current) return;
-    if (!groups || !friends) return;
+    if (!groups || !friendsReady) return;
 
     if (initialExpense) {
       initialized.current = true;
@@ -102,17 +109,17 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
     }
 
     // URL-param pre-selection (create mode only)
-    const friend = friends?.find((f) => f.uid === params.friend);
+    const friend = friends.find((f) => f.uid === params.friend);
     const group = groups?.find((g) => g.uid === params.group);
     if (friend || group) initialized.current = true;
     if (friend) dispatch({ type: 'select_friend', data: friend });
     else if (group) dispatch({ type: 'select_group', data: group });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [!!friends, !!groups]);
+  }, [friendsReady, !!groups]);
 
   const isGroup = selected[0]?.type === 'group';
-  const { data: groupDetail } = useQuery(
-    apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: selected[0]?.uid }, undefined, {
+  const { data: groupMembers } = useQuery(
+    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: selected[0]?.uid ?? '' }, undefined, {
       enabled: isGroup,
     })
   );
@@ -120,7 +127,7 @@ export function ExpenseParticipantsProvider({ children, initialExpense }: Provid
   const currentUserParticipant: SimpleUser[] = currentUser ? [currentUser] : [];
 
   const participants: SimpleUser[] = isGroup
-    ? (groupDetail?.members ?? [])
+    ? (groupMembers ?? [])
     : [...currentUserParticipant, ...(selected.map((p) => p.user!) as SimpleUser[])];
 
   return (

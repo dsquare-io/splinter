@@ -8,10 +8,11 @@ import { AdjustmentsHorizontalIcon, Cog6ToothIcon } from '@heroicons/react/24/ou
 import { ApiRoutes, type SimpleUser } from '@/api-types';
 import type { Expense } from '@/api-types/components/schemas';
 import { urlWithArgs } from '@/api-types/url';
+import { emit } from '@/collections/events.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { Button, DialogFooter, DialogHeader, IconButton, useDialog } from '@/components/primitives';
 import { AttachmentContext, useAttachment, useAttachmentContext } from '@/features/AttachmentPanel';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 import { ExpenseEntry } from './ExpenseEntry.tsx';
 import { ExpenseOptions } from './ExpenseOptions.tsx';
@@ -65,7 +66,7 @@ export function ExpenseEditorForm({ expense }: Props) {
 
 function ExpenseEditorFormInner({ expense }: Props) {
   const { close } = useDialog();
-  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useCurrencyPreference();
   const { getAttachmentUids, existingAttachments } = useAttachmentContext();
   const form = useForm();
   const { getValues, setValue, trigger, control } = form;
@@ -108,11 +109,11 @@ function ExpenseEditorFormInner({ expense }: Props) {
   }, [participantIds, expenseCount]);
 
   useEffect(() => {
-    if (preferredCurrency?.uid && !getValues('currency')) {
-      setValue('currency', preferredCurrency.uid);
+    if (preferredCurrency && !getValues('currency')) {
+      setValue('currency', preferredCurrency);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preferredCurrency?.uid]);
+  }, [preferredCurrency]);
 
   useEffect(() => {
     if (expense) return;
@@ -175,7 +176,11 @@ function ExpenseEditorFormInner({ expense }: Props) {
         }}
         onSubmitSuccess={async (response, control) => {
           const expenseUid = response.data.uid as string;
-          await invalidateQueriesForExpense({ uid: expenseUid, group: control.getValues('group') });
+          const group = control.getValues('group');
+          await Promise.all([
+            invalidateQueriesForExpense({ uid: expenseUid, group }),
+            emit('expense:mutated', { uid: expenseUid, group }),
+          ]);
           close();
         }}
       >

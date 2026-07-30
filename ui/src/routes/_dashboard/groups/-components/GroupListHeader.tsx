@@ -1,25 +1,30 @@
 import { DialogTrigger } from 'react-aria-components';
 
-import { ApiRoutes } from '@/api-types';
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
+
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Button, Money, ScrollScene } from '@/components/primitives';
 import { CreateGroupDialog } from '@/features/CreateGroupDialog';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 
 export function GroupListHeader() {
-  const { data: preferredCurrency, isPending: currencyPending } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
+  const { data: preferredCurrency, isPending: currencyPending } = useCurrencyPreference();
+  const { data: balances } = useLiveQuery((q) =>
+    q
+      .from({ balance: outstandingBalances.aggregated.collection })
+      .where(({ balance }: any) => eq(balance.balanceScope, 'group'))
+  );
 
-  const aggregatedOutstandingBalance = balanceData?.aggregatedOutstandingBalance
-    .filter((balance) => balance.objectType === 'group')
-    .reduce(
-      (acc, balance) => {
-        acc[balance.currency] = (acc[balance.currency] ?? 0) + +balance.amount;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+  const aggregatedOutstandingBalance = balances.reduce(
+    (acc, balance) => {
+      const currency = balance.currency;
+      acc[currency] = (acc[currency] ?? 0) + +balance.amount;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return (
     <ScrollScene.Header
@@ -33,24 +38,22 @@ export function GroupListHeader() {
         <ScrollScene.Hide range={[0, 50]}>
           {currencyPending ? (
             <Skeleton className="mt-1 h-4 w-40" />
-          ) : groups ? (
+          ) : (
             <p className="text-sm text-gray-600">
-              {!aggregatedOutstandingBalance?.[preferredCurrency!.uid] ? (
+              {!aggregatedOutstandingBalance?.[preferredCurrency!] ? (
                 'You are all settled up'
               ) : (
                 <>
                   Overall,{' '}
-                  {+aggregatedOutstandingBalance?.[preferredCurrency!.uid] > 0
-                    ? 'you lent '
-                    : 'you borrowed '}
+                  {+aggregatedOutstandingBalance?.[preferredCurrency!] > 0 ? 'you lent ' : 'you borrowed '}
                   <Money
-                    currency={preferredCurrency!.uid}
-                    value={aggregatedOutstandingBalance?.[preferredCurrency!.uid]}
+                    currency={preferredCurrency!}
+                    value={aggregatedOutstandingBalance?.[preferredCurrency!]}
                   />
                 </>
               )}
             </p>
-          ) : undefined}
+          )}
         </ScrollScene.Hide>
       </div>
 

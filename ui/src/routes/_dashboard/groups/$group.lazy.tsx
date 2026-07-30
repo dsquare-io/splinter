@@ -10,7 +10,7 @@ export const Route = createLazyFileRoute('/_dashboard/groups/$group')({
 });
 
 function RootComponent() {
-  const { group: group_uid } = Route.useParams();
+  const { group: groupUid } = Route.useParams();
 
   return (
     <>
@@ -19,9 +19,9 @@ function RootComponent() {
       </ErrorBoundary>
 
       <ScrollScene className="min-h-0 flex-1">
-        <GroupHeader group_uid={group_uid} />
+        <GroupHeader groupUid={groupUid} />
         <ScrollScene.Content>
-          <GroupTabs group_uid={group_uid} />
+          <GroupTabs groupUid={groupUid} />
         </ScrollScene.Content>
       </ScrollScene>
     </>

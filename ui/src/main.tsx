@@ -9,6 +9,7 @@ import { ConfirmationProvider } from '@/components/ConfirmationProvider';
 import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
 
+import '@/collections/index.ts';
 import './styles/index.css';
 
 if (import.meta.env.VITE_SENTRY_DSN) {

@@ -1,9 +1,8 @@
 import { ApiRoutes } from '@/api-types';
+import { emit } from '@/collections/events.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { Button, DialogFooter, useDialog } from '@/components/primitives';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
 
 export function AddFriendForm() {
   const { close } = useDialog();
@@ -12,9 +11,10 @@ export function AddFriendForm() {
     <Form
       className="mt-4 flex h-full flex-col space-y-4"
       action={ApiRoutes.FRIEND_LIST}
-      onSubmitSuccess={() =>
-        queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST)).then(close)
-      }
+      onSubmitSuccess={async (response) => {
+        await emit('friend:mutated', { uid: response.data.uid! });
+        close();
+      }}
       transformData={({ email, name }: { email: string; name: string }) => ({
         email,
         name: name || email.split('@')[0],

@@ -1,19 +1,27 @@
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
-import { ApiRoutes, GroupOutstandingBalance, SimpleUser, urlWithArgs, type Group } from '@/api-types';
+import { ApiRoutes, SimpleUser, urlWithArgs, type SimpleGroup } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
+import { ErrorAlert } from '@/components/ErrorAlert.tsx';
+import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, IconButton } from '@/components/primitives';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useConfirmation } from '@/hooks/useConfirmation.ts';
 import { queryClient } from '@/queryClient.ts';
 
 type GroupMembersSectionProps = {
-  group: Group;
-  balanceByUsers: Record<string, GroupOutstandingBalance[]>;
+  group: SimpleGroup;
+  currentUserHasBalance: boolean;
 };
 
-export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectionProps) {
+export function GroupMemberSection({ group, currentUserHasBalance }: GroupMembersSectionProps) {
   const confirm = useConfirmation();
+  const {
+    data: members,
+    isLoading: membersLoading,
+    error: membersError,
+    refetch: refetchMembers,
+  } = useApiQuery(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: group.uid });
 
   async function removeMember(member: SimpleUser) {
     return confirm({
@@ -32,7 +40,7 @@ export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectio
           })
         );
         return queryClient.invalidateQueries(
-          apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })
+          apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: group.uid })
         );
       },
     });
@@ -44,8 +52,22 @@ export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectio
       <p className="mb-2 text-sm text-neutral-500">
         Members with outstanding balances can't be removed from group
       </p>
+      <ErrorAlert
+        error={membersError}
+        onRetry={() => refetchMembers()}
+      />
       <div>
-        {group.members.map((member) => (
+        {membersLoading &&
+          Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-x-3 py-2"
+            >
+              <Skeleton className="size-8 rounded-full" />
+              <Skeleton className="h-4 flex-1" />
+            </div>
+          ))}
+        {members?.map((member) => (
           <div
             key={member.uid}
             className="flex items-center gap-x-3 py-2"
@@ -58,7 +80,7 @@ export function GroupMemberSection({ group, balanceByUsers }: GroupMembersSectio
               <div>{member.name}</div>
               {!member.isActive && <div className="text-sm text-neutral-500">Inactive</div>}
             </div>
-            {!balanceByUsers[member.uid]?.length && (
+            {!currentUserHasBalance && (
               <IconButton
                 type="button"
                 variant="plain"

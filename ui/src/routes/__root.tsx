@@ -10,6 +10,7 @@ import { Logo } from '@/components/Logo.tsx';
 import { NotFound } from '@/components/NotFound.tsx';
 import { Button } from '@/components/primitives';
 import { AuthStatus, useAuth } from '@/hooks/useAuth.ts';
+import { useIsOnline } from '@/hooks/useIsOnline.ts';
 
 function TopLoader() {
   const isLoading = useRouterState({ select: (s) => s.status === 'pending' });
@@ -69,6 +70,18 @@ function UpdateBanner() {
   );
 }
 
+function OfflineBanner() {
+  const isOnline = useIsOnline();
+
+  if (isOnline) return null;
+
+  return (
+    <div className="z-50 w-full bg-gray-800 px-4 py-1.5 text-center text-xs text-white md:hidden">
+      You're offline — showing saved data
+    </div>
+  );
+}
+
 function SplashController() {
   const { status, authError, refetchProfile, logout } = useAuth();
   const [isPending, setIsPending] = useState(false);
@@ -123,6 +136,7 @@ function SplashController() {
 function RootComponent() {
   return (
     <>
+      <OfflineBanner />
       <UpdateBanner />
       <TopLoader />
       <SplashController />

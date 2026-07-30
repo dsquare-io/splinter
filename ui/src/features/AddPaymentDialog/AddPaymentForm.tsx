@@ -1,60 +1,74 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
 import { useQuery } from '@tanstack/react-query';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes, type Friend, type Group, type SimpleUser } from '@/api-types';
+import { ApiRoutes, type SimpleUser } from '@/api-types';
+import { emit } from '@/collections/events.ts';
+import { friends as friendsEntity } from '@/collections/friends.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Form, FormRootErrors, HiddenField, SubmitButton, WatchState } from '@/components/form';
 import { CurrencyFormInput, RadioGroupFormInput, SelectFormInput } from '@/components/form-controls';
 import { Avatar, Button, DialogFooter, Money, useDialog } from '@/components/primitives';
 import { AttachmentContext, AttachmentPanel, useAttachment } from '@/features/AttachmentPanel';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
+import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
-  group?: Group;
-  friend?: Friend;
+  groupUid?: string;
+  friendUid?: string;
 };
 
-export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
+export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) {
   const { close } = useDialog();
   const formControl = useForm();
   const { currentUser } = useAuth();
-  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
-  const { data: userBalanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
-  const { data: groupBalances } = useQuery(
-    apiQueryOptions(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { group_uid: group?.uid ?? '' }, undefined, {
-      enabled: !!group,
+  const { data: preferredCurrency } = useCurrencyPreference();
+  const attachments = useAttachment();
+  const { data: balances } = useLiveQuery(
+    (q) =>
+      q
+        .from({ balance: outstandingBalances.raw.collection })
+        .where(({ balance }) =>
+          eq(friendUid ? balance.friendUid : balance.groupUid, friendUid ?? groupUid ?? '')
+        ),
+    [friendUid, groupUid]
+  );
+  const { data: friendMatches } = useLiveQuery(
+    (q) =>
+      q.from({ friend: friendsEntity.collection }).where(({ friend }) => eq(friend.uid, friendUid ?? '')),
+    [friendUid]
+  );
+  const friend = friendUid ? friendMatches?.[0] : undefined;
+  const { data: members } = useQuery(
+    apiQueryOptions(ApiRoutes.GROUP_MEMBERSHIP_LIST, { group_uid: groupUid ?? '' }, undefined, {
+      enabled: !!groupUid,
     })
   );
-  const attachments = useAttachment();
 
-  const friendAggregatedBalance = userBalanceData?.aggregatedOutstandingBalance.find(
-    (balance) => balance.objectType === 'friend' && balance.objectUid === friend?.uid
-  );
+  const friendBalance = friend
+    ? (balances.find((b) => b.friendUid === friend.uid && b.currency === preferredCurrency) ??
+      balances.find((b) => b.friendUid === friend.uid))
+    : undefined;
 
   useEffect(() => {
-    if (friendAggregatedBalance) {
-      const balance = +(friendAggregatedBalance.amount ?? 0);
+    if (friendBalance) {
+      const balance = +friendBalance.amount;
 
       if (balance) {
         formControl.setValue('paymentDir', balance < 0 ? 'out' : 'in');
         formControl.setValue('amount', Math.abs(balance));
       }
     }
-  }, [formControl, friendAggregatedBalance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formControl, friendBalance?.uid]);
 
-  const balanceByUsers = useMemo(() => {
-    const grouped = groupBy(groupBalances ?? [], (balance) => balance.user);
-    return Object.fromEntries(
-      Object.entries(grouped).map(([uId, balances]) => [
-        uId,
-        balances.filter((balance) => balance.friend === currentUser?.uid),
-      ])
-    );
-  }, [groupBalances, currentUser?.uid]);
+  const balanceByUsers = useMemo(() => groupBy(balances, (balance) => balance.friendUid), [balances]);
 
   return (
     <AttachmentContext.Provider value={attachments}>
@@ -83,22 +97,25 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
         method="POST"
         action={ApiRoutes.PAYMENT}
         onSubmitSuccess={async (response) => {
-          await invalidateQueriesForExpense({ uid: response.uid, group: group?.uid });
+          await Promise.all([
+            invalidateQueriesForExpense({ uid: response.uid, group: groupUid }),
+            emit('expense:mutated', { uid: response.uid, group: groupUid }),
+          ]);
           close();
         }}
       >
         <HiddenField
           name="currency"
-          value={preferredCurrency?.uid}
+          value={preferredCurrency}
         />
         <HiddenField
           name="datetime:now"
           value="."
         />
-        {group && (
+        {groupUid && (
           <HiddenField
             name="group"
-            value={group?.uid}
+            value={groupUid}
           />
         )}
 
@@ -133,10 +150,10 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           </div>
         )}
 
-        {group && (
+        {groupUid && (
           <SelectFormInput<SimpleUser>
             name="friend"
-            items={group?.members?.filter((e) => e.uid !== currentUser?.uid) ?? []}
+            items={members?.filter((e) => e.uid !== currentUser?.uid) ?? []}
             onChange={(key) => {
               const balance = key ? +(balanceByUsers[key as string]?.[0]?.amount ?? 0) : 0;
               if (balance) {
@@ -174,7 +191,7 @@ export function AddPaymentForm({ group, friend }: AddPaymentContentProps) {
           min={1}
           name="amount"
           label="Amount"
-          currency={preferredCurrency?.uid}
+          currency={preferredCurrency!}
           onBlur={() => {
             const val = formControl.getValues('amount');
             const paymentDir = formControl.getValues('paymentDir');

@@ -1,4 +1,5 @@
-import axios from 'axios';
+import { onlineManager } from '@tanstack/react-query';
+import axios, { isAxiosError, isCancel } from 'axios';
 
 import { ApiRoutes, type AccessToken } from '@/api-types';
 import { getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '@/authStorage.ts';
@@ -16,7 +17,6 @@ export const axiosInstance = axios.create({
 let _refreshTokenRequest: Promise<AccessToken> | null = null;
 
 function refreshTokens(): Promise<AccessToken> {
-  console.log('refreshing token...');
   if (!_refreshTokenRequest) {
     const redirectToLogin = () => {
       setAccessToken(null);
@@ -50,6 +50,17 @@ function refreshTokens(): Promise<AccessToken> {
 
   return _refreshTokenRequest;
 }
+
+axiosInstance.interceptors.response.use(
+  (res) => {
+    onlineManager.setOnline(true);
+    return res;
+  },
+  (e) => {
+    if (!isCancel(e)) onlineManager.setOnline(!(isAxiosError(e) && !e.response));
+    throw e;
+  }
+);
 
 axiosInstance.interceptors.response.use(
   (res) => res,

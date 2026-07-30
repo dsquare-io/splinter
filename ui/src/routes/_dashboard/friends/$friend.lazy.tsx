@@ -11,7 +11,7 @@ export const Route = createLazyFileRoute('/_dashboard/friends/$friend')({
 });
 
 function RootComponent() {
-  const { friend: friend_uid } = Route.useParams();
+  const { friend: friendUid } = Route.useParams();
 
   return (
     <>
@@ -20,13 +20,13 @@ function RootComponent() {
       </ErrorBoundary>
 
       <ScrollScene className="min-h-0 flex-1">
-        <FriendHeader friend_uid={friend_uid} />
+        <FriendHeader friendUid={friendUid} />
         <ScrollScene.Content>
           <ExpenseList
             apiPath={ApiRoutes.FRIEND_EXPENSE_LIST}
-            args={{ friend_uid }}
+            args={{ friend_uid: friendUid }}
             detailRoute="/friends/$friend/$expense"
-            detailRouteParams={{ friend: friend_uid }}
+            detailRouteParams={{ friend: friendUid }}
           />
         </ScrollScene.Content>
       </ScrollScene>

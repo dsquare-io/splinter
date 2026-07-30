@@ -1,16 +1,17 @@
+import { useLiveQuery } from '@tanstack/react-db';
 import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes } from '@/api-types';
+import { emit } from '@/collections/events.ts';
+import { friends as friendsEntity } from '@/collections/friends.ts';
 import { Form, FormRootErrors, SubmitButton } from '@/components/form';
 import { TextFormInput } from '@/components/form-controls';
 import { UserSelectFormInput } from '@/components/form-controls/UserSelectFormInput.tsx';
 import { Button, DialogFooter, useDialog } from '@/components/primitives';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
 
 export function CreateGroupForm() {
   const { close } = useDialog();
-  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsEntity.collection }));
   const navigate = useNavigate();
 
   return (
@@ -18,17 +19,14 @@ export function CreateGroupForm() {
       method="POST"
       action={ApiRoutes.GROUP_LIST}
       defaultValues={{ members: [] }}
-      onSubmitSuccess={(res) =>
-        queryClient
-          .invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST))
-          .then(() =>
-            navigate({
-              to: `/groups/$group`,
-              params: { group: res.data.uid! },
-            })
-          )
-          .then(close)
-      }
+      onSubmitSuccess={async (response) => {
+        await emit('group:mutated', { uid: response.data.uid! });
+        await navigate({
+          to: `/groups/$group`,
+          params: { group: response.data.uid! },
+        });
+        close();
+      }}
       className="mt-4 flex h-full flex-col space-y-4"
     >
       <FormRootErrors />
@@ -43,7 +41,7 @@ export function CreateGroupForm() {
         name="members"
         label="Members"
         selectionMode="multiple"
-        items={friends ?? []}
+        items={friends}
         minLength={{
           value: 1,
           message: 'Please select at least one friend',

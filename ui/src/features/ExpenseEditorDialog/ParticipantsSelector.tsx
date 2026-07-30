@@ -14,9 +14,10 @@ import {
 import { useFormContext } from 'react-hook-form';
 
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useLiveQuery } from '@tanstack/react-db';
 
-import { ApiRoutes } from '@/api-types';
-import { Friend, SimpleGroup } from '@/api-types/components/schemas';
+import { ApiRoutes, type Friend, type SimpleGroup } from '@/api-types';
+import { friends as friendsEntity } from '@/collections/friends.ts';
 import { Avatar, SelectValue, type SelectItemRenderProps } from '@/components/primitives';
 import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { useParticipantsContext } from './ExpenseParticipantsContext.tsx';
@@ -38,7 +39,7 @@ export function ParticipantsSelector() {
   const { selected, hasPreselected, groupLocked, dispatch } = useParticipantsContext();
   const triggerRef = useRef<HTMLDivElement>(null);
   const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-  const { data: friends } = useApiQuery(ApiRoutes.FRIEND_LIST);
+  const { data: friends } = useLiveQuery((q) => q.from({ friend: friendsEntity.collection }));
   const [inputValue, setInputValue] = useState('');
   const skipNextInputChange = useRef(false);
 
@@ -70,7 +71,7 @@ export function ParticipantsSelector() {
     );
   }
 
-  if (!groups || !friends) return null;
+  if (!groups) return null;
 
   const allItems: (Friend | SimpleGroup)[] = [...groups, ...friends];
   const selectedUrns = selected.map((p) => p.urn);

@@ -1,15 +1,14 @@
 import { useWatch } from 'react-hook-form';
 
-import { ApiRoutes } from '@/api-types';
 import { FieldScope } from '@/components/form';
 import { Money } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
 import { SingleExpenseShares } from './SingleExpenseShares.tsx';
 
 type ExpenseWatchValue = { description?: string; amount?: number };
 
 export function ExpenseShares() {
-  const { data: preferredCurrency } = useApiQuery(ApiRoutes.CURRENCY_PREFERENCE);
+  const { data: preferredCurrency } = useCurrencyPreference();
   const expenses = useWatch({ name: 'expenses' }) as ExpenseWatchValue[] | undefined;
 
   if (!expenses?.length) return null;
@@ -33,7 +32,7 @@ export function ExpenseShares() {
                 noColor
                 noTabularNums
                 value={expense.amount}
-                currency={preferredCurrency.uid}
+                currency={preferredCurrency}
                 className="text-sm text-neutral-600"
               />
             )}

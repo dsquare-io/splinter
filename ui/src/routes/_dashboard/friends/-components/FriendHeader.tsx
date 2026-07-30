@@ -1,37 +1,35 @@
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
+import { Link, useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
+import { friends } from '@/collections/friends.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { FriendSettingDialog } from '@/features/FriendSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
-import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
-export function FriendHeader({ friend_uid }: { friend_uid: string }) {
-  const { data: friend, isPending, error } = useApiQuery(ApiRoutes.FRIEND_DETAIL, { friend_uid });
-  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
-  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-  useRedirectOn404(error, '/friends');
+export function FriendHeader({ friendUid }: { friendUid: string }) {
+  const navigate = useNavigate();
+  const { hasSynced } = useEntitySync(friends);
 
-  const groupsById = useMemo(
-    () => Object.fromEntries((groups ?? []).map((group) => [group.uid, group])),
-    [groups]
+  const { data: matches, isReady } = useLiveQuery(
+    (q) => q.from({ friend: friends.collection }).where(({ friend }) => eq(friend.uid, friendUid)),
+    [friendUid]
   );
+  const friend = matches?.[0];
 
-  const outstandingBalances = (balanceData?.outstandingBalances ?? [])
-    .filter((balance) => friend && balance.friend === friend.uid)
-    .map((balance) => ({
-      ...balance,
-      friend: friend!,
-      group: balance.group ? (groupsById[balance.group] ?? null) : null,
-    }));
+  // Only bounce once the live query has actually loaded AND a sync has completed, and the
+  // friend still isn't there — not just because either one hasn't resolved yet.
+  useEffect(() => {
+    if (isReady && hasSynced && !friend) void navigate({ to: '/friends' });
+  }, [isReady, hasSynced, friend, navigate]);
 
   return (
     <ScrollScene.Header
@@ -51,7 +49,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         </Link>
       </div>
 
-      {isPending ? (
+      {!friend ? (
         <Skeleton className="size-16 rounded-full" />
       ) : (
         <ScrollScene.Animate
@@ -61,18 +59,18 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
         >
           <Avatar
             className="size-full rounded-full"
-            fallback={friend?.name || 'User'}
+            fallback={friend.name || 'User'}
           />
         </ScrollScene.Animate>
       )}
 
       <div>
-        {isPending ? (
+        {!friend ? (
           <>
             <Skeleton className="mt-1 h-7 w-36" />
             <Skeleton className="mt-2 h-4 w-48" />
           </>
-        ) : friend ? (
+        ) : (
           <>
             <div className="mt-1 text-2xl font-semibold text-gray-900">{friend.name}</div>
             <ScrollScene.Hide range={[0, 100]}>
@@ -81,10 +79,14 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
                   Not yet joined
                 </span>
               )}
-              <OutstandingBalanceList balances={outstandingBalances} />
+              <OutstandingBalanceList
+                hideFriend
+                scope="friend"
+                objectUid={friendUid}
+              />
             </ScrollScene.Hide>
           </>
-        ) : undefined}
+        )}
       </div>
 
       <ScrollScene.Hide
@@ -100,7 +102,7 @@ export function FriendHeader({ friend_uid }: { friend_uid: string }) {
               <BanknotesIcon />
               Settle Up
             </Button>
-            <AddPaymentDialog friend={friend} />
+            <AddPaymentDialog friendUid={friendUid} />
           </DialogTrigger>
 
           <div className="flex-1" />

@@ -1,20 +1,30 @@
 import { EnvelopeIcon, UserMinusIcon } from '@heroicons/react/24/outline';
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
 import { useNavigate } from '@tanstack/react-router';
 
 import { ApiRoutes, urlWithArgs, type Friend } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
+import { emit } from '@/collections/events.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
-import { apiQueryOptions, useApiQuery } from '@/hooks/useApiQuery.ts';
-import { queryClient } from '@/queryClient.ts';
+import { useDialog } from '@/components/primitives';
 
 type FriendActionSectionProps = {
   friend: Friend;
 };
 
 export function FriendActionSection({ friend }: FriendActionSectionProps) {
+  const { close } = useDialog();
   const navigate = useNavigate();
-  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
-  const hasBalance = !!balanceData?.outstandingBalances.some((balance) => balance.friend === friend.uid);
+  const { data: balances } = useLiveQuery(
+    (q) =>
+      q
+        .from({ balance: outstandingBalances.raw.collection })
+        .where(({ balance }) => eq(balance.friendUid, friend.uid)),
+    [friend.uid]
+  );
+  const hasBalance = balances.length > 0;
 
   return (
     <section className="mt-6">
@@ -39,8 +49,9 @@ export function FriendActionSection({ friend }: FriendActionSectionProps) {
           color="danger"
           onClick={async () => {
             await axiosInstance.delete(urlWithArgs(ApiRoutes.FRIEND_DETAIL, { friend_uid: friend.uid }));
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.FRIEND_LIST));
+            await emit('friend:mutated', { uid: friend.uid });
             await navigate({ to: '/friends' });
+            close();
           }}
           isDisabled={hasBalance}
           doneMessage={`Invite sent to ${friend.name}`}

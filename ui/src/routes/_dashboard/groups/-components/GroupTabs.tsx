@@ -4,7 +4,7 @@ import { ApiRoutes } from '@/api-types';
 import { ExpenseList } from '@/features/ExpenseList';
 import { GroupBalancesTab } from './GroupBalancesTab';
 
-export function GroupTabs({ group_uid }: { group_uid: string }) {
+export function GroupTabs({ groupUid }: { groupUid: string }) {
   return (
     <Tabs className="react-aria-Tabs">
       <div
@@ -22,13 +22,13 @@ export function GroupTabs({ group_uid }: { group_uid: string }) {
       <TabPanel id="activity">
         <ExpenseList
           apiPath={ApiRoutes.GROUP_EXPENSE_LIST}
-          args={{ group_uid }}
+          args={{ group_uid: groupUid }}
           detailRoute="/groups/$group/$expense"
-          detailRouteParams={{ group: group_uid }}
+          detailRouteParams={{ group: groupUid }}
         />
       </TabPanel>
       <TabPanel id="balance">
-        <GroupBalancesTab group_uid={group_uid} />
+        <GroupBalancesTab groupUid={groupUid} />
       </TabPanel>
     </Tabs>
   );

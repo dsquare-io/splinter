@@ -31,7 +31,7 @@ export interface AggregatedOutstandingBalance {
   /** Format: decimal */
   amount: string;
   readonly balances: SimpleOutstandingBalance[];
-  readonly objectType: ObjectTypeEnum;
+  readonly balanceScope: BalanceScopeEnum;
   readonly objectUid: string;
 }
 
@@ -57,6 +57,8 @@ export interface AvailableDevice {
   type: string;
   name: string;
 }
+
+export type BalanceScopeEnum = 'friend' | 'group';
 
 export interface ChallengeMfaDeviceResponse {
   message: string | null;
@@ -177,7 +179,7 @@ export interface Expense {
 
 export interface ExpenseChangeLog {
   changes?: string[];
-  readonly activityId: string;
+  readonly activityUrn: string;
   readonly references: Object_[];
 }
 
@@ -233,7 +235,6 @@ export type Friend = SimpleUser & {
 };
 export type Group = SimpleGroup & {
   readonly createdBy: SimpleUser;
-  readonly members: SimpleUser[];
 };
 export type GroupOutstandingBalance = SimpleOutstandingBalance & {
   readonly user: string;
@@ -257,12 +258,11 @@ export interface Object_ {
   readonly value: string;
 }
 
-export type ObjectTypeEnum = 'friend' | 'group';
 export type OutstandingBalance = SimpleOutstandingBalance & {
   readonly uid: string;
   /** Format: uuid */
-  readonly group: string;
-  readonly friend: string;
+  readonly groupUid: string;
+  readonly friendUid: string;
 };
 
 export interface PaginatedActivityList {
@@ -279,7 +279,6 @@ export interface PaginatedExpenseOrPaymentOrSettlementList {
 
 export type PatchedGroup = SimpleGroup & {
   readonly createdBy: SimpleUser;
-  readonly members: SimpleUser[];
 };
 export type PatchedUser = SimpleUser & {
   firstName?: string;

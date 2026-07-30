@@ -1,36 +1,38 @@
-import { useMemo } from 'react';
+import { useEffect } from 'react';
 import { DialogTrigger } from 'react-aria-components';
 
 import { BanknotesIcon, Cog8ToothIcon, UserPlusIcon } from '@heroicons/react/16/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
+import { Link, useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes } from '@/api-types';
+import { groups } from '@/collections/groups.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';
 import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
-import { useApiQuery } from '@/hooks/useApiQuery';
-import { useRedirectOn404 } from '@/hooks/useRedirectOn404.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
-export function GroupHeader({ group_uid }: { group_uid: string }) {
-  const { data: group, isPending, error } = useApiQuery(ApiRoutes.GROUP_DETAIL, { group_uid });
-  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
-  useRedirectOn404(error, '/groups');
+export function GroupHeader({ groupUid }: { groupUid: string }) {
+  const navigate = useNavigate();
+  const { hasSynced } = useEntitySync(groups);
 
-  const membersById = useMemo(
-    () => Object.fromEntries((group?.members ?? []).map((member) => [member.uid, member])),
-    [group?.members]
+  const { data: matches, isReady } = useLiveQuery(
+    (q) => q.from({ group: groups.collection }).where(({ group }) => eq(group.uid, groupUid)),
+    [groupUid]
   );
+  const group = matches?.[0];
 
-  const myOutstandingBalances = (balanceData?.outstandingBalances ?? [])
-    .filter((balance) => balance.group === group_uid)
-    .flatMap((balance) => {
-      const friend = membersById[balance.friend];
-      return friend ? [{ ...balance, friend, group: null }] : [];
-    });
+  // Only bounce once the live query has actually loaded AND a sync has completed, and the
+  // group still isn't there — not just because either one hasn't resolved yet.
+  useEffect(() => {
+    if (isReady && hasSynced && !group) void navigate({ to: '/groups' });
+  }, [isReady, hasSynced, group, navigate]);
+
+  const displayName = group?.name;
 
   return (
     <ScrollScene.Header
@@ -50,7 +52,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         </Link>
       </div>
 
-      {isPending ? (
+      {!displayName ? (
         <Skeleton className="size-16 rounded-lg" />
       ) : (
         <ScrollScene.Animate
@@ -60,22 +62,26 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
         >
           <Avatar
             className="size-full rounded-lg"
-            fallback={group?.name || 'Group'}
+            fallback={displayName}
           />
         </ScrollScene.Animate>
       )}
 
       <div>
-        {isPending ? (
+        {!displayName ? (
           <>
             <Skeleton className="h-7 w-36" />
             <Skeleton className="mt-2 h-4 w-48" />
           </>
         ) : (
           <>
-            <div className="text-2xl font-semibold text-gray-900">{group?.name}</div>
+            <div className="text-2xl font-semibold text-gray-900">{displayName}</div>
             <ScrollScene.Hide range={[0, 200]}>
-              <OutstandingBalanceList balances={myOutstandingBalances} />
+              <OutstandingBalanceList
+                hideGroup
+                scope="group"
+                objectUid={groupUid}
+              />
             </ScrollScene.Hide>
           </>
         )}
@@ -94,7 +100,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
               <BanknotesIcon />
               Settle Up
             </Button>
-            <AddPaymentDialog group={group} />
+            <AddPaymentDialog groupUid={groupUid} />
           </DialogTrigger>
 
           <div className="flex-1" />
@@ -109,7 +115,7 @@ export function GroupHeader({ group_uid }: { group_uid: string }) {
               <UserPlusIcon />
               Add Member
             </Button>
-            <AddGroupMemberDialog group={group} />
+            <AddGroupMemberDialog groupUid={groupUid} />
           </DialogTrigger>
           <DialogTrigger>
             <Button

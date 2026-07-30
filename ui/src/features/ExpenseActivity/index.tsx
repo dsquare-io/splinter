@@ -24,7 +24,7 @@ export function ExpenseActivity({ expenseId }: ExpenseActivityProps) {
   const changeLogByActivity = useMemo(() => {
     const grouped: Record<string, ExpenseChangeLog> = {};
     expenseChangeLogs?.forEach((e) => {
-      grouped[e.activityId] = e;
+      grouped[e.activityUrn] = e;
     });
 
     return grouped;

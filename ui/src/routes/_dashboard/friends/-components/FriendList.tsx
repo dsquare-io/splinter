@@ -1,36 +1,34 @@
-import { useMemo } from 'react';
-
+import { useLiveQuery } from '@tanstack/react-db';
 import groupBy from 'just-group-by';
 
-import { ApiRoutes } from '@/api-types';
+import { friends as friendsEntity } from '@/collections/friends.ts';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { ErrorAlert } from '@/components/ErrorAlert.tsx';
 import { FriendListItemSkeleton } from '@/components/layout/Skeleton.tsx';
 import { PullToRefresh, ScrollScene } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
+import { useEntitySync } from '@/hooks/useEntitySync.ts';
 import { EmptyFriends } from './EmptyFriends.tsx';
 import { FriendListItem } from './FriendListItem.tsx';
 
 export function FriendList() {
-  const { data: friends, isPending, error, refetch } = useApiQuery(ApiRoutes.FRIEND_LIST);
-  const { data: balanceData } = useApiQuery(ApiRoutes.USER_OUTSTANDING_BALANCE);
-  const { data: groups } = useApiQuery(ApiRoutes.GROUP_LIST);
-
-  const groupsById = useMemo(
-    () => Object.fromEntries((groups ?? []).map((group) => [group.uid, group])),
-    [groups]
+  const { data: friends, isLoading: isFriendsLoading } = useLiveQuery((q) =>
+    q.from({ friend: friendsEntity.collection })
   );
 
+  const { error, refetch: refetchFriends } = useEntitySync(friendsEntity);
+  const { refetch: refetchBalances } = useEntitySync(outstandingBalances);
+
   return (
-    <PullToRefresh onRefresh={refetch}>
+    <PullToRefresh onRefresh={() => Promise.all([refetchFriends(), refetchBalances()])}>
       <div className="flex flex-col -space-y-px">
-        {error ? (
+        {error && friends.length === 0 ? (
           <ErrorAlert
             error={error}
             variant="centered"
           />
-        ) : isPending ? (
+        ) : isFriendsLoading && friends.length === 0 ? (
           Array.from({ length: 6 }).map((_, i) => <FriendListItemSkeleton key={i} />)
-        ) : !friends?.length ? (
+        ) : friends.length === 0 ? (
           <EmptyFriends />
         ) : (
           Object.entries(groupBy(friends, (friend) => friend.name[0].toLowerCase()))
@@ -47,17 +45,7 @@ export function FriendList() {
                   {friends.map((friend) => (
                     <FriendListItem
                       key={friend.uid}
-                      {...friend}
-                      aggregatedOutstandingBalance={balanceData?.aggregatedOutstandingBalance.find(
-                        (balance) => balance.objectType === 'friend' && balance.objectUid === friend.uid
-                      )}
-                      outstandingBalances={(balanceData?.outstandingBalances ?? [])
-                        .filter((balance) => balance.friend === friend.uid)
-                        .map((balance) => ({
-                          ...balance,
-                          friend,
-                          group: balance.group ? (groupsById[balance.group] ?? null) : null,
-                        }))}
+                      friend={friend}
                     />
                   ))}
                 </div>

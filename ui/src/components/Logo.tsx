@@ -1,6 +1,11 @@
+import clsx from 'clsx';
 import { ComponentProps } from 'react';
 
-export function Logo(props: ComponentProps<'svg'>) {
+type LogoProps = ComponentProps<'svg'> & {
+  grayscale?: boolean;
+};
+
+export function Logo({ className, grayscale, ...props }: LogoProps) {
   return (
     <svg
       width="24"
@@ -8,6 +13,7 @@ export function Logo(props: ComponentProps<'svg'>) {
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={clsx(grayscale && 'grayscale', className)}
       {...props}
     >
       <path

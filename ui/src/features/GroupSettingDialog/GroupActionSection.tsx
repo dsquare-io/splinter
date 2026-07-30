@@ -1,22 +1,22 @@
 import { ArrowRightStartOnRectangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from '@tanstack/react-router';
 
-import { ApiRoutes, GroupOutstandingBalance, urlWithArgs, type Group } from '@/api-types';
+import { ApiRoutes, urlWithArgs, type SimpleGroup } from '@/api-types';
 import { axiosInstance } from '@/axios.ts';
+import { emit } from '@/collections/events.ts';
 import { ActionButton } from '@/components/composites/ActionButton.tsx';
-import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
+import { useDialog } from '@/components/primitives';
 import { useAuth } from '@/hooks/useAuth.ts';
-import { queryClient } from '@/queryClient.ts';
 
 type GroupActionsSectionProps = {
-  group: Group;
-  balanceByUsers: Record<string, GroupOutstandingBalance[]>;
+  group: SimpleGroup;
+  currentUserHasBalance: boolean;
 };
 
-export function GroupActionSection({ group, balanceByUsers }: GroupActionsSectionProps) {
+export function GroupActionSection({ group, currentUserHasBalance: hasBalance }: GroupActionsSectionProps) {
   const { currentUser } = useAuth();
+  const { close } = useDialog();
   const navigate = useNavigate();
-  const hasBalance = !!balanceByUsers[currentUser?.uid ?? '']?.length;
 
   return (
     <section className="mt-6">
@@ -31,12 +31,9 @@ export function GroupActionSection({ group, balanceByUsers }: GroupActionsSectio
                 member_uid: currentUser!.uid,
               })
             );
-            await queryClient.invalidateQueries(
-              apiQueryOptions(ApiRoutes.GROUP_DETAIL, { group_uid: group.uid })
-            );
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST));
-
-            return navigate({ to: '/groups' });
+            await emit('group:mutated', { uid: group.uid });
+            await navigate({ to: '/groups' });
+            close();
           }}
           confirmation={{
             title: 'Leave Group',
@@ -67,8 +64,9 @@ export function GroupActionSection({ group, balanceByUsers }: GroupActionsSectio
                 group_uid: group.uid,
               })
             );
-            await queryClient.invalidateQueries(apiQueryOptions(ApiRoutes.GROUP_LIST));
+            await emit('group:mutated', { uid: group.uid });
             await navigate({ to: '/groups' });
+            close();
           }}
           confirmation={{
             title: 'Delete Group',

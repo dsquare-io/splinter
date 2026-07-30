@@ -340,7 +340,8 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
+    /** List Group Membership */
+    get: operations['ListGroupMembership'];
     put?: never;
     /** Create Group Membership */
     post: operations['CreateGroupMembership'];
@@ -740,6 +741,12 @@ export interface components {
     AuthTokenData: import('./components/schemas.d.ts').AuthTokenData;
     AuthenticateUser: import('./components/schemas.d.ts').AuthenticateUser;
     AvailableDevice: import('./components/schemas.d.ts').AvailableDevice;
+    /**
+     * @description * `friend` - friend
+     *     * `group` - group
+     * @enum {string}
+     */
+    BalanceScopeEnum: import('./components/schemas.d.ts').BalanceScopeEnum;
     ChallengeMfaDeviceResponse: import('./components/schemas.d.ts').ChallengeMfaDeviceResponse;
     ChangePassword: import('./components/schemas.d.ts').ChangePassword;
     ChildExpense: import('./components/schemas.d.ts').ChildExpense;
@@ -772,12 +779,6 @@ export interface components {
     MfaToken: import('./components/schemas.d.ts').MfaToken;
     NotFound: import('./components/schemas.d.ts').NotFound;
     Object: import('./components/schemas.d.ts').Object_;
-    /**
-     * @description * `friend` - friend
-     *     * `group` - group
-     * @enum {string}
-     */
-    ObjectTypeEnum: import('./components/schemas.d.ts').ObjectTypeEnum;
     OutstandingBalance: import('./components/schemas.d.ts').OutstandingBalance;
     PaginatedActivityList: import('./components/schemas.d.ts').PaginatedActivityList;
     PaginatedExpenseOrPaymentOrSettlementList: import('./components/schemas.d.ts').PaginatedExpenseOrPaymentOrSettlementList;
@@ -2267,6 +2268,54 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['PaginatedExpenseOrPaymentOrSettlementList'];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Resource Not Found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotFound'];
+        };
+      };
+    };
+  };
+  ListGroupMembership: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        group_uid: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SimpleUser'][];
         };
       };
       /** @description Unauthorized */

@@ -1,22 +1,26 @@
-import { useMemo } from 'react';
+import { eq } from '@tanstack/db';
+import { useLiveQuery } from '@tanstack/react-db';
 
-import groupBy from 'just-group-by';
-
-import { ApiRoutes, type Group } from '@/api-types';
+import type { SimpleGroup } from '@/api-types';
+import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Dialog, DialogHeader } from '@/components/primitives';
-import { useApiQuery } from '@/hooks/useApiQuery.ts';
 import { GroupActionSection } from './GroupActionSection.tsx';
 import { GroupMemberSection } from './GroupMemberSection.tsx';
 import { GroupNameForm } from './GroupNameForm';
 
 type GroupSettingDialogProps = {
-  group: Group;
+  group: SimpleGroup;
 };
 
 export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
-  const { data: balances } = useApiQuery(ApiRoutes.GROUP_OUTSTANDING_BALANCE, { group_uid: group.uid });
-
-  const balanceByUsers = useMemo(() => groupBy(balances ?? [], (balance) => balance.user), [balances]);
+  const { data: balances } = useLiveQuery(
+    (q) =>
+      q
+        .from({ balance: outstandingBalances.raw.collection })
+        .where(({ balance }) => eq(balance.groupUid, group.uid)),
+    [group.uid]
+  );
+  const currentUserHasBalance = balances.length > 0;
 
   return (
     <Dialog>
@@ -27,11 +31,11 @@ export function GroupSettingDialog({ group }: GroupSettingDialogProps) {
       />
       <GroupMemberSection
         group={group}
-        balanceByUsers={balanceByUsers}
+        currentUserHasBalance={currentUserHasBalance}
       />
       <GroupActionSection
         group={group}
-        balanceByUsers={balanceByUsers}
+        currentUserHasBalance={currentUserHasBalance}
       />
     </Dialog>
   );
