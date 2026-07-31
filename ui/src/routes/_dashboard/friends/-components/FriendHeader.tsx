@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { FriendSettingDialog } from '@/features/FriendSettingDialog';
-import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
+import { OutstandingBalanceSummary } from '@/features/OutstandingBalanceSummary.tsx';
 import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
 export function FriendHeader({ friendUid }: { friendUid: string }) {
@@ -79,8 +79,7 @@ export function FriendHeader({ friendUid }: { friendUid: string }) {
                   Not yet joined
                 </span>
               )}
-              <OutstandingBalanceList
-                hideFriend
+              <OutstandingBalanceSummary
                 scope="friend"
                 objectUid={friendUid}
               />

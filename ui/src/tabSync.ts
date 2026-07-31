@@ -18,7 +18,6 @@ export function listenToOtherTabs(): void {
   // A BroadcastChannel never delivers to the instance that sent the message, so this only
   // ever runs in the *other* tabs — the one logging out reloads itself.
   channel?.addEventListener('message', (event: MessageEvent<TabMessage>) => {
-    console.log('message', event.data)
     if (event.data?.type === 'logout') window.location.reload();
   });
 }

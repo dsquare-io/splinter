@@ -28,7 +28,6 @@ export function GroupListItem({ uid, name }: GroupListItemProps) {
       <OutstandingBalanceList
         scope="group"
         objectUid={uid}
-        hideGroup
         className="grow pt-1 pl-12 text-sm font-medium text-gray-800"
       />
     </Link>

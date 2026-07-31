@@ -38,7 +38,6 @@ export function FriendListItem({ friend }: FriendListItemProps) {
       <OutstandingBalanceList
         scope="friend"
         objectUid={friend.uid}
-        hideFriend
         className="grow pt-1 pl-12 text-sm font-medium text-gray-800"
       />
     </Link>

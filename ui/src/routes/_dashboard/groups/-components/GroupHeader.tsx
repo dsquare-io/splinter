@@ -13,7 +13,7 @@ import { Avatar, Button, ScrollScene } from '@/components/primitives';
 import { AddGroupMemberDialog } from '@/features/AddGroupMemberDialog';
 import { AddPaymentDialog } from '@/features/AddPaymentDialog';
 import { GroupSettingDialog } from '@/features/GroupSettingDialog';
-import { OutstandingBalanceList } from '@/features/OutstandingBalanceList.tsx';
+import { OutstandingBalanceSummary } from '@/features/OutstandingBalanceSummary.tsx';
 import { useEntitySync } from '@/hooks/useEntitySync.ts';
 
 export function GroupHeader({ groupUid }: { groupUid: string }) {
@@ -77,8 +77,7 @@ export function GroupHeader({ groupUid }: { groupUid: string }) {
           <>
             <div className="text-2xl font-semibold text-gray-900">{displayName}</div>
             <ScrollScene.Hide range={[0, 200]}>
-              <OutstandingBalanceList
-                hideGroup
+              <OutstandingBalanceSummary
                 scope="group"
                 objectUid={groupUid}
               />

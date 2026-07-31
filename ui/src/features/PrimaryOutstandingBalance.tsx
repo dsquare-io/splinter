@@ -1,12 +1,7 @@
-import { and, eq } from '@tanstack/db';
-import { useLiveQuery } from '@tanstack/react-db';
-
 import { BalanceScopeEnum } from '@/api-types/components/schemas';
-import { outstandingBalances } from '@/collections/outstandingBalances.ts';
 import { Skeleton } from '@/components/layout/Skeleton.tsx';
 import { Money } from '@/components/primitives';
-import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
-import { useEntitySync } from '@/hooks/useEntitySync.ts';
+import { usePrimaryOutstandingBalance } from '@/hooks/usePrimaryOutstandingBalance.ts';
 
 type PrimaryBalanceSummaryProps = {
   scope: BalanceScopeEnum;
@@ -14,21 +9,7 @@ type PrimaryBalanceSummaryProps = {
 };
 
 export function PrimaryOutstandingBalance({ scope, objectUid }: PrimaryBalanceSummaryProps) {
-  const { data: preferredCurrency } = useCurrencyPreference();
-  const { hasSynced } = useEntitySync(outstandingBalances);
-
-  const { data: balances } = useLiveQuery(
-    (q) =>
-      q
-        .from({ balance: outstandingBalances.aggregated.collection })
-        .where(({ balance }: any) => and(eq(balance.balanceScope, scope), eq(balance.objectUid, objectUid))),
-    [scope, objectUid]
-  );
-
-  // A friend/group can have balances in multiple currencies now (server no longer collapses
-  // to one) — show the preferred-currency entry if present, else the first available,
-  // rather than silently hiding a real balance just because it's in another currency.
-  const primaryBalance = balances.find((b) => b.currency === preferredCurrency) ?? balances[0];
+  const { balance, hasSynced } = usePrimaryOutstandingBalance(scope, objectUid);
 
   if (!hasSynced) {
     return (
@@ -39,16 +20,16 @@ export function PrimaryOutstandingBalance({ scope, objectUid }: PrimaryBalanceSu
     );
   }
 
-  if (!primaryBalance || +primaryBalance.amount === 0) {
+  if (!balance || +balance.amount === 0) {
     return <div className="text-xs text-gray-400">Settled up</div>;
   }
 
   return (
     <div className="text-right text-sm">
-      <div className="text-xs text-gray-400">{+primaryBalance.amount > 0 ? 'You lent' : 'You borrowed'}</div>
+      <div className="text-xs text-gray-400">{+balance.amount > 0 ? 'You lent' : 'You borrowed'}</div>
       <Money
-        currency={primaryBalance.currency}
-        value={primaryBalance.amount}
+        currency={balance.currency}
+        value={balance.amount}
       />
     </div>
   );

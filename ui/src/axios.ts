@@ -74,7 +74,7 @@ axiosInstance.interceptors.response.use(
       throw e;
     }
 
-    if (e.response?.data?.code === 'authn:token_expired') {
+    if (e.response?.data?.code?.startsWith('authn:')) {
       const { accessToken } = await refreshTokens();
 
       originalRequest._retry = true;
