@@ -17,11 +17,15 @@ function DashboardLayout() {
 
   useEffect(() => {
     if (status === AuthStatus.LOGGED_OUT) return;
-    void import('@/collections/index.ts').then(({ friends, groups }) => {
-      if (status !== AuthStatus.LOGGED_IN) return;
-      void syncEntity(friends);
-      void syncEntity(groups);
-    });
+    void import('@/collections/index.ts')
+      .then(({ friends, groups }) => {
+        if (status !== AuthStatus.LOGGED_IN) return;
+        void syncEntity(friends);
+        void syncEntity(groups);
+      })
+      // Each collection module opens its RxDB collection with a top-level await, so anything
+      // rejecting here means the local cache silently never gets created. Don't swallow it.
+      .catch((error) => console.error('Failed to initialise local collections', error));
   }, [status]);
 
   if (status === AuthStatus.LOGGED_OUT) return <Navigate to="/auth/login" />;

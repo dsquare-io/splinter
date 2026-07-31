@@ -32,28 +32,36 @@ export function requestLocalDatabaseWipe(): void {
  * `createRxDatabase` below opens anything, when no connection exists to block us.
  */
 async function wipeIfRequested(): Promise<void> {
-  if (localStorage.getItem(WIPE_FLAG) === null) return;
-  localStorage.removeItem(WIPE_FLAG);
+  // Never let this reject: rxdbPromise is chained off it, and every collection module awaits
+  // that at the top level, so a throw here would take down all local storage rather than
+  // just skipping the wipe. localStorage and indexedDB.databases() both throw outright under
+  // Safari/iOS storage restrictions, which is exactly where that would bite.
+  try {
+    if (localStorage.getItem(WIPE_FLAG) === null) return;
+    localStorage.removeItem(WIPE_FLAG);
 
-  // Unsupported on Firefox, where the databases stay listed — emptied, but present.
-  if (!indexedDB.databases) return;
+    // Unsupported on Firefox, where the databases stay listed — emptied, but present.
+    if (!indexedDB.databases) return;
 
-  const prefix = `rxdb-dexie-${DB_NAME}--`;
-  const names = (await indexedDB.databases())
-    .map((db) => db.name)
-    .filter((name) => !!name && name.startsWith(prefix));
+    const prefix = `rxdb-dexie-${DB_NAME}--`;
+    const names = (await indexedDB.databases())
+      .map((db) => db.name)
+      .filter((name) => !!name && name.startsWith(prefix));
 
-  await Promise.all(
-    names.map(
-      (name) =>
-        new Promise<void>((resolve) => {
-          const request = indexedDB.deleteDatabase(name!);
-          // `blocked` means another tab still holds this database open; the delete stays
-          // queued for whenever that tab goes away, so resolve instead of hanging startup.
-          request.onsuccess = request.onerror = request.onblocked = () => resolve();
-        })
-    )
-  );
+    await Promise.all(
+      names.map(
+        (name) =>
+          new Promise<void>((resolve) => {
+            const request = indexedDB.deleteDatabase(name!);
+            // `blocked` means another tab still holds this database open; the delete stays
+            // queued for whenever that tab goes away, so resolve instead of hanging startup.
+            request.onsuccess = request.onerror = request.onblocked = () => resolve();
+          })
+      )
+    );
+  } catch (error) {
+    console.error('Failed to wipe local databases', error);
+  }
 }
 
 export const rxdbPromise = wipeIfRequested().then(() => createRxDatabase({ name: DB_NAME, storage }));
