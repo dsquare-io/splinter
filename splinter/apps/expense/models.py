@@ -223,29 +223,3 @@ class Settlement(TimestampedModel, PublicModel):
     @property
     def is_valid(self) -> bool:
         return self.invalidated_at is None
-
-
-class AggregatedOutstandingBalance(OutstandingBalance):
-    class Meta:
-        proxy = True
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # This model isn't supposed to be saved
-        self.pk = None
-
-    def __setattr__(self, key, value):
-        if key == 'total_amount':
-            key = 'amount'
-
-        return super().__setattr__(key, value)
-
-    def __str__(self):
-        return f'{self.amount} {self.currency_id}'
-
-    def save(self, **kwargs):
-        raise NotImplementedError()
-
-    def delete(self, **kwargs):
-        raise NotImplementedError()

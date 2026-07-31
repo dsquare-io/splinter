@@ -1,7 +1,6 @@
 import itertools
 import re
 from collections import defaultdict
-from decimal import Decimal
 from functools import cached_property
 from typing import TYPE_CHECKING
 
@@ -9,14 +8,8 @@ from django.db.models import Exists, OuterRef
 from django.http import Http404
 from rest_framework.generics import get_object_or_404
 
-from splinter.apps.expense.models import (
-    AggregatedOutstandingBalance,
-    Expense,
-    ExpenseChangeLog,
-    ExpenseParty,
-    OutstandingBalance,
-    Settlement,
-)
+from splinter.apps.expense.aggregator import OutstandingBalanceAggregator
+from splinter.apps.expense.models import Expense, ExpenseChangeLog, ExpenseParty, OutstandingBalance, Settlement
 from splinter.apps.expense.operations import (
     DeleteExpenseOperation,
     DeletePaymentOperation,
@@ -181,30 +174,10 @@ class RetrieveUserOutstandingBalanceView(GenericAPIView):
             OutstandingBalance.objects.prefetch_related('currency', 'friend', 'group').filter(user=self.request.user)
         )
 
-        summed: dict[tuple[int | None, int | None, int], AggregatedOutstandingBalance] = {}
-        for balance in qs:
-            key = (balance.friend_id if balance.group_id is None else None, balance.group_id, balance.currency_id)
-            aggregated = summed.get(key)
-            if aggregated is None:
-                aggregated = AggregatedOutstandingBalance()
-                if balance.group_id is None:
-                    aggregated.friend = balance.friend
-                else:
-                    aggregated.group = balance.group
-                aggregated.currency = balance.currency
-                aggregated.amount = Decimal(0)
-                summed[key] = aggregated
-
-            aggregated.amount += balance.amount
-
-        grouped: dict[tuple[int | None, int | None], list[AggregatedOutstandingBalance]] = defaultdict(list)
-        for aggregated in summed.values():
-            grouped[(aggregated.friend_id, aggregated.group_id)].append(aggregated)
-
         return UserOutstandingBalanceSerializer(
             {
                 "outstanding_balances": qs,
-                "aggregated_outstanding_balance": list(grouped.values()),
+                "aggregated_outstanding_balance": OutstandingBalanceAggregator(qs).aggregate(self.request.user),
             },
             context=self.get_serializer_context(),
         ).data

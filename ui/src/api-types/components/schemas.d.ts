@@ -25,14 +25,14 @@ export interface Activity {
 }
 
 export interface AggregatedOutstandingBalance {
-  readonly uid: string;
+  uid: string;
   /** @description ISO 4217 Currency Code */
   currency: string;
   /** Format: decimal */
   amount: string;
   readonly balances: SimpleOutstandingBalance[];
-  readonly balanceScope: BalanceScopeEnum;
-  readonly objectUid: string;
+  balanceScope: BalanceScopeEnum;
+  objectUid: string;
 }
 
 export interface AttachmentConfig {

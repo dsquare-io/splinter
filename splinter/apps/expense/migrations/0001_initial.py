@@ -147,16 +147,6 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='AggregatedOutstandingBalance',
-            fields=[],
-            options={
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
-            },
-            bases=('expense.outstandingbalance',),
-        ),
-        migrations.CreateModel(
             name='ExpenseParty',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

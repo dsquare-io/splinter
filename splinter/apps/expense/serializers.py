@@ -11,7 +11,6 @@ from splinter.apps.attachment.fields import FileAttachmentField
 from splinter.apps.attachment.serializers import FileAttachmentSerializer
 from splinter.apps.currency.fields import CurrencySerializerField
 from splinter.apps.expense.models import (
-    AggregatedOutstandingBalance,
     Expense,
     ExpenseAttachment,
     ExpenseChangeLog,
@@ -20,7 +19,6 @@ from splinter.apps.expense.models import (
     Settlement,
 )
 from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
-from splinter.apps.expense.shortcuts import simplify_outstanding_balances
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
@@ -449,31 +447,12 @@ class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
 
 
 class AggregatedOutstandingBalanceSerializer(serializers.Serializer):
-    uid = serializers.CharField(read_only=True)
+    uid = serializers.CharField()
     currency = CurrencySerializerField()
     amount = serializers.DecimalField(max_digits=9, decimal_places=2)
     balances = SimpleOutstandingBalanceSerializer(many=True, read_only=True)
-    balance_scope = serializers.ChoiceField(choices=('friend', 'group'), read_only=True)
-    object_uid = serializers.CharField(read_only=True)
-
-    def to_representation(self, instances: list['AggregatedOutstandingBalance']):
-        converted = simplify_outstanding_balances(self.context['request'].user, instances)
-        instance = instances[0]
-        is_group = instance.group_id is not None
-
-        balance_scope = 'group' if is_group else 'friend'
-        object_uid = instance.group.uid if is_group else instance.friend.uid
-
-        return super().to_representation(
-            {
-                'currency': converted.currency,
-                'amount': converted.amount,
-                'balances': instances,
-                'balance_scope': balance_scope,
-                'object_uid': object_uid,
-                'uid': f'{balance_scope}:{object_uid}-{converted.currency.uid}',
-            }
-        )
+    balance_scope = serializers.ChoiceField(choices=('friend', 'group'))
+    object_uid = serializers.CharField()
 
 
 class UserOutstandingBalanceSerializer(serializers.Serializer):
