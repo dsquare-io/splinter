@@ -98,13 +98,15 @@ export function OutstandingBalanceList({
         <p
           key={i}
           className={
-            isTree ?
-              clx(
-                'relative pb-0.5 pl-4',
-                'before:absolute before:top-0 before:left-1 before:w-px before:bg-gray-300',
-                i === rows.length - 1 ? 'before:h-2' : 'before:bottom-0',
-                'after:absolute after:top-2 after:left-1 after:h-px after:w-2 after:bg-gray-300'
-          ): ''}
+            isTree
+              ? clx(
+                  'relative pb-0.5 pl-4',
+                  'before:absolute before:top-0 before:left-1 before:w-px before:bg-gray-300',
+                  i === rows.length - 1 ? 'before:h-2' : 'before:bottom-0',
+                  'after:absolute after:top-2 after:left-1 after:h-px after:w-2 after:bg-gray-300'
+                )
+              : ''
+          }
         >
           {row}
         </p>

@@ -29,3 +29,11 @@
     @apply animate-in slide-in-from-right-8 fade-in-85;
   }
 }
+
+@variant max-sm {
+  .react-aria-Modal {
+    height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
