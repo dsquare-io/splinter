@@ -31,7 +31,7 @@
 }
 
 @variant max-sm {
-  .react-aria-Modal {
+  .react-aria-Modal, .react-aria-Drawer {
     height: 100vh;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);

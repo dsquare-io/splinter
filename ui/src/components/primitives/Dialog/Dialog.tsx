@@ -12,7 +12,7 @@ const dialogStyle = tv({
   base: 'relative flex flex-col overflow-y-auto p-4 focus:outline-hidden sm:p-6',
   variants: {
     variant: {
-      modal: 'h-full sm:max-h-[90vh]',
+      modal: 'h-full',
       drawer: 'max-h-screen',
       prompt: '',
     },
