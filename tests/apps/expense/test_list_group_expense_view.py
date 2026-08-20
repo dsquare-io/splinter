@@ -56,3 +56,15 @@ class ListGroupExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         self.assertEqual(len(expenses), 2)
         self.assertEqual(expenses[0]['amount'], '100.00')
         self.assertEqual(expenses[1]['amount'], '50.00')
+
+    def test_outstanding_balance_for_payer_on_multi_member_expense(self):
+        self.create_equal_split_expense(90, [self.user, self.friend, self.non_friend], group=self.group)
+
+        response = self.client.get(f'/api/groups/{self.group.public_id}/expenses')
+        self.assertEqual(response.status_code, 200)
+
+        expenses = response.json()['results']
+        self.assertEqual(len(expenses), 1)
+        # On the group page, the payer's outstanding balance should stay the full
+        # amount owed back by everyone (60.00), unlike the per-friend page.
+        self.assertEqual(expenses[0]['outstandingBalance'], '60.00')

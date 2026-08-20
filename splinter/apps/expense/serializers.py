@@ -170,6 +170,13 @@ class ExpenseSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerial
         )
 
         if expense.paid_by_id == current_user_id:
+            friend = getattr(self.context.get('view'), 'friend', None)
+            if friend is not None:
+                friend_share = next(
+                    (split.amount for split in expense.splits.all() if split.user_id == friend.id),
+                    ZERO_DECIMAL,
+                )
+                return str(friend_share)
             return str(expense.amount - user_share)
 
         user_share = NEGATIVE_ONE_DECIMAL * user_share

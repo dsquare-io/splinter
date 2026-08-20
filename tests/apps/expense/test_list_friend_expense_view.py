@@ -46,3 +46,17 @@ class ListFriendExpenseViewTests(ExpenseTestCase, AuthenticatedAPITestCase):
         expenses = response.json()['results']
         self.assertEqual(len(expenses), 1)
         self.assertEqual(expenses[0]['uid'], str(expense.public_id))
+
+    def test_outstanding_balance_for_payer_on_multi_party_expense(self):
+        another_friend = UserFactory()
+
+        self.create_equal_split_expense(90, [self.user, self.friend, another_friend])
+
+        response = self.client.get(f'/api/friends/{self.friend.username}/expenses')
+        self.assertEqual(response.status_code, 200)
+
+        expenses = response.json()['results']
+        self.assertEqual(len(expenses), 1)
+        # Payer's outstanding balance on the friend's page should be that friend's
+        # own share (30.00), not the combined total owed by every participant (60.00).
+        self.assertEqual(expenses[0]['outstandingBalance'], '30.00')
