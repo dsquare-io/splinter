@@ -144,6 +144,67 @@ class CheckAndCreateSettlementGroupSettledTests(ExpenseTestCase):
         self.assertEqual(Settlement.objects.count(), 0)
 
 
+class CheckAndCreateSettlementGroupPartiallySettledTests(ExpenseTestCase):
+    """Four-member group: user1 settles pairwise with user2, but still owes
+    user3 and user4. user1 should get no settlement marker (still owed
+    elsewhere); user2 should, since paying off user1 clears user2 with
+    everyone in the group."""
+
+    available_apps = AVAILABLE_APPS
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.user1 = UserFactory()
+        cls.user2 = UserFactory()
+        cls.user3 = UserFactory()
+        cls.user4 = UserFactory()
+        cls.group = GroupFactory(created_by=cls.user1)
+        GroupMembershipFactory(group=cls.group, user=cls.user2)
+        GroupMembershipFactory(group=cls.group, user=cls.user3)
+        GroupMembershipFactory(group=cls.group, user=cls.user4)
+
+        # user1 pays 100, split equally 4 ways -> user2/3/4 each owe user1 25.
+        cls.create_equal_split_expense(100, [cls.user1, cls.user2, cls.user3, cls.user4], group=cls.group)
+
+        # user2 pays back their 25 in full -> user1/user2 pairwise balance is now zero,
+        # but user1 is still owed 25 by user3 and 25 by user4.
+        cls.payment = cls.create_payment(25, cls.user2, cls.user1, group=cls.group)
+
+    def test_pairwise_balance_is_settled(self):
+        self.assertIsNone(
+            self.get_outstanding_balance(user=self.user1, friend=self.user2, currency=self.currency, group=self.group)
+        )
+
+    def test_other_members_still_owe(self):
+        self.assertEqual(
+            self.get_outstanding_balance(user=self.user1, friend=self.user3, currency=self.currency, group=self.group),
+            25,
+        )
+        self.assertEqual(
+            self.get_outstanding_balance(user=self.user1, friend=self.user4, currency=self.currency, group=self.group),
+            25,
+        )
+
+    def test_returns_true(self):
+        # The payment does fully settle the sender/receiver pair.
+        self.assertTrue(check_and_create_settlement(self.payment, self.user2.pk, self.user1.pk))
+
+    def test_no_settlement_marker_for_user_still_owed_by_others(self):
+        check_and_create_settlement(self.payment, self.user2.pk, self.user1.pk)
+        user_ids = set(Settlement.objects.values_list('group_membership__user_id', flat=True))
+        self.assertNotIn(self.user1.pk, user_ids)
+
+    def test_settlement_marker_created_for_fully_cleared_user(self):
+        check_and_create_settlement(self.payment, self.user2.pk, self.user1.pk)
+        user_ids = set(Settlement.objects.values_list('group_membership__user_id', flat=True))
+        self.assertIn(self.user2.pk, user_ids)
+
+    def test_only_one_settlement_created(self):
+        check_and_create_settlement(self.payment, self.user2.pk, self.user1.pk)
+        self.assertEqual(Settlement.objects.count(), 1)
+
+
 class InvalidateSettlementsForExpenseFriendTests(ExpenseTestCase):
     available_apps = AVAILABLE_APPS
 

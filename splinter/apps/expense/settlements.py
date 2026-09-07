@@ -8,6 +8,12 @@ from splinter.apps.group.models import GroupMembership
 from splinter.db.models.signals import post_restore
 
 
+def _group_balance(group_id: int, user_id: int) -> int:
+    return OutstandingBalance.objects.filter(group_id=group_id, user_id=user_id).aggregate(
+        total_amount=Sum('amount')
+    )['total_amount']
+
+
 def check_and_create_settlement(expense: Expense, sender_id: int, receiver_id: int) -> bool:
     outstanding_balance = OutstandingBalance.objects.filter(
         group_id=expense.group_id, user_id=sender_id, friend_id=receiver_id
@@ -17,12 +23,11 @@ def check_and_create_settlement(expense: Expense, sender_id: int, receiver_id: i
         return False
 
     if expense.group_id:
-        Settlement.objects.create(
-            group_membership=GroupMembership.objects.get(group_id=expense.group_id, user_id=sender_id)
-        )
-        Settlement.objects.create(
-            group_membership=GroupMembership.objects.get(group_id=expense.group_id, user_id=receiver_id)
-        )
+        for user_id in (sender_id, receiver_id):
+            if not _group_balance(expense.group_id, user_id):
+                Settlement.objects.create(
+                    group_membership=GroupMembership.objects.get(group_id=expense.group_id, user_id=user_id)
+                )
     else:
         party = ExpenseParty.objects.filter(expense=expense).select_related('friendship').first()
         if party:
