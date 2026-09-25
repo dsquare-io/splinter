@@ -83,7 +83,7 @@ class ExpenseShareSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelS
 class ChildExpenseSerializer(serializers.Serializer):
     uid = serializers.UUIDField(source='public_id', read_only=True)
     urn = serializers.CharField(read_only=True)
-    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
+    amount = serializers.DecimalField(max_digits=9, decimal_places=2, min_value=Decimal(1))
     description = serializers.CharField(max_length=32)
     shares = ExpenseShareSerializer(many=True, allow_empty=False)
 
@@ -373,7 +373,7 @@ class UpsertPaymentSerializer(serializers.Serializer):
     group = GroupSerializerField(required=False, allow_null=False, allow_empty=False)
 
     currency = CurrencySerializerField()
-    amount = serializers.DecimalField(max_digits=8, decimal_places=2, min_value=Decimal(1))
+    amount = serializers.DecimalField(max_digits=9, decimal_places=2, min_value=Decimal(1))
 
     attachments = FileAttachmentField(many=True, required=False, default=list)
 
@@ -456,7 +456,7 @@ class GroupOutstandingBalanceSerializer(SimpleOutstandingBalanceSerializer):
 class AggregatedOutstandingBalanceSerializer(serializers.Serializer):
     uid = serializers.CharField()
     currency = CurrencySerializerField()
-    amount = serializers.DecimalField(max_digits=9, decimal_places=2)
+    amount = serializers.DecimalField(max_digits=12, decimal_places=2)
     balances = SimpleOutstandingBalanceSerializer(many=True, read_only=True)
     balance_scope = serializers.ChoiceField(choices=('friend', 'group'))
     object_uid = serializers.CharField()

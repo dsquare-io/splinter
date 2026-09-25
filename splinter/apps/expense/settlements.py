@@ -9,9 +9,9 @@ from splinter.db.models.signals import post_restore
 
 
 def _group_balance(group_id: int, user_id: int) -> int:
-    return OutstandingBalance.objects.filter(group_id=group_id, user_id=user_id).aggregate(
-        total_amount=Sum('amount')
-    )['total_amount']
+    return OutstandingBalance.objects.filter(group_id=group_id, user_id=user_id).aggregate(total_amount=Sum('amount'))[
+        'total_amount'
+    ]
 
 
 def check_and_create_settlement(expense: Expense, sender_id: int, receiver_id: int) -> bool:

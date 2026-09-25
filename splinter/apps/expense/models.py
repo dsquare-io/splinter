@@ -171,7 +171,7 @@ class OutstandingBalance(TimestampedModel, SoftDeleteModel):
     friend = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='outstanding_balances')
 
     currency = models.ForeignKey('currency.Currency', on_delete=models.CASCADE, related_name='+')
-    amount = models.DecimalField(max_digits=9, decimal_places=2)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
 
     objects = OutstandingBalanceManager()
 

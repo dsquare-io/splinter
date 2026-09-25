@@ -4,7 +4,7 @@ from rest_framework.fields import DecimalField, DictField
 
 
 class OutstandingBalanceSerializerField(DictField):
-    child = DecimalField(max_digits=9, decimal_places=2)
+    child = DecimalField(max_digits=12, decimal_places=2)
 
 
 class OutstandingBalanceSerializerFieldExtension(OpenApiSerializerFieldExtension):
