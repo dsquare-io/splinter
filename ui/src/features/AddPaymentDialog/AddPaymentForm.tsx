@@ -17,12 +17,17 @@ import { AttachmentContext, AttachmentPanel, useAttachment } from '@/features/At
 import { apiQueryOptions } from '@/hooks/useApiQuery.ts';
 import { useAuth } from '@/hooks/useAuth.ts';
 import { useCurrencyPreference } from '@/hooks/useCurrencyPreference.ts';
+import { usePrimaryOutstandingBalance } from '@/hooks/usePrimaryOutstandingBalance.ts';
 import { invalidateQueriesForExpense } from '@/queryClient.ts';
 
 type AddPaymentContentProps = {
   groupUid?: string;
   friendUid?: string;
 };
+
+// Balances are from the current user's side: positive means the friend owes them (they lent),
+// so settling it means receiving; negative means they borrowed, so settling it means paying.
+const paymentDirForBalance = (balance: number) => (balance > 0 ? 'in' : 'out');
 
 export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) {
   const { close } = useDialog();
@@ -34,10 +39,8 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
     (q) =>
       q
         .from({ balance: outstandingBalances.raw.collection })
-        .where(({ balance }) =>
-          eq(friendUid ? balance.friendUid : balance.groupUid, friendUid ?? groupUid ?? '')
-        ),
-    [friendUid, groupUid]
+        .where(({ balance }) => eq(balance.groupUid, groupUid ?? '')),
+    [groupUid]
   );
   const { data: friendMatches } = useLiveQuery(
     (q) =>
@@ -51,24 +54,27 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
     })
   );
 
-  const friendBalance = friend
-    ? (balances.find((b) => b.friendUid === friend.uid && b.currency === preferredCurrency) ??
-      balances.find((b) => b.friendUid === friend.uid))
-    : undefined;
+  // Overall balance with the friend across non-group and group contexts, in the preferred
+  // currency — the same figure the friend header shows.
+  const { balance: friendBalance } = usePrimaryOutstandingBalance('friend', friendUid ?? '');
 
   useEffect(() => {
-    if (friendBalance) {
+    if (friendUid && friendBalance) {
       const balance = +friendBalance.amount;
 
       if (balance) {
-        formControl.setValue('paymentDir', balance < 0 ? 'out' : 'in');
+        formControl.setValue('paymentDir', paymentDirForBalance(balance));
         formControl.setValue('amount', Math.abs(balance));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formControl, friendBalance?.uid]);
+  }, [formControl, friendUid, friendBalance?.uid]);
 
   const balanceByUsers = useMemo(() => groupBy(balances, (balance) => balance.friendUid), [balances]);
+  // Payments are recorded in the preferred currency, so prefer the member's balance in it
+  const memberBalance = (memberUid: string) =>
+    balanceByUsers[memberUid]?.find((b) => b.currency === preferredCurrency) ??
+    balanceByUsers[memberUid]?.[0];
 
   return (
     <AttachmentContext.Provider value={attachments}>
@@ -95,7 +101,8 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
           };
         }}
         method="POST"
-        action={ApiRoutes.PAYMENT}
+        // Friend-level settle up is split server-side across non-group and group balances
+        action={friendUid ? ApiRoutes.SETTLE_UP : ApiRoutes.PAYMENT}
         onSubmitSuccess={async (response) => {
           await Promise.all([
             invalidateQueriesForExpense({ uid: response.uid, group: groupUid }),
@@ -155,9 +162,9 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
             name="friend"
             items={members?.filter((e) => e.uid !== currentUser?.uid) ?? []}
             onChange={(key) => {
-              const balance = key ? +(balanceByUsers[key as string]?.[0]?.amount ?? 0) : 0;
+              const balance = key ? +(memberBalance(key as string)?.amount ?? 0) : 0;
               if (balance) {
-                formControl.setValue('paymentDir', balance > 0 ? 'out' : 'in');
+                formControl.setValue('paymentDir', paymentDirForBalance(balance));
                 formControl.setValue('amount', Math.abs(balance));
               }
             }}
@@ -175,10 +182,10 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
                 <div className="flex-1">
                   <div>{item.name}</div>
                 </div>
-                {balanceByUsers[item.uid]?.[0] && (
+                {memberBalance(item.uid) && (
                   <Money
-                    currency={balanceByUsers[item.uid][0].currency}
-                    value={+balanceByUsers[item.uid][0].amount * -1}
+                    currency={memberBalance(item.uid)!.currency}
+                    value={+memberBalance(item.uid)!.amount * -1}
                   />
                 )}
               </>
@@ -197,7 +204,7 @@ export function AddPaymentForm({ groupUid, friendUid }: AddPaymentContentProps) 
             const paymentDir = formControl.getValues('paymentDir');
             if (val < 0) {
               formControl.setValue('paymentDir', paymentDir === 'in' ? 'out' : 'in');
-              formControl.setValue('val', Math.abs(val));
+              formControl.setValue('amount', Math.abs(val));
             }
           }}
         />

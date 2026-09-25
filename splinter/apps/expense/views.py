@@ -21,6 +21,7 @@ from splinter.apps.expense.serializers import (
     ExpenseOrPaymentOrSettlementSerializer,
     ExpenseOrPaymentSerializer,
     GroupOutstandingBalanceSerializer,
+    SettleUpSerializer,
     UpsertExpenseSerializer,
     UpsertPaymentSerializer,
     UserOutstandingBalanceSerializer,
@@ -41,6 +42,10 @@ class CreateExpenseView(CreateAPIView):
 
 class CreatePaymentView(CreateAPIView):
     serializer_class = UpsertPaymentSerializer
+
+
+class CreateSettleUpView(CreateAPIView):
+    serializer_class = SettleUpSerializer
 
 
 class RetrieveUpdateDestroyRestoreExpenseView(UpdateModelMixin, RetrieveAPIView, DestroyAPIView):

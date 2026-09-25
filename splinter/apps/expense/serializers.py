@@ -18,7 +18,12 @@ from splinter.apps.expense.models import (
     OutstandingBalance,
     Settlement,
 )
-from splinter.apps.expense.operations import CreateExpenseOperation, CreatePaymentOperation, UpdateExpenseOperation
+from splinter.apps.expense.operations import (
+    CreateExpenseOperation,
+    CreatePaymentOperation,
+    SettleUpOperation,
+    UpdateExpenseOperation,
+)
 from splinter.apps.friend.fields import FriendSerializerField
 from splinter.apps.friend.models import Friendship
 from splinter.apps.group.fields import GroupSerializerField
@@ -411,6 +416,16 @@ class UpsertPaymentSerializer(serializers.Serializer):
     def create(self, validated_data):
         actor = self.context['request'].user
         return CreatePaymentOperation(actor).execute(validated_data)
+
+
+class SettleUpSerializer(UpsertPaymentSerializer):
+    group = None
+
+    @transaction.atomic()
+    def create(self, validated_data):
+        actor = self.context['request'].user
+        payments = SettleUpOperation(actor).execute(validated_data)
+        return payments[0]
 
 
 class SimpleOutstandingBalanceSerializer(PrefetchQuerysetSerializerMixin, serializers.ModelSerializer):

@@ -574,6 +574,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/payments/settle-up': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Create Settle Up */
+    post: operations['CreateSettleUp'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/user/currency': {
     parameters: {
       query?: never;
@@ -791,6 +808,7 @@ export interface components {
     PushSubscription: import('./components/schemas.d.ts').PushSubscription;
     RefreshAccessToken: import('./components/schemas.d.ts').RefreshAccessToken;
     ResetPassword: import('./components/schemas.d.ts').ResetPassword;
+    SettleUp: import('./components/schemas.d.ts').SettleUp;
     Settlement: import('./components/schemas.d.ts').Settlement;
     SettlementTyped: import('./components/schemas.d.ts').SettlementTyped;
     /** @enum {string} */
@@ -3152,6 +3170,61 @@ export interface operations {
     requestBody: {
       content: {
         'application/json': components['schemas']['UpsertPayment'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Object'];
+        };
+      };
+      /** @description Bad Request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            /** @description List of non-field errors */
+            ''?: string[];
+          } & {
+            [key: string]: string[];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Request Forbidden */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  CreateSettleUp: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['SettleUp'];
       };
     };
     responses: {

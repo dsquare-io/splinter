@@ -1,4 +1,5 @@
 import difflib
+from collections import defaultdict
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -26,10 +27,12 @@ from splinter.apps.expense.models import (
     ExpenseRevision,
     ExpenseSplit,
     ExpenseSplitRevision,
+    OutstandingBalance,
 )
 from splinter.apps.expense.orchestrator import expense_event_orchestrator
 from splinter.apps.expense.settlements import check_and_create_settlement
 from splinter.apps.expense.utils import split_amount
+from splinter.apps.group.models import Group
 
 if TYPE_CHECKING:
     from splinter.apps.activity.models import Activity
@@ -214,6 +217,74 @@ class CreatePaymentOperation(ExpenseOperation[dict]):
             activity.save(update_fields=['verb'])
 
         return activity
+
+
+class SettleUpOperation:
+    """
+    Records a friend-level settle up as one payment per balance context.
+
+    The amount first clears what the sender owes the receiver outside any group, then
+    their debts in shared groups (oldest first); whatever is left over is added to the
+    non-group payment. Only balances in the payment currency are considered.
+    """
+
+    def __init__(self, actor: 'User'):
+        self.actor = actor
+
+    @staticmethod
+    def allocate(
+        sender: 'User', receiver: 'User', currency: 'Currency', amount: Decimal
+    ) -> list[tuple[int | None, Decimal]]:
+        debts = (
+            OutstandingBalance.objects.select_for_update()
+            .filter(user=sender, friend=receiver, currency=currency, amount__lt=0)
+            .order_by('created_at', 'pk')
+        )
+
+        non_group_debt = Decimal(0)
+        group_debts: list[tuple[int, Decimal]] = []
+        for balance in debts:
+            if balance.group_id is None:
+                non_group_debt += -balance.amount
+            else:
+                group_debts.append((balance.group_id, -balance.amount))
+
+        allocations: dict[int | None, Decimal] = defaultdict(Decimal)
+        remaining = amount
+
+        allocations[None] = min(remaining, non_group_debt)
+        remaining -= allocations[None]
+
+        for group_id, debt in group_debts:
+            if remaining <= 0:
+                break
+
+            portion = min(remaining, debt)
+            allocations[group_id] += portion
+            remaining -= portion
+
+        if remaining > 0:
+            allocations[None] += remaining
+
+        return [(group_id, portion) for group_id, portion in allocations.items() if portion > 0]
+
+    def execute(self, data: dict) -> list[Expense]:
+        with transaction.atomic():
+            allocations = self.allocate(data['sender'], data['receiver'], data['currency'], data['amount'])
+            groups = Group.objects.in_bulk([group_id for group_id, _ in allocations if group_id is not None])
+
+            payments = []
+            for group_id, portion in allocations:
+                payment_data = {
+                    **data,
+                    'group': groups[group_id] if group_id is not None else None,
+                    'amount': portion,
+                    # Attachments can only belong to a single expense; keep them on the first payment
+                    'attachments': data['attachments'] if not payments else [],
+                }
+                payments.append(CreatePaymentOperation(self.actor).execute(payment_data))
+
+        return payments
 
 
 class DeleteExpenseOperation(ExpenseOperation[Expense]):

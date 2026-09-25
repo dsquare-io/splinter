@@ -337,6 +337,8 @@ export interface ResetPassword {
   password: string;
 }
 
+export type SettleUp = UpsertPayment;
+
 export interface Settlement {
   /** Format: uuid */
   readonly uid: string;
